@@ -10,6 +10,46 @@ struct HistoryArchiveView: View {
     @State private var selectedFilter: SavedEventStatus = .saved
     @State private var searchText: String = ""
     @State private var pendingDelete: SavedEvent? = nil
+    @State private var smartFilter: SmartFilter? = nil
+
+    /// Archive triage filters layered on the status chips.
+    enum SmartFilter: String, CaseIterable, Identifiable {
+        case upcoming = "Upcoming"
+        case rsvpDue = "RSVP Due"
+        case repeating = "Repeats"
+        case duplicates = "Possible Duplicates"
+
+        var id: String { rawValue }
+        var icon: String {
+            switch self {
+            case .upcoming: return "calendar"
+            case .rsvpDue: return "envelope.badge"
+            case .repeating: return "repeat"
+            case .duplicates: return "square.on.square"
+            }
+        }
+    }
+
+    /// IDs of saved records that belong to a likely-duplicate cluster (Premium).
+    private var duplicateIDs: Set<String> {
+        guard appState.isEntitled(to: .duplicateClusters) else { return [] }
+        let entries = savedEvents.compactMap { saved -> EventSimilarityService.Entry? in
+            guard let candidate = saved.candidate else { return nil }
+            return EventSimilarityService.Entry(id: saved.id, similarityKey: candidate.similarityKey, title: candidate.title,
+                                                start: candidate.startDate, isSaved: saved.status == .saved)
+        }
+        return Set(EventSimilarityService.clusters(entries).flatMap { $0.map(\.id) })
+    }
+
+    private func matches(_ filter: SmartFilter, _ saved: SavedEvent, candidate: EventCandidate, duplicates: Set<String>) -> Bool {
+        let now = Date()
+        switch filter {
+        case .upcoming: return candidate.startDate >= now
+        case .rsvpDue: return (candidate.rsvpDeadline.map { $0 >= Calendar.current.startOfDay(for: now) }) ?? false
+        case .repeating: return candidate.recurrenceRaw != nil || candidate.interpretation?.stored?.understanding.recurrence != nil
+        case .duplicates: return duplicates.contains(saved.id)
+        }
+    }
     
     private var actions: SavedEventActions {
         SavedEventActions(services: services, modelContext: modelContext)
@@ -23,6 +63,9 @@ struct HistoryArchiveView: View {
     private var filteredEvents: [SavedEvent] {
         savedEvents.filter { saved in
             guard saved.status == selectedFilter, let candidate = saved.candidate else { return false }
+            if let smartFilter, !matches(smartFilter, saved, candidate: candidate, duplicates: smartFilter == .duplicates ? duplicateIDs : []) {
+                return false
+            }
             guard !searchText.isEmpty else { return true }
             let dateText = candidate.startDate.formatted(date: .complete, time: .omitted)
             return [candidate.title, candidate.venueName ?? "", candidate.location ?? "", candidate.notes, dateText, saved.targetCalendar]
@@ -111,6 +154,15 @@ struct HistoryArchiveView: View {
                         }
                         .padding(.vertical, 8)
                     }
+
+                    // Smart triage filters
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(SmartFilter.allCases) { filter in
+                                smartFilterChip(filter)
+                            }
+                        }
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
@@ -184,6 +236,36 @@ struct HistoryArchiveView: View {
         }
     }
     
+    @ViewBuilder
+    private func smartFilterChip(_ filter: SmartFilter) -> some View {
+        let isSelected = smartFilter == filter
+        let locked = filter == .duplicates && !appState.isEntitled(to: .duplicateClusters)
+        Button {
+            if locked {
+                appState.activeModal = .premiumPaywall
+            } else {
+                smartFilter = isSelected ? nil : filter
+            }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: locked ? "lock.fill" : filter.icon)
+                    .font(.system(size: 11, weight: .semibold))
+                Text(filter.rawValue)
+                    .font(DSTypography.caption())
+            }
+            .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 44)
+            .background(
+                Capsule()
+                    .fill(isSelected ? Color.dsPrimary.opacity(0.14) : Color.clear)
+                    .overlay(Capsule().stroke(isSelected ? Color.dsPrimary : Color.dsBorder, lineWidth: 1))
+            )
+        }
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityHint(locked ? PremiumFeature.duplicateClusters.upgradeReason : "Filters the history list")
+    }
+
     @ViewBuilder
     private func filterChip(status: SavedEventStatus, count: Int) -> some View {
         let isSelected = selectedFilter == status
