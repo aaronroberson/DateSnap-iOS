@@ -333,7 +333,7 @@ struct NoDatesFoundView: View {
         let candidate = EventCandidate(
             title: rawFragments.first ?? "",
             startDate: start,
-            endDate: start.addingTimeInterval(7200),
+            endDate: EventDurationPolicy.fallbackEnd(for: start),
             confidenceScore: 0.5,
             rawTextSnippet: appState.lastScanRawText,
             confidenceTierRaw: ConfidenceTier.low.rawValue

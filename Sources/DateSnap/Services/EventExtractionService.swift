@@ -154,30 +154,37 @@ public final class EventExtractionService: EventExtractionServiceProtocol {
 
         // Offload algorithmic parsing to background detached task
         let dtos: [ExtractedCandidateData] = await Task.detached(priority: .userInitiated) {
-            // Step 1: False-positive rejection
-            if DateInference.isFalsePositive(text: trimmed, anchor: anchor) {
-                return []
-            }
-
-            // Step 2: Line segmentation into blocks
-            let blocks = DateInference.segmentIntoEventBlocks(result: result)
-            var allCandidates: [ExtractedCandidateData] = []
-
-            for block in blocks {
-                let candidateList = DateInference.inferCandidates(
-                    from: block,
-                    locale: locale,
-                    anchor: anchor,
-                    assetIdentifier: assetIdentifier
-                )
-                allCandidates.append(contentsOf: candidateList)
-            }
-
-            return allCandidates
+            EventExtractionCore.extract(from: result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier)
         }.value
 
         // Instantiate SwiftData PersistentModel instances on caller's actor context
         return dtos.map { $0.toModel() }
+    }
+}
+
+// MARK: - Deterministic Extraction Core
+
+/// Pure, synchronous deterministic extraction from OCR, a locale and an injected reference date.
+/// Shared by `EventExtractionService` and the `EventUnderstandingPipeline`.
+public enum EventExtractionCore {
+    public static func extract(
+        from result: OCRResult,
+        locale: Locale,
+        anchor: Date,
+        assetIdentifier: String = "local_asset"
+    ) -> [ExtractedCandidateData] {
+        let trimmed = result.fullText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+
+        // Step 1: False-positive rejection
+        if DateInference.isFalsePositive(text: trimmed, anchor: anchor) {
+            return []
+        }
+
+        // Step 2: Line segmentation into blocks, then per-block inference
+        return DateInference.segmentIntoEventBlocks(result: result).flatMap { block in
+            DateInference.inferCandidates(from: block, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier)
+        }
     }
 }
 
@@ -426,7 +433,7 @@ public enum DateInference {
                     endComps.minute = timeInfo.endMinute ?? 0
                     end = calendar.date(from: endComps)
                 } else {
-                    end = calendar.date(byAdding: .hour, value: 2, to: combinedStart)
+                    end = EventDurationPolicy.fallbackEnd(for: combinedStart)
                 }
 
                 items.append(DetectedDateItem(
@@ -648,7 +655,7 @@ public enum DateInference {
                             endComps.minute = timeInfo.endMinute ?? 0
                             dayEndDate = calendar.date(from: endComps)
                         } else if timeInfo.hasTime {
-                            dayEndDate = calendar.date(byAdding: .hour, value: 2, to: expandedDate)
+                            dayEndDate = EventDurationPolicy.fallbackEnd(for: expandedDate)
                         }
 
                         results.append(DetectedDateItem(
@@ -674,7 +681,7 @@ public enum DateInference {
                     endComps.minute = timeInfo.endMinute ?? 0
                     singleEndDate = calendar.date(from: endComps)
                 } else if timeInfo.hasTime {
-                    singleEndDate = calendar.date(byAdding: .hour, value: 2, to: resolvedDate)
+                    singleEndDate = EventDurationPolicy.fallbackEnd(for: resolvedDate)
                 }
 
                 results.append(DetectedDateItem(
@@ -775,7 +782,7 @@ public enum DateInference {
                 endComps.minute = timeInfo.endMinute ?? 0
                 endDate = calendar.date(from: endComps)
             } else if timeInfo.hasTime {
-                endDate = calendar.date(byAdding: .hour, value: 2, to: resolvedDate)
+                endDate = EventDurationPolicy.fallbackEnd(for: resolvedDate)
             }
 
             return DetectedDateItem(
@@ -1028,10 +1035,9 @@ public enum DateInference {
         public var confidence: Float
     }
 
-    public static func inferTitleFromHierarchy(lines: [OCRLine], fullText: String) -> TitleInferenceResult {
-        guard !lines.isEmpty else {
-            return TitleInferenceResult(title: "Upcoming Event", confidence: 0.50)
-        }
+    /// Every plausible title line with its hierarchy score, best first.
+    public static func rankTitleCandidates(lines: [OCRLine]) -> [(line: OCRLine, score: Float)] {
+        guard !lines.isEmpty else { return [] }
 
         let boilerplateKeywords = [
             "tickets", "door", "doors", "admission", "free", "rsvp", "presale", "21+", "18+",
@@ -1071,6 +1077,15 @@ public enum DateInference {
             scoredLines.append((line, totalScore))
         }
 
+        return scoredLines.sorted(by: { $0.score > $1.score })
+    }
+
+    public static func inferTitleFromHierarchy(lines: [OCRLine], fullText: String) -> TitleInferenceResult {
+        guard !lines.isEmpty else {
+            return TitleInferenceResult(title: "Upcoming Event", confidence: 0.50)
+        }
+
+        let scoredLines = rankTitleCandidates(lines: lines)
         if let best = scoredLines.sorted(by: { $0.score > $1.score }).first {
             let titleConf = min(0.98, max(0.60, best.score))
             return TitleInferenceResult(title: best.line.text, confidence: titleConf)
@@ -1101,7 +1116,10 @@ public enum DateInference {
         for (index, line) in rawLines.enumerated() {
             let range = NSRange(location: 0, length: line.utf16.count)
             if let match = addressRegex?.firstMatch(in: line, range: range) {
-                address = (line as NSString).substring(with: match.range)
+                // Keep the rest of a short address line (city, state) rather than just the street.
+                let street = (line as NSString).substring(with: match.range)
+                let fromStreet = (line as NSString).substring(from: match.range.location).trimmingCharacters(in: .whitespaces)
+                address = fromStreet.count <= 80 ? fromStreet : street
                 if index > 0 {
                     let prev = rawLines[index - 1]
                     if prev.count > 3 && prev.count < 40 && !prev.contains(":") {

@@ -66,7 +66,7 @@ public final class EventReviewViewModel: ObservableObject {
 
         self.title = candidate.title
         self.startDate = candidate.startDate
-        self.endDate = candidate.endDate ?? candidate.startDate.addingTimeInterval(7200)
+        self.endDate = candidate.endDate ?? EventDurationPolicy.fallbackEnd(for: candidate.startDate)
         self.isAllDay = candidate.isAllDay
         self.location = candidate.location ?? ""
         self.venueName = candidate.venueName ?? ""
@@ -113,7 +113,7 @@ public final class EventReviewViewModel: ObservableObject {
     /// Keeps the end after the start when the start moves.
     public func startDateChanged(from oldValue: Date) {
         let duration = max(endDate.timeIntervalSince(oldValue), 0)
-        endDate = startDate.addingTimeInterval(duration == 0 ? 7200 : duration)
+        endDate = startDate.addingTimeInterval(duration == 0 ? EventDurationPolicy.fallback : duration)
     }
 
     // MARK: - Load Available Calendars & Lists

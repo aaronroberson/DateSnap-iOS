@@ -141,7 +141,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         if candidate.isAllDay {
             event.endDate = candidate.endDate ?? candidate.startDate
         } else {
-            event.endDate = candidate.endDate ?? candidate.startDate.addingTimeInterval(7200) // Default 2 hours
+            event.endDate = candidate.endDate ?? EventDurationPolicy.fallbackEnd(for: candidate.startDate)
         }
         if let tz = candidate.timeZoneIdentifier, !candidate.isAllDay {
             event.timeZone = TimeZone(identifier: tz)
