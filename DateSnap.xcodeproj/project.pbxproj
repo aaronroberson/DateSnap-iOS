@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		027612132C13C749817C5B13 /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB74C190900C646B945427FB /* ScanViewModel.swift */; };
+		03A5C309BC062AE97110023D /* InterpretationReviewViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE5803848C6949D05762FAD /* InterpretationReviewViews.swift */; };
 		066CFD400780C1D7BD1ED0AA /* IntelligencePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3798FF039CE3C28B1C54761 /* IntelligencePolicy.swift */; };
 		071BA06AFB1CA36EB2D65BD1 /* ScanFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BE3C61707DF08BEE6EC9B3 /* ScanFlowViews.swift */; };
 		08CB0F2787F589C0AABDA003 /* EventReviewViewModel+Interpretation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8898168BD83A0BF6DA692A /* EventReviewViewModel+Interpretation.swift */; };
@@ -117,6 +118,7 @@
 		66872204135AD2BD7E23BC2B /* HistoryArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryArchiveView.swift; sourceTree = "<group>"; };
 		6B6CEAE02011D09BA111F3F6 /* EventUnderstandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingTests.swift; sourceTree = "<group>"; };
 		6C947E824B44CADFC33B6AE0 /* NoDatesFoundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDatesFoundView.swift; sourceTree = "<group>"; };
+		6EE5803848C6949D05762FAD /* InterpretationReviewViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpretationReviewViews.swift; sourceTree = "<group>"; };
 		74044B5D30A33F4F9E4A3AF4 /* SettingsHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHubView.swift; sourceTree = "<group>"; };
 		79832EC061247A46B041CE85 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
 		7D5056BDCBFF6FD396B66CD6 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				839348B87F622E293335343F /* HelpFeedbackView.swift */,
 				66872204135AD2BD7E23BC2B /* HistoryArchiveView.swift */,
 				C4AD9CF639664B9DE3B5DD12 /* HomeEmptyStateView.swift */,
+				6EE5803848C6949D05762FAD /* InterpretationReviewViews.swift */,
 				5454EB47254B227A2BC9F812 /* ManagePlanView.swift */,
 				850A036788CAC8DA0EEEE06F /* MarketingKitView.swift */,
 				6C947E824B44CADFC33B6AE0 /* NoDatesFoundView.swift */,
@@ -465,6 +468,7 @@
 				AA5251495F4F2C34754C1F3B /* IntelligenceComposition.swift in Sources */,
 				066CFD400780C1D7BD1ED0AA /* IntelligencePolicy.swift in Sources */,
 				28AF3827AAFB48EFD956D694 /* InterpretationRanker.swift in Sources */,
+				03A5C309BC062AE97110023D /* InterpretationReviewViews.swift in Sources */,
 				C59B934D66F046BA477CE755 /* ManagePlanView.swift in Sources */,
 				12B4374B0516C77DCCE73121 /* MarketingKitView.swift in Sources */,
 				EF805E45491A208DA96070E1 /* NoDatesFoundView.swift in Sources */,

@@ -53,6 +53,7 @@ struct EventReviewForm: View {
     @State private var showScheduleEditor: Bool = false
     @State private var showSuccessToast: Bool = false
     @State private var showDiscardConfirm: Bool = false
+    @State private var duplicatesDismissed: Bool = false
 
     init(viewModel: @autoclosure @escaping () -> EventReviewViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())
@@ -71,8 +72,39 @@ struct EventReviewForm: View {
                     VStack(spacing: 18) {
                         header
                         confidenceRow
-                        if viewModel.isAmbiguousDate { ambiguityBanner }
+                        if let route = viewModel.engineRoute {
+                            EngineRouteBadge(route: route)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal)
+                        }
+                        if !viewModel.duplicateMatches.isEmpty && !duplicatesDismissed {
+                            PossibleDuplicateBanner(
+                                matches: viewModel.duplicateMatches,
+                                onOpen: openSavedEvent,
+                                onKeepSeparate: { withAnimation { duplicatesDismissed = true } }
+                            )
+                            .padding(.horizontal)
+                        }
+                        ForEach(viewModel.openQuestions) { question in
+                            AmbiguityQuestionCard(question: question) { option in
+                                withAnimation { viewModel.answer(question, with: option) }
+                            }
+                            .padding(.horizontal)
+                        }
+                        if viewModel.isAmbiguousDate && !viewModel.openQuestions.contains(where: { $0.field == .date }) {
+                            ambiguityBanner
+                        }
                         sourceCard
+                        if !viewModel.visibleAlternatives.isEmpty {
+                            AlternativeInterpretationsCard(alternatives: viewModel.visibleAlternatives) { alternative in
+                                withAnimation { viewModel.apply(alternative) }
+                            }
+                            .padding(.horizontal)
+                        }
+                        if !viewModel.whyThisRows.isEmpty {
+                            WhyThisSection(rows: viewModel.whyThisRows)
+                                .padding(.horizontal)
+                        }
                         formSection
                     }
                 }
@@ -108,7 +140,10 @@ struct EventReviewForm: View {
             } message: {
                 Text("It will be removed from your review queue. Nothing was added to your calendar.")
             }
-            .task { await viewModel.prepareDestinations() }
+            .task {
+                viewModel.findDuplicates(in: modelContext)
+                await viewModel.prepareDestinations()
+            }
         }
     }
 
@@ -343,6 +378,20 @@ struct EventReviewForm: View {
             locationCard
             notesCard
             if !rawLines.isEmpty { rawTextCard }
+            ReviewSuggestionsCard(
+                viewModel: viewModel,
+                isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
+                onUpgrade: { Task { await appState.present(.premiumPaywall) } }
+            )
+            if !viewModel.actions.isEmpty {
+                EventActionsChecklist(
+                    actions: viewModel.actions,
+                    deadlineReminderDate: viewModel.deadlineReminderDate,
+                    deadlineReminderEnabled: $viewModel.deadlineReminderEnabled,
+                    isEntitledToDeadlineReminders: appState.isEntitled(to: .advancedReminderPlans),
+                    onUpgrade: { Task { await appState.present(.premiumPaywall) } }
+                )
+            }
             destinationCard
             actions
         }
@@ -356,9 +405,9 @@ struct EventReviewForm: View {
                     .font(DSTypography.overlineConfidence())
                     .foregroundStyle(Color.dsMutedForeground)
                 Spacer()
-                Text("AI Parsed")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsPrimary)
+                if let source = viewModel.provenance(for: .title) {
+                    ProvenanceChip(provenance: source.provenance, needsCheck: source.needsCheck)
+                }
             }
 
             HStack(spacing: 10) {
@@ -391,6 +440,15 @@ struct EventReviewForm: View {
 
     private var dateCard: some View {
         VStack(spacing: 12) {
+            if let source = viewModel.provenance(for: .date) {
+                HStack {
+                    Text("WHEN")
+                        .font(DSTypography.overlineConfidence())
+                        .foregroundStyle(Color.dsMutedForeground)
+                    Spacer()
+                    ProvenanceChip(provenance: source.provenance, needsCheck: source.needsCheck)
+                }
+            }
             dateRow(icon: "calendar", label: viewModel.isAllDay ? "DATE" : "STARTS") {
                 DatePicker(
                     "Start",
@@ -476,6 +534,9 @@ struct EventReviewForm: View {
                 Text("LOCATION")
                     .font(DSTypography.overlineConfidence())
                     .foregroundStyle(Color.dsMutedForeground)
+                if let source = viewModel.provenance(for: .venue) {
+                    ProvenanceChip(provenance: source.provenance, needsCheck: source.needsCheck)
+                }
                 Spacer()
                 if let mapsURL {
                     Button {
@@ -770,6 +831,11 @@ struct EventReviewForm: View {
         }
         .padding(.top, 4)
         .padding(.bottom, 24)
+    }
+
+    private func openSavedEvent(_ candidateID: String) {
+        guard let match = SavedEventActions.candidate(id: candidateID, in: modelContext) else { return }
+        Task { await appState.present(.savedEventDetail(match.toDateSnapEvent())) }
     }
 
     private func save() async {
