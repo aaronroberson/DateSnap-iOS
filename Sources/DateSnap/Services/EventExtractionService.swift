@@ -303,8 +303,9 @@ public enum DateInference {
         let blockText = block.fullText
         let calendar = Calendar.current
 
-        // B1 & B2 & B3: Detect candidate dates
-        let dateResults = detectDates(in: blockText, locale: locale, anchor: anchor)
+        // B1 & B2 & B3: Detect candidate dates, ignoring RSVP-deadline and on-sale lines when another date exists
+        let eventDateText = textExcludingDeadlineLines(blockText, locale: locale, anchor: anchor)
+        let dateResults = detectDates(in: eventDateText, locale: locale, anchor: anchor)
         guard !dateResults.isEmpty else { return [] }
 
         // B8: Infer Title from visual hierarchy
@@ -888,6 +889,22 @@ public enum DateInference {
     }
 
     // MARK: - B6. Time Parsing, Windows & Multi-Marker Disambiguation
+
+    /// Lines whose dates are deadlines or sale dates rather than the event's own date.
+    public static let deadlineVocabulary = "rsvp by|rsvp before|rsvp no later|register by|registration closes|reply by|sign up by|deadline|on sale|presale|pre-sale|tickets available"
+
+    public static func isDeadlineLine(_ line: String) -> Bool {
+        line.lowercased().range(of: deadlineVocabulary, options: .regularExpression) != nil
+    }
+
+    /// Block text without deadline/on-sale lines, when the remaining lines still contain a date.
+    static func textExcludingDeadlineLines(_ text: String, locale: Locale, anchor: Date) -> String {
+        let lines = text.components(separatedBy: "\n")
+        let kept = lines.filter { !isDeadlineLine($0) }
+        guard kept.count < lines.count else { return text }
+        let keptText = kept.joined(separator: "\n")
+        return detectDates(in: keptText, locale: locale, anchor: anchor).isEmpty ? text : keptText
+    }
 
     /// Words that mark the main start ("Show 8:30", "8:30 Headliner set").
     public static let showVocabulary = "\\b(show|showtime|headlin\\w*|main set|performance|kick ?off|starts?|begins?)\\b"

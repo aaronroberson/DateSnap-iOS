@@ -173,10 +173,9 @@ public enum RuleBasedEventAnalyzer {
     }
 
     static func role(forLine lower: String) -> TemporalRole? {
-        if ["rsvp by", "rsvp before", "register by", "registration closes", "reply by", "sign up by", "deadline", "rsvp no later"].contains(where: lower.contains) {
-            return .rsvpDeadline
+        if DateInference.isDeadlineLine(lower) {
+            return lower.range(of: "on sale|presale|pre-sale|tickets available", options: .regularExpression) != nil ? .ticketSale : .rsvpDeadline
         }
-        if ["on sale", "presale", "pre-sale", "tickets available"].contains(where: lower.contains) { return .ticketSale }
         if lower.range(of: DateInference.showVocabulary, options: .regularExpression) != nil { return .show }
         if lower.range(of: DateInference.doorsVocabulary, options: .regularExpression) != nil { return .doors }
         if lower.range(of: "\\b(until|till|til|ends?|curfew|close)\\b", options: .regularExpression) != nil { return .eventEnd }
