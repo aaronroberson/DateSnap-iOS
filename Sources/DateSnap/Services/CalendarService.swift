@@ -176,6 +176,14 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         }
         event.notes = notesComponents.joined(separator: "\n\n")
 
+        // Recurrence only when the user chose to repeat the event (never inferred silently).
+        event.recurrenceRules?.forEach { event.removeRecurrenceRule($0) }
+        switch candidate.recurrenceRaw.flatMap(RecurrenceSignal.Kind.init(rawValue:)) {
+        case .weekly: event.addRecurrenceRule(EKRecurrenceRule(recurrenceWith: .weekly, interval: 1, end: nil))
+        case .monthly: event.addRecurrenceRule(EKRecurrenceRule(recurrenceWith: .monthly, interval: 1, end: nil))
+        case .series, .none: break
+        }
+
         // Replace alarms (e.g. 1 day before: -86400, 2 hours before: -7200)
         event.alarms?.forEach { event.removeAlarm($0) }
         for offset in alarms {

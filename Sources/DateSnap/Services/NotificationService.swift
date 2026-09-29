@@ -9,10 +9,17 @@ public protocol NotificationServiceProtocol: Sendable {
         title: String,
         body: String,
         triggerDates: [Date],
-        eventId: String?
+        eventId: String?,
+        actionURL: String?
     ) async throws -> [String]
     func removePendingNotifications(identifiers: [String])
     func setupNotificationCategories()
+}
+
+extension NotificationServiceProtocol {
+    public func scheduleLocalNotifications(title: String, body: String, triggerDates: [Date], eventId: String?) async throws -> [String] {
+        try await scheduleLocalNotifications(title: title, body: body, triggerDates: triggerDates, eventId: eventId, actionURL: nil)
+    }
 }
 
 // MARK: - Production Notification Service
@@ -20,6 +27,9 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
     public static let categoryIdentifier = "DATESNAP_EVENT_ALERT"
     public static let viewEventActionIdentifier = "VIEW_EVENT_ACTION"
     public static let dismissActionIdentifier = "DISMISS_ACTION"
+    /// Category for alerts whose event has an RSVP/ticket link copied from the flyer.
+    public static let linkCategoryIdentifier = "DATESNAP_EVENT_ALERT_LINK"
+    public static let openLinkActionIdentifier = "OPEN_LINK_ACTION"
 
     private let notificationCenter: UNUserNotificationCenter
 
@@ -67,7 +77,19 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
             options: [.customDismissAction]
         )
 
-        notificationCenter.setNotificationCategories([eventCategory])
+        let openLinkAction = UNNotificationAction(
+            identifier: Self.openLinkActionIdentifier,
+            title: "Open RSVP / Tickets",
+            options: [.foreground]
+        )
+        let linkCategory = UNNotificationCategory(
+            identifier: Self.linkCategoryIdentifier,
+            actions: [viewAction, openLinkAction, dismissAction],
+            intentIdentifiers: [],
+            options: [.customDismissAction]
+        )
+
+        notificationCenter.setNotificationCategories([eventCategory, linkCategory])
     }
 
     // MARK: - Schedule Local Notifications
@@ -75,7 +97,8 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
         title: String,
         body: String,
         triggerDates: [Date],
-        eventId: String? = nil
+        eventId: String? = nil,
+        actionURL: String? = nil
     ) async throws -> [String] {
         let status = await authorizationStatus()
         if status != .authorized && status != .provisional {
@@ -97,7 +120,8 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
             content.title = title
             content.body = body
             content.sound = .default
-            content.categoryIdentifier = Self.categoryIdentifier
+            let link = actionURL.flatMap(Self.validatedLink)
+            content.categoryIdentifier = link == nil ? Self.categoryIdentifier : Self.linkCategoryIdentifier
 
             var userInfo: [String: String] = [
                 "type": "datesnap_event_reminder",
@@ -105,6 +129,9 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
             ]
             if let id = eventId {
                 userInfo["eventId"] = id
+            }
+            if let link {
+                userInfo["actionURL"] = link.absoluteString
             }
             content.userInfo = userInfo
 
@@ -123,6 +150,17 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
         }
 
         return scheduledIds
+    }
+
+    /// Only http(s) links copied from the flyer become notification actions.
+    static func validatedLink(_ raw: String) -> URL? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !trimmed.contains(" ") else { return nil }
+        let withScheme = trimmed.lowercased().hasPrefix("http") ? trimmed : "https://\(trimmed)"
+        guard let url = URL(string: withScheme), ["http", "https"].contains(url.scheme?.lowercased() ?? ""), url.host?.contains(".") == true else {
+            return nil
+        }
+        return url
     }
 
     // MARK: - Remove Notifications
@@ -146,8 +184,13 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
     ) async {
         let dismissed = response.actionIdentifier == Self.dismissActionIdentifier
             || response.actionIdentifier == UNNotificationDismissActionIdentifier
-        guard !dismissed,
-              let eventId = response.notification.request.content.userInfo["eventId"] as? String else { return }
+        let userInfo = response.notification.request.content.userInfo
+        if response.actionIdentifier == Self.openLinkActionIdentifier,
+           let raw = userInfo["actionURL"] as? String, let url = Self.validatedLink(raw) {
+            await DeepLinkInbox.shared.deliver(url: url)
+            return
+        }
+        guard !dismissed, let eventId = userInfo["eventId"] as? String else { return }
         await DeepLinkInbox.shared.deliver(eventId: eventId)
     }
 }
@@ -162,10 +205,22 @@ public final class DeepLinkInbox: ObservableObject {
     public static let notificationName = NSNotification.Name("DateSnapDeepLinkEvent")
 
     @Published public private(set) var pendingEventId: String?
+    /// A flyer link the user asked to open from a notification action.
+    @Published public private(set) var pendingURL: URL?
 
     public func deliver(eventId: String) {
         pendingEventId = eventId
         NotificationCenter.default.post(name: Self.notificationName, object: nil, userInfo: ["eventId": eventId])
+    }
+
+    public func deliver(url: URL) {
+        pendingURL = url
+        NotificationCenter.default.post(name: Self.notificationName, object: nil, userInfo: ["url": url])
+    }
+
+    public func consumeURL() -> URL? {
+        defer { pendingURL = nil }
+        return pendingURL
     }
 
     public func consume() -> String? {

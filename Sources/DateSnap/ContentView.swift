@@ -5,6 +5,7 @@ struct ContentView: View {
     @Environment(\.services) private var services
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
 
     @StateObject private var appState = AppState()
     @StateObject private var settingsState = SettingsState()
@@ -116,6 +117,10 @@ struct ContentView: View {
 
     /// Opens the saved event a notification tap pointed at.
     private func openPendingDeepLink() {
+        if let url = DeepLinkInbox.shared.consumeURL() {
+            openURL(url)
+            return
+        }
         guard let eventId = DeepLinkInbox.shared.consume() else { return }
         guard let candidate = SavedEventActions.candidate(id: eventId, in: modelContext) else {
             appState.showToast("That event is no longer in DateSnap")

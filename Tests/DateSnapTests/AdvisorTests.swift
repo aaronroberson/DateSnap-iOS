@@ -64,3 +64,16 @@ struct AdvisorServiceTests {
         #expect(service.suggestedCalendarIdentifier(for: .appointment, available: ["work", "fun"]) == nil)
     }
 }
+
+@Suite("Notification link actions")
+struct NotificationLinkTests {
+    @Test("Only http(s) links from the flyer become notification actions")
+    func validatedLinks() {
+        #expect(NotificationService.validatedLink("datesnap.app/rsvp")?.absoluteString == "https://datesnap.app/rsvp")
+        #expect(NotificationService.validatedLink("https://tickets.example.com/e/1")?.host == "tickets.example.com")
+        #expect(NotificationService.validatedLink("javascript:alert(1)") == nil)
+        #expect(NotificationService.validatedLink("tel:5551234567") == nil)
+        #expect(NotificationService.validatedLink("not a link") == nil)
+        #expect(NotificationService.validatedLink("") == nil)
+    }
+}

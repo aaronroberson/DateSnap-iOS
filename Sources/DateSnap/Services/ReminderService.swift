@@ -80,6 +80,8 @@ public protocol ReminderServiceProtocol: Sendable {
         offsets: [ReminderOffset]
     ) async throws -> String
     func deleteReminder(externalIdentifier: String) throws
+    /// A standalone to-do (e.g. "RSVP: …") due at `due`, separate from the event reminder.
+    func createDeadlineReminder(title: String, due: Date, url: String?, list: EKCalendar?) async throws -> String
 }
 
 // MARK: - Production Reminder Service
@@ -168,6 +170,34 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
             try eventStore.save(reminder, commit: true)
             let identifier = reminder.calendarItemExternalIdentifier ?? reminder.calendarItemIdentifier
             return identifier
+        } catch {
+            throw DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription))
+        }
+    }
+
+    // MARK: - Deadline Reminder
+    public func createDeadlineReminder(title: String, due: Date, url: String?, list: EKCalendar? = nil) async throws -> String {
+        if authorizationStatus() != .fullAccess {
+            guard try await requestReminderAccess() else { throw DateSnapError.reminders(.accessDenied) }
+        }
+        guard let targetList = list ?? defaultReminderList() ?? fetchReminderLists().first else {
+            throw DateSnapError.reminders(.noListFound)
+        }
+        let reminder = EKReminder(eventStore: eventStore)
+        reminder.title = title
+        reminder.calendar = targetList
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .timeZone], from: due)
+        reminder.dueDateComponents = components
+        reminder.addAlarm(EKAlarm(absoluteDate: due))
+        if let url, let link = URL(string: url.hasPrefix("http") ? url : "https://\(url)") {
+            reminder.url = link
+            reminder.notes = "Link from the flyer: \(url)\nCaptured on-device by DateSnap"
+        } else {
+            reminder.notes = "Captured on-device by DateSnap"
+        }
+        do {
+            try eventStore.save(reminder, commit: true)
+            return reminder.calendarItemExternalIdentifier ?? reminder.calendarItemIdentifier
         } catch {
             throw DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription))
         }

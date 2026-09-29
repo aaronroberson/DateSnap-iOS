@@ -315,6 +315,8 @@ public final class SavedEvent {
     public var statusRaw: String
     /// Alert offsets (negative seconds before start) currently applied to the calendar, reminder and local alerts.
     public var alertOffsets: [Double] = []
+    /// Separate RSVP/registration-deadline reminder the user accepted, if any.
+    public var deadlineReminderId: String? = nil
 
     public var candidate: EventCandidate?
 

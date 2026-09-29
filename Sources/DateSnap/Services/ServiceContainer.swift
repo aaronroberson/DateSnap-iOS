@@ -170,13 +170,16 @@ public final class MockReminderService: ReminderServiceProtocol, @unchecked Send
         externalIdentifier
     }
     public func deleteReminder(externalIdentifier: String) throws {}
+    public func createDeadlineReminder(title: String, due: Date, url: String?, list: EKCalendar?) async throws -> String {
+        "mock-deadline-\(UUID().uuidString)"
+    }
 }
 
 public final class MockNotificationService: NotificationServiceProtocol {
     public init() {}
     public func requestAuthorization() async throws -> Bool { true }
     public func authorizationStatus() async -> UNAuthorizationStatus { .authorized }
-    public func scheduleLocalNotifications(title: String, body: String, triggerDates: [Date], eventId: String?) async throws -> [String] {
+    public func scheduleLocalNotifications(title: String, body: String, triggerDates: [Date], eventId: String?, actionURL: String?) async throws -> [String] {
         return triggerDates.enumerated().map { "mock-notification-\($0.offset)" }
     }
     public func removePendingNotifications(identifiers: [String]) {}

@@ -48,7 +48,8 @@ struct SavedEventActions {
                     title: candidate.title,
                     body: EventAlertText.body(for: candidate),
                     triggerDates: offsets.map { $0.triggerDate(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay) },
-                    eventId: candidate.id
+                    eventId: candidate.id,
+                    actionURL: candidate.rsvpUrl
                 )
             } catch {
                 saved.scheduledNotificationIds = []
@@ -78,7 +79,7 @@ struct SavedEventActions {
             if let calendarId = saved.externalCalendarEventId {
                 try? services.calendar.deleteEvent(externalIdentifier: calendarId)
             }
-            for reminderId in saved.externalReminderIds {
+            for reminderId in saved.externalReminderIds + [saved.deadlineReminderId].compactMap({ $0 }) {
                 try? services.reminders.deleteReminder(externalIdentifier: reminderId)
             }
         }

@@ -296,7 +296,8 @@ public final class EventReviewViewModel: ObservableObject {
                 title: candidate.title,
                 body: EventAlertText.body(for: candidate),
                 triggerDates: triggerDates,
-                eventId: candidate.id
+                eventId: candidate.id,
+                actionURL: candidate.rsvpUrl
             )
         } catch {
             notificationsSkipped = true
@@ -307,14 +308,23 @@ public final class EventReviewViewModel: ObservableObject {
 
 // MARK: - Shared Alert Copy
 enum EventAlertText {
+    /// Concise, category-aware alert copy built from app templates and the candidate's own fields.
     @MainActor
     static func body(for candidate: EventCandidate) -> String {
         let when = candidate.isAllDay
             ? candidate.startDate.formatted(date: .abbreviated, time: .omitted)
             : candidate.startDate.formatted(date: .abbreviated, time: .shortened)
-        if let place = candidate.venueName ?? candidate.location {
-            return "\(when) · \(place)"
+        let place = candidate.venueName ?? candidate.location
+        switch EventCategory(rawValue: candidate.categoryRaw) ?? .other {
+        case .deadline:
+            return "Due \(when)"
+        case .appointment:
+            return ["Appointment \(when)", place].compactMap { $0 }.joined(separator: " · ")
+        case .concert, .nightlife:
+            let doors = candidate.notes.range(of: "Doors open at [0-9:]+ ?[AP]M", options: .regularExpression).map { String(candidate.notes[$0]) }
+            return [when, doors, place].compactMap { $0 }.joined(separator: " · ")
+        default:
+            return [when, place].compactMap { $0 }.joined(separator: " · ")
         }
-        return when
     }
 }
