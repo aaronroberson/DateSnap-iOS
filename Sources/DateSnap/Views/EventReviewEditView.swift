@@ -393,6 +393,9 @@ struct EventReviewForm: View {
                 )
             }
             destinationCard
+            #if DEBUG
+            InterpretationDiagnosticsView(viewModel: viewModel)
+            #endif
             actions
         }
         .padding(.horizontal)
