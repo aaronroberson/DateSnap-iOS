@@ -5,7 +5,9 @@ import Testing
 /// Exercises the real Foundation Models route when this machine can run it; otherwise verifies the fallback.
 @Suite("Apple Intelligence live route")
 struct AppleIntelligenceLiveTests {
-    @Test("Live pipeline returns a validated result or a clean rules-only fallback")
+    /// Opt-in (DATESNAP_EVAL_LIVE=1) because a real model pass takes 10–20 s.
+    @Test("Live pipeline returns a validated result or a clean rules-only fallback",
+          .enabled(if: ProcessInfo.processInfo.environment["DATESNAP_EVAL_LIVE"] == "1"))
     func livePipeline() async throws {
         let poster = makeOCR([
             ("SUMMER NIGHTS", 0.09),
