@@ -576,7 +576,7 @@ struct HomeEmptyStateView: View {
             .padding(.horizontal)
             .task(id: homeViewModel.recentScreenshots.map(\.localIdentifier)) {
                 if appState.isEntitled(to: .likelyEventTriage) {
-                    homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)))
+                    homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)), tier: appState.subscriptionTier)
                 }
             }
         } else if !appState.isEntitled(to: .automaticScreenshotDetection) {

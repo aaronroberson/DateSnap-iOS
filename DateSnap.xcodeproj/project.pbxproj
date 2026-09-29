@@ -19,6 +19,7 @@
 		17DD9A0D1E21E277686BE4F2 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5037EEF723A7175F22FC332 /* Typography.swift */; };
 		1AA94BE049FD05A199338FC0 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E09A6F427402F6FE1AC56BD /* SubscriptionService.swift */; };
 		1BF9DABFB0B93E0F66FFA25B /* EventUnderstandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6CEAE02011D09BA111F3F6 /* EventUnderstandingTests.swift */; };
+		1E823ECEFF182013A14634CE /* InterpretationDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8695D41CA0C3E50FAD66AC77 /* InterpretationDiagnosticsView.swift */; };
 		24218EF538592A02C6B197F3 /* AdvisorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE323656DAE7A805CD2EC71 /* AdvisorTests.swift */; };
 		2641DF002417F940C759EEA9 /* ServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C86BC46FAFA0EDCED3073D8 /* ServiceContainer.swift */; };
 		28AF3827AAFB48EFD956D694 /* InterpretationRanker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5FAB10A61B2B540B9CB8CD /* InterpretationRanker.swift */; };
@@ -63,6 +64,7 @@
 		C5A3168EF6AD308047CBEE48 /* DateSnap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F925C66B8AD24D4EF607F4 /* DateSnap.swift */; };
 		C86D6228C85FF6B05BD3CE86 /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43B1D80DD8D30D5F0BC8B97 /* PremiumPaywallView.swift */; };
 		CCD77F421B58558AEBADEBEF /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4CC51E81B43393FEA908592 /* NotificationService.swift */; };
+		D08BB0872E7E65152DBD6ACD /* IntelligenceUsagePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0477A70AC8013DFED2CE9A7 /* IntelligenceUsagePolicy.swift */; };
 		D11CDE9CA9F1D84076DA767B /* SettingsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334BC94863216871AC321BA2 /* SettingsState.swift */; };
 		D1C74102F5650FEC390DD4A8 /* CalendarPermissionDeniedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31217A0F1B6DC9210F6FB7DF /* CalendarPermissionDeniedView.swift */; };
 		DE72A729A3C7F61776BBE0A3 /* EventExtractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98BDF345A5700E51B903D57B /* EventExtractionService.swift */; };
@@ -132,6 +134,7 @@
 		8486FC2D21F8DC8901CCFE21 /* ReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderService.swift; sourceTree = "<group>"; };
 		850A036788CAC8DA0EEEE06F /* MarketingKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingKitView.swift; sourceTree = "<group>"; };
 		8653406B93BF387A7E813F4D /* ReminderScheduleEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduleEditorView.swift; sourceTree = "<group>"; };
+		8695D41CA0C3E50FAD66AC77 /* InterpretationDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpretationDiagnosticsView.swift; sourceTree = "<group>"; };
 		86AB1A5A37117D3CF4611C04 /* SwiftDataEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataEntities.swift; sourceTree = "<group>"; };
 		95D351A9F1EC999E78CF4BA1 /* EventReviewEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReviewEditView.swift; sourceTree = "<group>"; };
 		9646C6E197EB5B8F6BC6DD0E /* EventDurationPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDurationPolicy.swift; sourceTree = "<group>"; };
@@ -154,6 +157,7 @@
 		CAFA1093859A31B599707112 /* InterpretationRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpretationRecordTests.swift; sourceTree = "<group>"; };
 		CB74C190900C646B945427FB /* ScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewModel.swift; sourceTree = "<group>"; };
 		CF8898168BD83A0BF6DA692A /* EventReviewViewModel+Interpretation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventReviewViewModel+Interpretation.swift"; sourceTree = "<group>"; };
+		D0477A70AC8013DFED2CE9A7 /* IntelligenceUsagePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceUsagePolicy.swift; sourceTree = "<group>"; };
 		D3798FF039CE3C28B1C54761 /* IntelligencePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligencePolicy.swift; sourceTree = "<group>"; };
 		DF50DEB9AE192CF2A3E6DB6F /* EventUnderstandingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingModels.swift; sourceTree = "<group>"; };
 		DFE323656DAE7A805CD2EC71 /* AdvisorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvisorTests.swift; sourceTree = "<group>"; };
@@ -189,6 +193,7 @@
 				A841137B4F992EC30A732D05 /* IntelligenceCapabilities.swift */,
 				0AAC819368AFC3A098941B88 /* IntelligenceComposition.swift */,
 				D3798FF039CE3C28B1C54761 /* IntelligencePolicy.swift */,
+				D0477A70AC8013DFED2CE9A7 /* IntelligenceUsagePolicy.swift */,
 				7E5FAB10A61B2B540B9CB8CD /* InterpretationRanker.swift */,
 				976FACC3562771694A7E4C6D /* RuleBasedEventAnalyzer.swift */,
 			);
@@ -261,6 +266,7 @@
 				839348B87F622E293335343F /* HelpFeedbackView.swift */,
 				66872204135AD2BD7E23BC2B /* HistoryArchiveView.swift */,
 				C4AD9CF639664B9DE3B5DD12 /* HomeEmptyStateView.swift */,
+				8695D41CA0C3E50FAD66AC77 /* InterpretationDiagnosticsView.swift */,
 				6EE5803848C6949D05762FAD /* InterpretationReviewViews.swift */,
 				5454EB47254B227A2BC9F812 /* ManagePlanView.swift */,
 				850A036788CAC8DA0EEEE06F /* MarketingKitView.swift */,
@@ -473,6 +479,8 @@
 				83CDC4B2DB121781788647C4 /* IntelligenceCapabilities.swift in Sources */,
 				AA5251495F4F2C34754C1F3B /* IntelligenceComposition.swift in Sources */,
 				066CFD400780C1D7BD1ED0AA /* IntelligencePolicy.swift in Sources */,
+				D08BB0872E7E65152DBD6ACD /* IntelligenceUsagePolicy.swift in Sources */,
+				1E823ECEFF182013A14634CE /* InterpretationDiagnosticsView.swift in Sources */,
 				28AF3827AAFB48EFD956D694 /* InterpretationRanker.swift in Sources */,
 				03A5C309BC062AE97110023D /* InterpretationReviewViews.swift in Sources */,
 				C59B934D66F046BA477CE755 /* ManagePlanView.swift in Sources */,

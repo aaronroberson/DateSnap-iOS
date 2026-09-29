@@ -131,11 +131,14 @@ public final class HomeViewModel: ObservableObject {
 
     // MARK: - Likely-Event Triage (Plus)
     /// Checks up to `PhotoCandidateRanker.assessmentBudget` new, unscanned screenshots on device.
-    public func triageLikelyEvents(scannedIDs: Set<String>) {
-        let pending = recentScreenshots
+    public func triageLikelyEvents(scannedIDs: Set<String>, tier: SubscriptionTier) {
+        guard triageTask == nil else { return }
+        let candidates = recentScreenshots
             .filter { !scannedIDs.contains($0.localIdentifier) && !assessedIDs.contains($0.localIdentifier) }
             .prefix(PhotoCandidateRanker.assessmentBudget)
-        guard !pending.isEmpty, triageTask == nil else { return }
+        let granted = IntelligenceUsagePolicy().consume(.likelyEventTriage, count: candidates.count, tier: tier)
+        let pending = candidates.prefix(granted)
+        guard !pending.isEmpty else { return }
         let photos = photoLibraryService
         let ocr = ocrService
         triageTask = Task { [weak self] in

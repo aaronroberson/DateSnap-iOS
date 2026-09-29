@@ -77,3 +77,18 @@ struct NotificationLinkTests {
         #expect(NotificationService.validatedLink("") == nil)
     }
 }
+
+@Suite("Intelligence usage policy")
+struct IntelligenceUsagePolicyTests {
+    @Test("Daily triage budgets depend on tier and reset each day")
+    func budgets() {
+        let policy = IntelligenceUsagePolicy(defaultsSuiteName: "datesnap.tests.usage.\(UUID().uuidString)")
+        let day = testAnchor
+        #expect(policy.consume(.likelyEventTriage, count: 5, tier: .starter, now: day) == 0)
+        #expect(policy.consume(.likelyEventTriage, count: 25, tier: .plus, now: day) == 25)
+        #expect(policy.consume(.likelyEventTriage, count: 10, tier: .plus, now: day) == 5)
+        #expect(policy.consume(.likelyEventTriage, count: 1, tier: .plus, now: day) == 0)
+        #expect(policy.consume(.likelyEventTriage, count: 6, tier: .plus, now: day.addingTimeInterval(86400)) == 6)
+        #expect(policy.consume(.documentImport, count: 3, tier: .premium, now: day) == 3)
+    }
+}
