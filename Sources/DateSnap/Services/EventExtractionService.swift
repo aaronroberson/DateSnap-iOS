@@ -314,7 +314,7 @@ public enum DateInference {
         let titleScore = titleInference.confidence
 
         // Location, Venue, and Contacts
-        let (venue, location) = extractLocationAndVenue(lines: block.lines, fullText: blockText)
+        let (venue, location) = extractLocationAndVenue(lines: block.lines, fullText: blockText, excludingTitle: title)
         let rsvpUrl = extractRSVPOrURL(from: blockText)
         let phone = extractPhoneNumber(from: blockText)
         let email = extractEmail(from: blockText)
@@ -1087,7 +1087,7 @@ public enum DateInference {
                 keyword.contains(" ") ? lower.contains(keyword) : words.contains(keyword)
             }
             let isNumericDate = trimmed.range(of: "^\\d{1,2}[/.-]\\d{1,2}", options: .regularExpression) != nil
-            if isNumericDate { continue }
+            if isNumericDate || isTemporalOnlyLine(trimmed) { continue }
 
             let widthScore = Float(line.normalizedWidth) * 0.45
             let fontRank = Float(line.fontSizeProxy / max(0.001, maxFontProxy)) * 0.30
@@ -1126,7 +1126,33 @@ public enum DateInference {
 
     // MARK: - Location, Venue, and Contact Field Extraction
 
+    /// True when a line is just a date/time ("9am - 1pm", "Saturday, October 31") with no other words.
+    public static func isTemporalOnlyLine(_ text: String) -> Bool {
+        let temporalWords: Set<String> = [
+            "am", "pm", "noon", "midnight", "at", "to", "from", "until", "till", "and", "the", "of", "on",
+            "jan", "january", "feb", "february", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july",
+            "aug", "august", "sep", "sept", "september", "oct", "october", "nov", "november", "dec", "december",
+            "mon", "monday", "tue", "tues", "tuesday", "wed", "wednesday", "thu", "thur", "thurs", "thursday",
+            "fri", "friday", "sat", "saturday", "sun", "sunday", "today", "tonight", "tomorrow", "st", "nd", "rd", "th"
+        ]
+        let words = text.lowercased()
+            .components(separatedBy: CharacterSet.letters.inverted)
+            .filter { !$0.isEmpty }
+        let hasDigits = text.rangeOfCharacter(from: .decimalDigits) != nil
+        let otherWords = words.filter { !temporalWords.contains($0) }
+        return otherWords.isEmpty && (hasDigits || !words.isEmpty)
+    }
+
+    /// True when a line contains a clock time or a date, even alongside other words.
+    static func containsTimeOrDate(_ text: String) -> Bool {
+        text.range(of: "(?i)(?<![\\d/.:])(\\d{1,2}:\\d{2}|\\d{1,2}\\s*(am|pm))|\\b\\d{1,2}[/.-]\\d{1,2}\\b", options: .regularExpression) != nil
+    }
+
     public static func extractLocationAndVenue(lines: [OCRLine], fullText: String) -> (venue: String?, address: String?) {
+        extractLocationAndVenue(lines: lines, fullText: fullText, excludingTitle: nil)
+    }
+
+    public static func extractLocationAndVenue(lines: [OCRLine], fullText: String, excludingTitle title: String?) -> (venue: String?, address: String?) {
         let addressPattern = "\\b\\d{1,5}\\s+[A-Za-z0-9#\\.\\s]+(?:Street|St|Avenue|Ave|Boulevard|Blvd|Road|Rd|Drive|Dr|Way|Lane|Ln|Court|Ct|Plaza|Plz|Suite|Ste|Floor)\\b"
         let addressRegex = try? NSRegularExpression(pattern: addressPattern, options: [.caseInsensitive])
 
@@ -1151,8 +1177,14 @@ public enum DateInference {
                 break
             }
 
-            let venueKeywords = ["skybar", "penthouse", "lounge", "rooftop", "theatre", "theater", "stadium", "hall", "plaza", "center", "centre", "club"]
-            if venueKeywords.contains(where: { line.lowercased().contains($0) }) {
+            // Venue keywords, ignoring the title line and lines that carry a time or date
+            // ("7:00 PM Lounge Opens" is a doors time, "Book Club" the event itself).
+            let venueKeywords = ["skybar", "penthouse", "lounge", "rooftop", "theatre", "theater", "stadium", "hall", "plaza",
+                                 "center", "centre", "club", "arena", "park", "square", "library", "studio", "museum", "gallery",
+                                 "church", "cafe", "café", "bar", "pub", "hotel", "ballroom", "room", "venue", "garden", "gardens"]
+            let isTitle = title.map { $0.caseInsensitiveCompare(line) == .orderedSame } ?? false
+            let lowerWords = Set(line.lowercased().components(separatedBy: CharacterSet.letters.inverted))
+            if !isTitle && !containsTimeOrDate(line) && venueKeywords.contains(where: { lowerWords.contains($0) || ($0.count > 5 && line.lowercased().contains($0)) }) {
                 if venue == nil && line.count < 50 {
                     venue = line
                 }
