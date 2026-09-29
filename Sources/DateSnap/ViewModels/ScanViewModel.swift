@@ -183,6 +183,8 @@ public final class ScanViewModel: ObservableObject {
             for event in result.events {
                 let candidate = event.best.toExtractedData().toModel()
                 candidate.similarityKey = event.best.similarityKey
+                candidate.categoryRaw = event.best.category.rawValue
+                candidate.rsvpDeadline = event.actions.compactMap(\.deadline).first
                 understandings[candidate.id] = event
                 rawCandidates.append(candidate)
             }
@@ -232,6 +234,12 @@ public final class ScanViewModel: ObservableObject {
                 for candidate in newCandidates {
                     context.insert(candidate)
                     candidate.scannedAsset = scannedAsset
+                    if let understanding = understandings[candidate.id],
+                       let result = pageResults.first(where: { $0.events.contains { $0.best.id == understanding.best.id } }),
+                       let record = InterpretationRecord.make(for: understanding, in: result) {
+                        context.insert(record)
+                        candidate.interpretation = record
+                    }
                 }
                 try? context.save()
             }

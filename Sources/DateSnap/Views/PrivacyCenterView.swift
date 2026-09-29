@@ -251,6 +251,8 @@ struct PrivacyCenterView: View {
         for asset in assets {
             asset.rawOcrText = ""
         }
+        // Interpretation records hold OCR evidence lines too.
+        try? modelContext.delete(model: InterpretationRecord.self)
         try? modelContext.save()
         appState.clearSourceImages()
     }

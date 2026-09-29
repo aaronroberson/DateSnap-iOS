@@ -14,7 +14,8 @@ struct DateSnapApp: App {
             UserSettings.self,
             ScannedAsset.self,
             EventCandidate.self,
-            SavedEvent.self
+            SavedEvent.self,
+            InterpretationRecord.self
         ])
     }
 }

@@ -94,6 +94,7 @@ struct SavedEventActions {
     func eraseAllLocalData() {
         let saved = (try? modelContext.fetch(FetchDescriptor<SavedEvent>())) ?? []
         services.notifications.removePendingNotifications(identifiers: saved.flatMap(\.scheduledNotificationIds))
+        try? modelContext.delete(model: InterpretationRecord.self)
         try? modelContext.delete(model: SavedEvent.self)
         try? modelContext.delete(model: EventCandidate.self)
         try? modelContext.delete(model: ScannedAsset.self)

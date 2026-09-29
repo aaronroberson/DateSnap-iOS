@@ -149,6 +149,16 @@ public final class EventCandidate {
     public var notes: String = ""
     /// Content-based identity (normalized title, day, venue) for matching the same event across screenshots.
     public var similarityKey: String = ""
+    /// `EventCategory` raw value suggested by understanding (editable in review).
+    public var categoryRaw: String = "other"
+    /// RSVP / registration deadline found on the flyer, if any.
+    public var rsvpDeadline: Date? = nil
+    /// `RecurrenceSignal.Kind` raw value, set only when the user chooses to repeat the event in Calendar.
+    public var recurrenceRaw: String? = nil
+
+    /// Alternatives, evidence and provenance from the scan that produced this candidate.
+    @Relationship(deleteRule: .cascade, inverse: \InterpretationRecord.candidate)
+    public var interpretation: InterpretationRecord?
 
     public var scannedAsset: ScannedAsset?
 
@@ -205,6 +215,73 @@ public final class EventCandidate {
         self.phoneNumber = phoneNumber
         self.email = email
         self.notes = notes
+    }
+}
+
+// MARK: - Interpretation Record
+/// Versioned review bundle for one candidate: the best interpretation, alternatives, evidence lines and
+/// field provenance, plus which alternative the user chose and which fields they corrected. OCR evidence stays
+/// on device like the rest of the scan. Deleted with its candidate.
+@Model
+public final class InterpretationRecord {
+    public var schemaVersion: Int
+    public var engineRoute: String
+    public var fallbackReason: String?
+    /// JSON-encoded `StoredInterpretation`.
+    public var payload: Data
+    public var selectedInterpretationID: String?
+    public var correctedFields: [String]
+    public var createdAt: Date
+
+    public var candidate: EventCandidate?
+
+    public init(
+        schemaVersion: Int = EventUnderstandingResult.schemaVersion,
+        engineRoute: String,
+        fallbackReason: String? = nil,
+        payload: Data,
+        selectedInterpretationID: String? = nil,
+        correctedFields: [String] = [],
+        createdAt: Date = Date()
+    ) {
+        self.schemaVersion = schemaVersion
+        self.engineRoute = engineRoute
+        self.fallbackReason = fallbackReason
+        self.payload = payload
+        self.selectedInterpretationID = selectedInterpretationID
+        self.correctedFields = correctedFields
+        self.createdAt = createdAt
+    }
+}
+
+/// Codable payload of an `InterpretationRecord`.
+public struct StoredInterpretation: Codable, Sendable {
+    public var understanding: EventUnderstanding
+    public var evidence: [EvidenceLine]
+    public var route: EngineRoute
+    public var quality: OCRQualityReport
+
+    public init(understanding: EventUnderstanding, evidence: [EvidenceLine], route: EngineRoute, quality: OCRQualityReport) {
+        self.understanding = understanding
+        self.evidence = evidence
+        self.route = route
+        self.quality = quality
+    }
+}
+
+extension InterpretationRecord {
+    /// Builds a record for a freshly scanned candidate. Returns nil if encoding fails.
+    static func make(for understanding: EventUnderstanding, in result: EventUnderstandingResult) -> InterpretationRecord? {
+        let stored = StoredInterpretation(understanding: understanding, evidence: result.evidence, route: result.route, quality: result.quality)
+        guard let data = try? JSONEncoder().encode(stored) else { return nil }
+        return InterpretationRecord(engineRoute: result.route.rawValue, fallbackReason: result.fallbackReason, payload: data,
+                                    selectedInterpretationID: understanding.best.id)
+    }
+
+    /// Decodes the payload; nil for unknown future schema versions or corrupt data.
+    var stored: StoredInterpretation? {
+        guard schemaVersion <= EventUnderstandingResult.schemaVersion else { return nil }
+        return try? JSONDecoder().decode(StoredInterpretation.self, from: payload)
     }
 }
 
