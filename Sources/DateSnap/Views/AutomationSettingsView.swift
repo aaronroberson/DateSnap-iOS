@@ -5,12 +5,15 @@ import SwiftUI
 struct AutomationSettingsView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var settings: SettingsState
+    @AppStorage(IntelligencePolicy.userDefaultsKey) private var enhancedInterpretation = true
+    @State private var capability: IntelligenceCapability = .unavailable(.unknown)
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 18) {
                 SettingsScreenHeader(title: "Automation Settings", showBack: true)
                 engineStatus
+                enhancedInterpretationSection
                 scanModes
                 captureScope
                 confidenceTuning
@@ -23,6 +26,45 @@ struct AutomationSettingsView: View {
             .padding(.bottom, 24)
         }
         .dsScreenBackground()
+        .task { capability = IntelligenceComposition.currentCapability() }
+    }
+
+    // MARK: - Enhanced Interpretation (Apple Intelligence)
+
+    private var capabilityText: String {
+        if !enhancedInterpretation { return IntelligenceUnavailableReason.disabledByUser.userFacingDescription }
+        switch capability {
+        case .available:
+            return "Available. When a flyer is ambiguous, Apple Intelligence on this iPhone helps read it. Text never leaves your device."
+        case .unavailable(let reason):
+            return reason.userFacingDescription
+        }
+    }
+
+    private var enhancedInterpretationSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SettingsSectionHeader(icon: "wand.and.sparkles", title: "Enhanced Interpretation", tint: .dsPrimary,
+                                  trailing: capability.isAvailable && enhancedInterpretation ? "On Device" : nil)
+            VStack(alignment: .leading, spacing: 10) {
+                SettingRow(icon: "text.viewfinder", iconTint: .dsPrimary,
+                           title: "Use Apple Intelligence for tricky flyers",
+                           subtitle: "Every suggestion is checked against the flyer text; you confirm before anything is saved.") {
+                    Toggle("Use Apple Intelligence for tricky flyers", isOn: $enhancedInterpretation)
+                        .labelsHidden()
+                        .tint(Color.dsPrimary)
+                }
+                HStack(alignment: .top, spacing: 6) {
+                    Image(systemName: capability.isAvailable && enhancedInterpretation ? "checkmark.circle.fill" : "info.circle")
+                        .foregroundStyle(capability.isAvailable && enhancedInterpretation ? Color.dsSuccess : Color.dsMutedForeground)
+                    Text(capabilityText)
+                        .font(DSTypography.caption())
+                        .foregroundStyle(Color.dsMutedForeground)
+                }
+                .accessibilityElement(children: .combine)
+            }
+            .padding(16)
+            .dsGlassCard()
+        }
     }
 
     // MARK: - Engine Status
