@@ -247,6 +247,27 @@ struct DateSnapInferenceTests {
         #expect(monthName.startMinute == 0)
     }
 
+    @Test("Explicit years are detected relative to the anchor, not a fixed window")
+    func testAnchorRelativeExplicitYear() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let anchor = calendar.date(from: DateComponents(year: 2040, month: 3, day: 1))!
+
+        // 2041 was outside the old 2024–2039 window
+        #expect(DateInference.findExplicitYear(in: "Gala · May 2 2041", anchor: anchor, calendar: calendar) == 2041)
+        // Implausible years (street numbers, distant history) are ignored
+        #expect(DateInference.findExplicitYear(in: "1901 Sunset Blvd", anchor: anchor, calendar: calendar) == nil)
+        // Part of a time or numeric date is not a year
+        #expect(DateInference.findExplicitYear(in: "Doors 20:45", anchor: anchor, calendar: calendar) == nil)
+
+        let resolved = DateInference.resolveAssumedYear(
+            month: 5, day: 2, hour: 19, minute: 0, explicitYear: nil,
+            text: "Gala · May 2 2041", anchor: anchor, calendar: calendar
+        )
+        #expect(resolved.yearAssumed == false)
+        #expect(calendar.component(.year, from: resolved.date) == 2041)
+    }
+
     // MARK: - 6. False-Positive Filtering Tests
 
     @Test("Receipts, shipping notices, and pure timestamps are rejected as false positives")

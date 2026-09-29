@@ -480,8 +480,7 @@ public enum DateInference {
                     endDate = calendar.date(from: endComps)
                 }
 
-                let fourDigitRegex = try? NSRegularExpression(pattern: "\\b(202[4-9]|203[0-9])\\b")
-                let hasExplicitYear = fourDigitRegex?.firstMatch(in: text, range: NSRange(location: 0, length: text.utf16.count)) != nil
+                let hasExplicitYear = findExplicitYear(in: text, anchor: anchor, calendar: calendar) != nil
 
                 var effectiveStart = d
                 var yearAssumed = false
@@ -813,11 +812,8 @@ public enum DateInference {
         if let y = explicitYear {
             effectiveYear = y
         } else {
-            // Check if 4-digit year exists anywhere in the text
-            let yearRegex = try? NSRegularExpression(pattern: "\\b(202[4-9]|203[0-9])\\b")
-            if let match = yearRegex?.firstMatch(in: text, range: NSRange(location: 0, length: text.utf16.count)),
-               let r = Range(match.range, in: text),
-               let y = Int(text[r]) {
+            // Check if a plausible 4-digit year exists anywhere in the text
+            if let y = findExplicitYear(in: text, anchor: anchor, calendar: calendar) {
                 effectiveYear = y
             } else {
                 yearAssumed = true
@@ -855,6 +851,21 @@ public enum DateInference {
 
         let resultDate = calendar.date(from: comps) ?? anchor
         return (resultDate, yearAssumed)
+    }
+
+    /// First four-digit year in `text` that is plausible for an event relative to `anchor`
+    /// (from 2 years before to 10 years after), replacing a fixed calendar window.
+    public static func findExplicitYear(in text: String, anchor: Date, calendar: Calendar = .current) -> Int? {
+        let anchorYear = calendar.component(.year, from: anchor)
+        guard let regex = try? NSRegularExpression(pattern: "(?<![\\d/.:-])((?:19|20|21)\\d{2})(?![\\d:])") else { return nil }
+        let range = NSRange(location: 0, length: text.utf16.count)
+        for match in regex.matches(in: text, range: range) {
+            guard let r = Range(match.range(at: 1), in: text), let year = Int(text[r]) else { continue }
+            if (anchorYear - 2)...(anchorYear + 10) ~= year {
+                return year
+            }
+        }
+        return nil
     }
 
     private static func isLeapYear(_ year: Int) -> Bool {
