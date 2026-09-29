@@ -1,7 +1,7 @@
 # DateSnap On-Device Intelligence Architecture Plan
 
 **Date:** 2026-09-29  
-**Status:** Proposed architecture and phased implementation plan  
+**Status:** Implemented (Phases 0–4) — on-device verification pending; live-route latency 10–20 s per model pass  
 **Scope:** On-device Apple Intelligence for event understanding, plus reusable intelligence augmentation across DateSnap services.  
 **Deployment baseline:** iOS 18.0, as declared by `Package.swift` and `project.yml`.
 
