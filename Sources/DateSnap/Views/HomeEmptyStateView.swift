@@ -292,7 +292,7 @@ struct HomeEmptyStateView: View {
                             .disabled(scanViewModel.isProcessing)
 
                             Button {
-                                if appState.isPremiumMember {
+                                if appState.isEntitled(to: .documentImport) {
                                     showFileImporter = true
                                 } else {
                                     appState.activeModal = .premiumPaywall
@@ -530,7 +530,7 @@ struct HomeEmptyStateView: View {
     @ViewBuilder
     private var autoDetectedScreenshotsCard: some View {
         let photosAuthorized = homeViewModel.photoAuthorizationStatus == .authorized || homeViewModel.photoAuthorizationStatus == .limited
-        if appState.isPlusMember && photosAuthorized && !newScreenshots.isEmpty {
+        if appState.isEntitled(to: .automaticScreenshotDetection) && photosAuthorized && !newScreenshots.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Label("New screenshots detected", systemImage: "bolt.badge.automatic.fill")
@@ -561,7 +561,7 @@ struct HomeEmptyStateView: View {
             .padding(16)
             .dsGlassCard(cornerRadius: 20, elevated: true, borderColor: Color.dsPrimary.opacity(0.3))
             .padding(.horizontal)
-        } else if !appState.isPlusMember {
+        } else if !appState.isEntitled(to: .automaticScreenshotDetection) {
             Button {
                 appState.activeModal = .plusPaywall
             } label: {

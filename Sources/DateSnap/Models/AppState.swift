@@ -57,6 +57,10 @@ final class AppState: ObservableObject {
     var isPlusMember: Bool { subscriptionTier != .starter }
     var isPremiumMember: Bool { subscriptionTier == .premium }
 
+    func isEntitled(to feature: PremiumFeature) -> Bool {
+        subscriptionTier.includes(feature)
+    }
+
     // Scan context handed from the scan pipeline to the review / no-dates screens.
     @Published var lastScanRawText: String = ""
     @Published var lastScanImage: UIImage? = nil
