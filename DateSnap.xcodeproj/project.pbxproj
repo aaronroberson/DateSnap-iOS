@@ -10,6 +10,7 @@
 		027612132C13C749817C5B13 /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB74C190900C646B945427FB /* ScanViewModel.swift */; };
 		066CFD400780C1D7BD1ED0AA /* IntelligencePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3798FF039CE3C28B1C54761 /* IntelligencePolicy.swift */; };
 		071BA06AFB1CA36EB2D65BD1 /* ScanFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BE3C61707DF08BEE6EC9B3 /* ScanFlowViews.swift */; };
+		08CB0F2787F589C0AABDA003 /* EventReviewViewModel+Interpretation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8898168BD83A0BF6DA692A /* EventReviewViewModel+Interpretation.swift */; };
 		0EC46973BCA434CE74478472 /* InterpretationRecordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFA1093859A31B599707112 /* InterpretationRecordTests.swift */; };
 		12B4374B0516C77DCCE73121 /* MarketingKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850A036788CAC8DA0EEEE06F /* MarketingKitView.swift */; };
 		15BDAB1B0AF49847C558A6D5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9163CE168D33CAFEB6C4463 /* Colors.swift */; };
@@ -146,6 +147,7 @@
 		C9F042DEA95A5BCDE0A6F3E7 /* EvidenceValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceValidationTests.swift; sourceTree = "<group>"; };
 		CAFA1093859A31B599707112 /* InterpretationRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpretationRecordTests.swift; sourceTree = "<group>"; };
 		CB74C190900C646B945427FB /* ScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewModel.swift; sourceTree = "<group>"; };
+		CF8898168BD83A0BF6DA692A /* EventReviewViewModel+Interpretation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventReviewViewModel+Interpretation.swift"; sourceTree = "<group>"; };
 		D3798FF039CE3C28B1C54761 /* IntelligencePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligencePolicy.swift; sourceTree = "<group>"; };
 		DF50DEB9AE192CF2A3E6DB6F /* EventUnderstandingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingModels.swift; sourceTree = "<group>"; };
 		DFE323656DAE7A805CD2EC71 /* AdvisorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvisorTests.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				C8C120D1787C5D5AC9DA06FA /* EventReviewViewModel.swift */,
+				CF8898168BD83A0BF6DA692A /* EventReviewViewModel+Interpretation.swift */,
 				59D0332FC8103519C12B1473 /* HomeViewModel.swift */,
 				1CCBF0B2A0317ADB50009E0B /* PurchaseViewModel.swift */,
 				CB74C190900C646B945427FB /* ScanViewModel.swift */,
@@ -446,6 +449,7 @@
 				DE72A729A3C7F61776BBE0A3 /* EventExtractionService.swift in Sources */,
 				E1BE92B653B7FE3AB54D63E4 /* EventModels.swift in Sources */,
 				FF7A20129EC62282B783FCB6 /* EventReviewEditView.swift in Sources */,
+				08CB0F2787F589C0AABDA003 /* EventReviewViewModel+Interpretation.swift in Sources */,
 				7C3E0F10FB9FA96696671684 /* EventReviewViewModel.swift in Sources */,
 				9C944FA4BDFA20C8A3AAE122 /* EventSimilarityService.swift in Sources */,
 				9EE9F32932B4E9E19E86A50C /* EventUnderstandingModels.swift in Sources */,

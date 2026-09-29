@@ -44,6 +44,25 @@ public final class EventReviewViewModel: ObservableObject {
     /// Set when the event saved but local alerts could not be scheduled (notifications denied).
     @Published public var notificationsSkipped: Bool = false
 
+    // MARK: - Interpretation (best, alternatives, evidence, suggestions)
+    /// Review bundle from the scan: best interpretation, alternatives, questions, actions, evidence.
+    @Published public var understanding: EventUnderstanding? = nil
+    @Published public var engineRoute: EngineRoute? = nil
+    @Published public var evidenceLines: [EvidenceLine] = []
+    /// Which interpretation the editable fields were last filled from.
+    @Published public var appliedInterpretationID: String? = nil
+    /// Questions the user has not answered yet.
+    @Published public var openQuestions: [AmbiguityQuestion] = []
+    @Published public var category: EventCategory = .other
+    @Published public var rsvpDeadline: Date? = nil
+    /// Accepted RSVP-deadline reminder (created on save).
+    @Published public var deadlineReminderEnabled: Bool = false
+    /// Recurrence the user chose to write to Calendar; nil saves a single event.
+    @Published public var repeatSelection: RecurrenceSignal.Kind? = nil
+    /// Saved or pending events that may be the same event from another screenshot.
+    @Published public var duplicateMatches: [EventSimilarityService.Match] = []
+    let calendarRecommender = CalendarRecommendationService()
+
     /// The candidate being reviewed. Edits are written back to it on save.
     public let candidate: EventCandidate
     public let sourceImage: UIImage?
@@ -78,6 +97,17 @@ public final class EventReviewViewModel: ObservableObject {
         self.ambiguousFragment = candidate.ambiguousFragment
         self.timeZoneIdentifier = candidate.timeZoneIdentifier ?? Calendar.current.timeZone.identifier
         self.confidenceTier = candidate.confidenceTier
+        self.category = EventCategory(rawValue: candidate.categoryRaw) ?? .other
+        self.rsvpDeadline = candidate.rsvpDeadline
+        self.repeatSelection = candidate.recurrenceRaw.flatMap(RecurrenceSignal.Kind.init(rawValue:))
+        if let stored = candidate.interpretation?.stored {
+            self.understanding = stored.understanding
+            self.engineRoute = stored.route
+            self.evidenceLines = stored.evidence
+            self.appliedInterpretationID = candidate.interpretation?.selectedInterpretationID ?? stored.understanding.best.id
+            // Questions stay open until answered, and only for events not yet saved.
+            self.openQuestions = candidate.savedEvent == nil ? stored.understanding.questions : []
+        }
         if let saved = candidate.savedEvent, !saved.alertOffsets.isEmpty {
             self.selectedOffsets = saved.alertOffsets.map { ReminderOffset.forInterval($0) }
         }
@@ -120,7 +150,11 @@ public final class EventReviewViewModel: ObservableObject {
     public func loadCalendarData() {
         self.availableCalendars = calendarService.fetchWritableCalendars()
         let savedTitle = candidate.savedEvent?.targetCalendar
+        let recommendedID = calendarRecommender.suggestedCalendarIdentifier(
+            for: category, available: availableCalendars.map(\.calendarIdentifier)
+        )
         self.selectedCalendar = availableCalendars.first(where: { $0.title == savedTitle })
+            ?? availableCalendars.first(where: { $0.calendarIdentifier == recommendedID })
             ?? calendarService.defaultCalendar()
             ?? availableCalendars.first
 
@@ -171,6 +205,9 @@ public final class EventReviewViewModel: ObservableObject {
         candidate.isAmbiguousDate = isAmbiguousDate
         candidate.ambiguousFragment = ambiguousFragment
         candidate.timeZoneIdentifier = timeZoneIdentifier
+        candidate.categoryRaw = category.rawValue
+        candidate.recurrenceRaw = repeatSelection == .series ? nil : repeatSelection?.rawValue
+        recordCorrections()
     }
 
     private func savedEventRecord(in context: ModelContext?) -> SavedEvent {
@@ -269,6 +306,14 @@ public final class EventReviewViewModel: ObservableObject {
             print("Notice: Reminder creation skipped or denied: \(error.localizedDescription)")
         }
 
+        // 2b. Accepted RSVP-deadline reminder (created once)
+        var deadlineReminderId = existing?.deadlineReminderId
+        if deadlineReminderEnabled, deadlineReminderId == nil, let due = deadlineReminderDate {
+            deadlineReminderId = try? await reminderService.createDeadlineReminder(
+                title: "RSVP: \(candidate.title)", due: due, url: candidate.rsvpUrl, list: selectedReminderList
+            )
+        }
+
         // 3. Local push alerts, replacing any previously scheduled for this event
         notificationService.removePendingNotifications(identifiers: existing?.scheduledNotificationIds ?? [])
         let scheduledNotifIds = await scheduleAlerts(offsets: offsets)
@@ -282,6 +327,10 @@ public final class EventReviewViewModel: ObservableObject {
         record.targetCalendar = selectedCalendar?.title ?? calendarService.defaultCalendar()?.title ?? "Default Calendar"
         record.targetRemindersList = selectedReminderList?.title ?? reminderService.defaultReminderList()?.title ?? "Reminders"
         record.status = .saved
+        record.deadlineReminderId = deadlineReminderId
+        if let calendar = selectedCalendar {
+            calendarRecommender.recordChoice(calendarIdentifier: calendar.calendarIdentifier, for: category)
+        }
         try? modelContext?.save()
 
         isDraftOnly = false
