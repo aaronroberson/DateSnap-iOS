@@ -1,0 +1,53 @@
+name: DateSnap
+options:
+  bundleIdPrefix: com.datesnap
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+configs:
+  Debug: debug
+  Release: release
+configFiles:
+  Debug: Config/DateSnap-Debug.xcconfig
+  Release: Config/DateSnap-Release.xcconfig
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+targets:
+  DateSnap:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Sources/DateSnap
+    resources:
+      - path: Assets.xcassets
+      - path: PrivacyInfo.xcprivacy
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.datesnap.app
+        INFOPLIST_FILE: Info.plist
+        CODE_SIGN_ENTITLEMENTS: DateSnap.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: NO
+    scheme:
+      storeKitConfiguration: DateSnap.storekit
+      testTargets:
+        - DateSnapTests
+  DateSnapTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Tests/DateSnapTests
+    dependencies:
+      - target: DateSnap
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.datesnap.app.tests
+        GENERATE_INFOPLIST_FILE: YES
+
