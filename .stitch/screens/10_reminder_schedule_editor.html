@@ -1,0 +1,362 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#050816;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "card-glass": "rgba(18, 24, 52, 0.72)", "muted-surface": "rgba(255, 255, 255, 0.08)", "on-secondary-fixed-variant": "#0037ba", "on-secondary-container": "#a5b5ff", "tabbar-surface": "rgba(10, 14, 30, 0.72)", "secondary": "#b8c4ff", "background-base": "#050816", "background": "#0f1321", "on-primary-container": "#007165", "status-warning-foreground": "#1F1400", "surface-container-low": "#171b2a", "glass-specular-top": "rgba(255, 255, 255, 0.22)", "surface-container-lowest": "#0a0d1c", "secondary-fixed": "#dde1ff", "surface-bright": "#353849", "primary-fixed": "#74f8e3", "on-error": "#690005", "on-tertiary-fixed": "#3d0026", "accent-purple": "#7B61FF", "inverse-on-surface": "#2c303f", "primary-fixed-dim": "#54dbc7", "on-secondary-fixed": "#001454", "accent-orange": "#FF8A3D", "on-tertiary-fixed-variant": "#8b005b", "tertiary-container": "#ffd8e7", "surface-container": "#1b1f2e", "on-tertiary-container": "#be0c7f", "status-success-foreground": "#041B10", "tertiary-fixed": "#ffd8e7", "on-secondary": "#002585", "on-error-container": "#ffdad6", "secondary-foreground": "#F7F8FF", "surface": "#0f1321", "inverse-surface": "#dfe1f6", "on-background": "#dfe1f6", "status-info": "#63B8FF", "on-tertiary": "#63003f", "on-surface-variant": "#bbcac5", "status-success": "#46E39A", "status-info-foreground": "#041424", "tertiary-fixed-dim": "#ffafd3", "tertiary": "#ffffff", "foreground-primary": "#F7F8FF", "on-primary-fixed-variant": "#005047", "status-error": "#FF6B7A", "secondary-fixed-dim": "#b8c4ff", "surface-container-high": "#262939", "error-container": "#93000a", "primary-container": "#74f8e3", "surface-variant": "#303444", "overlay-scrim": "rgba(4, 8, 22, 0.72)", "surface-dim": "#0f1321", "inverse-primary": "#006b5f", "muted-foreground": "#A8B0D4", "outline-variant": "#3c4946", "outline": "#869490", "status-warning": "#FFBE55", "surface-tint": "#54dbc7", "glass-border": "rgba(173, 195, 255, 0.18)", "status-error-foreground": "#1F0407", "error": "#ffb4ab", "on-surface": "#dfe1f6", "on-primary-fixed": "#00201c", "on-primary": "#003731", "secondary-container": "#0239bf", "primary-foreground": "#07111F", "primary": "#ffffff", "surface-container-highest": "#303444" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-tablet": "1.5rem", "space-xs": "0.25rem", "gutter": "1rem", "margin-desktop": "2rem", "margin": "1rem", "gutter-tablet": "1.25rem", "space-xl": "1.5rem", "space-sm": "0.5rem", "space-lg": "1.25rem", "space-md": "1rem", "space-xxl": "2rem" }, "fontFamily": { "body-compact": ["Inter"], "label-chip": ["Inter"], "display-hero": ["Sora"], "overline-confidence": ["Sora"], "body-strong": ["Inter"], "caption": ["Inter"], "display-title": ["Sora"], "body-base": ["Inter"], "display-hero-mobile": ["Sora"], "headline-card": ["Sora"], "headline-section": ["Sora"] }, "fontSize": { "body-compact": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}], "label-chip": ["13px", {"lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "500"}], "display-hero": ["38px", {"lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800"}], "overline-confidence": ["11px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600"}], "body-strong": ["18px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600"}], "caption": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400"}], "display-title": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "body-base": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}], "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}], "headline-card": ["20px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-section": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700"}] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+<!-- Subtle Ambient Glows -->
+<div class="relative w-full overflow-hidden">
+<div class="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-accent-purple/20 blur-3xl pointer-events-none"></div>
+<div class="absolute top-20 -right-20 w-60 h-60 rounded-full bg-primary-container/15 blur-3xl pointer-events-none"></div>
+<!-- Screen Intro / Event Anchor -->
+<div class="relative z-10 flex flex-col pt-space-xs">
+<div class="inline-flex items-center gap-space-xs self-start px-space-sm py-1 rounded-full bg-card-glass backdrop-blur-xl shadow-sm mb-space-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-overline-confidence text-overline-confidence text-secondary uppercase tracking-wider">
+          Smart Tiered Alerts
+        </span>
+</div>
+<div class="flex items-center gap-space-sm text-muted-foreground">
+<span class="material-symbols-outlined text-primary-container text-[18px]">event</span>
+<p class="font-caption text-caption text-secondary truncate">
+          Neon Sunset Rooftop Session · Jul 18, 7:00 PM
+        </p>
+</div>
+<h2 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight mt-1">
+        Reminder Schedule
+      </h2>
+<p class="font-body-compact text-body-compact text-muted-foreground mt-space-xs leading-relaxed">
+        Configure multi-stage alerts so you never miss ticket drops, preparation windows, or final departure.
+      </p>
+</div>
+</div>
+<!-- Quick Presets Carousel -->
+<div class="flex flex-col space-y-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption text-muted-foreground uppercase tracking-wider">Smart Presets</span>
+<span class="font-caption text-caption text-primary-fixed">Customizable</span>
+</div>
+<div class="flex items-center gap-space-sm overflow-x-auto pb-1 -mx-margin px-margin scrollbar-none">
+<button class="preset-pill flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-primary-container text-primary-foreground font-label-chip text-label-chip shadow-md transition-all active:scale-95" onclick="applyPreset(this, 'default')">
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+<span>Default (2 alerts)</span>
+</button>
+<button class="preset-pill flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card-glass text-foreground-primary font-label-chip text-label-chip backdrop-blur-xl shadow-sm transition-all active:scale-95" onclick="applyPreset(this, 'travel')">
+<span class="material-symbols-outlined text-secondary text-[16px]">flight_takeoff</span>
+<span>Travel Heavy (3 alerts)</span>
+</button>
+<button class="preset-pill flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card-glass text-foreground-primary font-label-chip text-label-chip backdrop-blur-xl shadow-sm transition-all active:scale-95" onclick="applyPreset(this, 'dayof')">
+<span class="material-symbols-outlined text-secondary text-[16px]">today</span>
+<span>Day-of Only</span>
+</button>
+<button class="preset-pill flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card-glass text-foreground-primary font-label-chip text-label-chip backdrop-blur-xl shadow-sm transition-all active:scale-95" onclick="applyPreset(this, 'custom')">
+<span class="material-symbols-outlined text-secondary text-[16px]">tune</span>
+<span>Custom</span>
+</button>
+</div>
+</div>
+<!-- Configured Reminder Rows (Up to 3 Interactive Glass Cards) -->
+<div class="flex flex-col space-y-space-md" id="reminderCardContainer">
+<!-- Reminder 1: First Warning -->
+<div class="reminder-row group relative bg-card-glass backdrop-blur-2xl rounded-2xl p-space-md shadow-lg transition-all" id="reminder-row-1">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-accent-purple/20 flex items-center justify-center text-accent-purple shadow-inner">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-overline-confidence text-overline-confidence text-muted-foreground uppercase">Alert 1 · Preparation</span>
+</div>
+<h3 class="font-headline-card text-headline-card text-foreground-primary mt-0.5">
+              1 day before
+            </h3>
+</div>
+</div>
+<button aria-label="Delete alert 1" class="w-9 h-9 rounded-full bg-muted-surface flex items-center justify-center text-muted-foreground hover:text-status-error active:scale-90 transition-all" onclick="deleteReminder(1)">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<!-- Detail strip & selectors -->
+<div class="mt-space-md pt-space-sm bg-surface-container-lowest/60 rounded-xl p-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-2">
+<span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">schedule</span> Scheduled for
+          </span>
+<span class="font-label-chip text-label-chip text-foreground-primary bg-surface-container-high px-2.5 py-1 rounded-lg">
+            Jul 17, 9:00 AM
+          </span>
+</div>
+<div class="flex items-center justify-between gap-2">
+<span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">notifications_active</span> Channel
+          </span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/30 text-secondary font-label-chip text-label-chip">
+<span class="material-symbols-outlined text-[14px]">checklist</span>
+<span>Apple Reminders</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reminder 2: Departure Alert -->
+<div class="reminder-row group relative bg-card-glass backdrop-blur-2xl rounded-2xl p-space-md shadow-lg transition-all" id="reminder-row-2">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-accent-orange/20 flex items-center justify-center text-accent-orange shadow-inner">
+<span class="material-symbols-outlined text-[20px]">directions_walk</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-overline-confidence text-overline-confidence text-muted-foreground uppercase">Alert 2 · Departure</span>
+</div>
+<h3 class="font-headline-card text-headline-card text-foreground-primary mt-0.5">
+              2 hours before
+            </h3>
+</div>
+</div>
+<button aria-label="Delete alert 2" class="w-9 h-9 rounded-full bg-muted-surface flex items-center justify-center text-muted-foreground hover:text-status-error active:scale-90 transition-all" onclick="deleteReminder(2)">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<!-- Detail strip & selectors -->
+<div class="mt-space-md pt-space-sm bg-surface-container-lowest/60 rounded-xl p-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-2">
+<span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">schedule</span> Scheduled for
+          </span>
+<span class="font-label-chip text-label-chip text-foreground-primary bg-surface-container-high px-2.5 py-1 rounded-lg">
+            Jul 18, 5:00 PM
+          </span>
+</div>
+<div class="flex items-center justify-between gap-2">
+<span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">notifications_active</span> Channel
+          </span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/20 text-primary-fixed font-label-chip text-label-chip">
+<span class="material-symbols-outlined text-[14px]">notifications</span>
+<span>Calendar Notification</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reminder 3: Final Call -->
+<div class="reminder-row group relative bg-card-glass backdrop-blur-2xl rounded-2xl p-space-md shadow-lg transition-all" id="reminder-row-3">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-status-success/20 flex items-center justify-center text-status-success shadow-inner">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-overline-confidence text-overline-confidence text-muted-foreground uppercase">Alert 3 · Final Call</span>
+</div>
+<h3 class="font-headline-card text-headline-card text-foreground-primary mt-0.5">
+              30 minutes before
+            </h3>
+</div>
+</div>
+<button aria-label="Delete alert 3" class="w-9 h-9 rounded-full bg-muted-surface flex items-center justify-center text-muted-foreground hover:text-status-error active:scale-90 transition-all" onclick="deleteReminder(3)">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<!-- Detail strip & selectors -->
+<div class="mt-space-md pt-space-sm bg-surface-container-lowest/60 rounded-xl p-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-2">
+<span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">schedule</span> Scheduled for
+          </span>
+<span class="font-label-chip text-label-chip text-foreground-primary bg-surface-container-high px-2.5 py-1 rounded-lg">
+            Jul 18, 6:30 PM
+          </span>
+</div>
+<div class="flex items-center justify-between gap-2">
+<span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">notifications_active</span> Channel
+          </span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/40 text-foreground-primary font-label-chip text-label-chip shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary-container">camera_indoor</span>
+<span>DateSnap Priority Push</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Alert Action -->
+<div class="flex flex-col items-center">
+<button class="w-full h-14 rounded-2xl bg-surface-container-low text-muted-foreground flex items-center justify-center gap-space-xs font-label-chip text-label-chip transition-all active:scale-98 opacity-60 cursor-not-allowed" id="addAlertBtn" onclick="handleAddAlert()">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span id="addAlertBtnLabel">Alert Limit Reached (3 of 3 max)</span>
+</button>
+<p class="font-caption text-caption text-secondary/60 mt-space-xs text-center">
+      Tiered notifications prevent calendar alert fatigue while safeguarding essential arrival windows.
+    </p>
+</div>
+<!-- Behavior Info Callout -->
+<div class="relative bg-card-glass backdrop-blur-xl rounded-2xl p-space-md shadow-md flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-muted-surface flex-shrink-0 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[22px]">info</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-body-strong text-body-strong text-foreground-primary">
+        Timed vs. All-Day Logic
+      </h4>
+<p class="font-caption text-caption text-muted-foreground mt-1 leading-relaxed">
+        Timed events trigger at precise temporal countdown offsets. If an event is designated as all-day, reminder tiers calibrate automatically to 9:00 AM local time on designated offset days.
+      </p>
+</div>
+</div>
+<!-- Sticky Bottom Actions -->
+<div class="sticky bottom-0 z-40 bg-tabbar-surface/90 backdrop-blur-2xl -mx-margin px-margin pt-space-sm pb-space-lg shadow-2xl flex flex-col gap-space-sm">
+<button class="w-full h-14 rounded-full bg-primary-container text-primary-foreground font-body-strong text-body-strong flex items-center justify-center gap-space-xs shadow-lg shadow-primary-container/25 transition-all active:scale-95" id="saveBtn" onclick="saveSchedule()">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>Save Reminder Schedule</span>
+</button>
+<div class="flex items-center justify-between px-space-xs pt-space-xs">
+<button class="font-label-chip text-label-chip text-muted-foreground hover:text-foreground-primary transition-colors py-1" onclick="resetDefaults()">
+        Reset to Default
+      </button>
+<button class="font-label-chip text-label-chip text-status-error/80 hover:text-status-error transition-colors py-1" onclick="window.history.back()">
+        Discard Changes
+      </button>
+</div>
+</div>
+</div>
+<script>
+  let activeAlerts = [1, 2, 3];
+
+  function updateAddButtonState() {
+    const btn = document.getElementById('addAlertBtn');
+    const label = document.getElementById('addAlertBtnLabel');
+    if (!btn || !label) return;
+
+    if (activeAlerts.length >= 3) {
+      btn.classList.add('opacity-60', 'cursor-not-allowed');
+      btn.classList.remove('bg-surface-container', 'text-foreground-primary', 'cursor-pointer');
+      label.textContent = 'Alert Limit Reached (3 of 3 max)';
+    } else {
+      btn.classList.remove('opacity-60', 'cursor-not-allowed');
+      btn.classList.add('bg-surface-container', 'text-foreground-primary', 'cursor-pointer');
+      label.textContent = `+ Add Alert (${activeAlerts.length} of 3 active)`;
+    }
+  }
+
+  function deleteReminder(id) {
+    const card = document.getElementById('reminder-row-' + id);
+    if (!card) return;
+
+    card.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      card.remove();
+      activeAlerts = activeAlerts.filter(item => item !== id);
+      updateAddButtonState();
+    }, 200);
+  }
+
+  function handleAddAlert() {
+    if (activeAlerts.length >= 3) return;
+
+    const availableIds = [1, 2, 3].filter(id => !activeAlerts.includes(id));
+    if (availableIds.length === 0) return;
+
+    const newId = availableIds[0];
+    const container = document.getElementById('reminderCardContainer');
+
+    const card = document.createElement('div');
+    card.className = 'reminder-row group relative bg-card-glass backdrop-blur-2xl rounded-2xl p-space-md shadow-lg transition-all scale-95 opacity-0';
+    card.id = `reminder-row-${newId}`;
+
+    card.innerHTML = `
+      <div class="flex items-start justify-between gap-space-sm">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-10 h-10 rounded-xl bg-status-info/20 flex items-center justify-center text-status-info shadow-inner">
+            <span class="material-symbols-outlined text-[20px]">alarm</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-space-xs">
+              <span class="font-overline-confidence text-overline-confidence text-muted-foreground uppercase">Alert ${newId} &middot; Proximity</span>
+            </div>
+            <h3 class="font-headline-card text-headline-card text-foreground-primary mt-0.5">
+              15 minutes before
+            </h3>
+          </div>
+        </div>
+        <button onclick="deleteReminder(${newId})" aria-label="Delete alert ${newId}" class="w-9 h-9 rounded-full bg-muted-surface flex items-center justify-center text-muted-foreground hover:text-status-error active:scale-90 transition-all">
+          <span class="material-symbols-outlined text-[18px]">delete</span>
+        </button>
+      </div>
+      <div class="mt-space-md pt-space-sm bg-surface-container-lowest/60 rounded-xl p-space-sm flex flex-col gap-space-sm">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px] text-secondary">schedule</span> Scheduled for
+          </span>
+          <span class="font-label-chip text-label-chip text-foreground-primary bg-surface-container-high px-2.5 py-1 rounded-lg">
+            Jul 18, 6:45 PM
+          </span>
+        </div>
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-caption text-caption text-muted-foreground flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px] text-secondary">notifications_active</span> Channel
+          </span>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/20 text-primary-fixed font-label-chip text-label-chip">
+            <span class="material-symbols-outlined text-[14px]">notifications</span>
+            <span>Push Notification</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(card);
+    activeAlerts.push(newId);
+    updateAddButtonState();
+
+    requestAnimationFrame(() => {
+      card.classList.remove('scale-95', 'opacity-0');
+      card.classList.add('scale-100', 'opacity-100');
+    });
+  }
+
+  function applyPreset(element, presetKey) {
+    document.querySelectorAll('.preset-pill').forEach(btn => {
+      btn.className = 'preset-pill flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card-glass text-foreground-primary font-label-chip text-label-chip backdrop-blur-xl shadow-sm transition-all active:scale-95';
+    });
+
+    element.className = 'preset-pill flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-primary-container text-primary-foreground font-label-chip text-label-chip shadow-md transition-all active:scale-95';
+
+    if (presetKey === 'dayof') {
+      if (document.getElementById('reminder-row-1')) deleteReminder(1);
+    }
+  }
+
+  function resetDefaults() {
+    location.reload();
+  }
+
+  function saveSchedule() {
+    const saveBtn = document.getElementById('saveBtn');
+    if (!saveBtn) return;
+    const initialText = saveBtn.innerHTML;
+
+    saveBtn.innerHTML = `
+      <span class="material-symbols-outlined text-[20px] animate-spin">sync</span>
+      <span>Syncing Schedule...</span>
+    `;
+
+    setTimeout(() => {
+      saveBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[20px]">task_alt</span>
+        <span>Schedule Synced!</span>
+      `;
+      saveBtn.classList.replace('bg-primary-container', 'bg-status-success');
+      saveBtn.classList.replace('text-primary-foreground', 'text-status-success-foreground');
+
+      setTimeout(() => {
+        saveBtn.innerHTML = initialText;
+        saveBtn.classList.replace('bg-status-success', 'bg-primary-container');
+        saveBtn.classList.replace('text-status-success-foreground', 'text-primary-foreground');
+      }, 1800);
+    }, 600);
+  }
+
+  updateAddButtonState();
+</script></main></body></html>

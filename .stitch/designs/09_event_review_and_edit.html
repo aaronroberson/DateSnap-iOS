@@ -1,0 +1,290 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#050816;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "card-glass": "rgba(18, 24, 52, 0.72)", "muted-surface": "rgba(255, 255, 255, 0.08)", "on-secondary-fixed-variant": "#0037ba", "on-secondary-container": "#a5b5ff", "tabbar-surface": "rgba(10, 14, 30, 0.72)", "secondary": "#b8c4ff", "background-base": "#050816", "background": "#0f1321", "on-primary-container": "#007165", "status-warning-foreground": "#1F1400", "surface-container-low": "#171b2a", "glass-specular-top": "rgba(255, 255, 255, 0.22)", "surface-container-lowest": "#0a0d1c", "secondary-fixed": "#dde1ff", "surface-bright": "#353849", "primary-fixed": "#74f8e3", "on-error": "#690005", "on-tertiary-fixed": "#3d0026", "accent-purple": "#7B61FF", "inverse-on-surface": "#2c303f", "primary-fixed-dim": "#54dbc7", "on-secondary-fixed": "#001454", "accent-orange": "#FF8A3D", "on-tertiary-fixed-variant": "#8b005b", "tertiary-container": "#ffd8e7", "surface-container": "#1b1f2e", "on-tertiary-container": "#be0c7f", "status-success-foreground": "#041B10", "tertiary-fixed": "#ffd8e7", "on-secondary": "#002585", "on-error-container": "#ffdad6", "secondary-foreground": "#F7F8FF", "surface": "#0f1321", "inverse-surface": "#dfe1f6", "on-background": "#dfe1f6", "status-info": "#63B8FF", "on-tertiary": "#63003f", "on-surface-variant": "#bbcac5", "status-success": "#46E39A", "status-info-foreground": "#041424", "tertiary-fixed-dim": "#ffafd3", "tertiary": "#ffffff", "foreground-primary": "#F7F8FF", "on-primary-fixed-variant": "#005047", "status-error": "#FF6B7A", "secondary-fixed-dim": "#b8c4ff", "surface-container-high": "#262939", "error-container": "#93000a", "primary-container": "#74f8e3", "surface-variant": "#303444", "overlay-scrim": "rgba(4, 8, 22, 0.72)", "surface-dim": "#0f1321", "inverse-primary": "#006b5f", "muted-foreground": "#A8B0D4", "outline-variant": "#3c4946", "outline": "#869490", "status-warning": "#FFBE55", "surface-tint": "#54dbc7", "glass-border": "rgba(173, 195, 255, 0.18)", "status-error-foreground": "#1F0407", "error": "#ffb4ab", "on-surface": "#dfe1f6", "on-primary-fixed": "#00201c", "on-primary": "#003731", "secondary-container": "#0239bf", "primary-foreground": "#07111F", "primary": "#ffffff", "surface-container-highest": "#303444" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-tablet": "1.5rem", "space-xs": "0.25rem", "gutter": "1rem", "margin-desktop": "2rem", "margin": "1rem", "gutter-tablet": "1.25rem", "space-xl": "1.5rem", "space-sm": "0.5rem", "space-lg": "1.25rem", "space-md": "1rem", "space-xxl": "2rem" }, "fontFamily": { "body-compact": ["Inter"], "label-chip": ["Inter"], "display-hero": ["Sora"], "overline-confidence": ["Sora"], "body-strong": ["Inter"], "caption": ["Inter"], "display-title": ["Sora"], "body-base": ["Inter"], "display-hero-mobile": ["Sora"], "headline-card": ["Sora"], "headline-section": ["Sora"] }, "fontSize": { "body-compact": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}], "label-chip": ["13px", {"lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "500"}], "display-hero": ["38px", {"lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800"}], "overline-confidence": ["11px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600"}], "body-strong": ["18px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600"}], "caption": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400"}], "display-title": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "body-base": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}], "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}], "headline-card": ["20px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-section": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700"}] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+<!-- Top Context Header & Stage Badge -->
+<div class="flex items-center justify-between pt-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-2 h-2 rounded-full bg-status-success animate-pulse"></div>
+<span class="font-overline-confidence text-overline-confidence uppercase tracking-wider text-muted-foreground">Verification Stage</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-status-success/15 shadow-[0_0_12px_rgba(70,227,154,0.2)]">
+<span class="material-symbols-outlined text-[14px] text-status-success" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-overline-confidence text-overline-confidence text-status-success font-semibold tracking-wide">96% High Confidence OCR</span>
+</div>
+</div>
+<!-- Hero Source Flyer Card -->
+<div class="relative w-full rounded-2xl bg-card-glass backdrop-blur-xl p-space-md shadow-xl overflow-hidden group">
+<!-- Specular Keyline Rim Highlight -->
+<div class="absolute inset-x-0 top-0 h-[1px] bg-glass-specular-top"></div>
+<div class="flex gap-space-md items-center">
+<!-- Thumbnail with Scanning Edge Glow -->
+<div class="relative w-20 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+<img class="w-full h-full object-cover" data-alt="Vibrant neon rooftop sunset party flyer with gradient magenta, orange, and purple hues, featuring bold modern typography and palms silhouetted against an illuminated Los Angeles twilight skyline." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcQov_uyAsxo8A8xj1FLC493dWsEo2GezMaEQOSlgMqb8hQt-jTg6kOAfpG7Ivzo9JfKQP2PFFeLTT6GzNXPm4Qw2w4tjljjzJOIfB3oflbkLC1xCYcEAbiyQBJ-b9DdeYbz_JD1CPWPaEt58NfTv_xgzuK9bDSItlgTD6MxAuuEx4ekUUbWRAja63kDZWE_VjQXrzkvrD9J0uODesGaxmlSz8YoqgJYUNw7hrrtn5XU7-aB7CPZI">
+<div class="absolute inset-0 bg-gradient-to-t from-background-base/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-surface-container-lowest/80 backdrop-blur-sm">
+<span class="text-[10px] font-caption font-bold text-secondary-fixed">FLYER</span>
+</div>
+</div>
+<!-- Flyer Meta & Expansion Trigger -->
+<div class="flex flex-col justify-between flex-1 min-w-0 py-0.5">
+<div>
+<div class="flex items-center gap-1 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="font-overline-confidence text-overline-confidence uppercase tracking-wider">Source Detected</span>
+</div>
+<h2 class="font-headline-card text-headline-card text-foreground-primary truncate mt-0.5">
+            Sunset Flyer #082
+          </h2>
+<p class="font-caption text-caption text-muted-foreground truncate">
+            Captured today from Instagram Stories
+          </p>
+</div>
+<button class="inline-flex items-center gap-1.5 mt-2 self-start px-3 py-1.5 rounded-full bg-muted-surface hover:bg-white/15 active:scale-95 transition-all text-secondary-fixed" id="toggle-source-preview-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="font-label-chip text-label-chip">View Original</span>
+</button>
+</div>
+</div>
+<!-- Hidden Raw View Expanded Modal Area (Simulated collapsible) -->
+<div class="hidden mt-3 pt-3 border-t-0 bg-surface-container-lowest/60 rounded-xl p-space-sm text-center" id="source-preview-drawer">
+<p class="font-caption text-caption text-muted-foreground mb-2">Original high-res screenshot overlay</p>
+<div class="relative w-full h-44 rounded-lg overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up macro photo of a graphic promotional poster for a Neon Sunset Rooftop Session with dates, guest list details, and ambient lighting accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0kGtG7AsuuFNXDgdesm9RaMShiuKR3f8ItCtJiOaPIbWPjIdarfMeCktfVkgEikvVIW-gAii48-2nDitMBZ2uY5opAWSPMmBZ7CGjIZZbpTUs-Xle3WY3zIGq6cjtAywA5iFpUKilvSHeDk6gja3frCvuVkd_eGm9E-OBZpTk2MP12b-y44rgDUljaQayvNVY2ctbo6Wqjr0ue2WavIHJtgz4bXtI_c9XcOf7VDIhAdx8Y5FBM4Q">
+<div class="absolute inset-0 bg-accent-purple/10 pointer-events-none"></div>
+</div>
+</div>
+</div>
+<!-- Editable Form Section -->
+<form class="space-y-space-md" id="event-edit-form" onsubmit="event.preventDefault();">
+<!-- Event Title Input -->
+<div class="flex flex-col space-y-1.5">
+<label class="font-label-chip text-label-chip text-muted-foreground uppercase tracking-wider flex items-center justify-between px-1">
+<span>Event Title</span>
+<span class="text-primary-fixed text-[11px] font-caption">AI Parsed</span>
+</label>
+<div class="relative flex items-center rounded-2xl bg-card-glass backdrop-blur-xl p-1.5 shadow-sm transition-all focus-within:ring-0 focus-within:shadow-[0_0_18px_rgba(116,248,227,0.22)]">
+<div class="absolute inset-x-0 top-0 h-[1px] bg-glass-specular-top rounded-t-2xl pointer-events-none"></div>
+<div class="w-10 h-10 flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]">title</span>
+</div>
+<input class="flex-1 bg-transparent text-foreground-primary font-headline-card text-headline-card font-semibold focus:outline-none placeholder:text-muted-foreground/40 pr-2" id="event-title-input" placeholder="Enter event name..." type="text" value="Neon Sunset Rooftop Session">
+<button aria-label="Clear event title" class="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground-primary active:scale-90 transition-all mr-1" onclick="document.getElementById('event-title-input').value = '';" type="button">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+</div>
+<!-- Date & Time Card Block -->
+<div class="relative rounded-2xl bg-card-glass backdrop-blur-xl p-space-md space-y-space-md shadow-md overflow-hidden">
+<div class="absolute inset-x-0 top-0 h-[1px] bg-glass-specular-top"></div>
+<!-- Date Trigger -->
+<div class="flex items-center justify-between gap-space-sm cursor-pointer active:opacity-80 transition-opacity">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-xl bg-muted-surface flex items-center justify-center text-secondary-fixed flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</div>
+<div class="min-w-0">
+<span class="font-caption text-caption uppercase tracking-wider text-muted-foreground block">Date</span>
+<span class="font-body-strong text-body-strong text-foreground-primary truncate block">Friday, July 18, 2025</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted-foreground text-[20px]">chevron_right</span>
+</div>
+<div class="w-full h-[1px] bg-muted-surface"></div>
+<!-- Time Trigger -->
+<div class="flex items-center justify-between gap-space-sm cursor-pointer active:opacity-80 transition-opacity">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-xl bg-muted-surface flex items-center justify-center text-secondary-fixed flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<div class="min-w-0">
+<span class="font-caption text-caption uppercase tracking-wider text-muted-foreground block">Time Window</span>
+<span class="font-body-strong text-body-strong text-foreground-primary truncate block">7:00 PM – 11:30 PM</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted-foreground text-[20px]">chevron_right</span>
+</div>
+<div class="w-full h-[1px] bg-muted-surface"></div>
+<!-- All Day Toggle Row -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-compact text-body-compact font-semibold text-foreground-primary">All-Day Event</span>
+<span class="font-caption text-caption text-muted-foreground">Lock calendar for entire daytime</span>
+</div>
+<!-- Animated Custom Toggle Button -->
+<button aria-checked="false" class="relative w-12 h-7 rounded-full bg-surface-container-high transition-colors focus:outline-none" id="all-day-toggle" role="switch" type="button">
+<span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-muted-foreground transition-transform transform translate-x-0 shadow-sm" id="toggle-thumb"></span>
+</button>
+</div>
+</div>
+<!-- Location Field -->
+<div class="relative rounded-2xl bg-card-glass backdrop-blur-xl p-space-md space-y-space-xs shadow-md overflow-hidden">
+<div class="absolute inset-x-0 top-0 h-[1px] bg-glass-specular-top"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-chip text-label-chip text-muted-foreground uppercase tracking-wider">Location</span>
+<div class="flex items-center gap-1 text-[11px] font-caption text-status-info">
+<span class="material-symbols-outlined text-[13px]">map</span>
+<span>Apple Maps Pin</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm pt-1">
+<div class="w-10 h-10 rounded-xl bg-muted-surface flex items-center justify-center text-status-info flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<div class="flex-1 min-w-0">
+<input class="w-full bg-transparent text-foreground-primary font-body-strong text-body-strong font-semibold focus:outline-none" type="text" value="Skybar Penthouse &amp; Lounge">
+<p class="font-caption text-caption text-muted-foreground truncate mt-0.5">
+            450 Sunset Blvd, West Hollywood, Los Angeles, CA
+          </p>
+</div>
+<button class="text-secondary hover:text-foreground-primary p-1" type="button">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Notes Field -->
+<div class="relative rounded-2xl bg-card-glass backdrop-blur-xl p-space-md space-y-1 shadow-md overflow-hidden">
+<div class="absolute inset-x-0 top-0 h-[1px] bg-glass-specular-top"></div>
+<label class="font-label-chip text-label-chip text-muted-foreground uppercase tracking-wider block">
+        Notes &amp; Details
+      </label>
+<textarea class="w-full bg-transparent text-foreground-primary font-body-compact text-body-compact focus:outline-none resize-none pt-1 placeholder:text-muted-foreground/40" placeholder="Add special instructions, ticket links, or attire..." rows="3">Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator. Strict cocktail attire.</textarea>
+</div>
+<!-- Raw Parsed OCR Accordion -->
+<div class="rounded-2xl bg-card-glass backdrop-blur-xl overflow-hidden shadow-md">
+<div class="absolute inset-x-0 top-0 h-[1px] bg-glass-specular-top pointer-events-none"></div>
+<button class="w-full px-space-md py-3.5 flex items-center justify-between text-left hover:bg-muted-surface/40 transition-colors" id="raw-ocr-trigger" type="button">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-accent-purple">terminal</span>
+<span class="font-label-chip text-label-chip text-muted-foreground">Extracted Source Text (Raw OCR)</span>
+</div>
+<span class="material-symbols-outlined text-muted-foreground text-[20px] transition-transform duration-200" id="raw-ocr-chevron">expand_more</span>
+</button>
+<div class="hidden px-space-md pb-space-md pt-1 space-y-2" id="raw-ocr-content">
+<div class="p-2.5 rounded-xl bg-surface-container-lowest font-mono text-[11px] leading-relaxed text-secondary-fixed/80 select-all space-y-1">
+<p class="text-status-success/80"># OCR_PARSER_V4.2 [CONFIDENCE: 0.964]</p>
+<p>&gt; LINE 1: NEON SUNSET ROOFTOP SESSION</p>
+<p>&gt; LINE 2: FRI JULY 18 / 7PM TILL LATE</p>
+<p>&gt; LINE 3: SKYBAR PENTHOUSE 450 SUNSET BLVD</p>
+<p>&gt; LINE 4: NORTH ELEVATOR TIX REQ AT DOOR</p>
+</div>
+</div>
+</div>
+<!-- Save Destination Card -->
+<div class="relative rounded-2xl bg-surface-container-low backdrop-blur-md p-space-md flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container flex-shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</div>
+<div class="min-w-0">
+<span class="font-caption text-caption text-muted-foreground block">Saving To Target</span>
+<span class="font-body-compact text-body-compact font-semibold text-foreground-primary truncate block">Apple Calendar (Personal)</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<span class="px-2 py-0.5 rounded-full bg-muted-surface font-caption text-[11px] text-secondary-fixed">2 Alerts</span>
+<button class="text-muted-foreground hover:text-foreground-primary" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Primary & Secondary Actions Cluster -->
+<div class="space-y-space-sm pt-space-xs">
+<!-- Primary Save Button -->
+<button class="w-full h-14 rounded-full bg-primary-container text-primary-foreground font-display-title text-[15px] font-bold tracking-tight shadow-[0_8px_24px_rgba(116,248,227,0.3)] hover:shadow-[0_8px_30px_rgba(116,248,227,0.45)] active:scale-[0.985] transition-all flex items-center justify-center gap-2" id="save-event-btn" type="button">
+<span>Save Event to Calendar</span>
+<span class="material-symbols-outlined text-[20px] font-bold">arrow_forward</span>
+</button>
+<!-- Secondary Dual Action Pill Grid -->
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-12 rounded-full bg-muted-surface hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center gap-1.5 text-foreground-primary" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">bookmark_border</span>
+<span class="font-label-chip text-label-chip">Save Draft</span>
+</button>
+<button class="h-12 rounded-full bg-transparent hover:bg-status-error/10 active:scale-95 transition-all flex items-center justify-center gap-1.5 text-status-error" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+<span class="font-label-chip text-label-chip">Discard</span>
+</button>
+</div>
+</div>
+</form>
+<!-- Saved Notification Toast (Hidden by default) -->
+<div class="fixed bottom-6 inset-x-6 z-50 transform translate-y-32 transition-transform duration-300 ease-out pointer-events-none" id="toast-success">
+<div class="w-full bg-card-glass backdrop-blur-2xl p-space-md rounded-2xl flex items-center gap-3 shadow-[0_12px_32px_rgba(0,0,0,0.6)]">
+<div class="w-9 h-9 rounded-full bg-status-success/20 flex items-center justify-center text-status-success flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">done_all</span>
+</div>
+<div class="min-w-0 flex-1">
+<h4 class="font-body-strong text-body-strong font-bold text-foreground-primary">Saved to Apple Calendar</h4>
+<p class="font-caption text-caption text-muted-foreground truncate">Syncing event with 2 reminders active.</p>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Toggle Source Preview
+  const toggleBtn = document.getElementById('toggle-source-preview-btn');
+  const previewDrawer = document.getElementById('source-preview-drawer');
+  if (toggleBtn && previewDrawer) {
+    toggleBtn.addEventListener('click', () => {
+      previewDrawer.classList.toggle('hidden');
+    });
+  }
+
+  // Raw OCR Accordion Toggle
+  const ocrTrigger = document.getElementById('raw-ocr-trigger');
+  const ocrContent = document.getElementById('raw-ocr-content');
+  const ocrChevron = document.getElementById('raw-ocr-chevron');
+  if (ocrTrigger && ocrContent && ocrChevron) {
+    ocrTrigger.addEventListener('click', () => {
+      const isHidden = ocrContent.classList.toggle('hidden');
+      ocrChevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  }
+
+  // All Day Toggle Switch Micro-interaction
+  const allDayBtn = document.getElementById('all-day-toggle');
+  const toggleThumb = document.getElementById('toggle-thumb');
+  let isAllDay = false;
+  if (allDayBtn && toggleThumb) {
+    allDayBtn.addEventListener('click', () => {
+      isAllDay = !isAllDay;
+      allDayBtn.setAttribute('aria-checked', isAllDay.toString());
+      if (isAllDay) {
+        allDayBtn.classList.remove('bg-surface-container-high');
+        allDayBtn.classList.add('bg-primary-container', 'shadow-[0_0_12px_rgba(116,248,227,0.4)]');
+        toggleThumb.classList.remove('bg-muted-foreground', 'translate-x-0');
+        toggleThumb.classList.add('bg-primary-foreground', 'translate-x-5');
+      } else {
+        allDayBtn.classList.add('bg-surface-container-high');
+        allDayBtn.classList.remove('bg-primary-container', 'shadow-[0_0_12px_rgba(116,248,227,0.4)]');
+        toggleThumb.classList.add('bg-muted-foreground', 'translate-x-0');
+        toggleThumb.classList.remove('bg-primary-foreground', 'translate-x-5');
+      }
+    });
+  }
+
+  // Save Event Button Feedback & Toast
+  const saveBtn = document.getElementById('save-event-btn');
+  const toast = document.getElementById('toast-success');
+  if (saveBtn && toast) {
+    saveBtn.addEventListener('click', () => {
+      saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Syncing...</span>';
+      saveBtn.disabled = true;
+      setTimeout(() => {
+        saveBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Event Added!</span>';
+        toast.classList.remove('translate-y-32');
+        toast.classList.add('translate-y-0');
+        setTimeout(() => {
+          toast.classList.remove('translate-y-0');
+          toast.classList.add('translate-y-32');
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<span>Save Event to Calendar</span><span class="material-symbols-outlined text-[20px] font-bold">arrow_forward</span>';
+        }, 2600);
+      }, 700);
+    });
+  }
+</script></main></body></html>

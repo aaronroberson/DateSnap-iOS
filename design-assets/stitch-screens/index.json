@@ -1,0 +1,102 @@
+[
+  {
+    "id": "6c145dff8ec540b9a51f806629e55c70",
+    "slug": "01_premium_paywall",
+    "title": "DateSnap - Premium Paywall",
+    "htmlFile": "01_premium_paywall.html",
+    "imageFile": "01_premium_paywall.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2932"
+  },
+  {
+    "id": "df7a78364bd54941ad1d7bb6ca34d449",
+    "slug": "02_plus_paywall",
+    "title": "DateSnap - Plus Paywall",
+    "htmlFile": "02_plus_paywall.html",
+    "imageFile": "02_plus_paywall.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2782"
+  },
+  {
+    "id": "e5fc50914c2f4a788389e8aa94806f45",
+    "slug": "03_history_and_archive",
+    "title": "DateSnap - History & Archive",
+    "htmlFile": "03_history_and_archive.html",
+    "imageFile": "03_history_and_archive.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2734"
+  },
+  {
+    "id": "7d2a6476acc841b7be7374273debbf8b",
+    "slug": "04_calendar_permission_denied",
+    "title": "DateSnap - Calendar Permission Denied",
+    "htmlFile": "04_calendar_permission_denied.html",
+    "imageFile": "04_calendar_permission_denied.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2534"
+  },
+  {
+    "id": "1a0a6dacd22344d797031c2746da9b37",
+    "slug": "05_notification_permission_denied",
+    "title": "DateSnap - Notification Permission Denied",
+    "htmlFile": "05_notification_permission_denied.html",
+    "imageFile": "05_notification_permission_denied.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2298"
+  },
+  {
+    "id": "d973f4ad48f2487ea6be61abce9b19ae",
+    "slug": "06_no_dates_found",
+    "title": "DateSnap - No Dates Found",
+    "htmlFile": "06_no_dates_found.html",
+    "imageFile": "06_no_dates_found.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2744"
+  },
+  {
+    "id": "b04278172768466ead0f77aec1e7fefe",
+    "slug": "07_home_empty_state",
+    "title": "DateSnap - Home Empty State",
+    "htmlFile": "07_home_empty_state.html",
+    "imageFile": "07_home_empty_state.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2824"
+  },
+  {
+    "id": "79edd80432f24128889607dee9d678f4",
+    "slug": "08_saved_event_detail",
+    "title": "DateSnap - Saved Event Detail",
+    "htmlFile": "08_saved_event_detail.html",
+    "imageFile": "08_saved_event_detail.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2218"
+  },
+  {
+    "id": "50e76e9e2a6743a98d1f320729a3738a",
+    "slug": "09_event_review_and_edit",
+    "title": "DateSnap - Event Review and Edit",
+    "htmlFile": "09_event_review_and_edit.html",
+    "imageFile": "09_event_review_and_edit.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2364"
+  },
+  {
+    "id": "fc49f1067442461dbf28c683626a3b70",
+    "slug": "10_reminder_schedule_editor",
+    "title": "DateSnap - Reminder Schedule Editor",
+    "htmlFile": "10_reminder_schedule_editor.html",
+    "imageFile": "10_reminder_schedule_editor.png",
+    "deviceType": "MOBILE",
+    "width": "780",
+    "height": "2684"
+  }
+]
