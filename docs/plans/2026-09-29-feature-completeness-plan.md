@@ -1,7 +1,7 @@
 # DateSnap: Feature-Complete Product Engineering Plan & Runtime Audit
 
 **Date:** 2026-09-29  
-**Status:** Approved for Implementation  
+**Status:** Implemented — pending on-device verification (see §8)  
 **Scope:** Core Feature Completeness, Runtime Wiring, and Prototype-to-Product Transition (Excludes Wave 2 App Store packaging/signing)
 
 ---
@@ -231,26 +231,26 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ## 7. Concrete Engineering Tasks
 
 ```markdown
-- [ ] Task 1.1: Import PhotosUI into HomeEmptyStateView.swift and add PhotosPicker binding.
-- [ ] Task 1.2: Instantiate ScanViewModel in HomeEmptyStateView using @Environment(\.services).
-- [ ] Task 1.3: Pass selected PhotosPicker image data to ScanViewModel.scanImage(_:modelContext:).
-- [ ] Task 1.4: Bind HomeEmptyStateView sheet presentation to ScanViewModel.stage == .complete(candidates).
-- [ ] Task 2.1: Refactor EventReviewEditView.swift to accept EventReviewViewModel.
-- [ ] Task 2.2: Bind "Save Event to Calendar" in EventReviewEditView to viewModel.commitEvent(modelContext:).
-- [ ] Task 2.3: Connect Ambiguous Date swap button to viewModel.swapMonthAndDay().
-- [ ] Task 3.1: Remove mock sample events from AppState.swift initialization.
-- [ ] Task 3.2: Refactor HistoryArchiveView.swift to use @Query for SavedEvent entities.
-- [ ] Task 3.3: Implement SwiftData modelContext.delete and status updates in HistoryArchiveView.
-- [ ] Task 4.1: Connect PlusPaywallView CTA to subscriptionService.purchase(product:).
-- [ ] Task 4.2: Connect PremiumPaywallView CTA to subscriptionService.purchase(product:).
-- [ ] Task 4.3: Connect "Restore" buttons in both paywalls to subscriptionService.restorePurchases().
-- [ ] Task 5.1: Update EventExtractionService.swift line 901 to prioritize isShow over earliest door time.
-- [ ] Task 5.2: Append door time to event notes in EventExtractionService.
-- [ ] Task 6.1: Add NotificationCenter deep-link observer in ContentView.swift.
-- [ ] Task 6.2: Route active modal to .savedEventDetail when deep link arrives.
-- [ ] Task 7.1: Replace static disclosure in HomeEmptyStateView with real sample flyer image scan.
-- [ ] Task 8.1: Replace toast in CalendarPermissionDeniedView with UIApplication.openSettingsURLString.
-- [ ] Task 8.2: Replace toast in NotificationPermissionDeniedView with UIApplication.openSettingsURLString.
+- [x] Task 1.1: Import PhotosUI into HomeEmptyStateView.swift and add PhotosPicker binding.
+- [x] Task 1.2: Instantiate ScanViewModel in HomeEmptyStateView using @Environment(\.services).
+- [x] Task 1.3: Pass selected PhotosPicker image data to ScanViewModel.scanImage(_:modelContext:).
+- [x] Task 1.4: Bind HomeEmptyStateView sheet presentation to ScanViewModel.stage == .complete(candidates).
+- [x] Task 2.1: Refactor EventReviewEditView.swift to accept EventReviewViewModel.
+- [x] Task 2.2: Bind "Save Event to Calendar" in EventReviewEditView to viewModel.commitEvent(modelContext:).
+- [x] Task 2.3: Connect Ambiguous Date swap button to viewModel.swapMonthAndDay().
+- [x] Task 3.1: Remove mock sample events from AppState.swift initialization.
+- [x] Task 3.2: Refactor HistoryArchiveView.swift to use @Query for SavedEvent entities.
+- [x] Task 3.3: Implement SwiftData modelContext.delete and status updates in HistoryArchiveView.
+- [x] Task 4.1: Connect PlusPaywallView CTA to subscriptionService.purchase(product:).
+- [x] Task 4.2: Connect PremiumPaywallView CTA to subscriptionService.purchase(product:).
+- [x] Task 4.3: Connect "Restore" buttons in both paywalls to subscriptionService.restorePurchases().
+- [x] Task 5.1: Update EventExtractionService.swift line 901 to prioritize isShow over earliest door time.
+- [x] Task 5.2: Append door time to event notes in EventExtractionService.
+- [x] Task 6.1: Add NotificationCenter deep-link observer in ContentView.swift.
+- [x] Task 6.2: Route active modal to .savedEventDetail when deep link arrives.
+- [x] Task 7.1: Replace static disclosure in HomeEmptyStateView with real sample flyer image scan.
+- [x] Task 8.1: Replace toast in CalendarPermissionDeniedView with UIApplication.openSettingsURLString.
+- [x] Task 8.2: Replace toast in NotificationPermissionDeniedView with UIApplication.openSettingsURLString.
 ```
 
 ---
