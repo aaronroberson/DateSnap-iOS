@@ -74,6 +74,7 @@
 		EBBF0882F1F31CD0CCE0EDAD /* SettingsClusterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F0BC8108F6FF8AE5A8D7 /* SettingsClusterView.swift */; };
 		EF805E45491A208DA96070E1 /* NoDatesFoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C947E824B44CADFC33B6AE0 /* NoDatesFoundView.swift */; };
 		F310A549C2D314B432619A39 /* DateSnapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840C1D8095EA740354E7FA97 /* DateSnapTests.swift */; };
+		F3EA8DC2D491C3DA7CC35925 /* ScanImageEnhancer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BAEE25B8244CDAF566B7D6 /* ScanImageEnhancer.swift */; };
 		F537FB5B3DD349F9706DF5F2 /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435B9A5E763375C3CD1F7297 /* ReminderSettingsView.swift */; };
 		F823CBD9C7B9A2E84D46A1FB /* RuleBasedEventAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976FACC3562771694A7E4C6D /* RuleBasedEventAnalyzer.swift */; };
 		FBAD0106B02D4466D83E9B9F /* PhotoCandidateRanker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0DBE4FD98BB0B9EE5C4080 /* PhotoCandidateRanker.swift */; };
@@ -146,6 +147,7 @@
 		A43B1D80DD8D30D5F0BC8B97 /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
 		A5037EEF723A7175F22FC332 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		A841137B4F992EC30A732D05 /* IntelligenceCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceCapabilities.swift; sourceTree = "<group>"; };
+		A9BAEE25B8244CDAF566B7D6 /* ScanImageEnhancer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanImageEnhancer.swift; sourceTree = "<group>"; };
 		A9BE3C61707DF08BEE6EC9B3 /* ScanFlowViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanFlowViews.swift; sourceTree = "<group>"; };
 		AC72F417245B2C15484F57A6 /* DateSnap-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DateSnap-Release.xcconfig"; sourceTree = "<group>"; };
 		BCADB942FEA26C318100B80D /* DateSnap-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DateSnap-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 				8486FC2D21F8DC8901CCFE21 /* ReminderService.swift */,
 				5DA4842108BB5E2D6333435A /* SampleFlyer.swift */,
 				9A8D48FAE51305965ABA2B1D /* SavedEventActions.swift */,
+				A9BAEE25B8244CDAF566B7D6 /* ScanImageEnhancer.swift */,
 				3C86BC46FAFA0EDCED3073D8 /* ServiceContainer.swift */,
 				4E09A6F427402F6FE1AC56BD /* SubscriptionService.swift */,
 				251BC23D97E1EC98FB4ACC6F /* Advisors */,
@@ -504,6 +507,7 @@
 				BFE370ADB0B00ED3C1260AA8 /* SavedEventActions.swift in Sources */,
 				493DF7EF7B486B36B14F0F36 /* SavedEventDetailView.swift in Sources */,
 				071BA06AFB1CA36EB2D65BD1 /* ScanFlowViews.swift in Sources */,
+				F3EA8DC2D491C3DA7CC35925 /* ScanImageEnhancer.swift in Sources */,
 				027612132C13C749817C5B13 /* ScanViewModel.swift in Sources */,
 				7ECB154F900BE671A9E3DFE4 /* ScreenGalleryView.swift in Sources */,
 				2641DF002417F940C759EEA9 /* ServiceContainer.swift in Sources */,

@@ -157,7 +157,7 @@ public final class ScanViewModel: ObservableObject {
             stage = .processingOCR
             let ocrResult: OCRResult
             do {
-                ocrResult = try await ocrService.recognizeLines(in: page, confidenceFloor: 0.35)
+                ocrResult = try await recognizeWithRetry(page)
             } catch DateSnapError.ocr(.noTextRecognized) {
                 continue
             } catch {
@@ -259,6 +259,27 @@ public final class ScanViewModel: ObservableObject {
         } else {
             stage = .noDatesFound(rawText: fullText)
         }
+    }
+
+    /// Runs Vision OCR; if the text is hard to read, retries once on a contrast-enhanced grayscale copy
+    /// and keeps whichever pass is more legible.
+    private func recognizeWithRetry(_ page: UIImage) async throws -> OCRResult {
+        let first: OCRResult
+        do {
+            first = try await ocrService.recognizeLines(in: page, confidenceFloor: 0.35)
+        } catch DateSnapError.ocr(.noTextRecognized) {
+            guard let enhanced = ScanImageEnhancer.enhanced(page) else { throw DateSnapError.ocr(.noTextRecognized) }
+            return try await ocrService.recognizeLines(in: enhanced, confidenceFloor: 0.35)
+        }
+        let quality = RuleBasedEventAnalyzer.qualityReport(for: first, anchor: Date())
+        guard !quality.isLegible, let enhanced = ScanImageEnhancer.enhanced(page),
+              let retry = try? await ocrService.recognizeLines(in: enhanced, confidenceFloor: 0.35) else {
+            return first
+        }
+        let retryQuality = RuleBasedEventAnalyzer.qualityReport(for: retry, anchor: Date())
+        let better = retryQuality.meanConfidence > quality.meanConfidence
+            || (retryQuality.isScanWorthy && !quality.isScanWorthy)
+        return better ? retry : first
     }
 
     /// Stops a slow on-device interpretation; the scan continues with the rules-based result.
