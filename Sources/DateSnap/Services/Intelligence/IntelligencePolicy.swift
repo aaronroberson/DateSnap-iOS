@@ -22,7 +22,7 @@ public struct IntelligencePolicy: Sendable {
         rolloutEnabled: Bool = true,
         maxInputLines: Int = 60,
         maxInputCharacters: Int = 3000,
-        timeout: Duration = .seconds(12)
+        timeout: Duration = .seconds(20)
     ) {
         self.userEnabled = userEnabled
         self.rolloutEnabled = rolloutEnabled

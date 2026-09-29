@@ -8,9 +8,13 @@ import os
 public protocol EventUnderstandingProviding: Sendable {
     func analyze(_ result: OCRResult, locale: Locale, anchor: Date, assetIdentifier: String) async -> PreparedUnderstanding
     func complete(_ prepared: PreparedUnderstanding) async -> EventUnderstandingResult
+    /// Warms the on-device model while OCR runs, when it is enabled and available.
+    func prewarm(locale: Locale) async
 }
 
 extension EventUnderstandingProviding {
+    public func prewarm(locale: Locale) async {}
+
     public func understand(_ result: OCRResult, locale: Locale = .current, anchor: Date = Date(), assetIdentifier: String = "local_asset") async -> EventUnderstandingResult {
         await complete(await analyze(result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier))
     }
@@ -51,6 +55,14 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
     /// Rules-only pipeline (older OS, previews, tests).
     public static func rulesOnly(reason: IntelligenceUnavailableReason = .osUnsupported) -> EventUnderstandingPipeline {
         EventUnderstandingPipeline(capability: UnavailableCapabilityProvider(reason: reason), makeInterpreter: { nil })
+    }
+
+    public func prewarm(locale: Locale) async {
+        let current = policy()
+        guard current.userEnabled, current.rolloutEnabled,
+              capability.currentCapability(for: locale).isAvailable,
+              let interpreter = makeInterpreter() else { return }
+        await interpreter.prewarm()
     }
 
     public func analyze(_ result: OCRResult, locale: Locale, anchor: Date, assetIdentifier: String) async -> PreparedUnderstanding {

@@ -12,6 +12,7 @@
 		071BA06AFB1CA36EB2D65BD1 /* ScanFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BE3C61707DF08BEE6EC9B3 /* ScanFlowViews.swift */; };
 		12B4374B0516C77DCCE73121 /* MarketingKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850A036788CAC8DA0EEEE06F /* MarketingKitView.swift */; };
 		15BDAB1B0AF49847C558A6D5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9163CE168D33CAFEB6C4463 /* Colors.swift */; };
+		16472F46D8B0CC9C933EE865 /* AppleFoundationModelInterpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480D82BA047E5B777F2BA01A /* AppleFoundationModelInterpreter.swift */; };
 		17DD9A0D1E21E277686BE4F2 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5037EEF723A7175F22FC332 /* Typography.swift */; };
 		1AA94BE049FD05A199338FC0 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E09A6F427402F6FE1AC56BD /* SubscriptionService.swift */; };
 		1BF9DABFB0B93E0F66FFA25B /* EventUnderstandingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6CEAE02011D09BA111F3F6 /* EventUnderstandingTests.swift */; };
@@ -33,6 +34,7 @@
 		7ECB154F900BE671A9E3DFE4 /* ScreenGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D99C50F1AD06F38847D0799 /* ScreenGalleryView.swift */; };
 		7F6FED3A5F40E8D83D8CF21A /* AutomationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A952F053D34F9C5CD77FD5A /* AutomationSettingsView.swift */; };
 		811C6C138C5020A7563339BE /* EvidenceValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F224096BFB25D58987AA7F /* EvidenceValidator.swift */; };
+		816BFF49C019464FDAC15BF2 /* AppleIntelligenceLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA98102BA8DCBF41B1D8FA8 /* AppleIntelligenceLiveTests.swift */; };
 		8315885156CC87536E5C74A8 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59D0332FC8103519C12B1473 /* HomeViewModel.swift */; };
 		83CDC4B2DB121781788647C4 /* IntelligenceCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A841137B4F992EC30A732D05 /* IntelligenceCapabilities.swift */; };
 		8945E651801D9D15E2B03CFF /* HistoryArchiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66872204135AD2BD7E23BC2B /* HistoryArchiveView.swift */; };
@@ -90,6 +92,7 @@
 		435B9A5E763375C3CD1F7297 /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
 		4464E4DF303C20C3C4C66759 /* DateSnap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DateSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45AD4F1919BD7DD965C86702 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		480D82BA047E5B777F2BA01A /* AppleFoundationModelInterpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationModelInterpreter.swift; sourceTree = "<group>"; };
 		4A952F053D34F9C5CD77FD5A /* AutomationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationSettingsView.swift; sourceTree = "<group>"; };
 		4D99C50F1AD06F38847D0799 /* ScreenGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGalleryView.swift; sourceTree = "<group>"; };
 		4E09A6F427402F6FE1AC56BD /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
@@ -101,6 +104,7 @@
 		59D0332FC8103519C12B1473 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		5C37C7D54734D2BFA5AA2148 /* PlusPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallView.swift; sourceTree = "<group>"; };
 		5DA4842108BB5E2D6333435A /* SampleFlyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleFlyer.swift; sourceTree = "<group>"; };
+		5EA98102BA8DCBF41B1D8FA8 /* AppleIntelligenceLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceLiveTests.swift; sourceTree = "<group>"; };
 		66872204135AD2BD7E23BC2B /* HistoryArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryArchiveView.swift; sourceTree = "<group>"; };
 		6B6CEAE02011D09BA111F3F6 /* EventUnderstandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingTests.swift; sourceTree = "<group>"; };
 		6C947E824B44CADFC33B6AE0 /* NoDatesFoundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDatesFoundView.swift; sourceTree = "<group>"; };
@@ -157,6 +161,7 @@
 		0DF1D506C1A3965E863E82D3 /* Intelligence */ = {
 			isa = PBXGroup;
 			children = (
+				480D82BA047E5B777F2BA01A /* AppleFoundationModelInterpreter.swift */,
 				9646C6E197EB5B8F6BC6DD0E /* EventDurationPolicy.swift */,
 				DF50DEB9AE192CF2A3E6DB6F /* EventUnderstandingModels.swift */,
 				504B3DC4C54C69736B86F92C /* EventUnderstandingPipeline.swift */,
@@ -182,6 +187,7 @@
 		34761E9A3B3C0A262C34998D /* DateSnapTests */ = {
 			isa = PBXGroup;
 			children = (
+				5EA98102BA8DCBF41B1D8FA8 /* AppleIntelligenceLiveTests.swift */,
 				A0A26845AAE032A8E82FC022 /* DateSnapInferenceTests.swift */,
 				840C1D8095EA740354E7FA97 /* DateSnapTests.swift */,
 				18DE32848B33F7E3A8387111 /* EventUnderstandingPipelineTests.swift */,
@@ -401,6 +407,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3DFDF41DAFAD2092B94B302 /* AppState.swift in Sources */,
+				16472F46D8B0CC9C933EE865 /* AppleFoundationModelInterpreter.swift in Sources */,
 				7F6FED3A5F40E8D83D8CF21A /* AutomationSettingsView.swift in Sources */,
 				D1C74102F5650FEC390DD4A8 /* CalendarPermissionDeniedView.swift in Sources */,
 				FE61AD85B12E3F32F56DA538 /* CalendarService.swift in Sources */,
@@ -461,6 +468,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				816BFF49C019464FDAC15BF2 /* AppleIntelligenceLiveTests.swift in Sources */,
 				97624F6D825B5288646EFEDC /* DateSnapInferenceTests.swift in Sources */,
 				F310A549C2D314B432619A39 /* DateSnapTests.swift in Sources */,
 				7E9E054973D2CA3C104425FF /* EventUnderstandingPipelineTests.swift in Sources */,

@@ -55,6 +55,8 @@ public final class ScanViewModel: ObservableObject {
     @Published public var understandingByCandidateID: [String: EventUnderstanding] = [:]
     /// Route, quality and evidence lines of the last scan (combined across PDF pages).
     @Published public var lastResult: EventUnderstandingResult? = nil
+    /// The in-flight on-device interpretation, cancellable from the progress overlay.
+    private var interpretationTask: Task<EventUnderstandingResult, Never>? = nil
 
     public init(services: ServiceContainer) {
         self.photoLibraryService = services.photoLibrary
@@ -138,6 +140,10 @@ public final class ScanViewModel: ObservableObject {
             progressDetail = nil
         }
 
+        // Let the on-device model load while Vision reads the text.
+        let understanding = self.understanding
+        Task.detached(priority: .utility) { await understanding.prewarm(locale: .current) }
+
         var rawCandidates: [EventCandidate] = []
         var understandings: [String: EventUnderstanding] = [:]
         var pageResults: [EventUnderstandingResult] = []
@@ -169,7 +175,10 @@ public final class ScanViewModel: ObservableObject {
             stage = .extractingEvents
             let prepared = await understanding.analyze(ocrResult, locale: .current, anchor: Date(), assetIdentifier: assetIdentifier)
             if prepared.willInterpret { stage = .interpreting }
-            let result = await understanding.complete(prepared)
+            let completion = Task { await understanding.complete(prepared) }
+            interpretationTask = completion
+            let result = await completion.value
+            interpretationTask = nil
             pageResults.append(result)
             for event in result.events {
                 let candidate = event.best.toExtractedData().toModel()
@@ -242,6 +251,11 @@ public final class ScanViewModel: ObservableObject {
         } else {
             stage = .noDatesFound(rawText: fullText)
         }
+    }
+
+    /// Stops a slow on-device interpretation; the scan continues with the rules-based result.
+    public func skipInterpretation() {
+        interpretationTask?.cancel()
     }
 
     /// Merges per-page results of a multi-page document into one scan result.

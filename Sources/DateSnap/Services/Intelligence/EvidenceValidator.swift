@@ -101,6 +101,12 @@ public struct EventHypothesis: Sendable, Codable, Equatable {
 /// On-device semantic interpreter. Implementations must be side-effect free.
 public protocol OnDeviceEventInterpreting: Sendable {
     func interpret(_ request: InterpretationRequest) async throws -> [EventHypothesis]
+    /// Optional warm-up so the first request doesn't pay model load time.
+    func prewarm() async
+}
+
+extension OnDeviceEventInterpreting {
+    public func prewarm() async {}
 }
 
 // MARK: - Evidence Validator

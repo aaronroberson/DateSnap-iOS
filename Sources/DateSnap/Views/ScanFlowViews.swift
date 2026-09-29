@@ -70,6 +70,17 @@ struct ScanProgressOverlay: View {
                             .font(DSTypography.caption())
                             .foregroundStyle(Color.dsMutedForeground)
                     }
+                    if scan.stage == .interpreting {
+                        Button {
+                            scan.skipInterpretation()
+                        } label: {
+                            Text("Skip — use standard result")
+                                .font(DSTypography.labelChip())
+                                .foregroundStyle(Color.dsSecondary)
+                                .frame(minHeight: 44)
+                        }
+                        .accessibilityHint("Stops Apple Intelligence and shows the rules-based result")
+                    }
                     Label("Private, on-device processing", systemImage: "lock.shield.fill")
                         .font(DSTypography.caption())
                         .foregroundStyle(Color.dsMutedForeground)
