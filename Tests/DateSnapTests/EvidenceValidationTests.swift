@@ -62,6 +62,21 @@ struct EvidenceValidationTests {
         #expect(Set(outcome.rejectedFields).isSuperset(of: ["title", "venue", "date", "startTime", "category", "notes"]))
     }
 
+    @Test("A model start on a doors/opening line loses to a show-labeled time")
+    func doorsLineCannotBeStart() throws {
+        let a = analysis()
+        let baseline = try #require(a.events.first?.best)
+        // Rules already pick the headliner set (line 5) because "Lounge Opens" reads as doors.
+        #expect(Calendar.current.component(.hour, from: baseline.start.value) == 20)
+        let hypothesis = EventHypothesis(startTimeLineID: 4, startTimeText: "7:00 PM", doorsTimeLineID: 4, doorsTimeText: "7:00 PM",
+                                         reason: "startTimeLine")
+        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor)
+        #expect(outcome.rejectedFields.contains("startTime"))
+        let merged = outcome.candidate
+        #expect(merged.map { Calendar.current.component(.hour, from: $0.start.value) } ?? 20 == 20)
+        #expect(merged?.explanations.isEmpty ?? true)
+    }
+
     @Test("A contradicting model date cannot override an explicit high-confidence date")
     func explicitDateStaysAuthoritative() throws {
         let a = analysis()

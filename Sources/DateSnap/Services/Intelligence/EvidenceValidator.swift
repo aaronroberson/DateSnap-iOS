@@ -171,6 +171,16 @@ public enum EvidenceValidator {
                                               reason: "Venue from \"\(source.text)\".")
             accepted.append("venue")
         }
+        // An organizer or performer on the title (or venue) line is a role collision, not a new entity.
+        let titleLine = hypothesis.titleLineID
+        let venueLine = hypothesis.venueLineID
+        var hypothesis = hypothesis
+        for (lineID, field) in [(hypothesis.organizerLineID, "organizer"), (hypothesis.performerLineID, "performer")] {
+            guard let lineID, lineID == titleLine || lineID == venueLine else { continue }
+            rejected.append(field)
+            if field == "organizer" { hypothesis.organizerLineID = nil; hypothesis.organizerText = nil }
+            else { hypothesis.performerLineID = nil; hypothesis.performerText = nil }
+        }
         if let (organizer, source) = grounded(hypothesis.organizerText, in: hypothesis.organizerLineID, field: "organizer") {
             candidate.organizer = FieldAssessment(value: organizer, provenance: .modelInterpretation, evidence: reference(source), score: 0.75)
             accepted.append("organizer")
@@ -205,7 +215,14 @@ public enum EvidenceValidator {
             return (parsed.hour, parsed.minute, source)
         }
 
-        let startTime = time(hypothesis.startTimeText, lineID: hypothesis.startTimeLineID, field: "startTime")
+        var startTime = time(hypothesis.startTimeText, lineID: hypothesis.startTimeLineID, field: "startTime")
+        // A start on a doors/opening line loses to an explicitly show-labeled time elsewhere on the flyer.
+        if let proposed = startTime,
+           RuleBasedEventAnalyzer.role(forLine: proposed.line.text.lowercased()) == .doors,
+           evidence.contains(where: { $0.id != proposed.line.id && RuleBasedEventAnalyzer.role(forLine: $0.text.lowercased()) == .show }) {
+            startTime = nil
+            rejected.append("startTime")
+        }
         let doorsTime = time(hypothesis.doorsTimeText, lineID: hypothesis.doorsTimeLineID, field: "doorsTime")
         let endTime = time(hypothesis.endTimeText, lineID: hypothesis.endTimeLineID, field: "endTime")
 
@@ -225,7 +242,7 @@ public enum EvidenceValidator {
                 evidence: evidenceRefs,
                 score: min(0.95, 0.6 + 0.3 * (startTime?.line.confidence ?? baseline.start.score)),
                 isAmbiguous: baseline.isAmbiguousDate && hypothesis.dateLineID == nil,
-                reason: startTime.map { "Start time \(hypothesis.startTimeText ?? "") taken from \"\($0.line.text)\"." }
+                reason: startTime.map { "Start time taken from \"\($0.line.text)\"." } ?? baseline.start.reason
             )
             if startTime != nil {
                 accepted.append("startTime")
@@ -235,8 +252,8 @@ public enum EvidenceValidator {
 
         if let doorsTime {
             candidate.doorsTime = calendar.date(bySettingHour: doorsTime.hour, minute: doorsTime.minute, second: 0, of: day)
-            if let doors = candidate.doorsTime, doors > start {
-                // Doors after the start contradicts the labels; drop the doors value rather than guess.
+            if let doors = candidate.doorsTime, doors >= start {
+                // Doors at or after the start contradicts the labels; drop the doors value rather than guess.
                 candidate.doorsTime = baseline.doorsTime
                 rejected.append("doorsTime")
             } else {
@@ -277,7 +294,11 @@ public enum EvidenceValidator {
         if let summary = hypothesis.notesSummary?.trimmingCharacters(in: .whitespacesAndNewlines), !summary.isEmpty {
             // Summaries may not introduce links, emails or phone numbers that the flyer lacks.
             let introducesContact = summary.range(of: "https?://|www\\.|@|\\d{3}[-. ]\\d{3}[-. ]\\d{4}", options: .regularExpression) != nil
-            if summary.count <= 240 && !introducesContact {
+            // Every substantive word must appear on the flyer, so the model can condense but not invent.
+            let flyerWords = Set(evidence.flatMap { $0.text.lowercased().components(separatedBy: CharacterSet.alphanumerics.inverted) })
+            let summaryWords = summary.lowercased().components(separatedBy: CharacterSet.alphanumerics.inverted).filter { $0.count >= 4 }
+            let grounded = summaryWords.allSatisfy { flyerWords.contains($0) }
+            if summary.count <= 240 && !introducesContact && grounded {
                 candidate.notesSummary = [baseline.notesSummary, summary].filter { !$0.isEmpty }.joined(separator: " · ")
                 accepted.append("notes")
             } else {
@@ -285,17 +306,19 @@ public enum EvidenceValidator {
             }
         }
 
-        if let reason = hypothesis.reason?.trimmingCharacters(in: .whitespacesAndNewlines), !reason.isEmpty, reason.count <= 160 {
-            explanations.append(reason)
+        // Keep only a readable sentence from the model; field names or fragments are dropped.
+        if let reason = hypothesis.reason?.trimmingCharacters(in: .whitespacesAndNewlines),
+           reason.count >= 12, reason.count <= 160, reason.contains(" ") {
+            explanations.append("On-device model: \(reason)")
         }
-        if let startTime, candidate.doorsTime != nil {
-            explanations.append("Start time from \"\(startTime.line.text)\"; doors time kept in notes.")
+        if startTime != nil, let doors = candidate.doorsTime {
+            candidate.start.reason = (candidate.start.reason ?? "") + " Doors at \(doors.formatted(date: .omitted, time: .shortened)) kept in notes."
         }
 
         guard !accepted.isEmpty else {
             return Outcome(candidate: nil, acceptedFields: [], rejectedFields: rejected)
         }
-        candidate.explanations = explanations + baseline.explanations.filter { !explanations.contains($0) }
+        candidate.explanations = explanations
         candidate.similarityKey = RuleBasedEventAnalyzer.similarityKey(
             title: candidate.title.value, start: candidate.start.value,
             venue: candidate.venue.value ?? candidate.address.value, calendar: calendar

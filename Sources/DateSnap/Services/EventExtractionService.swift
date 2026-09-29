@@ -889,6 +889,11 @@ public enum DateInference {
 
     // MARK: - B6. Time Parsing, Windows & Multi-Marker Disambiguation
 
+    /// Words that mark the main start ("Show 8:30", "8:30 Headliner set").
+    public static let showVocabulary = "\\b(show|showtime|headlin\\w*|main set|performance|kick ?off|starts?|begins?)\\b"
+    /// Words that mark an earlier arrival time ("Doors 7", "7:00 Lounge opens", "Check-in 6:30").
+    public static let doorsVocabulary = "\\b(doors?|opens?|arrival|arrive|check-?in)\\b"
+
     /// Parsed times for a block. `doors*` is set only when a separate show time became the start.
     public typealias TimeInfo = (hasTime: Bool, startHour: Int?, startMinute: Int?, endHour: Int?, endMinute: Int?, doorsHour: Int?, doorsMinute: Int?)
 
@@ -929,9 +934,9 @@ public enum DateInference {
                 if m.range(at: 1).location != NSNotFound {
                     let prefix = (line as NSString).substring(with: m.range(at: 1)).lowercased()
                     marker = prefix.hasPrefix("door") ? .doors : .show
-                } else if lowerLine.contains("show") {
+                } else if lowerLine.range(of: showVocabulary, options: .regularExpression) != nil {
                     marker = .show
-                } else if lowerLine.contains("door") {
+                } else if lowerLine.range(of: doorsVocabulary, options: .regularExpression) != nil {
                     marker = .doors
                 }
                 if let t = parseSingleTime(raw) {

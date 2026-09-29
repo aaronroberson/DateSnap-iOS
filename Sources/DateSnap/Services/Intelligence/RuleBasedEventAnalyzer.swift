@@ -177,8 +177,8 @@ public enum RuleBasedEventAnalyzer {
             return .rsvpDeadline
         }
         if ["on sale", "presale", "pre-sale", "tickets available"].contains(where: lower.contains) { return .ticketSale }
-        if lower.contains("door") { return .doors }
-        if lower.range(of: "\\b(show|showtime|starts?|begins?|kick ?off)\\b", options: .regularExpression) != nil { return .show }
+        if lower.range(of: DateInference.showVocabulary, options: .regularExpression) != nil { return .show }
+        if lower.range(of: DateInference.doorsVocabulary, options: .regularExpression) != nil { return .doors }
         if lower.range(of: "\\b(until|till|til|ends?|curfew|close)\\b", options: .regularExpression) != nil { return .eventEnd }
         return nil
     }
@@ -329,15 +329,12 @@ public enum RuleBasedEventAnalyzer {
 
         let tzExplicit = fullText.range(of: "\\b(PST|PDT|EST|EDT|CST|CDT|MST|MDT|GMT|UTC|BST|CET|IST)\\b", options: .regularExpression) != nil
 
-        var explanations: [String] = []
-        if let line = titleRefs.first { explanations.append("Title: most prominent line \"\(lineText(line.lineID, evidence))\".") }
-        explanations.append(startReason)
-        if let venue = dto.venueName, let line = venueRefs.first ?? addressRefs.first {
-            explanations.append("Venue \"\(venue)\" read from \"\(lineText(line.lineID, evidence))\".")
-        }
-        if !hasExplicitEnd && !dto.isAllDay {
-            explanations.append("No end time on the flyer; using the standard 2-hour length.")
-        }
+        let titleReason = titleRefs.first.map { "Most prominent text on the flyer: \"\(lineText($0.lineID, evidence))\"." }
+            ?? "Most prominent text on the flyer."
+        let venueReason = (venueRefs.first ?? addressRefs.first).map { "Read from \"\(lineText($0.lineID, evidence))\"." }
+        let endReason = hasExplicitEnd || dto.isAllDay
+            ? "End time printed on the flyer."
+            : "No end time on the flyer; using the standard 2-hour length."
 
         let evidenceScore = { (refs: [EvidenceReference], base: Float) -> Float in
             let ocr = refs.isEmpty ? meanOCRConfidence : refs.map(\.confidence).max() ?? meanOCRConfidence
@@ -347,14 +344,14 @@ public enum RuleBasedEventAnalyzer {
         return EventInterpretationCandidate(
             id: dto.id,
             title: FieldAssessment(value: dto.title, provenance: .deterministicRule, evidence: titleRefs,
-                                   score: evidenceScore(titleRefs, dto.titleConfidence), reason: explanations.first),
+                                   score: evidenceScore(titleRefs, dto.titleConfidence), reason: titleReason),
             start: FieldAssessment(value: dto.startDate, provenance: startProvenance, evidence: dateRefs,
                                    score: evidenceScore(dateRefs, dto.dateConfidence), isAmbiguous: dto.isAmbiguousDate, reason: startReason),
             end: FieldAssessment(value: dto.endDate, provenance: endProvenance, evidence: [],
-                                 score: hasExplicitEnd ? 0.9 : 0.4),
+                                 score: hasExplicitEnd ? 0.9 : 0.4, reason: endReason),
             isAllDay: dto.isAllDay,
             venue: FieldAssessment(value: dto.venueName, provenance: .explicitText, evidence: venueRefs,
-                                   score: dto.venueName == nil ? 0 : evidenceScore(venueRefs, 0.85)),
+                                   score: dto.venueName == nil ? 0 : evidenceScore(venueRefs, 0.85), reason: venueReason),
             address: FieldAssessment(value: dto.location, provenance: .explicitText, evidence: addressRefs,
                                      score: dto.location == nil ? 0 : evidenceScore(addressRefs, 0.9)),
             organizer: FieldAssessment(value: organizer?.value, provenance: .explicitText,
@@ -377,7 +374,7 @@ public enum RuleBasedEventAnalyzer {
             dedupeKey: dto.dedupeKey,
             similarityKey: similarityKey(title: dto.title, start: dto.startDate, venue: dto.venueName ?? dto.location, calendar: calendar),
             rankScore: dto.confidenceScore,
-            explanations: explanations
+            explanations: []
         )
     }
 

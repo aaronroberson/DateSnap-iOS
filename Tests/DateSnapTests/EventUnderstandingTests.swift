@@ -63,7 +63,8 @@ struct RuleBasedEventAnalyzerTests {
         #expect(best.notesSummary.contains("Doors open at 7:00 PM"))
         #expect(best.notesSummary.contains("Ages: 21+"))
         #expect(best.notesSummary.contains("Price: $25"))
-        #expect(best.explanations.contains { $0.contains("SHOW 8:30 PM") })
+        #expect(best.start.reason?.contains("SHOW 8:30 PM") == true)
+        #expect(best.end.reason?.contains("2-hour") == true)
     }
 
     @Test("Actions carry exact targets and the RSVP deadline; recurrence is a suggestion")
