@@ -21,7 +21,9 @@ struct HomeEmptyStateView: View {
     /// Screenshots the library observer has seen that DateSnap has not scanned yet (Plus auto-detection).
     private var newScreenshots: [PHAsset] {
         let scanned = Set(scannedAssets.map(\.assetIdentifier))
-        return homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }
+        let unscanned = homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }
+        guard appState.isEntitled(to: .likelyEventTriage) else { return unscanned }
+        return PhotoCandidateRanker.rank(unscanned, scannedIDs: scanned, likelyEventIDs: homeViewModel.likelyEventIDs)
     }
     
     var body: some View {
@@ -549,18 +551,34 @@ struct HomeEmptyStateView: View {
                             } label: {
                                 AssetThumbnail(asset: asset, height: 120)
                                     .frame(width: 80)
+                                    .overlay(alignment: .bottom) {
+                                        if homeViewModel.likelyEventIDs.contains(asset.localIdentifier) {
+                                            Label("Event", systemImage: "calendar.badge.checkmark")
+                                                .font(.system(size: 10, weight: .bold))
+                                                .foregroundStyle(Color.dsBackground)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 3)
+                                                .background(Capsule().fill(Color.dsPrimary))
+                                                .padding(.bottom, 6)
+                                        }
+                                    }
                             }
                             .accessibilityLabel("Scan screenshot from \(asset.creationDate?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")")
                         }
                     }
                 }
-                Text("DateSnap Plus watches your Screenshots album and surfaces new ones here. Nothing is saved until you review it.")
+                Text("DateSnap Plus watches your Screenshots album, checks new ones on device, and shows likely events first. Nothing is saved until you review it.")
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }
             .padding(16)
             .dsGlassCard(cornerRadius: 20, elevated: true, borderColor: Color.dsPrimary.opacity(0.3))
             .padding(.horizontal)
+            .task(id: homeViewModel.recentScreenshots.map(\.localIdentifier)) {
+                if appState.isEntitled(to: .likelyEventTriage) {
+                    homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)))
+                }
+            }
         } else if !appState.isEntitled(to: .automaticScreenshotDetection) {
             Button {
                 appState.activeModal = .plusPaywall

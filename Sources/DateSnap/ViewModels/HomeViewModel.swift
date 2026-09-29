@@ -10,6 +10,7 @@ public final class HomeViewModel: ObservableObject {
     private let subscriptionService: SubscriptionServiceProtocol
     private let calendarService: CalendarServiceProtocol
     private let notificationService: NotificationServiceProtocol
+    private let ocrService: OCRServiceProtocol
 
     // MARK: - Published State
     @Published public var recentScreenshots: [PHAsset] = []
@@ -19,6 +20,11 @@ public final class HomeViewModel: ObservableObject {
     @Published public var currentSubscriptionTier: SubscriptionTier = .starter
     @Published public var isRefreshing: Bool = false
     @Published public var errorMessage: String? = nil
+    /// Screenshots the Plus triage judged likely to contain an event.
+    @Published public var likelyEventIDs: Set<String> = []
+    /// Screenshots already checked by triage (so each is assessed once per session).
+    private var assessedIDs: Set<String> = []
+    private var triageTask: Task<Void, Never>? = nil
 
     private var observationTask: Task<Void, Never>? = nil
 
@@ -27,6 +33,7 @@ public final class HomeViewModel: ObservableObject {
         self.subscriptionService = services.subscription
         self.calendarService = services.calendar
         self.notificationService = services.notifications
+        self.ocrService = services.ocr
 
         refreshStatus()
         startObservingPhotoLibrary()
@@ -119,6 +126,26 @@ public final class HomeViewModel: ObservableObject {
                 self.errorMessage = error.localizedDescription
                 self.isRefreshing = false
             }
+        }
+    }
+
+    // MARK: - Likely-Event Triage (Plus)
+    /// Checks up to `PhotoCandidateRanker.assessmentBudget` new, unscanned screenshots on device.
+    public func triageLikelyEvents(scannedIDs: Set<String>) {
+        let pending = recentScreenshots
+            .filter { !scannedIDs.contains($0.localIdentifier) && !assessedIDs.contains($0.localIdentifier) }
+            .prefix(PhotoCandidateRanker.assessmentBudget)
+        guard !pending.isEmpty, triageTask == nil else { return }
+        let photos = photoLibraryService
+        let ocr = ocrService
+        triageTask = Task { [weak self] in
+            for asset in pending {
+                guard !Task.isCancelled else { break }
+                let likely = await PhotoCandidateRanker.isLikelyEvent(asset, photos: photos, ocr: ocr)
+                self?.assessedIDs.insert(asset.localIdentifier)
+                if likely { self?.likelyEventIDs.insert(asset.localIdentifier) }
+            }
+            self?.triageTask = nil
         }
     }
 
