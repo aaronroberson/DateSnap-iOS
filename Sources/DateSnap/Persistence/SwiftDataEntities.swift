@@ -147,6 +147,8 @@ public final class EventCandidate {
     public var phoneNumber: String? = nil
     public var email: String? = nil
     public var notes: String = ""
+    /// Content-based identity (normalized title, day, venue) for matching the same event across screenshots.
+    public var similarityKey: String = ""
 
     public var scannedAsset: ScannedAsset?
 

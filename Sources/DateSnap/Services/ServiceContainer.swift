@@ -13,6 +13,8 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
     public let reminders: ReminderServiceProtocol
     public let notifications: NotificationServiceProtocol
     public let subscription: SubscriptionServiceProtocol
+    /// OCR → deterministic extraction → optional on-device interpretation → validated review bundle.
+    public let understanding: EventUnderstandingProviding
 
     public init(
         photoLibrary: PhotoLibraryServiceProtocol,
@@ -21,7 +23,8 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
         calendar: CalendarServiceProtocol,
         reminders: ReminderServiceProtocol,
         notifications: NotificationServiceProtocol,
-        subscription: SubscriptionServiceProtocol
+        subscription: SubscriptionServiceProtocol,
+        understanding: EventUnderstandingProviding = EventUnderstandingPipeline.rulesOnly()
     ) {
         self.photoLibrary = photoLibrary
         self.ocr = ocr
@@ -30,6 +33,7 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
         self.reminders = reminders
         self.notifications = notifications
         self.subscription = subscription
+        self.understanding = understanding
     }
 
     // MARK: - Live Production Container
@@ -50,7 +54,8 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
             calendar: calendarService,
             reminders: reminderService,
             notifications: notificationService,
-            subscription: subscriptionService
+            subscription: subscriptionService,
+            understanding: IntelligenceComposition.liveUnderstanding()
         )
     }
 

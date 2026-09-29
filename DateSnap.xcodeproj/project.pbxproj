@@ -24,10 +24,12 @@
 		49C2EAFFA6F8331E735CEF3D /* HomeEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AD9CF639664B9DE3B5DD12 /* HomeEmptyStateView.swift */; };
 		4A2D0C70CDB207CEDC1774C1 /* ReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8486FC2D21F8DC8901CCFE21 /* ReminderService.swift */; };
 		538963F81E5D0D2B7BCEF827 /* EvidenceValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F042DEA95A5BCDE0A6F3E7 /* EvidenceValidationTests.swift */; };
+		6B2F69F41E34FDB7E78BF172 /* EventUnderstandingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504B3DC4C54C69736B86F92C /* EventUnderstandingPipeline.swift */; };
 		74E627445E3B3C67B4F3860C /* NotificationPermissionDeniedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEA10D6A5634F7223DEF4E01 /* NotificationPermissionDeniedView.swift */; };
 		7A38BFBE82315D19739970E7 /* DateSnapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF83B099FE6069C153973C /* DateSnapError.swift */; };
 		7B7D41BD5DA9D18DBFAA34F3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E22CF04691A41B571E8F35 /* ContentView.swift */; };
 		7C3E0F10FB9FA96696671684 /* EventReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C120D1787C5D5AC9DA06FA /* EventReviewViewModel.swift */; };
+		7E9E054973D2CA3C104425FF /* EventUnderstandingPipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DE32848B33F7E3A8387111 /* EventUnderstandingPipelineTests.swift */; };
 		7ECB154F900BE671A9E3DFE4 /* ScreenGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D99C50F1AD06F38847D0799 /* ScreenGalleryView.swift */; };
 		7F6FED3A5F40E8D83D8CF21A /* AutomationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A952F053D34F9C5CD77FD5A /* AutomationSettingsView.swift */; };
 		811C6C138C5020A7563339BE /* EvidenceValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F224096BFB25D58987AA7F /* EvidenceValidator.swift */; };
@@ -42,6 +44,7 @@
 		9C8930EE58404749BB3E78F6 /* SettingsHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74044B5D30A33F4F9E4A3AF4 /* SettingsHubView.swift */; };
 		9EE9F32932B4E9E19E86A50C /* EventUnderstandingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF50DEB9AE192CF2A3E6DB6F /* EventUnderstandingModels.swift */; };
 		A4E666652CFBD8E1B83EE6A7 /* GlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E6E7FCF7939EDFF497BF7C /* GlassModifiers.swift */; };
+		AA5251495F4F2C34754C1F3B /* IntelligenceComposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC819368AFC3A098941B88 /* IntelligenceComposition.swift */; };
 		B39172338CE3F8DD43464D62 /* HelpFeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839348B87F622E293335343F /* HelpFeedbackView.swift */; };
 		BFE370ADB0B00ED3C1260AA8 /* SavedEventActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D48FAE51305965ABA2B1D /* SavedEventActions.swift */; };
 		C0512E4DF782ADEDAFEF59C7 /* ReminderScheduleEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8653406B93BF387A7E813F4D /* ReminderScheduleEditorView.swift */; };
@@ -76,8 +79,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0AAC819368AFC3A098941B88 /* IntelligenceComposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceComposition.swift; sourceTree = "<group>"; };
 		0ED1EA022E2F1FE923840BDF /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
 		10AF83B099FE6069C153973C /* DateSnapError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSnapError.swift; sourceTree = "<group>"; };
+		18DE32848B33F7E3A8387111 /* EventUnderstandingPipelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingPipelineTests.swift; sourceTree = "<group>"; };
 		1CCBF0B2A0317ADB50009E0B /* PurchaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseViewModel.swift; sourceTree = "<group>"; };
 		31217A0F1B6DC9210F6FB7DF /* CalendarPermissionDeniedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPermissionDeniedView.swift; sourceTree = "<group>"; };
 		334BC94863216871AC321BA2 /* SettingsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsState.swift; sourceTree = "<group>"; };
@@ -88,6 +93,7 @@
 		4A952F053D34F9C5CD77FD5A /* AutomationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationSettingsView.swift; sourceTree = "<group>"; };
 		4D99C50F1AD06F38847D0799 /* ScreenGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGalleryView.swift; sourceTree = "<group>"; };
 		4E09A6F427402F6FE1AC56BD /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
+		504B3DC4C54C69736B86F92C /* EventUnderstandingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingPipeline.swift; sourceTree = "<group>"; };
 		5162294B3F95C67021094F5C /* EventModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModels.swift; sourceTree = "<group>"; };
 		51F925C66B8AD24D4EF607F4 /* DateSnap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSnap.swift; sourceTree = "<group>"; };
 		5454EB47254B227A2BC9F812 /* ManagePlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagePlanView.swift; sourceTree = "<group>"; };
@@ -153,8 +159,10 @@
 			children = (
 				9646C6E197EB5B8F6BC6DD0E /* EventDurationPolicy.swift */,
 				DF50DEB9AE192CF2A3E6DB6F /* EventUnderstandingModels.swift */,
+				504B3DC4C54C69736B86F92C /* EventUnderstandingPipeline.swift */,
 				C3F224096BFB25D58987AA7F /* EvidenceValidator.swift */,
 				A841137B4F992EC30A732D05 /* IntelligenceCapabilities.swift */,
+				0AAC819368AFC3A098941B88 /* IntelligenceComposition.swift */,
 				D3798FF039CE3C28B1C54761 /* IntelligencePolicy.swift */,
 				7E5FAB10A61B2B540B9CB8CD /* InterpretationRanker.swift */,
 				976FACC3562771694A7E4C6D /* RuleBasedEventAnalyzer.swift */,
@@ -176,6 +184,7 @@
 			children = (
 				A0A26845AAE032A8E82FC022 /* DateSnapInferenceTests.swift */,
 				840C1D8095EA740354E7FA97 /* DateSnapTests.swift */,
+				18DE32848B33F7E3A8387111 /* EventUnderstandingPipelineTests.swift */,
 				6B6CEAE02011D09BA111F3F6 /* EventUnderstandingTests.swift */,
 				C9F042DEA95A5BCDE0A6F3E7 /* EvidenceValidationTests.swift */,
 			);
@@ -405,6 +414,7 @@
 				FF7A20129EC62282B783FCB6 /* EventReviewEditView.swift in Sources */,
 				7C3E0F10FB9FA96696671684 /* EventReviewViewModel.swift in Sources */,
 				9EE9F32932B4E9E19E86A50C /* EventUnderstandingModels.swift in Sources */,
+				6B2F69F41E34FDB7E78BF172 /* EventUnderstandingPipeline.swift in Sources */,
 				811C6C138C5020A7563339BE /* EvidenceValidator.swift in Sources */,
 				A4E666652CFBD8E1B83EE6A7 /* GlassModifiers.swift in Sources */,
 				B39172338CE3F8DD43464D62 /* HelpFeedbackView.swift in Sources */,
@@ -412,6 +422,7 @@
 				49C2EAFFA6F8331E735CEF3D /* HomeEmptyStateView.swift in Sources */,
 				8315885156CC87536E5C74A8 /* HomeViewModel.swift in Sources */,
 				83CDC4B2DB121781788647C4 /* IntelligenceCapabilities.swift in Sources */,
+				AA5251495F4F2C34754C1F3B /* IntelligenceComposition.swift in Sources */,
 				066CFD400780C1D7BD1ED0AA /* IntelligencePolicy.swift in Sources */,
 				28AF3827AAFB48EFD956D694 /* InterpretationRanker.swift in Sources */,
 				C59B934D66F046BA477CE755 /* ManagePlanView.swift in Sources */,
@@ -452,6 +463,7 @@
 			files = (
 				97624F6D825B5288646EFEDC /* DateSnapInferenceTests.swift in Sources */,
 				F310A549C2D314B432619A39 /* DateSnapTests.swift in Sources */,
+				7E9E054973D2CA3C104425FF /* EventUnderstandingPipelineTests.swift in Sources */,
 				1BF9DABFB0B93E0F66FFA25B /* EventUnderstandingTests.swift in Sources */,
 				538963F81E5D0D2B7BCEF827 /* EvidenceValidationTests.swift in Sources */,
 			);

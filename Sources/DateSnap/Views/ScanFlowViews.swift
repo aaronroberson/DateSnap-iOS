@@ -47,8 +47,9 @@ struct ScanProgressOverlay: View {
     private var stageText: String {
         switch scan.stage {
         case .fetchingImage: return "Loading image…"
-        case .processingOCR: return "Reading text on-device…"
+        case .processingOCR: return "Checking text on-device…"
         case .extractingEvents: return "Finding dates & places…"
+        case .interpreting: return "Interpreting event details on device…"
         default: return "Analyzing…"
         }
     }

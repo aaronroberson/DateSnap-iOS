@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
 public final class ScanViewModel: ObservableObject {
     private let photoLibraryService: PhotoLibraryServiceProtocol
     private let ocrService: OCRServiceProtocol
-    private let extractionService: EventExtractionServiceProtocol
+    private let understanding: EventUnderstandingProviding
 
     // MARK: - Pipeline State
     public enum ScanStage: Equatable {
@@ -17,6 +17,8 @@ public final class ScanViewModel: ObservableObject {
         case fetchingImage
         case processingOCR
         case extractingEvents
+        /// The on-device model is interpreting the text (only when it will actually run).
+        case interpreting
         case complete(candidates: [EventCandidate])
         case noDatesFound(rawText: String)
         /// Every detected event is already saved in History.
@@ -25,7 +27,7 @@ public final class ScanViewModel: ObservableObject {
 
         public static func == (lhs: ScanStage, rhs: ScanStage) -> Bool {
             switch (lhs, rhs) {
-            case (.idle, .idle), (.fetchingImage, .fetchingImage), (.processingOCR, .processingOCR), (.extractingEvents, .extractingEvents):
+            case (.idle, .idle), (.fetchingImage, .fetchingImage), (.processingOCR, .processingOCR), (.extractingEvents, .extractingEvents), (.interpreting, .interpreting):
                 return true
             case (.complete(let a), .complete(let b)):
                 return a.map(\.id) == b.map(\.id)
@@ -49,11 +51,15 @@ public final class ScanViewModel: ObservableObject {
     @Published public var isProcessing: Bool = false
     /// Page progress for multi-page documents ("Page 2 of 5").
     @Published public var progressDetail: String? = nil
+    /// Review bundle (best interpretation, alternatives, evidence) per candidate ID from the last scan.
+    @Published public var understandingByCandidateID: [String: EventUnderstanding] = [:]
+    /// Route, quality and evidence lines of the last scan (combined across PDF pages).
+    @Published public var lastResult: EventUnderstandingResult? = nil
 
     public init(services: ServiceContainer) {
         self.photoLibraryService = services.photoLibrary
         self.ocrService = services.ocr
-        self.extractionService = services.eventExtraction
+        self.understanding = services.understanding
     }
 
     // MARK: - Scan PHAsset Pipeline
@@ -133,6 +139,8 @@ public final class ScanViewModel: ObservableObject {
         }
 
         var rawCandidates: [EventCandidate] = []
+        var understandings: [String: EventUnderstanding] = [:]
+        var pageResults: [EventUnderstandingResult] = []
         var texts: [String] = []
         var confidences: [Float] = []
 
@@ -157,8 +165,18 @@ public final class ScanViewModel: ObservableObject {
             confidences.append(ocrResult.meanConfidence)
 
             // Step 2: On-Device NaturalLanguage & Regex Event Extraction
+            // Step 2: Deterministic extraction, then (when useful and available) on-device interpretation
             stage = .extractingEvents
-            rawCandidates += await extractionService.extractCandidates(from: ocrResult, locale: .current)
+            let prepared = await understanding.analyze(ocrResult, locale: .current, anchor: Date(), assetIdentifier: assetIdentifier)
+            if prepared.willInterpret { stage = .interpreting }
+            let result = await understanding.complete(prepared)
+            pageResults.append(result)
+            for event in result.events {
+                let candidate = event.best.toExtractedData().toModel()
+                candidate.similarityKey = event.best.similarityKey
+                understandings[candidate.id] = event
+                rawCandidates.append(candidate)
+            }
         }
 
         let fullText = texts.joined(separator: "\n\n")
@@ -183,6 +201,7 @@ public final class ScanViewModel: ObservableObject {
                         // Same flyer scanned again before it was saved: resume reviewing the stored candidate.
                         if !validCandidates.contains(where: { $0.id == existing.id }) {
                             validCandidates.append(existing)
+                            understandings[existing.id] = understandings[candidate.id]
                         }
                     } else {
                         alreadySavedCount += 1
@@ -213,6 +232,8 @@ public final class ScanViewModel: ObservableObject {
         }
 
         self.extractedCandidates = validCandidates
+        self.understandingByCandidateID = understandings.filter { id, _ in validCandidates.contains { $0.id == id } }
+        self.lastResult = Self.combine(pageResults)
 
         if !validCandidates.isEmpty {
             stage = .complete(candidates: validCandidates)
@@ -223,6 +244,18 @@ public final class ScanViewModel: ObservableObject {
         }
     }
 
+    /// Merges per-page results of a multi-page document into one scan result.
+    private static func combine(_ results: [EventUnderstandingResult]) -> EventUnderstandingResult? {
+        guard let first = results.first else { return nil }
+        guard results.count > 1 else { return first }
+        var combined = first
+        combined.events = results.flatMap(\.events)
+        combined.route = results.contains { $0.route == .onDeviceModel } ? .onDeviceModel : .rulesOnly
+        combined.rejectedFieldCount = results.reduce(0) { $0 + $1.rejectedFieldCount }
+        combined.quality.isScanWorthy = results.contains { $0.quality.isScanWorthy }
+        return combined
+    }
+
     public func reset() {
         stage = .idle
         rawOcrText = ""
@@ -231,5 +264,7 @@ public final class ScanViewModel: ObservableObject {
         currentProcessingImage = nil
         isProcessing = false
         progressDetail = nil
+        understandingByCandidateID = [:]
+        lastResult = nil
     }
 }
