@@ -161,28 +161,32 @@ struct PlusPaywallView: View {
                                             .font(DSTypography.bodyStrong())
                                             .foregroundStyle(Color.dsForeground)
                                         
-                                        Text(savingsText)
-                                            .font(DSTypography.overlineConfidence())
-                                            .foregroundStyle(Color.dsPrimaryForeground)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 2)
-                                            .background(Capsule().fill(Color.dsPrimary))
+                                        if let savingsText {
+                                            Text(savingsText)
+                                                .font(DSTypography.overlineConfidence())
+                                                .foregroundStyle(Color.dsPrimaryForeground)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(Capsule().fill(Color.dsPrimary))
+                                        }
                                     }
                                     
-                                    Text("\(purchases.displayPrice(.plus, annual: true, fallback: "$39.99")) billed annually\(purchases.trialDescription(.plus, annual: true).map { " (includes \($0) free trial)" } ?? "")")
+                                    Text(annualPrice.isEmpty ? "Price unavailable" : "\(annualPrice) billed annually\(purchases.trialDescription(.plus, annual: true).map { " (includes \($0) free trial)" } ?? "")")
                                         .font(DSTypography.caption())
                                         .foregroundStyle(Color.dsMutedForeground)
                                 }
                                 
                                 Spacer()
                                 
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(purchases.monthlyEquivalent(.plus, fallback: "$3.33"))
-                                        .font(DSTypography.headlineCard())
-                                        .foregroundStyle(Color.dsForeground)
-                                    Text("/ month")
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsMutedForeground)
+                                if !annualPrice.isEmpty {
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text(purchases.monthlyEquivalent(.plus))
+                                            .font(DSTypography.headlineCard())
+                                            .foregroundStyle(Color.dsForeground)
+                                        Text("/ month")
+                                            .font(DSTypography.caption())
+                                            .foregroundStyle(Color.dsMutedForeground)
+                                    }
                                 }
                                 
                                 Image(systemName: selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
@@ -209,20 +213,22 @@ struct PlusPaywallView: View {
                                         .font(DSTypography.bodyStrong())
                                         .foregroundStyle(Color.dsForeground)
                                     
-                                    Text("\(purchases.displayPrice(.plus, annual: false, fallback: "$4.99")) billed monthly, cancel anytime")
+                                    Text(monthlyPrice.isEmpty ? "Price unavailable" : "\(monthlyPrice) billed monthly, cancel anytime")
                                         .font(DSTypography.caption())
                                         .foregroundStyle(Color.dsMutedForeground)
                                 }
                                 
                                 Spacer()
                                 
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(purchases.displayPrice(.plus, annual: false, fallback: "$4.99"))
-                                        .font(DSTypography.headlineCard())
-                                        .foregroundStyle(Color.dsForeground)
-                                    Text("/ month")
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsMutedForeground)
+                                if !monthlyPrice.isEmpty {
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text(monthlyPrice)
+                                            .font(DSTypography.headlineCard())
+                                            .foregroundStyle(Color.dsForeground)
+                                        Text("/ month")
+                                            .font(DSTypography.caption())
+                                            .foregroundStyle(Color.dsMutedForeground)
+                                    }
                                 }
                                 
                                 Image(systemName: !selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
@@ -256,7 +262,7 @@ struct PlusPaywallView: View {
                         }
                     }
                     .buttonStyle(DSPrimaryButtonStyle())
-                    .disabled(purchases.isPurchasing || purchases.isLoadingProducts || appState.isPlusMember)
+                    .disabled(purchases.isPurchasing || purchases.isLoadingProducts || appState.isPlusMember || !canPurchaseSelectedPlan)
                     .padding(.horizontal)
                     
                     // Cross-link to Premium
@@ -313,15 +319,21 @@ struct PlusPaywallView: View {
 
     private var ctaTitle: String {
         if appState.isPlusMember { return "Plus Is Active" }
+        guard canPurchaseSelectedPlan else { return "Subscribe" }
         if let trial = purchases.trialDescription(.plus, annual: selectedPlanIsAnnual) {
             return "Start \(trial.capitalized) Free Trial"
         }
-        return "Subscribe for \(purchases.displayPrice(.plus, annual: selectedPlanIsAnnual, fallback: selectedPlanIsAnnual ? "$39.99" : "$4.99"))"
+        return "Subscribe for \(selectedPrice)"
     }
 
-    private var savingsText: String {
+    private var annualPrice: String { purchases.displayPrice(.plus, annual: true) }
+    private var monthlyPrice: String { purchases.displayPrice(.plus, annual: false) }
+    private var selectedPrice: String { purchases.displayPrice(.plus, annual: selectedPlanIsAnnual) }
+    private var canPurchaseSelectedPlan: Bool { purchases.canPurchase(.plus, annual: selectedPlanIsAnnual) }
+
+    private var savingsText: String? {
         guard let monthly = purchases.product(.plus, annual: false), let annual = purchases.product(.plus, annual: true),
-              monthly.price > 0 else { return "Best Value" }
+              monthly.price > 0 else { return nil }
         let yearlyAtMonthly = monthly.price * 12
         let saving = (yearlyAtMonthly - annual.price) / yearlyAtMonthly * 100
         return "Save \(NSDecimalNumber(decimal: saving).intValue)%"

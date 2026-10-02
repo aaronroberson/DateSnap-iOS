@@ -45,15 +45,19 @@ final class PurchaseViewModel: ObservableObject {
         products[annual ? plan.annualID : plan.monthlyID]
     }
 
-    /// Localized price from the App Store, or a fallback while products load.
-    func displayPrice(_ plan: Plan, annual: Bool, fallback: String) -> String {
-        product(plan, annual: annual)?.displayPrice ?? fallback
+    /// Localized price from the App Store, or an empty string when the product is unavailable.
+    func displayPrice(_ plan: Plan, annual: Bool) -> String {
+        product(plan, annual: annual)?.displayPrice ?? ""
     }
 
-    /// Annual price expressed per month, e.g. "$3.33".
-    func monthlyEquivalent(_ plan: Plan, fallback: String) -> String {
-        guard let annual = product(plan, annual: true) else { return fallback }
+    /// Annual price expressed per month, using StoreKit's currency formatting.
+    func monthlyEquivalent(_ plan: Plan) -> String {
+        guard let annual = product(plan, annual: true) else { return "" }
         return (annual.price / 12).formatted(annual.priceFormatStyle)
+    }
+
+    func canPurchase(_ plan: Plan, annual: Bool) -> Bool {
+        subscription != nil && product(plan, annual: annual) != nil
     }
 
     /// Free-trial length from the product's introductory offer, if it has one.

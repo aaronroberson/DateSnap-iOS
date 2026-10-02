@@ -221,13 +221,11 @@ struct HistoryArchiveView: View {
                 presenting: pendingDelete
             ) { saved in
                 Button("Delete from DateSnap Only", role: .destructive) {
-                    actions.delete(saved, removeFromCalendar: false)
-                    appState.showToast("Removed from DateSnap history")
+                    reportMutation(actions.delete(saved, removeFromCalendar: false), success: "Removed from DateSnap history")
                 }
                 if saved.externalCalendarEventId != nil {
                     Button("Delete from Calendar & Reminders Too", role: .destructive) {
-                        actions.delete(saved, removeFromCalendar: true)
-                        appState.showToast("Deleted everywhere")
+                        reportMutation(actions.delete(saved, removeFromCalendar: true), success: "Deleted event")
                     }
                 }
             } message: { _ in
@@ -366,7 +364,9 @@ struct HistoryArchiveView: View {
             .contextMenu { triageMenu(for: saved) }
             .swipeActions { triageMenu(for: saved) }
             .accessibilityAction(named: saved.status == .archived ? "Restore" : "Archive") {
-                actions.setStatus(saved.status == .archived ? .saved : .archived, for: saved)
+                let isRestoring = saved.status == .archived
+                let result = actions.setStatus(isRestoring ? .saved : .archived, for: saved)
+                reportMutation(result, success: isRestoring ? "Event restored" : "Event archived")
             }
             .accessibilityAction(named: "Delete") { pendingDelete = saved }
         }
@@ -403,15 +403,14 @@ struct HistoryArchiveView: View {
     private func triageMenu(for saved: SavedEvent) -> some View {
         if saved.status == .archived {
             Button {
-                actions.setStatus(saved.externalCalendarEventId != nil ? .saved : .draft, for: saved)
-                appState.showToast("Event restored")
+                let result = actions.setStatus(saved.externalCalendarEventId != nil ? .saved : .draft, for: saved)
+                reportMutation(result, success: "Event restored")
             } label: {
                 Label("Restore", systemImage: "arrow.uturn.backward")
             }
         } else {
             Button {
-                actions.setStatus(.archived, for: saved)
-                appState.showToast("Event archived")
+                reportMutation(actions.setStatus(.archived, for: saved), success: "Event archived")
             } label: {
                 Label("Archive", systemImage: "archivebox")
             }
@@ -427,6 +426,17 @@ struct HistoryArchiveView: View {
             pendingDelete = saved
         } label: {
             Label("Delete", systemImage: "trash")
+        }
+    }
+
+    private func reportMutation(_ result: MutationResult, success: String) {
+        switch result {
+        case .success:
+            appState.showToast(success)
+        case .partial(let issues):
+            appState.showToast("Completed with issues: \(issues.joined(separator: "; "))")
+        case .failure(let error):
+            appState.showToast(error.localizedDescription)
         }
     }
 }

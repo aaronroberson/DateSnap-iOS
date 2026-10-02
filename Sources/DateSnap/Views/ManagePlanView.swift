@@ -107,7 +107,8 @@ struct ManagePlanView: View {
         guard tier != .starter else { return "Free" }
         let plan: PurchaseViewModel.Plan = tier == .premium ? .premium : .plus
         let annual = entitlement?.isAnnual ?? true
-        return purchases.displayPrice(plan, annual: annual, fallback: "—")
+        let price = purchases.displayPrice(plan, annual: annual)
+        return price.isEmpty ? "Price unavailable" : price
     }
 
     private var subscriptionCard: some View {
