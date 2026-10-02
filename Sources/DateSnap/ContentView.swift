@@ -98,7 +98,7 @@ struct ContentView: View {
             .environmentObject(settingsState)
             .environmentObject(scanViewModel)
             .environmentObject(homeViewModel)
-            .environment(\.services, services)
+            .dateSnapServices(services)
         }
         .onAppear {
             appState.bind(subscription: services.subscription)

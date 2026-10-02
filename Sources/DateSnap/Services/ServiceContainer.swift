@@ -76,3 +76,21 @@ extension EnvironmentValues {
         set { self[ServiceContainerKey.self] = newValue }
     }
 }
+
+@MainActor
+private struct ServiceContainerEnvironmentModifier: ViewModifier {
+    let services: ServiceContainer
+
+    func body(content: Content) -> some View {
+        content.transformEnvironment(\.self) { environment in
+            environment[ServiceContainerKey.self] = services
+        }
+    }
+}
+
+extension View {
+    @MainActor
+    func dateSnapServices(_ services: ServiceContainer) -> some View {
+        modifier(ServiceContainerEnvironmentModifier(services: services))
+    }
+}
