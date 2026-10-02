@@ -338,8 +338,17 @@ struct NoDatesFoundView: View {
             rawTextSnippet: appState.lastScanRawText,
             confidenceTierRaw: ConfidenceTier.low.rawValue
         )
-        modelContext.insert(candidate)
-        try? modelContext.save()
+        let result = MutationResult.perform {
+            modelContext.insert(candidate)
+            try modelContext.save()
+        }
+        guard case .success = result else {
+            modelContext.delete(candidate)
+            if case .failure(let error) = result {
+                appState.showToast(error.localizedDescription)
+            }
+            return
+        }
         appState.rememberSourceImage(appState.lastScanImage, for: [candidate])
         Task { await appState.present(.eventReviewEdit(candidate.toDateSnapEvent())) }
     }

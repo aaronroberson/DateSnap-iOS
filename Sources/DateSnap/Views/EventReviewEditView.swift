@@ -120,7 +120,7 @@ struct EventReviewForm: View {
                     initialOffsets: viewModel.selectedOffsets
                 ) { offsets in
                     viewModel.selectedOffsets = offsets
-                    return true
+                    return .success
                 }
             }
             .alert("Couldn't Save Event", isPresented: Binding(
@@ -133,7 +133,8 @@ struct EventReviewForm: View {
             }
             .confirmationDialog("Discard this event?", isPresented: $showDiscardConfirm, titleVisibility: .visible) {
                 Button("Discard", role: .destructive) {
-                    viewModel.discard(modelContext: modelContext)
+                    let result = viewModel.discard(modelContext: modelContext)
+                    guard case .success = result else { return }
                     appState.showToast("Event discarded")
                     dismiss()
                 }
@@ -789,7 +790,8 @@ struct EventReviewForm: View {
             if !viewModel.isEditingSavedEvent {
                 HStack(spacing: 12) {
                     Button {
-                        viewModel.saveDraft(modelContext: modelContext)
+                        let result = viewModel.saveDraft(modelContext: modelContext)
+                        guard case .success = result else { return }
                         appState.showToast("Draft saved to Review Queue")
                         dismiss()
                     } label: {
@@ -843,8 +845,8 @@ struct EventReviewForm: View {
 
     private func save() async {
         let wasUpdate = viewModel.isEditingSavedEvent
-        let saved = await viewModel.commitEvent(modelContext: modelContext)
-        guard saved else {
+        let result = await viewModel.commitEvent(modelContext: modelContext)
+        guard case .success = result else {
             if viewModel.calendarAccessDenied {
                 await appState.present(.calendarPermissionDenied)
             }
