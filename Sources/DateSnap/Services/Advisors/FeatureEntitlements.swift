@@ -152,7 +152,7 @@ public enum FeatureAccessPolicy {
         case .verified:
             return snapshot.tier.includes(feature)
                 ? .allowed
-                : .denied(.requiresTier(snapshot.tier))
+                : .denied(.requiresTier(feature.requiredTier))
         }
     }
 }

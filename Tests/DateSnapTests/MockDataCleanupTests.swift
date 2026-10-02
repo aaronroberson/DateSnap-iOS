@@ -157,8 +157,8 @@ struct MockDataCleanupTests {
         let eraseResult = actions.eraseAllLocalData()
 
         #expect(statusResult == .failure(MutationFailure(InjectedServiceFailure.persistence)))
-        #expect(cacheResult == .failure(MutationFailure(InjectedServiceFailure.persistence)))
-        #expect(eraseResult == .failure(MutationFailure(InjectedServiceFailure.persistence)))
+        #expect(cacheResult == .failure(MutationFailure(message: "Could not clear the scan cache: Injected SwiftData failure")))
+        #expect(eraseResult == .failure(MutationFailure(message: "Could not erase local DateSnap data: Injected SwiftData failure")))
     }
 
     @Test("Failed Calendar and Reminder cleanup retains the DateSnap record and identifiers")

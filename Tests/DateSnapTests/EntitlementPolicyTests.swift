@@ -14,7 +14,7 @@ struct FeatureAccessPolicyTests {
                 if tier.includes(feature) {
                     #expect(decision == .allowed)
                 } else {
-                    #expect(decision == .denied(.requiresTier(tier)))
+                    #expect(decision == .denied(.requiresTier(feature.requiredTier)))
                 }
             }
         }
