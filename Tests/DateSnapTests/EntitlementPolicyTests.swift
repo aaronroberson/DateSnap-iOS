@@ -23,7 +23,7 @@ struct FeatureAccessPolicyTests {
     func unresolvedStateFailsClosed(state: EntitlementResolutionState) {
         let snapshot = EntitlementSnapshot(
             tier: .premium,
-            resolution: state,
+            state: state,
             provenance: .testFixture
         )
 
@@ -55,7 +55,7 @@ struct SubscriptionCatalogTests {
             "com.datesnap.premium.monthly",
             "com.datesnap.premium.annual",
         ])
-        #expect(SubscriptionProduct.allCases.count == 4)
+        #expect(SubscriptionCatalog.allProductIDs.count == 4)
         #expect(SubscriptionCatalog.tier(for: "com.datesnap.plus.monthly") == .plus)
         #expect(SubscriptionCatalog.tier(for: "com.datesnap.plus.annual") == .plus)
         #expect(SubscriptionCatalog.tier(for: "com.datesnap.premium.monthly") == .premium)
@@ -77,8 +77,8 @@ struct SubscriptionEntitlementResolverTests {
     @Test("Active verified products resolve to the highest purchased tier")
     func activeProducts() {
         let result = SubscriptionEntitlementResolver.resolve([
-            record(.plusAnnual, expires: now.addingTimeInterval(60)),
-            record(.premiumMonthly, expires: now.addingTimeInterval(60)),
+            record("com.datesnap.plus.annual", expires: now.addingTimeInterval(60)),
+            record("com.datesnap.premium.monthly", expires: now.addingTimeInterval(60)),
         ], now: now, provenance: .testFixture)
 
         #expect(result.snapshot == .verified(.premium, at: now, provenance: .testFixture))
@@ -95,8 +95,8 @@ struct SubscriptionEntitlementResolverTests {
     @Test("Expired, revoked, and unknown products never grant access")
     func inactiveProducts() {
         let result = SubscriptionEntitlementResolver.resolve([
-            record(.premiumAnnual, expires: now),
-            record(.premiumMonthly, expires: now.addingTimeInterval(60), revoked: now),
+            record("com.datesnap.premium.annual", expires: now),
+            record("com.datesnap.premium.monthly", expires: now.addingTimeInterval(60), revoked: now),
             SubscriptionEntitlementRecord(
                 productID: "com.datesnap.premium.counterfeit",
                 expirationDate: now.addingTimeInterval(60),
@@ -106,16 +106,16 @@ struct SubscriptionEntitlementResolverTests {
         ], now: now, provenance: .testFixture)
 
         #expect(result.snapshot.tier == .starter)
-        #expect(result.snapshot.resolution == .verified)
+        #expect(result.snapshot.state == .verified)
         #expect(result.activeProductIDs.isEmpty)
     }
 
     @Test("Any failed transaction verification fails the snapshot closed")
     func verificationFailure() {
         let result = SubscriptionEntitlementResolver.resolve([
-            record(.premiumAnnual, expires: now.addingTimeInterval(60)),
+            record("com.datesnap.premium.annual", expires: now.addingTimeInterval(60)),
             SubscriptionEntitlementRecord(
-                productID: SubscriptionProduct.plusMonthly.rawValue,
+                productID: "com.datesnap.plus.monthly",
                 expirationDate: now.addingTimeInterval(60),
                 revocationDate: nil,
                 verification: .unverified
@@ -123,18 +123,18 @@ struct SubscriptionEntitlementResolverTests {
         ], now: now, provenance: .testFixture)
 
         #expect(result.snapshot.tier == .starter)
-        #expect(result.snapshot.resolution == .unverified)
+        #expect(result.snapshot.state == .unverified)
         #expect(result.activeProductIDs.isEmpty)
         #expect(result.verificationFailureCount == 1)
     }
 
     private func record(
-        _ product: SubscriptionProduct,
+        _ productID: String,
         expires: Date?,
         revoked: Date? = nil
     ) -> SubscriptionEntitlementRecord {
         SubscriptionEntitlementRecord(
-            productID: product.rawValue,
+            productID: productID,
             expirationDate: expires,
             revocationDate: revoked,
             verification: .verified

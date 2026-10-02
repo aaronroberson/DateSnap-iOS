@@ -1,33 +1,5 @@
 import Foundation
 
-public enum SubscriptionProduct: String, CaseIterable, Sendable {
-    case plusMonthly = "com.datesnap.plus.monthly"
-    case plusAnnual = "com.datesnap.plus.annual"
-    case premiumMonthly = "com.datesnap.premium.monthly"
-    case premiumAnnual = "com.datesnap.premium.annual"
-
-    public var tier: SubscriptionTier {
-        switch self {
-        case .plusMonthly, .plusAnnual:
-            return .plus
-        case .premiumMonthly, .premiumAnnual:
-            return .premium
-        }
-    }
-}
-
-public enum SubscriptionCatalog {
-    public static let productIdentifiers = Set(SubscriptionProduct.allCases.map(\.rawValue))
-
-    public static func product(for identifier: String) -> SubscriptionProduct? {
-        SubscriptionProduct(rawValue: identifier)
-    }
-
-    public static func tier(for identifier: String) -> SubscriptionTier? {
-        product(for: identifier)?.tier
-    }
-}
-
 public enum EntitlementRecordVerification: Sendable, Equatable {
     case verified
     case unverified
@@ -78,7 +50,7 @@ public enum SubscriptionEntitlementResolver {
             if let expirationDate = record.expirationDate, expirationDate <= now {
                 continue
             }
-            guard let product = SubscriptionCatalog.product(for: record.productID) else {
+            guard let product = SubscriptionCatalog.allProductIDs.first(where: { $0.rawValue == record.productID }) else {
                 continue
             }
 
@@ -92,7 +64,7 @@ public enum SubscriptionEntitlementResolver {
         return SubscriptionEntitlementResolution(
             snapshot: EntitlementSnapshot(
                 tier: verificationFailureCount == 0 ? highestTier : .starter,
-                resolution: state,
+                state: state,
                 evaluatedAt: now,
                 provenance: provenance
             ),
