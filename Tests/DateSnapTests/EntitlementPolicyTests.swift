@@ -3,14 +3,19 @@ import Testing
 @testable import DateSnap
 
 @Suite("Feature access policy")
+@MainActor
 struct FeatureAccessPolicyTests {
     @Test("Every feature follows its verified tier matrix")
     func exhaustiveTierMatrix() {
         for feature in PremiumFeature.allCases {
             for tier in SubscriptionTier.allCases {
-                let snapshot = EntitlementSnapshot.verified(tier, provenance: .testFixture)
+                let snapshot = EntitlementSnapshot.verified(tier, provenance: .storeKit)
                 let decision = FeatureAccessPolicy.decision(for: feature, snapshot: snapshot)
-                #expect(decision.isAllowed == tier.includes(feature))
+                if tier.includes(feature) {
+                    #expect(decision == .allowed)
+                } else {
+                    #expect(decision == .denied(.requiresTier(tier)))
+                }
             }
         }
     }
@@ -24,11 +29,20 @@ struct FeatureAccessPolicyTests {
         let snapshot = EntitlementSnapshot(
             tier: .premium,
             state: state,
-            provenance: .testFixture
+            provenance: .storeKit
         )
 
+        let expectedReason: FeatureAccessDenyReason
+        switch state {
+        case .checking: expectedReason = .checkingEntitlements
+        case .unverified: expectedReason = .unverified
+        case .unavailable: expectedReason = .unavailable
+        case .verified:
+            Issue.record("The test only covers unresolved states")
+            return
+        }
         for feature in PremiumFeature.allCases {
-            #expect(!FeatureAccessPolicy.decision(for: feature, snapshot: snapshot).isAllowed)
+            #expect(FeatureAccessPolicy.decision(for: feature, snapshot: snapshot) == .denied(expectedReason))
         }
     }
 
@@ -37,10 +51,10 @@ struct FeatureAccessPolicyTests {
         #expect(FeatureAccessPolicy.decision(
             for: .documentImport,
             snapshot: .checking()
-        ) == .denied(.entitlementChecking))
+        ) == .denied(.checkingEntitlements))
         #expect(FeatureAccessPolicy.decision(
             for: .documentImport,
-            snapshot: .verified(.plus, provenance: .testFixture)
+            snapshot: .verified(.plus, provenance: .storeKit)
         ) == .denied(.requiresTier(.premium)))
     }
 }
@@ -79,17 +93,17 @@ struct SubscriptionEntitlementResolverTests {
         let result = SubscriptionEntitlementResolver.resolve([
             record("com.datesnap.plus.annual", expires: now.addingTimeInterval(60)),
             record("com.datesnap.premium.monthly", expires: now.addingTimeInterval(60)),
-        ], now: now, provenance: .testFixture)
+        ], now: now, provenance: .storeKit)
 
-        #expect(result.snapshot == .verified(.premium, at: now, provenance: .testFixture))
+        #expect(result.snapshot == .verified(.premium, at: now, provenance: .storeKit))
         #expect(result.activeProductIDs.count == 2)
         #expect(result.verificationFailureCount == 0)
     }
 
     @Test("No purchases is a verified Starter result, not a loading state")
     func noPurchases() {
-        let result = SubscriptionEntitlementResolver.resolve([], now: now, provenance: .testFixture)
-        #expect(result.snapshot == .verified(.starter, at: now, provenance: .testFixture))
+        let result = SubscriptionEntitlementResolver.resolve([], now: now, provenance: .storeKit)
+        #expect(result.snapshot == .verified(.starter, at: now, provenance: .storeKit))
     }
 
     @Test("Expired, revoked, and unknown products never grant access")
@@ -103,7 +117,7 @@ struct SubscriptionEntitlementResolverTests {
                 revocationDate: nil,
                 verification: .verified
             ),
-        ], now: now, provenance: .testFixture)
+        ], now: now, provenance: .storeKit)
 
         #expect(result.snapshot.tier == .starter)
         #expect(result.snapshot.state == .verified)
@@ -120,7 +134,7 @@ struct SubscriptionEntitlementResolverTests {
                 revocationDate: nil,
                 verification: .unverified
             ),
-        ], now: now, provenance: .testFixture)
+        ], now: now, provenance: .storeKit)
 
         #expect(result.snapshot.tier == .starter)
         #expect(result.snapshot.state == .unverified)
