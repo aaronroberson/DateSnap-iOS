@@ -111,9 +111,9 @@ struct MockDataCleanupTests {
         let container = try modelContainer()
         let candidate = EventCandidate(
             title: "Reminder failure",
-            startDate: Date().addingTimeInterval(86_400),
-            rsvpDeadline: Date().addingTimeInterval(3_600)
+            startDate: Date().addingTimeInterval(86_400)
         )
+        candidate.rsvpDeadline = Date().addingTimeInterval(3_600)
         let review = EventReviewViewModel(
             candidate: candidate,
             services: services(
@@ -261,7 +261,7 @@ private final class TestCalendarService: CalendarServiceProtocol, @unchecked Sen
     }
 
     func requestEventAccess() async throws -> Bool { true }
-    func authorizationStatus() -> EKAuthorizationStatus { .authorized }
+    func authorizationStatus() -> EKAuthorizationStatus { .fullAccess }
     func fetchWritableCalendars() -> [EKCalendar] { [] }
     func defaultCalendar() -> EKCalendar? { nil }
     func createEvent(candidate: EventCandidate, calendar: EKCalendar?, alarms: [TimeInterval]) async throws -> String {
@@ -289,7 +289,7 @@ private final class TestReminderService: ReminderServiceProtocol, @unchecked Sen
     }
 
     func requestReminderAccess() async throws -> Bool { true }
-    func authorizationStatus() -> EKAuthorizationStatus { .authorized }
+    func authorizationStatus() -> EKAuthorizationStatus { .fullAccess }
     func fetchReminderLists() -> [EKCalendar] { [] }
     func defaultReminderList() -> EKCalendar? { nil }
     func createReminder(candidate: EventCandidate, list: EKCalendar?, offsets: [ReminderOffset]) async throws -> String {
