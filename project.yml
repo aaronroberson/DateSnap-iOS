@@ -8,9 +8,6 @@ options:
 configs:
   Debug: debug
   Release: release
-configFiles:
-  Debug: Config/DateSnap-Debug.xcconfig
-  Release: Config/DateSnap-Release.xcconfig
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -26,6 +23,9 @@ targets:
     resources:
       - path: Assets.xcassets
       - path: PrivacyInfo.xcprivacy
+    configFiles:
+      Debug: Config/DateSnap-Debug.xcconfig
+      Release: Config/DateSnap-Release.xcconfig
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.datesnap.app
@@ -50,4 +50,3 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.datesnap.app.tests
         GENERATE_INFOPLIST_FILE: YES
-
