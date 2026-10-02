@@ -2,14 +2,15 @@ import SwiftUI
 import SwiftData
 
 /// Edits up to three alert offsets for an event. `onSave` applies them (to the review form, or to a saved event's
-/// Calendar alarms, reminder and local notifications) and returns whether it succeeded.
+/// Calendar alarms, reminder and local notifications) and returns a typed result.
 struct ReminderScheduleEditorView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var appState: AppState
     
     let title: String
     let eventStart: Date
     let isAllDay: Bool
-    let onSave: @MainActor ([ReminderOffset]) async -> Bool
+    let onSave: @MainActor ([ReminderOffset]) async -> MutationResult
     
     @State private var selectedPreset: ReminderPreset
     @State private var offsets: [ReminderOffset]
@@ -21,7 +22,7 @@ struct ReminderScheduleEditorView: View {
         eventStart: Date,
         isAllDay: Bool,
         initialOffsets: [ReminderOffset],
-        onSave: @escaping @MainActor ([ReminderOffset]) async -> Bool
+        onSave: @escaping @MainActor ([ReminderOffset]) async -> MutationResult
     ) {
         self.title = title
         self.eventStart = eventStart
@@ -304,12 +305,19 @@ struct ReminderScheduleEditorView: View {
                         isSyncing = true
                         Task {
                             let sorted = offsets.sorted { $0.timeInterval < $1.timeInterval }
-                            let succeeded = await onSave(sorted)
+                            let result = await onSave(sorted)
                             isSyncing = false
-                            guard succeeded else { return }
-                            syncCompleted = true
-                            try? await Task.sleep(for: .milliseconds(600))
-                            dismiss()
+                            switch result {
+                            case .success:
+                                appState.showToast("Reminder settings updated")
+                                syncCompleted = true
+                                try? await Task.sleep(for: .milliseconds(600))
+                                dismiss()
+                            case .partial(let issues):
+                                appState.showToast("Reminder schedule updated with issues: \(issues.joined(separator: "; "))")
+                            case .failure(let error):
+                                appState.showToast("Couldn't update reminder schedule: \(error.localizedDescription)")
+                            }
                         }
                     } label: {
                         HStack(spacing: 8) {
@@ -460,17 +468,7 @@ struct SavedEventScheduleEditor: View {
             ) { offsets in
                 do {
                     let actions = SavedEventActions(services: services, modelContext: modelContext)
-                    let notified = try await actions.rescheduleAlerts(for: saved, offsets: offsets)
-                    appState.showToast(notified || offsets.isEmpty
-                        ? "✓ Reminder schedule updated (\(offsets.count) alert\(offsets.count == 1 ? "" : "s"))"
-                        : "Calendar updated — local alerts are off in iOS Settings")
-                    return true
-                } catch DateSnapError.calendar(.accessDenied) {
-                    await appState.present(.calendarPermissionDenied)
-                    return false
-                } catch {
-                    appState.showToast(error.localizedDescription)
-                    return false
+                    return await actions.rescheduleAlerts(for: saved, offsets: offsets)
                 }
             }
         } else {

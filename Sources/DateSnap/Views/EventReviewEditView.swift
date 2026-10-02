@@ -120,7 +120,7 @@ struct EventReviewForm: View {
                     initialOffsets: viewModel.selectedOffsets
                 ) { offsets in
                     viewModel.selectedOffsets = offsets
-                    return true
+                    return .success
                 }
             }
             .alert("Couldn't Save Event", isPresented: Binding(
@@ -133,9 +133,15 @@ struct EventReviewForm: View {
             }
             .confirmationDialog("Discard this event?", isPresented: $showDiscardConfirm, titleVisibility: .visible) {
                 Button("Discard", role: .destructive) {
-                    viewModel.discard(modelContext: modelContext)
-                    appState.showToast("Event discarded")
-                    dismiss()
+                    switch viewModel.discard(modelContext: modelContext) {
+                    case .success:
+                        appState.showToast("Event discarded")
+                        dismiss()
+                    case .partial(let issues):
+                        appState.showToast("Event discard was incomplete: \(issues.joined(separator: "; "))")
+                    case .failure:
+                        break // The view model exposes the failure through its alert.
+                    }
                 }
             } message: {
                 Text("It will be removed from your review queue. Nothing was added to your calendar.")
@@ -789,9 +795,15 @@ struct EventReviewForm: View {
             if !viewModel.isEditingSavedEvent {
                 HStack(spacing: 12) {
                     Button {
-                        viewModel.saveDraft(modelContext: modelContext)
-                        appState.showToast("Draft saved to Review Queue")
-                        dismiss()
+                        switch viewModel.saveDraft(modelContext: modelContext) {
+                        case .success:
+                            appState.showToast("Draft saved to Review Queue")
+                            dismiss()
+                        case .partial(let issues):
+                            appState.showToast("Draft saved with issues: \(issues.joined(separator: "; "))")
+                        case .failure:
+                            break // The view model exposes the failure through its alert.
+                        }
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "bookmark")
@@ -843,20 +855,22 @@ struct EventReviewForm: View {
 
     private func save() async {
         let wasUpdate = viewModel.isEditingSavedEvent
-        let saved = await viewModel.commitEvent(modelContext: modelContext)
-        guard saved else {
+        let result = await viewModel.commitEvent(modelContext: modelContext)
+        switch result {
+        case .failure:
             if viewModel.calendarAccessDenied {
                 await appState.present(.calendarPermissionDenied)
             }
             return
+        case .partial:
+            // Keep the review visible so the surfaced alert explains which reminder action failed.
+            return
+        case .success:
+            break
         }
         withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { showSuccessToast = true }
         try? await Task.sleep(for: .seconds(1.1))
-        if viewModel.notificationsSkipped {
-            appState.showToast("Saved — local alerts are off in iOS Settings")
-        } else {
-            appState.showToast(wasUpdate ? "✓ Calendar event updated" : "✓ Event saved to Calendar & Reminders")
-        }
+        appState.showToast(wasUpdate ? "✓ Calendar event updated" : "✓ Event saved to Calendar & Reminders")
         await appState.present(.savedEventDetail(viewModel.candidate.toDateSnapEvent()))
     }
 

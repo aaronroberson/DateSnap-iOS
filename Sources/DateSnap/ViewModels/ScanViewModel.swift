@@ -202,10 +202,18 @@ public final class ScanViewModel: ObservableObject {
             var newCandidates: [EventCandidate] = []
             for candidate in rawCandidates {
                 let key = candidate.dedupeKey
-                let existing: EventCandidate? = key.isEmpty ? nil : {
+                let existing: EventCandidate?
+                if key.isEmpty {
+                    existing = nil
+                } else {
                     let descriptor = FetchDescriptor<EventCandidate>(predicate: #Predicate { $0.dedupeKey == key })
-                    return (try? context.fetch(descriptor))?.first
-                }()
+                    do {
+                        existing = try context.fetch(descriptor).first
+                    } catch {
+                        stage = .failed("Couldn't check saved events: \(error.localizedDescription)")
+                        return
+                    }
+                }
 
                 if let existing {
                     if existing.savedEvent == nil {
@@ -241,7 +249,15 @@ public final class ScanViewModel: ObservableObject {
                         candidate.interpretation = record
                     }
                 }
-                try? context.save()
+                do {
+                    try context.save()
+                } catch {
+                    context.rollback()
+                    extractedCandidates = []
+                    understandingByCandidateID = [:]
+                    stage = .failed("Couldn't save scan results: \(error.localizedDescription)")
+                    return
+                }
             }
             validCandidates += newCandidates
         } else {

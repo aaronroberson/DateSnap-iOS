@@ -339,7 +339,12 @@ struct NoDatesFoundView: View {
             confidenceTierRaw: ConfidenceTier.low.rawValue
         )
         modelContext.insert(candidate)
-        try? modelContext.save()
+        let result = MutationResult.perform { try modelContext.save() }
+        guard case .success = result else {
+            modelContext.rollback()
+            appState.showToast("Couldn't create a review draft: \(result.issueMessage ?? "local storage is unavailable")")
+            return
+        }
         appState.rememberSourceImage(appState.lastScanImage, for: [candidate])
         Task { await appState.present(.eventReviewEdit(candidate.toDateSnapEvent())) }
     }

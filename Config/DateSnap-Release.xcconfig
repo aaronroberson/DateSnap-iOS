@@ -9,6 +9,3 @@ SWIFT_COMPILATION_MODE = wholemodule
 VALIDATE_PRODUCT = YES
 
 CODE_SIGN_STYLE = Automatic
-// Release automation must pass DEVELOPMENT_TEAM from the authorized Apple account.
-DEVELOPMENT_TEAM =
-PROVISIONING_PROFILE_SPECIFIER = 
