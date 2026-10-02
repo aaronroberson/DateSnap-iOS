@@ -9,14 +9,14 @@ Provide this exact information in App Store Connect under **App Review Informati
 ```text
 Dear Apple App Review Team,
 
-DateSnap is a privacy-first utility that processes screenshots and event flyers 100% on-device using Apple's Vision and NaturalLanguage frameworks to create Apple Calendar events and Reminders.
+DateSnap is a privacy-first utility that processes screenshots and event flyers on-device using Apple's Vision and NaturalLanguage frameworks to create Apple Calendar events and Reminders.
 
 1. PERMISSIONS RATIONALE:
-- Photo Library (Read): Used exclusively to let users select event flyers or detect screenshots in their Screenshots album. All Vision OCR and text extraction runs locally on the Neural Engine. Zero images, OCR strings, or metadata leave the device.
+- Photo Library (Read): Used exclusively to let users select event flyers or detect screenshots in their Screenshots album. Vision OCR and text extraction run locally. DateSnap does not upload images, OCR strings, or photo metadata.
 - Calendars & Reminders (Full Access): Used exclusively to write and sync the extracted events and staggered alert reminders into the user's native Apple Calendar and Reminders apps upon explicit user confirmation.
 
 2. ON-DEVICE PRIVACY VERIFICATION:
-DateSnap operates with an air-gapped architecture. You can test all features—including flyer analysis, date inference, and calendar creation—with Airplane Mode enabled (Wi-Fi and Cellular data turned off).
+The core flyer analysis, date inference, Calendar, and Reminders workflow can be tested with Airplane Mode enabled. StoreKit purchases and user-initiated links to policies, Apple Maps, or event websites require the corresponding Apple or web service.
 
 3. DEMO ASSETS & WALKTHROUGH:
 - To test the extraction engine immediately without granting camera roll access, tap "Try Sample Flyer" on the Home tab.

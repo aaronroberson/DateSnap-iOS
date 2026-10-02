@@ -12,7 +12,7 @@ This checklist outlines the manual and automated validation procedures for TestF
   - Select "Scan Recent Screenshots" or "Choose from Photo Library".
   - Verify native system modal displays custom description: *"DateSnap analyzes screenshots and event flyers directly on your iPhone..."*.
   - Test "Limited Access": Select 2 screenshots. Confirm app processes only selected assets without crashing.
-  - Test "Deny Access": Confirm app redirects cleanly to `CalendarPermissionDeniedView` or custom in-app guidance without freezing.
+  - Test "Deny Access": Confirm the app shows the **Allow Photo Access** guidance, offers **Open Settings**, and still allows **Choose a Photo Instead** through the system picker without freezing.
 - [ ] **Apple Calendar Authorization:**
   - Save an extracted candidate to Calendar.
   - Verify system modal requests full access with custom description: *"DateSnap requires full calendar access to schedule extracted events..."*.
@@ -40,10 +40,10 @@ This checklist outlines the manual and automated validation procedures for TestF
 - [ ] **Restore Purchases:** Reinstall app or launch on secondary sandbox device. Tap "Restore" and confirm active subscription is detected via `Transaction.currentEntitlements`.
 - [ ] **Cancellation / Expiration:** In App Store Sandbox settings, accelerate subscription renewal to trigger expiration. Confirm app gracefully downgrades to `Starter` tier.
 
-### 4. Zero-Cloud & Offline Assurance
+### 4. On-Device Processing & Offline Assurance
 - [ ] **Airplane Mode Scan:** Enable Airplane Mode (Wi-Fi and Cellular OFF).
 - [ ] Perform full workflow: Screenshot OCR -> Date Extraction -> Calendar Sync -> Reminder Creation.
-- [ ] Confirm 100% functionality with zero network connectivity.
+- [ ] Confirm the core scan, extraction, Calendar, and Reminders workflow succeeds without network connectivity. User-opened web/Maps links and StoreKit storefront operations are out of scope for this offline assertion.
 
 ---
 
@@ -53,4 +53,16 @@ A build qualifies for App Store submission **ONLY IF**:
 1. All Critical and High test cases pass on physical iPhone hardware running iOS 18.
 2. Crash-free user sessions reach 100% in internal TestFlight testing.
 3. No memory leaks detected in Instruments during repeated Vision OCR cycles.
-4. Zero network requests confirmed via Charles Proxy / Proxyman / Instruments.
+4. No app-originated telemetry or product-data upload is observed via Instruments or a configured proxy. Record StoreKit/App Store system traffic and user-initiated web/Maps links separately rather than treating them as product-data uploads.
+
+## Evidence Record
+
+Record the exact candidate for every QA pass:
+
+- Git SHA:
+- Marketing version / build:
+- TestFlight build ID:
+- Device model / OS:
+- Tester / date:
+- Automated-test result bundle:
+- Defects or accepted exceptions:

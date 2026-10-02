@@ -7,7 +7,7 @@ This runbook outlines the step-by-step procedures for building, archiving, valid
 ## 1. Prerequisites & Environment Setup
 
 1. **Apple Developer Account:** Active Apple Developer Program enrollment with App Manager or Admin role.
-2. **Xcode Toolchain:** Xcode 16.0+ running Swift 6.4 on macOS Sequoia (15.0+) or newer.
+2. **Xcode Toolchain:** Xcode 27 with Apple Swift 6.4. Record the exact versions with `xcodebuild -version` and `xcrun swift --version` in the release evidence.
 3. **App Store Connect API Key:** (Optional for CI/CD) An App Store Connect API Key with Admin or App Manager access (`AuthKey_XXXXXXXXXX.p8`).
 4. **Hardware Testing Devices:** Physical iPhone running iOS 18.0+ for verifying Camera Roll, EventKit, and StoreKit Sandbox flows.
 
@@ -29,7 +29,7 @@ This runbook outlines the step-by-step procedures for building, archiving, valid
 
 Before archiving:
 - [ ] Run test suite: Ensure all unit and inference tests pass.
-- [ ] Verify zero network calls: Audit codebase to guarantee zero remote telemetry or tracking.
+- [ ] Verify no app-originated telemetry or product-data uploads. Scope traffic inspection to exclude user-initiated web links, Apple Maps links, and StoreKit/App Store system traffic.
 - [ ] Verify Privacy Manifest: Check `PrivacyInfo.xcprivacy` presence in the bundle resources.
 - [ ] Check Info.plist permissions: Ensure usage strings for Photos, Calendar, and Reminders are present.
 - [ ] Verify StoreKit 2 wiring: Confirm paywalls are invoking `SubscriptionService` and not simulation timers.
@@ -39,6 +39,13 @@ Before archiving:
 ## 4. Archive, Export & Upload Commands
 
 ### Step A: Clean & Archive
+Set the authorized Apple Developer Team ID in the shell without committing it:
+
+```bash
+export DATESNAP_DEVELOPMENT_TEAM="<10-character Team ID>"
+test -n "$DATESNAP_DEVELOPMENT_TEAM"
+```
+
 ```bash
 xcodebuild clean archive \
   -project DateSnap.xcodeproj \
@@ -46,7 +53,7 @@ xcodebuild clean archive \
   -configuration Release \
   -destination "generic/platform=iOS" \
   -archivePath "./build/DateSnap.xcarchive" \
-  DEVELOPMENT_TEAM="YOUR_TEAM_ID" \
+  DEVELOPMENT_TEAM="$DATESNAP_DEVELOPMENT_TEAM" \
   CODE_SIGN_STYLE="Automatic"
 ```
 
@@ -59,20 +66,26 @@ xcodebuild -exportArchive \
 ```
 
 ### Step C: Upload to App Store Connect
-Upload the generated `.ipa` using `xcrun altool`:
+
+The preferred interactive workflow is Xcode Organizer: select the archive, choose **Distribute App**, then **App Store Connect → Upload**. This keeps signing and validation feedback visible without putting credentials in shell history.
+
+For automation, Xcode 27 includes `altool`. Confirm it is available with `xcrun altool --help`, then use App Store Connect API-key credentials supplied through the release environment:
+
 ```bash
 xcrun altool --upload-app \
   -f "./build/Exported/DateSnap.ipa" \
   -t ios \
-  --apiKey "YOUR_API_KEY_ID" \
-  --apiIssuer "YOUR_ISSUER_UUID"
+  --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+  --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
 ```
-Or authenticate with an App-Specific Password:
+
+Do not commit the `.p8` private key or API credentials. For a manual fallback, use an app-specific password stored in Keychain:
+
 ```bash
 xcrun altool --upload-app \
   -f "./build/Exported/DateSnap.ipa" \
   -t ios \
-  -u "developer@yourcompany.com" \
+  -u "$APPLE_ID" \
   -p "@keychain:ALTOOL_APP_SPECIFIC_PASSWORD"
 ```
 
