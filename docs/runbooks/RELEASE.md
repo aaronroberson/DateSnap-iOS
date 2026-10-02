@@ -29,6 +29,7 @@ This runbook outlines the step-by-step procedures for building, archiving, valid
 
 Before archiving:
 - [ ] Run test suite: Ensure all unit and inference tests pass.
+- [ ] Run the production-source leakage gate: `scripts/verify-release-content.sh`.
 - [ ] Verify no app-originated telemetry or product-data uploads. Scope traffic inspection to exclude user-initiated web links, Apple Maps links, and StoreKit/App Store system traffic.
 - [ ] Verify Privacy Manifest: Check `PrivacyInfo.xcprivacy` presence in the bundle resources.
 - [ ] Check Info.plist permissions: Ensure usage strings for Photos, Calendar, and Reminders are present.
@@ -55,6 +56,13 @@ xcodebuild clean archive \
   -archivePath "./build/DateSnap.xcarchive" \
   DEVELOPMENT_TEAM="$DATESNAP_DEVELOPMENT_TEAM" \
   CODE_SIGN_STYLE="Automatic"
+```
+
+Before export, scan the archived Release application. This is a blocking check: do not distribute an archive containing mock service symbols, mock identifiers, Stitch metadata, or the Debug simulation/gallery UI.
+
+```bash
+scripts/verify-release-content.sh \
+  "./build/DateSnap.xcarchive/Products/Applications/DateSnap.app"
 ```
 
 ### Step B: Validate & Export IPA
