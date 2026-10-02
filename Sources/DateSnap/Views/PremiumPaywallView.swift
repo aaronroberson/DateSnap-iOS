@@ -167,15 +167,17 @@ struct PremiumPaywallView: View {
                                             .font(DSTypography.bodyStrong())
                                             .foregroundStyle(Color.dsForeground)
                                         
-                                        Text(savingsText)
-                                            .font(DSTypography.overlineConfidence())
-                                            .foregroundStyle(Color.dsPrimaryForeground)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 2)
-                                            .background(Capsule().fill(Color.dsPrimary))
+                                        if let savingsText {
+                                            Text(savingsText)
+                                                .font(DSTypography.overlineConfidence())
+                                                .foregroundStyle(Color.dsPrimaryForeground)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(Capsule().fill(Color.dsPrimary))
+                                        }
                                     }
                                     
-                                    Text("\(purchases.displayPrice(.premium, annual: true, fallback: "$69.99")) billed annually\(purchases.trialDescription(.premium, annual: true).map { " (includes \($0) free trial)" } ?? "")")
+                                    Text(planPriceDescription(.premium, annual: true))
                                         .font(DSTypography.caption())
                                         .foregroundStyle(Color.dsMutedForeground)
                                 }
@@ -183,12 +185,14 @@ struct PremiumPaywallView: View {
                                 Spacer()
                                 
                                 VStack(alignment: .trailing, spacing: 2) {
-                                    Text(purchases.monthlyEquivalent(.premium, fallback: "$5.83"))
+                                    Text(priceAmount(.premium, annual: true))
                                         .font(DSTypography.headlineCard())
                                         .foregroundStyle(Color.dsForeground)
-                                    Text("/ month")
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsMutedForeground)
+                                    if purchases.monthlyEquivalent(.premium) != nil {
+                                        Text("/ month")
+                                            .font(DSTypography.caption())
+                                            .foregroundStyle(Color.dsMutedForeground)
+                                    }
                                 }
                                 
                                 Image(systemName: selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
@@ -215,7 +219,7 @@ struct PremiumPaywallView: View {
                                         .font(DSTypography.bodyStrong())
                                         .foregroundStyle(Color.dsForeground)
                                     
-                                    Text("\(purchases.displayPrice(.premium, annual: false, fallback: "$8.99")) billed monthly, cancel anytime")
+                                    Text(planPriceDescription(.premium, annual: false))
                                         .font(DSTypography.caption())
                                         .foregroundStyle(Color.dsMutedForeground)
                                 }
@@ -223,12 +227,14 @@ struct PremiumPaywallView: View {
                                 Spacer()
                                 
                                 VStack(alignment: .trailing, spacing: 2) {
-                                    Text(purchases.displayPrice(.premium, annual: false, fallback: "$8.99"))
+                                    Text(priceAmount(.premium, annual: false))
                                         .font(DSTypography.headlineCard())
                                         .foregroundStyle(Color.dsForeground)
-                                    Text("/ month")
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsMutedForeground)
+                                    if purchases.displayPrice(.premium, annual: false) != nil {
+                                        Text("/ month")
+                                            .font(DSTypography.caption())
+                                            .foregroundStyle(Color.dsMutedForeground)
+                                    }
                                 }
                                 
                                 Image(systemName: !selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
@@ -262,7 +268,7 @@ struct PremiumPaywallView: View {
                         }
                     }
                     .buttonStyle(DSPrimaryButtonStyle())
-                    .disabled(purchases.isPurchasing || purchases.isLoadingProducts || appState.isPremiumMember)
+                    .disabled(!purchases.canPurchase(.premium, annual: selectedPlanIsAnnual) || appState.isPremiumMember)
                     .padding(.horizontal)
                     
                     // Reassurance & Terms
@@ -271,7 +277,7 @@ struct PremiumPaywallView: View {
                             Image(systemName: "checkmark.shield.fill")
                                 .font(.system(size: 13))
                                 .foregroundStyle(Color.dsSuccess)
-                            Text("Renews at \(purchases.displayPrice(.premium, annual: selectedPlanIsAnnual, fallback: selectedPlanIsAnnual ? "$69.99" : "$8.99"))/\(selectedPlanIsAnnual ? "yr" : "mo") until cancelled. Cancel anytime in Settings › Apple ID › Subscriptions.")
+                            Text(renewalText)
                                 .font(DSTypography.caption())
                                 .foregroundStyle(Color.dsMutedForeground)
                         }
@@ -311,15 +317,41 @@ struct PremiumPaywallView: View {
 
     private var ctaTitle: String {
         if appState.isPremiumMember { return "Premium Is Active" }
+        guard let price = purchases.displayPrice(.premium, annual: selectedPlanIsAnnual) else {
+            return priceUnavailableText
+        }
         if let trial = purchases.trialDescription(.premium, annual: selectedPlanIsAnnual) {
             return "Start \(trial.capitalized) Free Trial"
         }
-        return appState.isPlusMember ? "Upgrade to Premium" : "Subscribe for \(purchases.displayPrice(.premium, annual: selectedPlanIsAnnual, fallback: selectedPlanIsAnnual ? "$69.99" : "$8.99"))"
+        return appState.isPlusMember ? "Upgrade to Premium" : "Subscribe for \(price)"
     }
 
-    private var savingsText: String {
+    private var priceUnavailableText: String {
+        purchases.isLoadingProducts ? "Loading price…" : "Price unavailable"
+    }
+
+    private var renewalText: String {
+        guard let price = purchases.displayPrice(.premium, annual: selectedPlanIsAnnual) else {
+            return priceUnavailableText
+        }
+        return "Renews at \(price)/\(selectedPlanIsAnnual ? "yr" : "mo") until cancelled. Cancel anytime in Settings › Apple ID › Subscriptions."
+    }
+
+    private func priceAmount(_ plan: PurchaseViewModel.Plan, annual: Bool) -> String {
+        let price = annual ? purchases.monthlyEquivalent(plan) : purchases.displayPrice(plan, annual: false)
+        return price ?? priceUnavailableText
+    }
+
+    private func planPriceDescription(_ plan: PurchaseViewModel.Plan, annual: Bool) -> String {
+        guard let price = purchases.displayPrice(plan, annual: annual) else { return priceUnavailableText }
+        let billing = annual ? "billed annually" : "billed monthly, cancel anytime"
+        let trial = purchases.trialDescription(plan, annual: annual).map { " (includes \($0) free trial)" } ?? ""
+        return "\(price) \(billing)\(trial)"
+    }
+
+    private var savingsText: String? {
         guard let monthly = purchases.product(.premium, annual: false), let annual = purchases.product(.premium, annual: true),
-              monthly.price > 0 else { return "BEST VALUE" }
+              monthly.price > 0 else { return nil }
         let yearlyAtMonthly = monthly.price * 12
         let saving = (yearlyAtMonthly - annual.price) / yearlyAtMonthly * 100
         return "SAVE \(NSDecimalNumber(decimal: saving).intValue)%"
