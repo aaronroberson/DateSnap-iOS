@@ -343,6 +343,100 @@ private final class OfflineSubscriptionService: SubscriptionServiceProtocol {
     func updateCustomerProductStatus() async {}
 }
 
+// MARK: - Handoff item 1: rescue-commit regressions with no current-tree equivalent
+// (port cross-check rescue 816101d -> codex sweep; see docs/HANDOFF.md open loop 1)
+
+@Suite("Rescue regression restoration")
+@MainActor
+struct RescueRegressionRestorationTests {
+    private func modelContainer() throws -> ModelContainer {
+        try ModelContainer(
+            for: UserSettings.self, ScannedAsset.self, EventCandidate.self, SavedEvent.self, InterpretationRecord.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+    }
+
+    private func services() -> ServiceContainer {
+        ServiceContainer(
+            photoLibrary: TestPhotoLibrary(),
+            ocr: OCRService(),
+            eventExtraction: EventExtractionService(),
+            calendar: TestCalendarService(),
+            reminders: TestReminderService(),
+            notifications: TestNotificationService(),
+            subscription: OfflineSubscriptionService(),
+            understanding: EventUnderstandingPipeline.rulesOnly()
+        )
+    }
+
+    private func candidate() -> EventCandidate {
+        EventCandidate(title: "Local Event", startDate: Date().addingTimeInterval(86_400 * 21))
+    }
+
+    @Test("Event review draft/discard/commit storage failures are surfaced")
+    func eventReviewStorageFailuresAreTyped() async throws {
+        let container = try modelContainer()
+
+        let draft = EventReviewViewModel(candidate: candidate(), services: services())
+        let draftFailure = draft.saveDraft(modelContext: container.mainContext) {
+            throw InjectedServiceFailure.persistence
+        }
+        guard case .failure = draftFailure else {
+            Issue.record("Draft persistence failure must not report completion")
+            return
+        }
+        #expect(draft.errorMessage?.contains("Injected SwiftData failure") == true)
+
+        let discard = EventReviewViewModel(candidate: candidate(), services: services())
+        let discardFailure = discard.discard(modelContext: container.mainContext) {
+            throw InjectedServiceFailure.persistence
+        }
+        guard case .failure = discardFailure else {
+            Issue.record("Discard persistence failure must not report completion")
+            return
+        }
+        #expect(discard.errorMessage?.contains("Injected SwiftData failure") == true)
+
+        let commit = EventReviewViewModel(candidate: candidate(), services: services())
+        let commitFailure = await commit.commitEvent(modelContext: container.mainContext) {
+            throw InjectedServiceFailure.persistence
+        }
+        guard case .failure = commitFailure else {
+            Issue.record("Commit persistence failure must not report completion")
+            return
+        }
+        #expect(commit.errorMessage?.contains("could not save the event") == true)
+        #expect(!commit.isSavedSuccessfully)
+    }
+
+    @Test("SwiftData delete failures return failure and retain the saved record")
+    func deleteFailingSaveReturnsFailureAndRetainsData() throws {
+        let container = try modelContainer()
+        let context = container.mainContext
+        let event = candidate()
+        let saved = SavedEvent(candidate: event)
+        context.insert(event)
+        context.insert(saved)
+        try context.save()
+
+        let actions = SavedEventActions(
+            services: services(),
+            modelContext: context,
+            saveOperation: { throw InjectedServiceFailure.persistence }
+        )
+
+        let result = actions.delete(saved, removeFromCalendar: false)
+        guard case .failure(let failure) = result else {
+            Issue.record("Delete with a failing save must fail, not report success.")
+            return
+        }
+        #expect(failure.message.contains("Could not save the event changes:"))
+
+        let stillThere = try context.fetch(FetchDescriptor<SavedEvent>()).contains { $0.id == saved.id }
+        #expect(stillThere)
+    }
+}
+
 // MARK: - Gen A denial tests (restored from rescue commit 816101d, adapted to current API)
 
 @Suite("Gen A denial restoration")
