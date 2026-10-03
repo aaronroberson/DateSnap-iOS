@@ -9,3 +9,6 @@ DerivedData/
 .zcode/
 .freebuff/
 lancedb/
+
+# Graphify knowledge-graph generated output (regenerable; never source)
+graphify-out/
