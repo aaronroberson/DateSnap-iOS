@@ -167,13 +167,12 @@ struct SavedEventActions {
             try save()
             return issues.isEmpty ? .success : .partial(issues)
         } catch {
-            if let candidate = saved.candidate {
-                modelContext.insert(candidate)
-                modelContext.insert(saved)
-                candidate.savedEvent = saved
-            } else {
-                modelContext.insert(saved)
-            }
+            // Nothing in this method was committed: the save is the first and only
+            // persistence point, so rolling back restores the record, its external
+            // identifiers, and its notification ids exactly as they were before the
+            // attempted deletion. (Re-inserting a deleted model does not reliably
+            // resurrect it in SwiftData.)
+            modelContext.rollback()
             return .failure(MutationFailure(message: "Could not save the event changes: \(error.localizedDescription)"))
         }
     }
