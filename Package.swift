@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "DateSnap",
     platforms: [
-        .iOS(.v18),
+        .iOS(.v17),
     ],
     targets: [
         .executableTarget(
