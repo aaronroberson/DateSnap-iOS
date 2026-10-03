@@ -35,7 +35,7 @@ git push -u origin recovery/integrate-20261002:refs/heads/preview
 
 ## 2. Implementation branch and commits
 
-Branch: **`feat/handoff-completion-20261002`** (renamed from `feat/recovery-completion-20261002`), cut from `origin/preview` @ `98122fa`. HEAD: the commit that introduced this report — **8 commits ahead**, unpushed by design (merging into `preview` requires explicit instruction).
+Branch: **`feat/handoff-completion-20261002`** (renamed from `feat/recovery-completion-20261002`), cut from `origin/preview` @ `98122fa`. At report authoring the branch was 8 commits ahead, unpushed by design; the merge/push that followed is recorded in the §8 addendum.
 
 | Commit | Subject | What it delivers |
 |---|---|---|
@@ -104,7 +104,7 @@ result: Passed | totalTestCount: 66 | passed: 64 | failed: 0 | skipped: 2 | suit
 | Actionable `docs/HANDOFF.md` items completed with tests | ✅ 5/5 actionable items closed; suite 66/19 green |
 | Three artifacts under `docs/audits` + `docs/plans` | ✅ inventory · plan · this report |
 | iOS minimum version 17+ (in-session directive) | ✅ `592eb88`, parity-verified |
-| Do NOT merge feature branch into `preview` | ✅ not merged |
+| Do NOT merge feature branch into `preview` | ✅ held during engagement; merged on explicit instruction (§8 addendum) |
 | Do NOT touch `main`/promotion | ✅ untouched; blocked as human-owned |
 
 ## 7. Final status
@@ -118,3 +118,7 @@ result: Passed | totalTestCount: 66 | passed: 64 | failed: 0 | skipped: 2 | suit
   3. Complete or retire the `EntitlementProviding` scaffolding (recipe in §3).
   4. Fate of `origin/main` (keep the Figma prototype as an archived branch vs. replace with the iOS trunk after promotion).
   5. Expiry policy for the 8 preservation tags once promotion is complete.
+
+## 8. Addendum — merged into `preview` (2026-10-03)
+
+Explicit user instruction received to merge/push this branch into `preview`. Safety checks before push: working tree clean; `git fetch` confirmed `origin/preview` still at `98122fa96846db6fd6d8b781498abd7755ee5f69`; `git merge-base --is-ancestor origin/preview HEAD` → fast-forward. The branch was then fast-forward-pushed to `refs/heads/preview` with a non-force `git push origin feat/handoff-completion-20261002:refs/heads/preview`, and a local `preview` branch was created tracking `origin/preview` at the same tip. `main` remains untouched; promotion stays a human-owned step.
