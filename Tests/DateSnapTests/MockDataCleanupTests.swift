@@ -342,3 +342,67 @@ private final class OfflineSubscriptionService: SubscriptionServiceProtocol {
     func restorePurchases() async throws -> SubscriptionTier { .starter }
     func updateCustomerProductStatus() async {}
 }
+
+// MARK: - Gen A denial tests (restored from rescue commit 816101d, adapted to current API)
+
+@Suite("Gen A denial restoration")
+@MainActor
+struct GenADenialRestorationTests {
+    private func modelContainer() throws -> ModelContainer {
+        try ModelContainer(
+            for: UserSettings.self, ScannedAsset.self, EventCandidate.self, SavedEvent.self, InterpretationRecord.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+    }
+
+    private func services(
+        photo: TestPhotoLibrary = TestPhotoLibrary(),
+        calendar: TestCalendarService = TestCalendarService(),
+        reminders: TestReminderService = TestReminderService(),
+        notifications: TestNotificationService = TestNotificationService()
+    ) -> ServiceContainer {
+        ServiceContainer(
+            photoLibrary: photo,
+            ocr: OCRService(),
+            eventExtraction: EventExtractionService(),
+            calendar: calendar,
+            reminders: reminders,
+            notifications: notifications,
+            subscription: OfflineSubscriptionService(),
+            understanding: EventUnderstandingPipeline.rulesOnly()
+        )
+    }
+
+    @Test("Denied Photos access is reported and does not trigger a permission prompt")
+    func photosDenialDoesNotBlockManualScanPath() async {
+        let photos = TestPhotoLibrary(status: .denied)
+        let viewModel = HomeViewModel(services: services(photo: photos))
+
+        let allowed = await viewModel.ensurePhotoAccess()
+
+        #expect(!allowed)
+        #expect(viewModel.photoAuthorizationStatus == .denied)
+        #expect(photos.requestCount == 0)
+        #expect(photos.fetchCount == 0)
+    }
+
+    @Test("Denied local notifications do not hide a successful Calendar save")
+    func notificationDenialIsPartialAndSurfaced() async throws {
+        let container = try modelContainer()
+        let candidate = EventCandidate(title: "Notification denial", startDate: Date().addingTimeInterval(86_400))
+        let review = EventReviewViewModel(
+            candidate: candidate,
+            services: services(notifications: TestNotificationService(scheduleError: .notification))
+        )
+
+        let result = await review.commitEvent(modelContext: container.mainContext)
+
+        guard case .partial(let issues) = result else {
+            Issue.record("Notification denial should produce a partial result.")
+            return
+        }
+        #expect(issues.contains { $0.contains("Local notifications") })
+        #expect(review.notificationsSkipped)
+        #expect(review.errorMessage?.contains("Injected notification failure") == true)
+    }
+}
