@@ -435,6 +435,45 @@ struct RescueRegressionRestorationTests {
         let stillThere = try context.fetch(FetchDescriptor<SavedEvent>()).contains { $0.id == saved.id }
         #expect(stillThere)
     }
+
+    @Test("Notification denial surfaces a human-readable message with the fix path")
+    func notificationDenialIsHumanReadable() async throws {
+        let container = try modelContainer()
+        let review = EventReviewViewModel(
+            candidate: candidate(),
+            services: ServiceContainer(
+                photoLibrary: TestPhotoLibrary(),
+                ocr: OCRService(),
+                eventExtraction: EventExtractionService(),
+                calendar: TestCalendarService(),
+                reminders: TestReminderService(),
+                notifications: DeniedNotificationService(),
+                subscription: OfflineSubscriptionService(),
+                understanding: EventUnderstandingPipeline.rulesOnly()
+            )
+        )
+
+        let result = await review.commitEvent(modelContext: container.mainContext)
+
+        guard case .partial(let issues) = result else {
+            Issue.record("Notification denial should produce a partial result, not a failure.")
+            return
+        }
+        #expect(issues.contains { $0.contains("Local notifications: Notifications are denied.") })
+        #expect(review.notificationsSkipped)
+        #expect(review.errorMessage?.contains("Notifications are denied.") == true)
+        #expect(try container.mainContext.fetch(FetchDescriptor<SavedEvent>()).count == 1)
+    }
+}
+
+private struct DeniedNotificationService: NotificationServiceProtocol {
+    func requestAuthorization() async throws -> Bool { false }
+    func authorizationStatus() async -> UNAuthorizationStatus { .denied }
+    func scheduleLocalNotifications(title: String, body: String, triggerDates: [Date], eventId: String?, actionURL: String?) async throws -> [String] {
+        throw DateSnapError.notifications(.accessDenied)
+    }
+    func removePendingNotifications(identifiers: [String]) {}
+    func setupNotificationCategories() {}
 }
 
 // MARK: - Gen A denial tests (restored from rescue commit 816101d, adapted to current API)

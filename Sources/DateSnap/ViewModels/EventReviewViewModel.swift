@@ -433,6 +433,14 @@ public final class EventReviewViewModel: ObservableObject {
                 eventId: candidate.id,
                 actionURL: candidate.rsvpUrl
             ))
+        } catch DateSnapError.notifications(.accessDenied) {
+            // Handoff 2026-10-02 open loop 2: a denied permission is an expected,
+            // recoverable state, so the review surface shows the human-readable
+            // outcome and where to fix it instead of echoing an infra error.
+            notificationsSkipped = true
+            return .failure(MutationFailure(
+                message: "Notifications are denied. Enable them in iOS Settings > Notifications > DateSnap."
+            ))
         } catch {
             notificationsSkipped = true
             return .failure(MutationFailure(error))
