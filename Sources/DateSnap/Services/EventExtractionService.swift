@@ -328,34 +328,18 @@ public enum DateInference {
         var candidates: [ExtractedCandidateData] = []
 
         for dateItem in dateResults {
-            // Date boundary checks (not > 24 months past or > 5 years future)
-            let monthInterval = calendar.dateComponents([.month], from: anchor, to: dateItem.startDate).month ?? 0
-            if monthInterval < -24 && dateItem.yearAssumed {
-                continue
-            }
-            if monthInterval > 60 {
+            guard isCandidateDateValid(dateItem.startDate, yearAssumed: dateItem.yearAssumed, anchor: anchor, calendar: calendar) else {
                 continue
             }
 
-            // B9: Multi-dimensional confidence scoring
-            var dateConfidence = dateItem.sourceReliability
-            if !dateItem.hasExplicitYear {
-                dateConfidence *= 0.92
-            }
-            if dateItem.isAmbiguous {
-                dateConfidence *= 0.70
-            }
+            let confidence = calculateCandidateConfidence(
+                dateItem: dateItem,
+                titleScore: titleScore,
+                location: location,
+                venue: venue,
+                rsvpUrl: rsvpUrl
+            )
 
-            var locConfidence: Float = 0.50
-            if location != nil || venue != nil { locConfidence = 0.90 }
-            if rsvpUrl != nil { locConfidence = min(1.0, locConfidence + 0.05) }
-
-            // Geometric mean: pow(date, 0.55) * pow(title, 0.30) * pow(location, 0.15)
-            let rawOverall = pow(Double(dateConfidence), 0.55) * pow(Double(titleScore), 0.30) * pow(Double(locConfidence), 0.15)
-            let clampedOverall = Float(max(0.40, min(0.99, rawOverall)))
-            let tier = ConfidenceTier.from(score: clampedOverall)
-
-            // B11: Dedupe Key
             let dedupeKey = computeDedupeKey(
                 title: title,
                 startDate: dateItem.startDate,
@@ -363,26 +347,18 @@ public enum DateInference {
                 assetIdentifier: assetIdentifier
             )
 
-            let candidate = ExtractedCandidateData(
-                id: UUID().uuidString,
+            let candidate = buildCandidateData(
                 title: title,
-                startDate: dateItem.startDate,
-                endDate: dateItem.endDate,
-                isAllDay: dateItem.isAllDay,
+                dateItem: dateItem,
                 location: location,
-                venueName: venue,
+                venue: venue,
                 rsvpUrl: rsvpUrl,
-                confidenceScore: clampedOverall,
-                yearAssumed: dateItem.yearAssumed,
-                rawTextSnippet: blockText,
-                dateConfidence: dateConfidence,
-                titleConfidence: titleScore,
-                confidenceTierRaw: tier.rawValue,
-                isAmbiguousDate: dateItem.isAmbiguous,
-                ambiguousFragment: dateItem.ambiguousFragment,
-                timeZoneIdentifier: timeZoneId,
+                confidence: confidence,
+                blockText: blockText,
+                titleScore: titleScore,
+                timeZoneId: timeZoneId,
                 dedupeKey: dedupeKey,
-                phoneNumber: phone,
+                phone: phone,
                 email: email,
                 notes: notes
             )
@@ -391,6 +367,89 @@ public enum DateInference {
         }
 
         return candidates
+    }
+
+    private static func isCandidateDateValid(
+        _ startDate: Date,
+        yearAssumed: Bool,
+        anchor: Date,
+        calendar: Calendar
+    ) -> Bool {
+        let monthInterval = calendar.dateComponents([.month], from: anchor, to: startDate).month ?? 0
+        if monthInterval < -24 && yearAssumed {
+            return false
+        }
+        if monthInterval > 60 {
+            return false
+        }
+        return true
+    }
+
+    private static func calculateCandidateConfidence(
+        dateItem: DetectedDateItem,
+        titleScore: Float,
+        location: String?,
+        venue: String?,
+        rsvpUrl: String?
+    ) -> (adjustedDateConfidence: Float, overallScore: Float, tier: ConfidenceTier) {
+        var dateConfidence = dateItem.sourceReliability
+        if !dateItem.hasExplicitYear {
+            dateConfidence *= 0.92
+        }
+        if dateItem.isAmbiguous {
+            dateConfidence *= 0.70
+        }
+
+        var locConfidence: Float = 0.50
+        if location != nil || venue != nil { locConfidence = 0.90 }
+        if rsvpUrl != nil { locConfidence = min(1.0, locConfidence + 0.05) }
+
+        // Geometric mean: pow(date, 0.55) * pow(title, 0.30) * pow(location, 0.15)
+        let rawOverall = pow(Double(dateConfidence), 0.55) * pow(Double(titleScore), 0.30) * pow(Double(locConfidence), 0.15)
+        let clampedOverall = Float(max(0.40, min(0.99, rawOverall)))
+        let tier = ConfidenceTier.from(score: clampedOverall)
+
+        return (dateConfidence, clampedOverall, tier)
+    }
+
+    private static func buildCandidateData(
+        title: String,
+        dateItem: DetectedDateItem,
+        location: String?,
+        venue: String?,
+        rsvpUrl: String?,
+        confidence: (adjustedDateConfidence: Float, overallScore: Float, tier: ConfidenceTier),
+        blockText: String,
+        titleScore: Float,
+        timeZoneId: String?,
+        dedupeKey: String,
+        phone: String?,
+        email: String?,
+        notes: String
+    ) -> ExtractedCandidateData {
+        ExtractedCandidateData(
+            id: UUID().uuidString,
+            title: title,
+            startDate: dateItem.startDate,
+            endDate: dateItem.endDate,
+            isAllDay: dateItem.isAllDay,
+            location: location,
+            venueName: venue,
+            rsvpUrl: rsvpUrl,
+            confidenceScore: confidence.overallScore,
+            yearAssumed: dateItem.yearAssumed,
+            rawTextSnippet: blockText,
+            dateConfidence: confidence.adjustedDateConfidence,
+            titleConfidence: titleScore,
+            confidenceTierRaw: confidence.tier.rawValue,
+            isAmbiguousDate: dateItem.isAmbiguous,
+            ambiguousFragment: dateItem.ambiguousFragment,
+            timeZoneIdentifier: timeZoneId,
+            dedupeKey: dedupeKey,
+            phoneNumber: phone,
+            email: email,
+            notes: notes
+        )
     }
 
     // MARK: - B1, B2, B3, B4, B6: Date Detection & Inference Cascade
@@ -980,9 +1039,9 @@ public enum DateInference {
         if detectedTimes.count >= 2 {
             // Earliest as start, latest as end
             let sorted = detectedTimes.sorted { minutes($0) < minutes($1) }
-            let earliest = sorted.first!
-            let latest = sorted.last!
-            return (true, earliest.hour, earliest.minute, latest.hour, latest.minute, nil, nil)
+            if let earliest = sorted.first, let latest = sorted.last {
+                return (true, earliest.hour, earliest.minute, latest.hour, latest.minute, nil, nil)
+            }
         }
 
         let first = detectedTimes[0]

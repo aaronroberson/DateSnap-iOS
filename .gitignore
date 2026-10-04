@@ -9,3 +9,4 @@ DerivedData/
 .zcode/
 .freebuff/
 lancedb/
+__pycache__/

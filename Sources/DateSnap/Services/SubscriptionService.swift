@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import StoreKit
 
 // MARK: - Subscription Entitlement Tiers
@@ -42,6 +43,8 @@ public protocol SubscriptionServiceProtocol: Sendable {
 public final class SubscriptionService: ObservableObject, SubscriptionServiceProtocol {
     public static let shared = SubscriptionService()
 
+    nonisolated private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.datesnap.app", category: "SubscriptionService")
+
     @Published public private(set) var currentTier: SubscriptionTier = .starter
     @Published public private(set) var availableProducts: [Product] = []
     @Published public private(set) var purchasedProductIDs: Set<String> = []
@@ -82,7 +85,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
                     await self?.updateCustomerProductStatus()
                     await transaction.finish()
                 } catch {
-                    // Transaction verification failed
+                    Self.logger.error("Transaction verification failed: \(error.localizedDescription)")
                 }
             }
         }

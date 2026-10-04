@@ -107,8 +107,25 @@ final class PurchaseViewModel: ObservableObject {
 
 // MARK: - Legal Links
 enum DateSnapLinks {
-    static let privacyPolicy = URL(string: "https://datesnap.app/privacy")!
-    static let support = URL(string: "https://datesnap.app/support")!
+    static let privacyPolicy: URL = {
+        guard let url = URL(string: "https://datesnap.app/privacy") else {
+            preconditionFailure("Invalid Privacy Policy URL")
+        }
+        return url
+    }()
+
+    static let support: URL = {
+        guard let url = URL(string: "https://datesnap.app/support") else {
+            preconditionFailure("Invalid Support URL")
+        }
+        return url
+    }()
+
     /// Apple's standard auto-renewable subscription EULA.
-    static let termsOfUse = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
+    static let termsOfUse: URL = {
+        guard let url = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/") else {
+            preconditionFailure("Invalid Terms of Use URL")
+        }
+        return url
+    }()
 }
