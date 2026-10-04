@@ -14,3 +14,8 @@ simulation-copy|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#2
 # 2026-10-04 per-line adjudication (round34h evidence):
 hard-coded-price|*PurchaseViewModel.swift|*|aaron|doc-comment example ("e.g. $3.33"), not executable price logic
 stitch-id|*download_screens.py|*|aaron|design-fetch tooling; Stitch identifiers intrinsic to its purpose
+# 2026-10-04 final adjudication (round34j; each verdict re-verified against the tree, evidence in-row):
+sample-title|*EventModels.swift|*|aaron|DEBUG-gated sample OCR fixture (rawOcrFragments) inside #if DEBUG opened at EventModels.swift:102
+simulation-copy|*HomeEmptyStateView.swift|*|aaron|Simulation Hub UI inside #if DEBUG opened at HomeEmptyStateView.swift:420
+sample-title|*PremiumPaywallView.swift|*|aaron|intentional shipped paywall illustration copy (hero doc card); NOT DEBUG-gated and deliberately absent from release_forbidden
+stitch-id|*ScreenGalleryView.swift|*|aaron|internal design gallery; entire file inside #if DEBUG (lines 3-259) and release scan forbids the string - release-reachability follow-up RESOLVED
