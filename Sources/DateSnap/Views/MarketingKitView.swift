@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 
+#if DEBUG
 // Launch Marketing Kit — approved campaign copy: social angles,
 // ad headlines, CTAs and the launch email sequence.
 struct MarketingKitView: View {
@@ -259,3 +260,4 @@ struct MarketingKitView: View {
         .buttonStyle(.plain)
     }
 }
+#endif

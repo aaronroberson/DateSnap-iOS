@@ -1,5 +1,7 @@
 # DateSnap-iOS Recovery Handoff - 2026-10-02
 
+> Historical handoff: the promotion and recovery steps below have been completed. The five open loops were reconciled on 2026-10-04; see `docs/audits/2026-10-04-handoff-items-closure.md`. Do not rerun the obsolete promotion command.
+
 ## Where things stand (verified green)
 - Branch `recovery/integrate-20261002`, head **1156fc3**, working tree clean (untracked: scripts/, graphify-out/).
 - Full suite: **63 tests / 18 suites, all passing** (3.9s, iPhone 18 Pro sim).
