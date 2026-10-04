@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Regenerate project + run suite
+    runs-on: macos-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        # Gives every run step `bash -eo pipefail`, so xcodebuild's exit
+        # status is never masked by output formatting.
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      # The core guard: DateSnap.xcodeproj is GENERATED from project.yml.
+      # Regenerating before every build means a file added to
+      # Sources/DateSnap or Tests/DateSnapTests is always compiled and
+      # tested, even if the committed pbxproj was hand-edited and left
+      # stale (the failure mode that hid 10 files from the suite for
+      # multiple merged PRs).
+      - name: Regenerate DateSnap.xcodeproj from project.yml
+        run: xcodegen generate
+
+      # Soft check (does not block): warns when the committed pbxproj
+      # differs from fresh generator output, e.g. xcodegen version drift
+      # or a contributor forgot to run `xcodegen generate` before
+      # committing. The build always proceeds on the regenerated
+      # project, so the test gate itself is unaffected.
+      - name: Check committed pbxproj matches xcodegen output
+        continue-on-error: true
+        run: |
+          if ! git diff --exit-code DateSnap.xcodeproj; then
+            echo "::warning file=DateSnap.xcodeproj/project.pbxproj::Committed DateSnap.xcodeproj differs from 'xcodegen generate' output. Run xcodegen locally and commit the result."
+            exit 1
+          fi
+
+      - name: Pick an available iPhone simulator
+        id: sim
+        run: |
+          DEVICE=$(xcrun simctl list devices available | grep -oE 'iPhone [^(]+' | head -1 | xargs)
+          if [ -z "$DEVICE" ]; then
+            echo "::error::No available iPhone simulator found on runner"
+            exit 1
+          fi
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          echo "Selected simulator: $DEVICE"
+
+      - name: Run full test suite
+        run: |
+          xcodebuild test \
+            -scheme DateSnap \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}"
