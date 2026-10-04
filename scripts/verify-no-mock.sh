@@ -22,6 +22,7 @@ rg_args=(
   --glob '!node_modules/**'
   --glob "!docs/**"
   --glob "!README.md"
+  --glob "!.stitch/**"
   --glob '!scripts/verify-no-mock.sh'
   --glob '!scripts/mock-allowlist.txt'
 )
