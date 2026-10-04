@@ -142,11 +142,20 @@ public final class HomeViewModel: ObservableObject {
         let photos = photoLibraryService
         let ocr = ocrService
         triageTask = Task { [weak self] in
-            for asset in pending {
-                guard !Task.isCancelled else { break }
-                let likely = await PhotoCandidateRanker.isLikelyEvent(asset, photos: photos, ocr: ocr)
-                self?.assessedIDs.insert(asset.localIdentifier)
-                if likely { self?.likelyEventIDs.insert(asset.localIdentifier) }
+            await withTaskGroup(of: (String, Bool).self) { group in
+                for asset in pending {
+                    guard !Task.isCancelled else { break }
+                    let assetID = asset.localIdentifier
+                    group.addTask {
+                        let likely = await PhotoCandidateRanker.isLikelyEvent(asset, photos: photos, ocr: ocr)
+                        return (assetID, likely)
+                    }
+                }
+                for await (assetID, likely) in group {
+                    guard let self = self, !Task.isCancelled else { break }
+                    self.assessedIDs.insert(assetID)
+                    if likely { self.likelyEventIDs.insert(assetID) }
+                }
             }
             self?.triageTask = nil
         }
