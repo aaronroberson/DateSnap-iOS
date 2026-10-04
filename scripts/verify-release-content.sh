@@ -7,7 +7,7 @@ repo_root="$(cd "$script_dir/.." && pwd)"
 source_root="$repo_root/Sources/DateSnap"
 
 source_forbidden='ServiceContainer[.]mock[(]|\bMock[A-Za-z0-9_]*Service\b|mock-(calendar-event|reminder|notification|deadline)-'
-release_forbidden='ServiceContainer[.]mock|Mock[A-Za-z0-9_]*Service|Mock Rooftop Sunset Party|mock-(calendar-event|reminder|notification|deadline)-|All 17 Stitch Screens|Stitch ID:|Screen State & Simulation Hub|6c145dff8ec540b9a51f806629e55c70'
+release_forbidden='ServiceContainer[.]mock|Mock[A-Za-z0-9_]*Service|Mock Rooftop Sunset Party|mock-(calendar-event|reminder|notification|deadline)-|All 17 Stitch Screens|Stitch ID:|Screen State & Simulation Hub|6c145dff8ec540b9a51f806629e55c70|sampleNeonSunset|Neon Sunset Rooftop Session|sampleDentalCheckup|Dr. Aris Dental Checkup|sampleSummerMixer|Summer Rooftop Mixer'
 
 failure=0
 
