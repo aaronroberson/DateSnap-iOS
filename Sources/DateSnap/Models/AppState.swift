@@ -1,6 +1,21 @@
 import SwiftUI
 import Combine
 
+@MainActor
+protocol ToastDismissalScheduling {
+    func scheduleDismissal(_ action: @escaping @MainActor @Sendable () -> Void)
+}
+
+private struct LiveToastDismissalScheduler: ToastDismissalScheduling {
+    func scheduleDismissal(_ action: @escaping @MainActor @Sendable () -> Void) {
+        Task {
+            try? await Task.sleep(for: .seconds(2.5))
+            guard !Task.isCancelled else { return }
+            action()
+        }
+    }
+}
+
 enum ActiveTab: String, CaseIterable, Identifiable, Sendable {
     case home = "Home"
     case review = "Review"
@@ -73,6 +88,11 @@ final class AppState: ObservableObject {
     @Published var toastMessage: String? = nil
 
     private var tierSubscription: AnyCancellable?
+    private let toastDismissalScheduler: any ToastDismissalScheduling
+
+    init(toastDismissalScheduler: any ToastDismissalScheduling = LiveToastDismissalScheduler()) {
+        self.toastDismissalScheduler = toastDismissalScheduler
+    }
 
     /// Mirrors the subscription tier. The live StoreKit service publishes changes (purchases, renewals, refunds).
     func bind(subscription: SubscriptionServiceProtocol) {
@@ -86,10 +106,9 @@ final class AppState: ObservableObject {
 
     func showToast(_ message: String) {
         toastMessage = message
-        Task {
-            try? await Task.sleep(nanoseconds: 2_500_000_000)
-            if self.toastMessage == message {
-                self.toastMessage = nil
+        toastDismissalScheduler.scheduleDismissal { [weak self] in
+            if self?.toastMessage == message {
+                self?.toastMessage = nil
             }
         }
     }
