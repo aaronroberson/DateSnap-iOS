@@ -1,27 +1,27 @@
 import SwiftUI
 import SwiftData
 
-/// Edits up to three alert offsets for an event. `onSave` applies them (to the review form, or to a saved event's
-/// Calendar alarms, reminder and local notifications) and returns whether it succeeded.
+/// Edits up to three alert offsets for an event and shows the save result.
 struct ReminderScheduleEditorView: View {
     @Environment(\.dismiss) private var dismiss
     
     let title: String
     let eventStart: Date
     let isAllDay: Bool
-    let onSave: @MainActor ([ReminderOffset]) async -> Bool
+    let onSave: @MainActor ([ReminderOffset]) async -> MutationResult
     
     @State private var selectedPreset: ReminderPreset
     @State private var offsets: [ReminderOffset]
     @State private var isSyncing: Bool = false
     @State private var syncCompleted: Bool = false
+    @State private var resultMessage: String?
     
     init(
         title: String,
         eventStart: Date,
         isAllDay: Bool,
         initialOffsets: [ReminderOffset],
-        onSave: @escaping @MainActor ([ReminderOffset]) async -> Bool
+        onSave: @escaping @MainActor ([ReminderOffset]) async -> MutationResult
     ) {
         self.title = title
         self.eventStart = eventStart
@@ -58,7 +58,7 @@ struct ReminderScheduleEditorView: View {
                             
                             Spacer()
                             
-                            Text("Schedule Conflict Resolver")
+                            Text("Reminder Schedule")
                                 .font(DSTypography.caption())
                                 .foregroundStyle(Color.dsMutedForeground)
                                 .lineLimit(1)
@@ -70,7 +70,7 @@ struct ReminderScheduleEditorView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 6) {
                                 Circle().fill(Color.dsPrimary).frame(width: 6, height: 6)
-                                Text("SMART TIERED ALERTS")
+                                Text("REMINDER ALERTS")
                                     .font(DSTypography.overlineConfidence())
                                     .foregroundStyle(Color.dsSecondary)
                             }
@@ -101,7 +101,7 @@ struct ReminderScheduleEditorView: View {
                         // Quick Presets Carousel
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("SMART PRESETS")
+                                Text("REMINDER PRESETS")
                                     .font(DSTypography.overlineConfidence())
                                     .foregroundStyle(Color.dsMutedForeground)
                                 Spacer()
@@ -304,12 +304,18 @@ struct ReminderScheduleEditorView: View {
                         isSyncing = true
                         Task {
                             let sorted = offsets.sorted { $0.timeInterval < $1.timeInterval }
-                            let succeeded = await onSave(sorted)
+                            let result = await onSave(sorted)
                             isSyncing = false
-                            guard succeeded else { return }
-                            syncCompleted = true
-                            try? await Task.sleep(for: .milliseconds(600))
-                            dismiss()
+                            switch result {
+                            case .success:
+                                syncCompleted = true
+                                try? await Task.sleep(for: .milliseconds(600))
+                                dismiss()
+                            case .partial(let issues):
+                                resultMessage = "Schedule saved with issues: \(issues.joined(separator: "; "))"
+                            case .failure(let error):
+                                resultMessage = error.localizedDescription
+                            }
                         }
                     } label: {
                         HStack(spacing: 8) {
@@ -355,6 +361,14 @@ struct ReminderScheduleEditorView: View {
                 .background(Color.dsBackground.opacity(0.95))
             }
             .dsScreenBackground()
+        }
+        .alert("Reminder Schedule", isPresented: Binding(
+            get: { resultMessage != nil },
+            set: { if !$0 { resultMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(resultMessage ?? "")
         }
     }
     
@@ -458,20 +472,12 @@ struct SavedEventScheduleEditor: View {
                 isAllDay: candidate.isAllDay,
                 initialOffsets: saved.alertOffsets.map { ReminderOffset.forInterval($0) }
             ) { offsets in
-                do {
-                    let actions = SavedEventActions(services: services, modelContext: modelContext)
-                    let notified = try await actions.rescheduleAlerts(for: saved, offsets: offsets)
-                    appState.showToast(notified || offsets.isEmpty
-                        ? "✓ Reminder schedule updated (\(offsets.count) alert\(offsets.count == 1 ? "" : "s"))"
-                        : "Calendar updated — local alerts are off in iOS Settings")
-                    return true
-                } catch DateSnapError.calendar(.accessDenied) {
-                    await appState.present(.calendarPermissionDenied)
-                    return false
-                } catch {
-                    appState.showToast(error.localizedDescription)
-                    return false
+                let actions = SavedEventActions(services: services, modelContext: modelContext)
+                let result = await actions.rescheduleAlerts(for: saved, offsets: offsets)
+                if case .success = result {
+                    appState.showToast("Reminder schedule updated (\(offsets.count) alert\(offsets.count == 1 ? "" : "s"))")
                 }
+                return result
             }
         } else {
             Text("This event is no longer available")

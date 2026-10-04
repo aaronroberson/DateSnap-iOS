@@ -10,3 +10,7 @@ DerivedData/
 .freebuff/
 lancedb/
 __pycache__/
+
+# Graphify knowledge-graph generated output (regenerable; never source)
+graphify-out/
+.vscode/mcp.json

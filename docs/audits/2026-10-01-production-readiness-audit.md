@@ -1,5 +1,7 @@
 # DateSnap iOS Pre-Release Production Readiness Audit
 
+> **Historical snapshot — 2026-10-01.** The repository and branch observations below describe the checkout reviewed on that date. Revalidate every finding against the current checkout before using it for a release decision.
+
 Date: 2026-10-01
 
 ## Scope
