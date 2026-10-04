@@ -194,6 +194,12 @@ struct ExtractionEvaluationTests {
     /// Opt-in (DATESNAP_EVAL_LIVE=1): runs the corpus through the live route when Apple Intelligence is available.
     @Test("Live route report", .enabled(if: ProcessInfo.processInfo.environment["DATESNAP_EVAL_LIVE"] == "1"))
     func liveRouteReport() async {
+        let capability = IntelligenceComposition.currentCapability(locale: Locale(identifier: "en_US"))
+        if ProcessInfo.processInfo.environment["DATESNAP_REQUIRE_LIVE_AI"] == "1",
+           !capability.isAvailable {
+            Issue.record("DATESNAP_REQUIRE_LIVE_AI=1, but Apple Intelligence is unavailable on this destination")
+            return
+        }
         let report = await ExtractionEvaluator.evaluate(IntelligenceComposition.liveUnderstanding(), route: "live", anchor: testAnchor)
         print(report)
         // The model may only improve on, never regress, validated fields relative to rules.

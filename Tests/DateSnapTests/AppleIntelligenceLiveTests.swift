@@ -18,6 +18,11 @@ struct AppleIntelligenceLiveTests {
             ("The Skybar · 8440 Sunset Blvd", 0.03)
         ])
         let capability = IntelligenceComposition.currentCapability(locale: Locale(identifier: "en_US"))
+        if ProcessInfo.processInfo.environment["DATESNAP_REQUIRE_LIVE_AI"] == "1",
+           !capability.isAvailable {
+            Issue.record("DATESNAP_REQUIRE_LIVE_AI=1, but Apple Intelligence is unavailable on this destination")
+            return
+        }
         let result = await IntelligenceComposition.liveUnderstanding()
             .understand(poster, locale: Locale(identifier: "en_US"), anchor: testAnchor)
         let best = try #require(result.events.first?.best)

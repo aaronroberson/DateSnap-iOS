@@ -66,3 +66,9 @@ Record the exact candidate for every QA pass:
 - Tester / date:
 - Automated-test result bundle:
 - Defects or accepted exceptions:
+
+## Live Apple Intelligence Gate
+
+Before promoting a TestFlight release candidate, run the compatible-device lane
+in `docs/runbooks/LIVE-AI-EVALUATION.md` and retain its `.xcresult` with the release
+evidence. This is separate from the default hermetic unit-test suite.
