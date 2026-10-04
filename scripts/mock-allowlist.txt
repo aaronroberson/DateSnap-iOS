@@ -11,3 +11,6 @@ hard-coded-price|*Tests/*|*|aaron|tests exercise paywall price strings
 mock-prefix|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
 sample-title|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
 simulation-copy|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
+# 2026-10-04 per-line adjudication (round34h evidence):
+hard-coded-price|*PurchaseViewModel.swift|*|aaron|doc-comment example ("e.g. $3.33"), not executable price logic
+stitch-id|*download_screens.py|*|aaron|design-fetch tooling; Stitch identifiers intrinsic to its purpose
