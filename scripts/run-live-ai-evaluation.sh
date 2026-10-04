@@ -11,5 +11,6 @@ DATESNAP_EVAL_LIVE=1 DATESNAP_REQUIRE_LIVE_AI=1 \
   xcodebuild test \
     -scheme DateSnap \
     -destination "${DATESNAP_LIVE_AI_DESTINATION}" \
+    -allowProvisioningUpdates \
     -only-testing:DateSnapTests/AppleIntelligenceLiveTests \
     -only-testing:DateSnapTests/ExtractionEvaluationTests/liveRouteReport
