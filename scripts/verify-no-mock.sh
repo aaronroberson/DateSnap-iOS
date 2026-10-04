@@ -22,6 +22,11 @@ rg_args=(
   --glob '!node_modules/**'
   --glob "!docs/**"
   --glob "!README.md"
+  --glob "!design-assets/**"
+  --glob "!.opencode/**"
+  --glob "!HANDOFF.md"
+  --glob "!DateSnap.xcodeproj/**"
+  --glob "!scripts/verify-release-content.sh"
   --glob "!.stitch/**"
   --glob '!scripts/verify-no-mock.sh'
   --glob '!scripts/mock-allowlist.txt'

@@ -1,2 +1,13 @@
 # category|path-glob|matching text or *|owner|reason
 # Keep entries narrow. Every entry is a pending signoff item for its named owner.
+# 2026-10-04 recovery-closure disposition (aaron): test fixtures intentionally
+# construct mocks/samples; that is what tests are for. SampleFlyer is
+# DEBUG-gated sample content (PRs #19/#22); release-content verify enforces it.
+mock-prefix|*Tests/*|*|aaron|test fixtures intentionally construct mocks
+sample-title|*Tests/*|*|aaron|test fixtures intentionally use sample titles
+simulation-copy|*Tests/*|*|aaron|test fixtures intentionally reference simulation copy
+stitch-id|*Tests/*|*|aaron|tests assert against stitch design identifiers
+hard-coded-price|*Tests/*|*|aaron|tests exercise paywall price strings
+mock-prefix|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
+sample-title|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
+simulation-copy|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
