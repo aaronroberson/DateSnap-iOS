@@ -35,6 +35,44 @@ rg_args=(
 unallowlisted=0
 allowlisted=0
 
+# --- Preflight: a scan that CANNOT match must never look like a green gate. -----
+# History (2026-10-04): this script ran `rg -P "$pattern" ... || true`. On a
+# ripgrep built without PCRE2, every search exited 2, `|| true` swallowed it, and
+# the script printed "No unallowlisted markers found (0 allowlisted hits)" with
+# exit 0 while having scanned nothing. The canary below proves the regex engine
+# can actually evaluate each construct this script relies on before we trust a
+# zero-hit result. Each probe MUST match (exit 0); exit 1 means the canary itself
+# is broken, exit >=2 means the engine is unusable. Both are fatal.
+preflight_regex_engine() {
+  local probe status failures=0 p
+  probe="$(mktemp)"
+  printf 'MockCanaryService Simulation Hub $1.23 TODO stitch-abcd1234 NEON SUNSET\n' >"$probe"
+  for p in \
+    '\bMock[A-Z][A-Za-z0-9_]*\b' \
+    '(?i)simulation hub' \
+    '\$[0-9]+\.[0-9]{2}' \
+    '\b(TODO|FIXME|HACK|XXX|TBD)\b' \
+    '(?i)\bstitch[_ -]?[a-z0-9-]{4,}\b'
+  do
+    set +e
+    rg --no-heading --color never -P "$p" "$probe" >/dev/null 2>&1
+    status=$?
+    set -e
+    if (( status != 0 )); then
+      echo "FATAL: regex preflight failed (exit $status) for pattern: $p" >&2
+      failures=$((failures + 1))
+    fi
+  done
+  rm -f "$probe"
+  if (( failures > 0 )); then
+    echo "FATAL: this ripgrep cannot run $failures of this script's patterns." >&2
+    echo "       $(rg --version 2>&1 | head -1)" >&2
+    echo "       Most likely cause: ripgrep built WITHOUT PCRE2 (needed for -P)." >&2
+    echo "       A scan that cannot match is NOT a pass. Refusing to report green." >&2
+    exit 3
+  fi
+}
+
 is_allowlisted() {
   local category="$1"
   local path="$2"
@@ -56,9 +94,25 @@ is_allowlisted() {
 scan_rule() {
   local category="$1"
   local pattern="$2"
-  local hit file line text
+  local hit file line text status out
+
+  out="$(mktemp)"
+  set +e
+  rg "${rg_args[@]}" -P "$pattern" "$repo_root" >"$out" 2>"$out.err"
+  status=$?
+  set -e
+
+  # rg: 0 = matches, 1 = no matches (a legitimate clean result), >=2 = error.
+  # An error is FATAL - never silently treated as "clean".
+  if (( status >= 2 )); then
+    echo "FATAL: ripgrep failed for category '$category' (exit $status):" >&2
+    sed 's/^/  rg: /' "$out.err" >&2
+    rm -f "$out" "$out.err"
+    exit 3
+  fi
 
   while IFS= read -r hit; do
+    [[ -z "$hit" ]] && continue
     IFS=: read -r file line text <<< "$hit"
     file="${file#./}"
     if is_allowlisted "$category" "$file" "$text"; then
@@ -67,8 +121,11 @@ scan_rule() {
       printf 'UNALLOWLISTED [%s] %s:%s %s\n' "$category" "$file" "$line" "$text" >&2
       ((unallowlisted += 1))
     fi
-  done < <(rg "${rg_args[@]}" -P "$pattern" "$repo_root" || true)
+  done <"$out"
+  rm -f "$out" "$out.err"
 }
+
+preflight_regex_engine
 
 scan_rule mock-prefix '\bMock[A-Z][A-Za-z0-9_]*\b'
 scan_rule sample-title 'NEON SUNSET|ROOFTOP SESSION|SUMMIT_2025\.PDF'
