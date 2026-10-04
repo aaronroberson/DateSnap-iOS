@@ -14,6 +14,7 @@ public final class EventReviewViewModel: ObservableObject {
     private let calendarService: CalendarServiceProtocol
     private let reminderService: ReminderServiceProtocol
     private let notificationService: NotificationServiceProtocol
+    private let entitlements: any EntitlementProviding
 
     // MARK: - Editable State
     @Published public var title: String
@@ -49,6 +50,8 @@ public final class EventReviewViewModel: ObservableObject {
     @Published public var calendarAccessDenied: Bool = false
     /// Set when the event saved but local alerts could not be scheduled (notifications denied).
     @Published public var notificationsSkipped: Bool = false
+    /// Typed denial from the most recent protected action, suitable for paywall or retry UI.
+    @Published public private(set) var featureAccessDenial: FeatureAccessDenyReason? = nil
 
     // MARK: - Interpretation (best, alternatives, evidence, suggestions)
     /// Review bundle from the scan: best interpretation, alternatives, questions, actions, evidence.
@@ -88,6 +91,7 @@ public final class EventReviewViewModel: ObservableObject {
         self.calendarService = services.calendar
         self.reminderService = services.reminders
         self.notificationService = services.notifications
+        self.entitlements = services.subscription
 
         self.title = candidate.title
         self.startDate = candidate.startDate
@@ -311,6 +315,7 @@ public final class EventReviewViewModel: ObservableObject {
         errorMessage = nil
         calendarAccessDenied = false
         notificationsSkipped = false
+        featureAccessDenial = nil
         isSavedSuccessfully = false
         defer { isSaving = false }
 
@@ -379,12 +384,21 @@ public final class EventReviewViewModel: ObservableObject {
         // 2b. Accepted RSVP-deadline reminder (created once)
         var deadlineReminderId = existing?.deadlineReminderId
         if deadlineReminderEnabled, deadlineReminderId == nil, let due = deadlineReminderDate {
-            do {
-                deadlineReminderId = try await reminderService.createDeadlineReminder(
-                    title: "RSVP: \(candidate.title)", due: due, url: candidate.rsvpUrl, list: selectedReminderList
-                )
-            } catch {
-                issues.append("RSVP deadline reminder: \(error.localizedDescription)")
+            switch FeatureAccessPolicy.decision(
+                for: .advancedReminderPlans,
+                snapshot: entitlements.entitlementSnapshot
+            ) {
+            case .allowed:
+                do {
+                    deadlineReminderId = try await reminderService.createDeadlineReminder(
+                        title: "RSVP: \(candidate.title)", due: due, url: candidate.rsvpUrl, list: selectedReminderList
+                    )
+                } catch {
+                    issues.append("RSVP deadline reminder: \(error.localizedDescription)")
+                }
+            case .denied(let reason):
+                featureAccessDenial = reason
+                issues.append("RSVP deadline reminder was not created because Premium access could not be verified.")
             }
         }
 

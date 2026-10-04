@@ -141,7 +141,8 @@ struct MockDataCleanupTests {
             candidate: candidate,
             services: services(
                 reminders: TestReminderService(createError: .reminder, deadlineError: .reminder),
-                notifications: TestNotificationService(scheduleError: .notification)
+                notifications: TestNotificationService(scheduleError: .notification),
+                subscription: OfflineSubscriptionService(snapshot: .verified(.premium, provenance: .none))
             )
         )
         review.deadlineReminderEnabled = true
@@ -157,6 +158,47 @@ struct MockDataCleanupTests {
         }
         #expect(candidate.savedEvent != nil)
         #expect(!review.isSavedSuccessfully)
+    }
+
+    @Test("Deadline reminder side effects require verified Premium at commit time")
+    func deadlineReminderAuthorization() async throws {
+        for tier in SubscriptionTier.allCases {
+            let container = try modelContainer()
+            let candidate = EventCandidate(title: "Tier \(tier.rawValue)", startDate: Date().addingTimeInterval(86_400))
+            candidate.rsvpDeadline = Date().addingTimeInterval(7_200)
+            let reminders = TestReminderService()
+            let store = OfflineSubscriptionService(snapshot: .verified(tier, provenance: .none))
+            let review = EventReviewViewModel(
+                candidate: candidate,
+                services: services(reminders: reminders, subscription: store)
+            )
+            review.deadlineReminderEnabled = true
+
+            _ = await review.commitEvent(modelContext: container.mainContext)
+
+            #expect(reminders.deadlineCreateCount == (tier == .premium ? 1 : 0))
+            #expect((review.featureAccessDenial == nil) == (tier == .premium))
+        }
+    }
+
+    @Test("Downgrading while editing prevents the deadline reminder side effect")
+    func deadlineReminderDowngradeDuringEdit() async throws {
+        let container = try modelContainer()
+        let candidate = EventCandidate(title: "Downgraded", startDate: Date().addingTimeInterval(86_400))
+        candidate.rsvpDeadline = Date().addingTimeInterval(7_200)
+        let reminders = TestReminderService()
+        let store = OfflineSubscriptionService(snapshot: .verified(.premium, provenance: .none))
+        let review = EventReviewViewModel(
+            candidate: candidate,
+            services: services(reminders: reminders, subscription: store)
+        )
+        review.deadlineReminderEnabled = true
+        store.entitlementSnapshot = .verified(.plus, provenance: .transactionUpdate)
+
+        _ = await review.commitEvent(modelContext: container.mainContext)
+
+        #expect(reminders.deadlineCreateCount == 0)
+        #expect(review.featureAccessDenial == .requiresTier(.premium))
     }
 
     @Test("SwiftData save failures are returned from event and privacy mutations")
@@ -304,6 +346,7 @@ private final class TestReminderService: ReminderServiceProtocol, @unchecked Sen
     let createError: InjectedServiceFailure?
     let deadlineError: InjectedServiceFailure?
     let deleteError: InjectedServiceFailure?
+    private(set) var deadlineCreateCount = 0
 
     init(createError: InjectedServiceFailure? = nil, deadlineError: InjectedServiceFailure? = nil, deleteError: InjectedServiceFailure? = nil) {
         self.createError = createError
@@ -327,6 +370,7 @@ private final class TestReminderService: ReminderServiceProtocol, @unchecked Sen
         if let deleteError { throw deleteError }
     }
     func createDeadlineReminder(title: String, due: Date, url: String?, list: EKCalendar?) async throws -> String {
+        deadlineCreateCount += 1
         if let deadlineError { throw deadlineError }
         return "deadline-id"
     }
