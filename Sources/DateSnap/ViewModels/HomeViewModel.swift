@@ -60,7 +60,7 @@ public final class HomeViewModel: ObservableObject {
         }
 
         if photoAuthorizationStatus == .authorized || photoAuthorizationStatus == .limited {
-            loadRecentScreenshots()
+            _ = loadAutomaticallyDetectedScreenshots()
         }
     }
 
@@ -129,16 +129,32 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
+    /// Automatic library monitoring is a Plus operation; manual user-initiated loading remains available.
+    @discardableResult
+    public func loadAutomaticallyDetectedScreenshots(limit: Int = 10) -> FeatureAccessDecision {
+        let decision = FeatureAccessPolicy.decision(
+            for: .automaticScreenshotDetection,
+            snapshot: subscriptionService.entitlementSnapshot
+        )
+        guard decision == .allowed else { return decision }
+        loadRecentScreenshots(limit: limit)
+        return .allowed
+    }
+
     // MARK: - Likely-Event Triage (Plus)
     /// Checks up to `PhotoCandidateRanker.assessmentBudget` new, unscanned screenshots on device.
-    public func triageLikelyEvents(scannedIDs: Set<String>, tier: SubscriptionTier) {
-        guard triageTask == nil else { return }
+    @discardableResult
+    public func triageLikelyEvents(scannedIDs: Set<String>) -> FeatureAccessDecision {
+        let snapshot = subscriptionService.entitlementSnapshot
+        let decision = FeatureAccessPolicy.decision(for: .likelyEventTriage, snapshot: snapshot)
+        guard decision == .allowed else { return decision }
+        guard triageTask == nil else { return .allowed }
         let candidates = recentScreenshots
             .filter { !scannedIDs.contains($0.localIdentifier) && !assessedIDs.contains($0.localIdentifier) }
             .prefix(PhotoCandidateRanker.assessmentBudget)
-        let granted = IntelligenceUsagePolicy().consume(.likelyEventTriage, count: candidates.count, tier: tier)
+        let granted = IntelligenceUsagePolicy().consume(.likelyEventTriage, count: candidates.count, tier: snapshot.tier)
         let pending = candidates.prefix(granted)
-        guard !pending.isEmpty else { return }
+        guard !pending.isEmpty else { return .allowed }
         let photos = photoLibraryService
         let ocr = ocrService
         triageTask = Task { [weak self] in
@@ -159,6 +175,7 @@ public final class HomeViewModel: ObservableObject {
             }
             self?.triageTask = nil
         }
+        return .allowed
     }
 
     // MARK: - Observe Photo Library Changes
@@ -170,7 +187,7 @@ public final class HomeViewModel: ObservableObject {
             for await _ in stream {
                 guard !Task.isCancelled else { break }
                 // Best-effort automatic reload of recent screenshots when active
-                self.loadRecentScreenshots()
+                _ = self.loadAutomaticallyDetectedScreenshots()
             }
         }
     }

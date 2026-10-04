@@ -145,7 +145,6 @@ public enum FeatureAccessDenyReason: Sendable, Equatable {
 /// `.checking` / `.unverified` / `.unavailable` deny all paid features (per the audit's "model
 /// checking/unverified/unavailable separately, deny by default"). Since every `PremiumFeature` requires
 /// plus/premium, unresolved states deny everything.
-@MainActor
 public enum FeatureAccessPolicy {
     /// The definitive decision for a given entitlement snapshot and feature.
     /// Deny-by-default: paid features are allowed only when

@@ -32,13 +32,15 @@ struct HistoryArchiveView: View {
 
     /// IDs of saved records that belong to a likely-duplicate cluster (Premium).
     private var duplicateIDs: Set<String> {
-        guard appState.isEntitled(to: .duplicateClusters) else { return [] }
         let entries = savedEvents.compactMap { saved -> EventSimilarityService.Entry? in
             guard let candidate = saved.candidate else { return nil }
             return EventSimilarityService.Entry(id: saved.id, similarityKey: candidate.similarityKey, title: candidate.title,
                                                 start: candidate.startDate, isSaved: saved.status == .saved)
         }
-        return Set(EventSimilarityService.clusters(entries).flatMap { $0.map(\.id) })
+        return Set(EventSimilarityService.premiumClusters(
+            entries,
+            snapshot: services.subscription.entitlementSnapshot
+        ).flatMap { $0.map(\.id) })
     }
 
     private func matches(_ filter: SmartFilter, _ saved: SavedEvent, candidate: EventCandidate, duplicates: Set<String>) -> Bool {

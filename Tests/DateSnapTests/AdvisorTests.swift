@@ -52,6 +52,15 @@ struct AdvisorServiceTests {
         let clusters = EventSimilarityService.clusters([saved, sameKey, sameDayTitle, otherDay])
         #expect(clusters.count == 1)
         #expect(Set(clusters[0].map(\.id)) == ["a", "b", "c"])
+
+        #expect(EventSimilarityService.premiumClusters(
+            [saved, sameKey],
+            snapshot: .verified(.plus, provenance: .none)
+        ).isEmpty)
+        #expect(EventSimilarityService.premiumClusters(
+            [saved, sameKey],
+            snapshot: .verified(.premium, provenance: .none)
+        ).count == 1)
     }
 
     @Test("Calendar suggestions follow the user's own choices per category")

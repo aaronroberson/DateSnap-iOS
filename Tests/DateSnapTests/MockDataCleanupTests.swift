@@ -101,6 +101,20 @@ struct MockDataCleanupTests {
         #expect(decision == .allowed)
     }
 
+    @Test("Automatic detection and triage authorize from the provider, not a caller tier")
+    func homeAutomationAuthorization() {
+        for tier in SubscriptionTier.allCases {
+            let store = OfflineSubscriptionService(snapshot: .verified(tier, provenance: .none))
+            let home = HomeViewModel(services: services(subscription: store))
+
+            let automatic = home.loadAutomaticallyDetectedScreenshots()
+            let triage = home.triageLikelyEvents(scannedIDs: [])
+            let shouldAllow = tier != .starter
+            #expect((automatic == .allowed) == shouldAllow)
+            #expect((triage == .allowed) == shouldAllow)
+        }
+    }
+
     @Test("OCR errors stop a scan and reach the scan state")
     func scanSurfacesOCRError() async {
         let scanner = ScanViewModel(services: services(ocr: FailingOCRService()))

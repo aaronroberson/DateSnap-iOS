@@ -39,7 +39,7 @@ public enum EventSimilarityService {
     }
 
     /// Groups entries into clusters of likely duplicates (connected by `matches`). Singletons are omitted.
-    public static func clusters(_ entries: [Entry], calendar: Calendar = .current) -> [[Entry]] {
+    static func clusters(_ entries: [Entry], calendar: Calendar = .current) -> [[Entry]] {
         var remaining = entries
         var clusters: [[Entry]] = []
         while let seed = remaining.first {
@@ -55,6 +55,18 @@ public enum EventSimilarityService {
             if cluster.count > 1 { clusters.append(cluster) }
         }
         return clusters
+    }
+
+    /// Premium operation boundary for archive-wide duplicate clustering.
+    public static func premiumClusters(
+        _ entries: [Entry],
+        snapshot: EntitlementSnapshot,
+        calendar: Calendar = .current
+    ) -> [[Entry]] {
+        guard FeatureAccessPolicy.decision(for: .duplicateClusters, snapshot: snapshot) == .allowed else {
+            return []
+        }
+        return clusters(entries, calendar: calendar)
     }
 
     static func titleOverlap(_ a: String, _ b: String) -> Double {
