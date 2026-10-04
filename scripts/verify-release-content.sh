@@ -7,7 +7,7 @@ repo_root="$(cd "$script_dir/.." && pwd)"
 source_root="$repo_root/Sources/DateSnap"
 
 source_forbidden='ServiceContainer[.]mock[(]|\bMock[A-Za-z0-9_]*Service\b|mock-(calendar-event|reminder|notification|deadline)-'
-release_forbidden='InterpretationDiagnosticsView|ServiceContainer[.]mock|Mock[A-Za-z0-9_]*Service|Mock Rooftop Sunset Party|mock-(calendar-event|reminder|notification|deadline)-|All 17 Stitch Screens|Stitch ID:|Screen State & Simulation Hub|6c145dff8ec540b9a51f806629e55c70|sampleNeonSunset|Neon Sunset Rooftop Session|sampleDentalCheckup|Dr. Aris Dental Checkup|sampleSummerMixer|Summer Rooftop Mixer'
+release_forbidden='InterpretationDiagnosticsView|ServiceContainer[.]mock|Mock[A-Za-z0-9_]*Service|Mock Rooftop Sunset Party|mock-(calendar-event|reminder|notification|deadline)-|All 17 Stitch Screens|Stitch ID:|Screen State & Simulation Hub|Launch Marketing Kit|0[.]12s on-device OCR|auto-purged screenshot storage|6c145dff8ec540b9a51f806629e55c70|sampleNeonSunset|Neon Sunset Rooftop Session|sampleDentalCheckup|Dr. Aris Dental Checkup|sampleSummerMixer|Summer Rooftop Mixer'
 
 # Usage: verify-release-content.sh [--require-app] [/path/to/Built.app]
 #   --require-app  (or DATESNAP_REQUIRE_APP=1) makes the Release executable scan

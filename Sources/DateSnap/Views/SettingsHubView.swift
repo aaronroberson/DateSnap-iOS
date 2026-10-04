@@ -263,12 +263,13 @@ struct SettingsHubView: View {
 
                 Divider().overlay(Color.dsBorder)
 
+                #if DEBUG
                 Button {
                     navigate(.marketingKit)
                 } label: {
                     SettingRow(icon: "megaphone.fill", iconTint: .dsAccent,
                                title: "Launch Marketing Kit",
-                               subtitle: "Approved campaign copy & assets") {
+                               subtitle: "Internal campaign copy and assets") {
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
@@ -276,6 +277,7 @@ struct SettingsHubView: View {
                 .buttonStyle(.plain)
 
                 Divider().overlay(Color.dsBorder)
+                #endif
 
                 Button {
                     navigate(.helpFeedback)
