@@ -161,23 +161,57 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
                     purchasedIDs.insert(transaction.productID)
                 }
             } catch {
+                Self.logger.warning("Entitlement verification failed: \(error.localizedDescription)")
                 continue
             }
         }
 
         self.purchasedProductIDs = purchasedIDs
+        self.currentTier = Self.determineTier(from: purchasedIDs)
+    }
 
+    // MARK: - Entitlement Processing & Tier Logic
+    nonisolated internal static func determineTier(from purchasedIDs: Set<String>) -> SubscriptionTier {
         if purchasedIDs.contains("com.datesnap.premium.monthly") || purchasedIDs.contains("com.datesnap.premium.annual") {
-            self.currentTier = .premium
+            return .premium
         } else if purchasedIDs.contains("com.datesnap.plus.monthly") || purchasedIDs.contains("com.datesnap.plus.annual") {
-            self.currentTier = .plus
+            return .plus
         } else {
-            self.currentTier = .starter
+            return .starter
         }
     }
 
+    nonisolated internal static func processEntitlement<T>(
+        _ result: VerificationResult<T>,
+        productID: (T) -> String,
+        revocationDate: (T) -> Date?
+    ) throws -> String? {
+        let transaction = try checkVerified(result)
+        guard revocationDate(transaction) == nil else { return nil }
+        return productID(transaction)
+    }
+
+    nonisolated internal static func processEntitlements<T>(
+        _ results: [VerificationResult<T>],
+        productID: (T) -> String,
+        revocationDate: (T) -> Date?
+    ) -> Set<String> {
+        var purchasedIDs: Set<String> = []
+        for result in results {
+            do {
+                if let id = try processEntitlement(result, productID: productID, revocationDate: revocationDate) {
+                    purchasedIDs.insert(id)
+                }
+            } catch {
+                logger.warning("Entitlement verification failed: \(error.localizedDescription)")
+                continue
+            }
+        }
+        return purchasedIDs
+    }
+
     // MARK: - Verify Cryptographic JWS Signature
-    nonisolated private static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    nonisolated internal static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified:
             throw DateSnapError.subscription(.verificationFailed)
