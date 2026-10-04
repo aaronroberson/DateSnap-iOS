@@ -45,15 +45,19 @@ final class PurchaseViewModel: ObservableObject {
         products[annual ? plan.annualID : plan.monthlyID]
     }
 
-    /// Localized price from the App Store, or a fallback while products load.
-    func displayPrice(_ plan: Plan, annual: Bool, fallback: String) -> String {
-        product(plan, annual: annual)?.displayPrice ?? fallback
+    /// Localized price from the App Store. `nil` means the product is unavailable.
+    func displayPrice(_ plan: Plan, annual: Bool) -> String? {
+        product(plan, annual: annual)?.displayPrice
     }
 
     /// Annual price expressed per month, e.g. "$3.33".
-    func monthlyEquivalent(_ plan: Plan, fallback: String) -> String {
-        guard let annual = product(plan, annual: true) else { return fallback }
+    func monthlyEquivalent(_ plan: Plan) -> String? {
+        guard let annual = product(plan, annual: true) else { return nil }
         return (annual.price / 12).formatted(annual.priceFormatStyle)
+    }
+
+    func canPurchase(_ plan: Plan, annual: Bool) -> Bool {
+        !isLoadingProducts && !isPurchasing && product(plan, annual: annual) != nil
     }
 
     /// Free-trial length from the product's introductory offer, if it has one.
@@ -107,8 +111,25 @@ final class PurchaseViewModel: ObservableObject {
 
 // MARK: - Legal Links
 enum DateSnapLinks {
-    static let privacyPolicy = URL(string: "https://datesnap.app/privacy")!
-    static let support = URL(string: "https://datesnap.app/support")!
+    static let privacyPolicy: URL = {
+        guard let url = URL(string: "https://datesnap.app/privacy") else {
+            preconditionFailure("Invalid Privacy Policy URL")
+        }
+        return url
+    }()
+
+    static let support: URL = {
+        guard let url = URL(string: "https://datesnap.app/support") else {
+            preconditionFailure("Invalid Support URL")
+        }
+        return url
+    }()
+
     /// Apple's standard auto-renewable subscription EULA.
-    static let termsOfUse = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
+    static let termsOfUse: URL = {
+        guard let url = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/") else {
+            preconditionFailure("Invalid Terms of Use URL")
+        }
+        return url
+    }()
 }

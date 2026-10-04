@@ -200,26 +200,34 @@ public final class ScanViewModel: ObservableObject {
 
         if let context = modelContext {
             var newCandidates: [EventCandidate] = []
-            for candidate in rawCandidates {
-                let key = candidate.dedupeKey
-                let existing: EventCandidate? = key.isEmpty ? nil : {
-                    let descriptor = FetchDescriptor<EventCandidate>(predicate: #Predicate { $0.dedupeKey == key })
-                    return (try? context.fetch(descriptor))?.first
-                }()
-
-                if let existing {
-                    if existing.savedEvent == nil {
-                        // Same flyer scanned again before it was saved: resume reviewing the stored candidate.
-                        if !validCandidates.contains(where: { $0.id == existing.id }) {
-                            validCandidates.append(existing)
-                            understandings[existing.id] = understandings[candidate.id]
-                        }
+            do {
+                for candidate in rawCandidates {
+                    let key = candidate.dedupeKey
+                    let existing: EventCandidate?
+                    if key.isEmpty {
+                        existing = nil
                     } else {
-                        alreadySavedCount += 1
+                        let descriptor = FetchDescriptor<EventCandidate>(predicate: #Predicate { $0.dedupeKey == key })
+                        existing = try context.fetch(descriptor).first
                     }
-                } else if !newCandidates.contains(where: { $0.dedupeKey == key && !key.isEmpty }) {
-                    newCandidates.append(candidate)
+
+                    if let existing {
+                        if existing.savedEvent == nil {
+                            // Same flyer scanned again before it was saved: resume reviewing the stored candidate.
+                            if !validCandidates.contains(where: { $0.id == existing.id }) {
+                                validCandidates.append(existing)
+                                understandings[existing.id] = understandings[candidate.id]
+                            }
+                        } else {
+                            alreadySavedCount += 1
+                        }
+                    } else if !newCandidates.contains(where: { $0.dedupeKey == key && !key.isEmpty }) {
+                        newCandidates.append(candidate)
+                    }
                 }
+            } catch {
+                stage = .failed("Could not check for an existing event: \(error.localizedDescription)")
+                return
             }
 
             if !newCandidates.isEmpty {
@@ -231,6 +239,7 @@ public final class ScanViewModel: ObservableObject {
                     candidateCount: newCandidates.count
                 )
                 context.insert(scannedAsset)
+                var newInterpretationRecords: [InterpretationRecord] = []
                 for candidate in newCandidates {
                     context.insert(candidate)
                     candidate.scannedAsset = scannedAsset
@@ -238,10 +247,19 @@ public final class ScanViewModel: ObservableObject {
                        let result = pageResults.first(where: { $0.events.contains { $0.best.id == understanding.best.id } }),
                        let record = InterpretationRecord.make(for: understanding, in: result) {
                         context.insert(record)
+                        newInterpretationRecords.append(record)
                         candidate.interpretation = record
                     }
                 }
-                try? context.save()
+                do {
+                    try context.save()
+                } catch {
+                    for record in newInterpretationRecords { context.delete(record) }
+                    for candidate in newCandidates { context.delete(candidate) }
+                    context.delete(scannedAsset)
+                    stage = .failed("Could not save the scan: \(error.localizedDescription)")
+                    return
+                }
             }
             validCandidates += newCandidates
         } else {

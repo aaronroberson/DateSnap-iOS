@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import StoreKit
 
 // MARK: - Subscription Entitlement Tiers
@@ -27,8 +28,11 @@ public enum SubscriptionTier: String, CaseIterable, Identifiable, Sendable {
 }
 
 // MARK: - Subscription Service Protocol
+/// Refines `EntitlementProviding`: every subscription service that backs `ServiceContainer`
+/// carries the entitlement snapshot and the provenance-stamped refresh contract, so callers
+/// (e.g. scene-activation refresh) need no type-casting.
 @MainActor
-public protocol SubscriptionServiceProtocol: Sendable {
+public protocol SubscriptionServiceProtocol: EntitlementProviding {
     var currentTier: SubscriptionTier { get }
     var isSubscribed: Bool { get }
     func fetchProducts() async throws -> [Product]
@@ -42,10 +46,15 @@ public protocol SubscriptionServiceProtocol: Sendable {
 public final class SubscriptionService: ObservableObject, SubscriptionServiceProtocol {
     public static let shared = SubscriptionService()
 
+    nonisolated private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.datesnap.app", category: "SubscriptionService")
+
     @Published public private(set) var currentTier: SubscriptionTier = .starter
     @Published public private(set) var availableProducts: [Product] = []
     @Published public private(set) var purchasedProductIDs: Set<String> = []
     @Published public private(set) var isLoading: Bool = false
+    /// Latest resolved entitlement projection, stamped with the provenance that produced it.
+    /// Starts `.checking` and becomes `.verified`/`.unverified` after the first resolution pass.
+    @Published public private(set) var entitlementSnapshot: EntitlementSnapshot = .checking()
 
     public var isSubscribed: Bool {
         currentTier != .starter
@@ -64,7 +73,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
         updateListenerTask = listenForTransactions()
 
         Task {
-            await updateCustomerProductStatus()
+            await refreshEntitlements(.launch)
             _ = try? await fetchProducts()
         }
     }
@@ -79,10 +88,10 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             for await result in Transaction.updates {
                 do {
                     let transaction = try Self.checkVerified(result)
-                    await self?.updateCustomerProductStatus()
+                    await self?.refreshEntitlements(.transactionUpdate)
                     await transaction.finish()
                 } catch {
-                    // Transaction verification failed
+                    Self.logger.error("Transaction verification failed: \(error.localizedDescription)")
                 }
             }
         }
@@ -118,7 +127,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
         switch result {
         case .success(let verification):
             let transaction = try Self.checkVerified(verification)
-            await updateCustomerProductStatus()
+            await refreshEntitlements(.purchase)
             await transaction.finish()
             return currentTier
 
@@ -140,41 +149,62 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
 
         do {
             try await AppStore.sync()
-            await updateCustomerProductStatus()
+            await refreshEntitlements(.restore)
             return currentTier
         } catch {
             throw DateSnapError.subscription(.verificationFailed)
         }
     }
 
-    // MARK: - Update Entitlements Status
+    // MARK: - Entitlement Refresh
+    /// Transaction-driven refresh (protocol entry point retained for compatibility).
     public func updateCustomerProductStatus() async {
-        var purchasedIDs: Set<String> = []
+        await refreshEntitlements(.transactionUpdate)
+    }
+
+    /// Re-resolves entitlements from the current StoreKit transaction stream through the
+    /// canonical `SubscriptionEntitlementResolver` and stamps the snapshot with the given
+    /// provenance (launch, purchase, restore, transaction update, or scene activation).
+    /// Silent by design: never triggers sign-in UI and never toggles `isLoading` — use
+    /// `restorePurchases()` for the interactive path.
+    public func refreshEntitlements(_ provenance: EntitlementProvenance) async {
+        var records: [SubscriptionEntitlementRecord] = []
 
         for await result in Transaction.currentEntitlements {
-            do {
-                let transaction = try Self.checkVerified(result)
-                if transaction.revocationDate == nil {
-                    purchasedIDs.insert(transaction.productID)
-                }
-            } catch {
-                continue
+            switch result {
+            case .verified(let transaction):
+                records.append(SubscriptionEntitlementRecord(
+                    productID: transaction.productID,
+                    expirationDate: transaction.expirationDate,
+                    revocationDate: transaction.revocationDate,
+                    verification: .verified
+                ))
+            case .unverified(let transaction, _):
+                // Keep the unverifiable payload so the resolver fails the snapshot closed
+                // (mirrors the audited "failed verification fails the snapshot closed" contract).
+                Self.logger.warning("Entitlement verification failed for \(transaction.productID); resolver will fail the snapshot closed")
+                records.append(SubscriptionEntitlementRecord(
+                    productID: transaction.productID,
+                    expirationDate: transaction.expirationDate,
+                    revocationDate: transaction.revocationDate,
+                    verification: .unverified
+                ))
             }
         }
 
-        self.purchasedProductIDs = purchasedIDs
+        apply(SubscriptionEntitlementResolver.resolve(records, provenance: provenance))
+    }
 
-        if purchasedIDs.contains("com.datesnap.premium.monthly") || purchasedIDs.contains("com.datesnap.premium.annual") {
-            self.currentTier = .premium
-        } else if purchasedIDs.contains("com.datesnap.plus.monthly") || purchasedIDs.contains("com.datesnap.plus.annual") {
-            self.currentTier = .plus
-        } else {
-            self.currentTier = .starter
-        }
+    /// Applies a resolver output to the published state. Internal so tests can drive the
+    /// resolution path hermetically, without StoreKit.
+    func apply(_ resolution: SubscriptionEntitlementResolution) {
+        purchasedProductIDs = resolution.activeProductIDs
+        currentTier = resolution.snapshot.tier
+        entitlementSnapshot = resolution.snapshot
     }
 
     // MARK: - Verify Cryptographic JWS Signature
-    nonisolated private static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    nonisolated internal static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified:
             throw DateSnapError.subscription(.verificationFailed)

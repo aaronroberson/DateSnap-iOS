@@ -3,8 +3,7 @@ import sys
 import subprocess
 import json
 import urllib.request
-
-PROJECT_ID = "454854512779783540"
+import argparse
 
 SCREENS = [
     {"id": "6c145dff8ec540b9a51f806629e55c70", "slug": "01_premium_paywall", "title": "DateSnap - Premium Paywall"},
@@ -19,11 +18,40 @@ SCREENS = [
     {"id": "fc49f1067442461dbf28c683626a3b70", "slug": "10_reminder_schedule_editor", "title": "DateSnap - Reminder Schedule Editor"},
 ]
 
+def resolve_project_id(cli_project_id=None):
+    if cli_project_id:
+        return cli_project_id
+    return os.environ.get("STITCH_PROJECT_ID") or os.environ.get("PROJECT_ID") or None
+
+def build_headers(token, project_id=None):
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    if project_id:
+        headers["X-Goog-User-Project"] = project_id
+    return headers
+
+def parse_args(args=None):
+    parser = argparse.ArgumentParser(description="Download screen metadata, HTML, and images from Stitch.")
+    parser.add_argument(
+        "--project-id",
+        type=str,
+        default=None,
+        help="Stitch Project ID. Overrides STITCH_PROJECT_ID and PROJECT_ID environment variables."
+    )
+    return parser.parse_args(args)
+
 def get_token():
     res = subprocess.run(["gcloud", "auth", "print-access-token"], capture_output=True, text=True, check=True)
     return res.stdout.strip()
 
-def main():
+def main(args=None):
+    parsed_args = parse_args(args)
+    project_id = resolve_project_id(parsed_args.project_id)
+
+    if not project_id:
+        print("Warning: No project ID provided. Please set STITCH_PROJECT_ID or PROJECT_ID environment variable, or pass --project-id.", file=sys.stderr)
+
     token = get_token()
     out_dir = os.path.abspath(".stitch/screens")
     os.makedirs(out_dir, exist_ok=True)
@@ -36,13 +64,10 @@ def main():
         title = item["title"]
         print(f"Fetching screen metadata: {title} ({screen_id})...")
         
-        url = f"https://stitch.googleapis.com/v1/projects/{PROJECT_ID}/screens/{screen_id}"
+        url = f"https://stitch.googleapis.com/v1/projects/{project_id or ''}/screens/{screen_id}"
         req = urllib.request.Request(
             url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "X-Goog-User-Project": "gen-lang-client-0738580358"
-            }
+            headers=build_headers(token, project_id)
         )
         try:
             with urllib.request.urlopen(req) as resp:

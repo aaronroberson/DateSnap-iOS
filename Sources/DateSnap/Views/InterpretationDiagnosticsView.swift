@@ -1,6 +1,6 @@
+#if DEBUG
 import SwiftUI
 
-#if DEBUG
 // MARK: - Interpretation Diagnostics (DEBUG only)
 /// Developer view of how a scan was interpreted: route, fallback, the applied hypothesis, alternatives,
 /// field provenance, corrections and the numbered OCR evidence lines. Never compiled into Release.

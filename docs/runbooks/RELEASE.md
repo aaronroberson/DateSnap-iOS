@@ -40,12 +40,7 @@ Before archiving:
 ## 4. Archive, Export & Upload Commands
 
 ### Step A: Clean & Archive
-Set the authorized Apple Developer Team ID in the shell without committing it:
-
-```bash
-export DATESNAP_DEVELOPMENT_TEAM="<10-character Team ID>"
-test -n "$DATESNAP_DEVELOPMENT_TEAM"
-```
+Sign in to the authorized Apple Developer account in **Xcode → Settings → Accounts**, then select the intended team for the DateSnap target in **Signing & Capabilities**. The Debug and Release xcconfig files intentionally omit `DEVELOPMENT_TEAM`; keep automatic signing enabled and let Xcode resolve the team from the selected account. Do not add a Team ID to the xcconfig files.
 
 ```bash
 xcodebuild clean archive \
@@ -54,9 +49,10 @@ xcodebuild clean archive \
   -configuration Release \
   -destination "generic/platform=iOS" \
   -archivePath "./build/DateSnap.xcarchive" \
-  DEVELOPMENT_TEAM="$DATESNAP_DEVELOPMENT_TEAM" \
   CODE_SIGN_STYLE="Automatic"
 ```
+
+After archiving, a release owner must confirm that the archive is signed with the intended Apple Distribution identity before distribution.
 
 Before export, scan the archived Release application. This is a blocking check: do not distribute an archive containing mock service symbols, mock identifiers, Stitch metadata, or the Debug simulation/gallery UI.
 

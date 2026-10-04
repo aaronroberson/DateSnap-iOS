@@ -76,3 +76,27 @@ extension EnvironmentValues {
         set { self[ServiceContainerKey.self] = newValue }
     }
 }
+
+/// Injects the container through `transformEnvironment(\.self)` instead of
+/// `.environment(\.services, ...)`. A dynamic key-path write to `\.services`
+/// projects the computed getter first, which traps while the value is still
+/// unset — SwiftUI does that write while building child environments, so the
+/// app dies at first layout. Writing the underlying `ServiceContainerKey`
+/// storage directly avoids the trapping getter.
+@MainActor
+private struct ServiceContainerEnvironmentModifier: ViewModifier {
+    let services: ServiceContainer
+
+    func body(content: Content) -> some View {
+        content.transformEnvironment(\.self) { environment in
+            environment[ServiceContainerKey.self] = services
+        }
+    }
+}
+
+extension View {
+    @MainActor
+    func dateSnapServices(_ services: ServiceContainer) -> some View {
+        modifier(ServiceContainerEnvironmentModifier(services: services))
+    }
+}

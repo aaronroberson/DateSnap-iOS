@@ -13,6 +13,7 @@ public protocol NotificationServiceProtocol: Sendable {
         actionURL: String?
     ) async throws -> [String]
     func removePendingNotifications(identifiers: [String])
+    func removeAllPendingNotifications()
     func setupNotificationCategories()
 }
 
@@ -20,6 +21,8 @@ extension NotificationServiceProtocol {
     public func scheduleLocalNotifications(title: String, body: String, triggerDates: [Date], eventId: String?) async throws -> [String] {
         try await scheduleLocalNotifications(title: title, body: body, triggerDates: triggerDates, eventId: eventId, actionURL: nil)
     }
+
+    public func removeAllPendingNotifications() {}
 }
 
 // MARK: - Production Notification Service
@@ -167,6 +170,10 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
     public func removePendingNotifications(identifiers: [String]) {
         guard !identifiers.isEmpty else { return }
         notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+
+    public func removeAllPendingNotifications() {
+        notificationCenter.removeAllPendingNotificationRequests()
     }
 
     // MARK: - UNUserNotificationCenterDelegate

@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UIKit
 
 // Help & Feedback — care hub with searchable FAQs, topic guides,
 // support channels and a diagnostic summary. Pushed from Settings Hub.
@@ -27,25 +28,25 @@ struct HelpFeedbackView: View {
 
     let faqs: [FAQTopic] = [
         FAQTopic(id: 1, icon: "cpu.fill", question: "How does DateSnap find dates in screenshots?",
-                 answer: "DateSnap utilizes CoreML and on-device natural language parsing. When you snap or select an image, the app isolates date phrases (like \"Next Thursday at 8 PM\" or \"Nov 14-16\"), extracts temporal context, and formulates standard calendar records without sending your photo to any third-party server."),
+                 answer: "DateSnap uses Apple Vision to recognize text. Rules-based extraction is the default; if Apple Intelligence is available and enabled, it can help interpret ambiguous flyers. Review the event details before saving."),
         FAQTopic(id: 2, icon: "arrow.triangle.2.circlepath", question: "Why did an event scan with the wrong time?",
                  answer: "Posters with stylized serif typography or multi-timezone notices (e.g. \"7 PM EST / 4 PM PST\") can sometimes lead to ambiguous matches. You can tap any parsed event card to manually adjust the time or date pill before saving, or use the crop preview tool to pinpoint the specific time lockup."),
         FAQTopic(id: 3, icon: "lock.shield.fill", question: "Are private photos uploaded to a cloud?",
-                 answer: "Never. Your visual camera roll remains entirely localized. No screenshots, images, OCR strings, or metadata leave your physical device. We uphold a strict zero-telemetry media policy so your tickets, personal chats, and medical appointments stay private."),
+                 answer: "Image text recognition runs on the device. If you save an event, DateSnap writes it to the Calendar or Reminders destination you choose. Apple may sync those destinations according to your account settings."),
         FAQTopic(id: 4, icon: "arrow.left.arrow.right", question: "How do I export to Google or Outlook?",
-                 answer: "DateSnap seamlessly bridges into your default system EventKit calendar. If your iPhone already syncs with Google Calendar, Microsoft Exchange, or Outlook in iOS Settings > Calendar > Accounts, DateSnap automatically deposits your verified dates into your preferred cloud schedule."),
+                 answer: "DateSnap can add an event to a calendar available through Apple Calendar. To use Google or Outlook calendars, add the account in iOS Settings > Calendar > Accounts and select its calendar when saving."),
     ]
 
     let topics: [SupportTopic] = [
         SupportTopic(id: "quickStart", icon: "book.fill", title: "Quick Start",
-                     subtitle: "Master screenshot capture in 2 mins",
-                     body: "1. Screenshot any flyer, invite, or ticket.\n2. Open DateSnap — the Neural Intake Engine scans automatically.\n3. Review the parsed event card and adjust date or time pills if needed.\n4. Save to Apple Calendar & Reminders with 3-tier staggered alerts."),
+                     subtitle: "Scan and review an event",
+                     body: "1. Choose a flyer image in DateSnap.\n2. Review the dates and event details found in the image.\n3. Correct any details that need adjustment.\n4. Save the event to a Calendar or Reminders destination you choose."),
         SupportTopic(id: "troubleshootOCR", icon: "doc.text.viewfinder.fill", title: "Troubleshoot OCR",
                      subtitle: "Fix unread or blurred flyer dates",
-                     body: "Blurry or stylized dates are the most common OCR failure. Crop the scan preview to isolate the date lockup, raise the Confidence Threshold in Automation Settings to 85%+, or enable Draft Low Confidence Events so ambiguous scans land in your review tray instead of being discarded."),
+                     body: "Blurred, small, or stylized text can be hard to recognize. Try a clearer image with the event details in focus. Check and correct the extracted date, time, and location before saving."),
         SupportTopic(id: "permissions", icon: "lock.open.fill", title: "Permissions",
-                     subtitle: "Enable Calendar & Photos sync",
-                     body: "DateSnap needs Photos access (read-only) to intake screenshots and Calendar access (write-only) to save events. If a permission was denied, open iOS Settings > DateSnap and toggle Photos & Calendars back on. The app works fully on-device either way."),
+                     subtitle: "Choose images and save destinations",
+                     body: "Select an image when scanning. Calendar and Reminders access is requested when you choose to save an event there. You can review granted access in iOS Settings > Apps > DateSnap."),
     ]
 
     var filteredFAQs: [FAQTopic] {
@@ -73,8 +74,7 @@ struct HelpFeedbackView: View {
                 }
                 humanSupport
                 appEnvironment
-                bottomLinks
-                SettingsFooterNote(lines: ["DateSnap respects your time and peace of mind. All data extracted remains strictly yours."])
+                SettingsFooterNote(lines: ["Review extracted event details before saving."])
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
@@ -101,7 +101,6 @@ struct HelpFeedbackView: View {
                     .font(DSTypography.displayTitle())
                     .foregroundStyle(Color.dsForeground)
                 Spacer()
-                ValueChip(text: "Systems 100% On-Device", tint: .dsSuccess, systemImage: "checkmark.shield.fill")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -220,38 +219,17 @@ struct HelpFeedbackView: View {
     // MARK: - Privacy Guarantee
 
     private var privacyGuarantee: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("The DateSnap Privacy Guarantee")
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Image Processing")
                 .font(DSTypography.headlineCard())
                 .foregroundStyle(Color.dsForeground)
-            Text("Unlike cloud scanners, DateSnap processes your personal screenshots strictly on-device utilizing the local Apple Neural Engine.")
+            Text("Text recognition uses Apple Vision on this device. Event suggestions come from rules-based extraction, with optional on-device Apple Intelligence interpretation when available.")
                 .font(DSTypography.caption())
                 .foregroundStyle(Color.dsMutedForeground)
-            HStack(spacing: 10) {
-                guaranteeStat("Processing", "0.12s", "Local NPU")
-                guaranteeStat("Cloud Upload", "0 Bytes", "Air-Gapped")
-                guaranteeStat("Accuracy", "99.4%", "Temporal AI")
-            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .dsGlassCard(borderColor: Color.dsSuccess.opacity(0.3))
-    }
-
-    private func guaranteeStat(_ label: String, _ value: String, _ caption: String) -> some View {
-        VStack(spacing: 3) {
-            Text(label.uppercased())
-                .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(Color.dsMutedForeground)
-            Text(value)
-                .font(DSTypography.headlineCard())
-                .foregroundStyle(Color.dsSuccess)
-            Text(caption)
-                .font(.system(size: 10))
-                .foregroundStyle(Color.dsMutedForeground.opacity(0.8))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.dsMuted))
+        .dsGlassCard()
     }
 
     // MARK: - FAQ
@@ -314,8 +292,8 @@ struct HelpFeedbackView: View {
 
     private var humanSupport: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "headphones", title: "Get Human Support",
-                                  tint: .dsInfo, trailing: "Reply < 2 hrs")
+            SettingsSectionHeader(icon: "headphones", title: "Get Support",
+                                  tint: .dsInfo)
             VStack(spacing: 14) {
                 Button {
                     if let url = URL(string: "mailto:support@datesnap.app?subject=DateSnap%20Support%20Request") {
@@ -324,7 +302,7 @@ struct HelpFeedbackView: View {
                 } label: {
                     SettingRow(icon: "envelope.fill", iconTint: .dsPrimary,
                                title: "Send Message to Support",
-                               subtitle: "Direct access to DateSnap core engineers") {
+                               subtitle: "Email support@datesnap.app") {
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
@@ -372,13 +350,11 @@ struct HelpFeedbackView: View {
 
     private var appEnvironment: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "terminal", title: "App Environment",
-                                  tint: .dsSuccess, trailing: "Ready")
+                SettingsSectionHeader(icon: "terminal", title: "App Environment",
+                                  tint: .dsInfo)
             VStack(spacing: 12) {
-                envRow("Client Version", "v4.2.1 (Build 4802)")
-                envRow("Core Engine", "Apple Neural v18.2")
-                envRow("Local Vision OCR", "Hardware Accelerated")
-                envRow("Calendar Bridge", "Connected (Full Sync)")
+                envRow("DateSnap Version", appVersion)
+                envRow("iOS Version", UIDevice.current.systemVersion)
 
                 Divider().overlay(Color.dsBorder)
 
@@ -420,38 +396,15 @@ struct HelpFeedbackView: View {
         """
         DateSnap Diagnostic Summary
         ---------------------------
-        Client: v4.2.1 (Build 4802)
-        Core Engine: Apple Neural v18.2
-        Local Vision OCR: Hardware Accelerated
-        Calendar Bridge: Connected (Full Sync)
-        Scan Profile: \(settings.scanProfile.rawValue)
-        Confidence: \(Int(settings.confidence))%
-        Zero-Cloud: Enabled
+        DateSnap Version: \(appVersion)
+        iOS Version: \(UIDevice.current.systemVersion)
         """
     }
 
-    private var bottomLinks: some View {
-        HStack(spacing: 14) {
-            Button {
-                appState.showToast("Community Discord invite copied")
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "person.2.fill")
-                    Text("Community Discord")
-                }
-            }
-            Text("|").foregroundStyle(Color.dsMutedForeground.opacity(0.4))
-            Button {
-                appState.showToast("Opening Release Notes…")
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "doc.text.fill")
-                    Text("Release Notes")
-                }
-            }
-        }
-        .font(DSTypography.caption())
-        .foregroundStyle(Color.dsSecondary)
+    private var appVersion: String {
+        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown"
+        return "\(short) (\(build))"
     }
 }
 

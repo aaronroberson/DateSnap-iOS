@@ -1,5 +1,7 @@
 # DateSnap Production Readiness Implementation Plan
 
+> **Historical plan — 2026-10-01.** This plan records release preparation tasks as understood on that date. Revalidate configuration, commands, and approval status before acting on it.
+
 ## 1. Objective
 
 Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release candidate for TestFlight and App Store submission, with every approval artifact tied to one immutable commit and build number. The current audit outcome is **no-go** until all blockers below are resolved and every blocking verification in this plan passes.

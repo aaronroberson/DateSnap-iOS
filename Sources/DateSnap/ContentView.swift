@@ -98,7 +98,7 @@ struct ContentView: View {
             .environmentObject(settingsState)
             .environmentObject(scanViewModel)
             .environmentObject(homeViewModel)
-            .environment(\.services, services)
+            .dateSnapServices(services)
         }
         .onAppear {
             appState.bind(subscription: services.subscription)
@@ -108,9 +108,11 @@ struct ContentView: View {
             openPendingDeepLink()
         }
         .onChange(of: scenePhase) { _, phase in
-            // Returning from iOS Settings (or anywhere else): re-read permission state.
+            // Returning from iOS Settings (or anywhere else): re-read permission state
+            // and re-resolve entitlements (purchases made or expired while backgrounded).
             if phase == .active {
                 homeViewModel.refreshStatus()
+                Task { await services.subscription.refreshEntitlements(.sceneActivation) }
             }
         }
     }
