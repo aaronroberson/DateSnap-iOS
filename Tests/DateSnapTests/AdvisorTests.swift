@@ -96,6 +96,7 @@ struct IntelligenceUsagePolicyTests {
 @Suite("Event action link validation")
 struct EventActionLinkValidationTests {
     @Test("Validates and restricts action link schemes to allowed set")
+    @MainActor
     func actionLinkValidation() {
         // Call actions
         let validCall = ActionSuggestion(kind: .call, target: "+1 (555) 123-4567")
