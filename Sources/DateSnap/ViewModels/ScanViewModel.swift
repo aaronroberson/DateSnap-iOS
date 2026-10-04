@@ -10,6 +10,7 @@ public final class ScanViewModel: ObservableObject {
     private let photoLibraryService: PhotoLibraryServiceProtocol
     private let ocrService: OCRServiceProtocol
     private let understanding: EventUnderstandingProviding
+    private let entitlements: any EntitlementProviding
 
     // MARK: - Pipeline State
     public enum ScanStage: Equatable {
@@ -62,6 +63,7 @@ public final class ScanViewModel: ObservableObject {
         self.photoLibraryService = services.photoLibrary
         self.ocrService = services.ocr
         self.understanding = services.understanding
+        self.entitlements = services.subscription
     }
 
     // MARK: - Scan PHAsset Pipeline
@@ -100,7 +102,21 @@ public final class ScanViewModel: ObservableObject {
 
     // MARK: - Files / PDF Import Pipeline (Premium)
     /// Scans a PDF (every page) or an image file picked from Files / iCloud Drive.
-    public func scanDocument(at url: URL, modelContext: ModelContext? = nil) async {
+    @discardableResult
+    public func scanDocument(
+        at url: URL,
+        modelContext: ModelContext? = nil
+    ) async -> FeatureAccessDecision {
+        let decision = FeatureAccessPolicy.decision(
+            for: .documentImport,
+            snapshot: entitlements.entitlementSnapshot
+        )
+        guard decision == .allowed else {
+            stage = .failed(decision.documentImportMessage)
+            isProcessing = false
+            return decision
+        }
+
         isProcessing = true
         stage = .fetchingImage
         let accessing = url.startAccessingSecurityScopedResource()
@@ -111,7 +127,7 @@ public final class ScanViewModel: ObservableObject {
             guard let document = PDFDocument(url: url), document.pageCount > 0 else {
                 stage = .failed("This PDF could not be opened.")
                 isProcessing = false
-                return
+                return .allowed
             }
             let pages = (0..<min(document.pageCount, 30)).compactMap { document.page(at: $0) }.map(Self.render(page:))
             await scanPages(pages, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext)
@@ -119,10 +135,11 @@ public final class ScanViewModel: ObservableObject {
             guard let data = try? Data(contentsOf: url) else {
                 stage = .failed("This file could not be read.")
                 isProcessing = false
-                return
+                return .allowed
             }
             await scanImageData(data, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext)
         }
+        return .allowed
     }
 
     private static func render(page: PDFPage) -> UIImage {

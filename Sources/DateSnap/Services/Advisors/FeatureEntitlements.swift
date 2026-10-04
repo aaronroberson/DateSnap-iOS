@@ -110,6 +110,19 @@ public struct EntitlementSnapshot: Sendable, Equatable {
 public enum FeatureAccessDecision: Sendable, Equatable {
     case allowed
     case denied(FeatureAccessDenyReason)
+
+    var documentImportMessage: String {
+        switch self {
+        case .allowed:
+            return ""
+        case .denied(.checkingEntitlements):
+            return "DateSnap is still checking your subscription. Please try again shortly."
+        case .denied(.unverified), .denied(.unavailable):
+            return "DateSnap could not verify your subscription. Please try again."
+        case .denied(.requiresTier):
+            return PremiumFeature.documentImport.upgradeReason
+        }
+    }
 }
 
 // MARK: - Feature Access Deny Reason

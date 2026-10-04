@@ -78,6 +78,29 @@ struct MockDataCleanupTests {
         #expect(store.fetchCount == 0)
     }
 
+    @Test("Document import enforces the current verified Premium entitlement at its boundary")
+    func documentImportAuthorization() async {
+        for snapshot in [
+            EntitlementSnapshot.verified(.starter, provenance: .none),
+            EntitlementSnapshot.verified(.plus, provenance: .none),
+            EntitlementSnapshot(tier: .premium, state: .checking, provenance: .none),
+            EntitlementSnapshot(tier: .premium, state: .unverified, provenance: .none),
+            EntitlementSnapshot(tier: .premium, state: .unavailable, provenance: .none),
+        ] {
+            let store = OfflineSubscriptionService(snapshot: snapshot)
+            let scanner = ScanViewModel(services: services(subscription: store))
+            let decision = await scanner.scanDocument(at: URL(fileURLWithPath: "/not-readable.pdf"))
+
+            #expect(decision != .allowed)
+            #expect(scanner.isProcessing == false)
+        }
+
+        let premium = OfflineSubscriptionService(snapshot: .verified(.premium, provenance: .none))
+        let scanner = ScanViewModel(services: services(subscription: premium))
+        let decision = await scanner.scanDocument(at: URL(fileURLWithPath: "/not-readable.pdf"))
+        #expect(decision == .allowed)
+    }
+
     @Test("OCR errors stop a scan and reach the scan state")
     func scanSurfacesOCRError() async {
         let scanner = ScanViewModel(services: services(ocr: FailingOCRService()))
@@ -330,10 +353,12 @@ private final class TestNotificationService: NotificationServiceProtocol, @unche
 private final class OfflineSubscriptionService: SubscriptionServiceProtocol {
     private(set) var fetchCount = 0
     var failsOffline = false
-    var currentTier: SubscriptionTier { .starter }
-    var isSubscribed: Bool { false }
-    var entitlementSnapshot: EntitlementSnapshot {
-        EntitlementSnapshot(tier: currentTier, state: .verified, evaluatedAt: Date(), provenance: .none)
+    var entitlementSnapshot: EntitlementSnapshot
+    var currentTier: SubscriptionTier { entitlementSnapshot.tier }
+    var isSubscribed: Bool { currentTier != .starter }
+
+    init(snapshot: EntitlementSnapshot = .verified(.starter, provenance: .none)) {
+        entitlementSnapshot = snapshot
     }
 
     func refreshEntitlements(_ provenance: EntitlementProvenance) async {}
