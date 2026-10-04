@@ -1,6 +1,58 @@
 import Foundation
 import EventKit
 
+protocol CalendarEventStoreProviding: Sendable {
+    func authorizationStatus() -> EKAuthorizationStatus
+    func requestAccess() async throws -> Bool
+    func writableCalendars() -> [EKCalendar]
+    func defaultCalendar() -> EKCalendar?
+    func makeEvent() -> EKEvent
+    func save(_ event: EKEvent) throws
+    func remove(_ event: EKEvent) throws
+    func existingEvent(withExternalIdentifier identifier: String) -> EKEvent?
+}
+
+private final class LiveCalendarEventStore: CalendarEventStoreProviding, @unchecked Sendable {
+    private let eventStore: EKEventStore
+
+    init(eventStore: EKEventStore) {
+        self.eventStore = eventStore
+    }
+
+    func authorizationStatus() -> EKAuthorizationStatus {
+        EKEventStore.authorizationStatus(for: .event)
+    }
+
+    func requestAccess() async throws -> Bool {
+        try await eventStore.requestFullAccessToEvents()
+    }
+
+    func writableCalendars() -> [EKCalendar] {
+        eventStore.calendars(for: .event).filter(\.allowsContentModifications)
+    }
+
+    func defaultCalendar() -> EKCalendar? {
+        eventStore.defaultCalendarForNewEvents
+    }
+
+    func makeEvent() -> EKEvent {
+        EKEvent(eventStore: eventStore)
+    }
+
+    func save(_ event: EKEvent) throws {
+        try eventStore.save(event, span: .thisEvent, commit: true)
+    }
+
+    func remove(_ event: EKEvent) throws {
+        try eventStore.remove(event, span: .thisEvent, commit: true)
+    }
+
+    func existingEvent(withExternalIdentifier identifier: String) -> EKEvent? {
+        let items = eventStore.calendarItems(withExternalIdentifier: identifier)
+        return items.compactMap { $0 as? EKEvent }.first ?? eventStore.event(withIdentifier: identifier)
+    }
+}
+
 // MARK: - Calendar Service Protocol
 public protocol CalendarServiceProtocol: Sendable {
     func requestEventAccess() async throws -> Bool
@@ -15,45 +67,36 @@ public protocol CalendarServiceProtocol: Sendable {
 
 // MARK: - Production Calendar Service
 public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable {
-    private let eventStore: EKEventStore
+    private let eventStore: any CalendarEventStoreProviding
 
     public init(eventStore: EKEventStore = EKEventStore()) {
+        self.eventStore = LiveCalendarEventStore(eventStore: eventStore)
+    }
+
+    init(eventStore: any CalendarEventStoreProviding) {
         self.eventStore = eventStore
     }
 
     // MARK: - Authorization
     public func authorizationStatus() -> EKAuthorizationStatus {
-        EKEventStore.authorizationStatus(for: .event)
+        eventStore.authorizationStatus()
     }
 
     public func requestEventAccess() async throws -> Bool {
-        if #available(iOS 17.0, *) {
-            do {
-                let granted = try await eventStore.requestFullAccessToEvents()
-                return granted
-            } catch {
-                throw DateSnapError.calendar(.accessDenied)
-            }
-        } else {
-            return try await withCheckedThrowingContinuation { continuation in
-                eventStore.requestAccess(to: .event) { granted, error in
-                    if let error = error {
-                        continuation.resume(throwing: DateSnapError.calendar(.eventCreationFailed(error.localizedDescription)))
-                    } else {
-                        continuation.resume(returning: granted)
-                    }
-                }
-            }
+        do {
+            return try await eventStore.requestAccess()
+        } catch {
+            throw DateSnapError.calendar(.accessDenied)
         }
     }
 
     // MARK: - Calendars
     public func fetchWritableCalendars() -> [EKCalendar] {
-        return eventStore.calendars(for: .event).filter { $0.allowsContentModifications }
+        eventStore.writableCalendars()
     }
 
     public func defaultCalendar() -> EKCalendar? {
-        return eventStore.defaultCalendarForNewEvents
+        eventStore.defaultCalendar()
     }
 
     // MARK: - Create Event
@@ -87,12 +130,12 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
             throw DateSnapError.calendar(.noWritableCalendarFound)
         }
 
-        let event = EKEvent(eventStore: eventStore)
+        let event = eventStore.makeEvent()
         event.calendar = targetCalendar
         apply(candidate: candidate, alarms: alarms, to: event)
 
         do {
-            try eventStore.save(event, span: .thisEvent, commit: true)
+            try eventStore.save(event)
             let externalId = event.calendarItemExternalIdentifier ?? event.eventIdentifier ?? UUID().uuidString
             return externalId
         } catch {
@@ -113,7 +156,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         if let calendar { event.calendar = calendar }
         apply(candidate: candidate, alarms: alarms, to: event)
         do {
-            try eventStore.save(event, span: .thisEvent, commit: true)
+            try eventStore.save(event)
             return event.calendarItemExternalIdentifier ?? externalIdentifier
         } catch {
             throw DateSnapError.calendar(.eventCreationFailed(error.localizedDescription))
@@ -123,15 +166,14 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
     public func deleteEvent(externalIdentifier: String) throws {
         guard let event = existingEvent(externalIdentifier) else { return }
         do {
-            try eventStore.remove(event, span: .thisEvent, commit: true)
+            try eventStore.remove(event)
         } catch {
             throw DateSnapError.calendar(.eventCreationFailed(error.localizedDescription))
         }
     }
 
     private func existingEvent(_ externalIdentifier: String) -> EKEvent? {
-        let items = eventStore.calendarItems(withExternalIdentifier: externalIdentifier)
-        return items.compactMap { $0 as? EKEvent }.first ?? eventStore.event(withIdentifier: externalIdentifier)
+        eventStore.existingEvent(withExternalIdentifier: externalIdentifier)
     }
 
     func apply(candidate: EventCandidate, alarms: [TimeInterval] = [], to event: EKEvent) {
