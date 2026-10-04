@@ -20,6 +20,8 @@ rg_args=(
   --glob '!build/**'
   --glob '!DerivedData/**'
   --glob '!node_modules/**'
+  --glob "!docs/**"
+  --glob "!README.md"
   --glob '!scripts/verify-no-mock.sh'
   --glob '!scripts/mock-allowlist.txt'
 )
