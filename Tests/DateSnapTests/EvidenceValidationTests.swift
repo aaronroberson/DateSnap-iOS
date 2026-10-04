@@ -39,8 +39,8 @@ struct EvidenceValidationTests {
         #expect(outcome.rejectedFields.isEmpty)
         #expect(merged.title.value == "SUMMER NIGHTS")
         #expect(merged.title.provenance == .modelInterpretation)
-        #expect(Calendar.current.dateComponents([.hour, .minute], from: merged.start.value) == DateComponents(hour: 20, minute: 30))
-        #expect(merged.doorsTime.map { Calendar.current.component(.hour, from: $0) } == 19)
+        #expect(testCalendar.dateComponents([.hour, .minute], from: merged.start.value) == DateComponents(hour: 20, minute: 30))
+        #expect(merged.doorsTime.map { testCalendar.component(.hour, from: $0) } == 19)
         #expect(merged.category == .concert)
         #expect(merged.start.evidence.contains { $0.lineID == 5 })
     }
@@ -67,13 +67,13 @@ struct EvidenceValidationTests {
         let a = analysis()
         let baseline = try #require(a.events.first?.best)
         // Rules already pick the headliner set (line 5) because "Lounge Opens" reads as doors.
-        #expect(Calendar.current.component(.hour, from: baseline.start.value) == 20)
+        #expect(testCalendar.component(.hour, from: baseline.start.value) == 20)
         let hypothesis = EventHypothesis(startTimeLineID: 4, startTimeText: "7:00 PM", doorsTimeLineID: 4, doorsTimeText: "7:00 PM",
                                          reason: "startTimeLine")
         let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor)
         #expect(outcome.rejectedFields.contains("startTime"))
         let merged = outcome.candidate
-        #expect(merged.map { Calendar.current.component(.hour, from: $0.start.value) } ?? 20 == 20)
+        #expect(merged.map { testCalendar.component(.hour, from: $0.start.value) } ?? 20 == 20)
         #expect(merged?.explanations.isEmpty ?? true)
     }
 
@@ -102,7 +102,7 @@ struct EvidenceValidationTests {
         let alternatives = InterpretationRanker.deterministicAlternatives(for: baseline, titleCandidates: [])
         #expect(alternatives.count == 1)
         let swapped = try #require(alternatives.first)
-        #expect(Calendar.current.dateComponents([.month, .day], from: swapped.start.value) == DateComponents(month: 5, day: 4))
+        #expect(testCalendar.dateComponents([.month, .day], from: swapped.start.value) == DateComponents(month: 5, day: 4))
 
         let ranked = InterpretationRanker.rank(baseline: baseline, modelCandidate: nil, deterministicAlternatives: alternatives, ocrMeanConfidence: 0.95)
         let questions = InterpretationRanker.questions(best: ranked.best, alternatives: ranked.alternatives)

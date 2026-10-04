@@ -14,10 +14,22 @@ func makeOCR(_ lines: [(String, CGFloat)], confidence: Float = 0.95) -> OCRResul
 }
 
 let testAnchor: Date = {
+    NSTimeZone.default = TimeZone(secondsFromGMT: 0)!
     var calendar = Calendar(identifier: .gregorian)
-    calendar.timeZone = .current
+    calendar.timeZone = TimeZone(secondsFromGMT: 0)!
     return calendar.date(from: DateComponents(year: 2026, month: 9, day: 1, hour: 12))!
 }()
+
+let testFutureDate: Date = {
+    testCalendar.date(from: DateComponents(year: 2030, month: 9, day: 1, hour: 12))!
+}()
+
+var testCalendar: Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.locale = Locale(identifier: "en_US_POSIX")
+    calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+    return calendar
+}
 
 @Suite("Rule-based event understanding")
 struct RuleBasedEventAnalyzerTests {
@@ -53,9 +65,9 @@ struct RuleBasedEventAnalyzerTests {
         let best = try #require(analysis.events.first?.best)
         #expect(best.title.value == "NEON SUNSET")
         #expect(!best.title.evidence.isEmpty)
-        #expect(Calendar.current.component(.hour, from: best.start.value) == 20)
+        #expect(testCalendar.component(.hour, from: best.start.value) == 20)
         #expect(best.start.provenance == .explicitText)
-        #expect(best.doorsTime.map { Calendar.current.component(.hour, from: $0) } == 19)
+        #expect(best.doorsTime.map { testCalendar.component(.hour, from: $0) } == 19)
         #expect(best.organizer.value == "Void Acoustics")
         #expect(best.address.value == "8440 Sunset Blvd, West Hollywood, CA")
         #expect(best.durationSource == .categoryDefault)

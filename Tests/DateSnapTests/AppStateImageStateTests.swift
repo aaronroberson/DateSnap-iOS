@@ -11,8 +11,8 @@ struct AppStateImageStateTests {
     func clearSourceImagesWhenPopulated() {
         let appState = AppState()
         let testImage = UIImage()
-        let candidate1 = EventCandidate(title: "Concert", startDate: Date())
-        let candidate2 = EventCandidate(title: "Art Exhibit", startDate: Date())
+        let candidate1 = EventCandidate(title: "Concert", startDate: testAnchor)
+        let candidate2 = EventCandidate(title: "Art Exhibit", startDate: testAnchor)
 
         appState.lastScanImage = testImage
         appState.rememberSourceImage(testImage, for: [candidate1, candidate2])

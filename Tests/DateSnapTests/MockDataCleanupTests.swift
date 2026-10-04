@@ -72,7 +72,7 @@ struct MockDataCleanupTests {
         #expect(scanner.rawOcrText.localizedCaseInsensitiveContains("NEON SUNSET"))
         #expect(scanner.lastResult?.route == .rulesOnly)
         #expect(!candidates.isEmpty)
-        #expect(candidates.contains { $0.startDate > Date() })
+        #expect(candidates.contains { $0.startDate > testAnchor })
         #expect(photos.requestCount == 0)
         #expect(photos.fetchCount == 0)
         #expect(store.fetchCount == 0)
@@ -129,7 +129,7 @@ struct MockDataCleanupTests {
     @Test("Calendar failure prevents a saved success result")
     func calendarFailureDoesNotCommit() async throws {
         let container = try modelContainer()
-        let candidate = EventCandidate(title: "Calendar failure", startDate: Date().addingTimeInterval(86_400))
+        let candidate = EventCandidate(title: "Calendar failure", startDate: testFutureDate)
         let review = EventReviewViewModel(candidate: candidate, services: services(calendar: TestCalendarService(createError: .calendar)))
 
         let result = await review.commitEvent(modelContext: container.mainContext)
@@ -148,9 +148,9 @@ struct MockDataCleanupTests {
         let container = try modelContainer()
         let candidate = EventCandidate(
             title: "Reminder failure",
-            startDate: Date().addingTimeInterval(86_400)
+            startDate: testFutureDate
         )
-        candidate.rsvpDeadline = Date().addingTimeInterval(3_600)
+        candidate.rsvpDeadline = testFutureDate.addingTimeInterval(-3_600)
         let review = EventReviewViewModel(
             candidate: candidate,
             services: services(
@@ -178,8 +178,8 @@ struct MockDataCleanupTests {
     func deadlineReminderAuthorization() async throws {
         for tier in SubscriptionTier.allCases {
             let container = try modelContainer()
-            let candidate = EventCandidate(title: "Tier \(tier.rawValue)", startDate: Date().addingTimeInterval(86_400))
-            candidate.rsvpDeadline = Date().addingTimeInterval(7_200)
+            let candidate = EventCandidate(title: "Tier \(tier.rawValue)", startDate: testFutureDate)
+            candidate.rsvpDeadline = testFutureDate.addingTimeInterval(-7_200)
             let reminders = TestReminderService()
             let store = OfflineSubscriptionService(snapshot: .verified(tier, provenance: .none))
             let review = EventReviewViewModel(
@@ -198,8 +198,8 @@ struct MockDataCleanupTests {
     @Test("Downgrading while editing prevents the deadline reminder side effect")
     func deadlineReminderDowngradeDuringEdit() async throws {
         let container = try modelContainer()
-        let candidate = EventCandidate(title: "Downgraded", startDate: Date().addingTimeInterval(86_400))
-        candidate.rsvpDeadline = Date().addingTimeInterval(7_200)
+        let candidate = EventCandidate(title: "Downgraded", startDate: testFutureDate)
+        candidate.rsvpDeadline = testFutureDate.addingTimeInterval(-7_200)
         let reminders = TestReminderService()
         let store = OfflineSubscriptionService(snapshot: .verified(.premium, provenance: .none))
         let review = EventReviewViewModel(
@@ -219,7 +219,7 @@ struct MockDataCleanupTests {
     func persistenceFailuresAreSurfaced() throws {
         let container = try modelContainer()
         let context = container.mainContext
-        let candidate = EventCandidate(title: "Persistence failure", startDate: Date().addingTimeInterval(86_400))
+        let candidate = EventCandidate(title: "Persistence failure", startDate: testFutureDate)
         let saved = SavedEvent(candidate: candidate)
         context.insert(candidate)
         context.insert(saved)
@@ -243,7 +243,7 @@ struct MockDataCleanupTests {
     @Test("Failed Calendar and Reminder cleanup retains the DateSnap record and identifiers")
     func externalCleanupFailureIsPartial() throws {
         let container = try modelContainer()
-        let candidate = EventCandidate(title: "Keep cleanup record", startDate: Date().addingTimeInterval(86_400))
+        let candidate = EventCandidate(title: "Keep cleanup record", startDate: testFutureDate)
         let saved = SavedEvent(
             externalCalendarEventId: "calendar-id",
             externalReminderIds: ["reminder-id"],
@@ -458,7 +458,7 @@ struct RescueRegressionRestorationTests {
     }
 
     private func candidate() -> EventCandidate {
-        EventCandidate(title: "Local Event", startDate: Date().addingTimeInterval(86_400 * 21))
+        EventCandidate(title: "Local Event", startDate: testFutureDate)
     }
 
     @Test("Event review draft/discard/commit storage failures are surfaced")
@@ -610,7 +610,7 @@ struct GenADenialRestorationTests {
     @Test("Denied local notifications do not hide a successful Calendar save")
     func notificationDenialIsPartialAndSurfaced() async throws {
         let container = try modelContainer()
-        let candidate = EventCandidate(title: "Notification denial", startDate: Date().addingTimeInterval(86_400))
+        let candidate = EventCandidate(title: "Notification denial", startDate: testFutureDate)
         let review = EventReviewViewModel(
             candidate: candidate,
             services: services(notifications: TestNotificationService(scheduleError: .notification))

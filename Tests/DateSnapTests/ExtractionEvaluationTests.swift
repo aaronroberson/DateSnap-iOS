@@ -85,7 +85,7 @@ struct EvaluationReport: CustomStringConvertible {
 enum ExtractionEvaluator {
     static func evaluate(_ pipeline: EventUnderstandingProviding, route: String, anchor: Date) async -> EvaluationReport {
         var report = EvaluationReport(route: route)
-        let calendar = Calendar.current
+        let calendar = testCalendar
         for flyer in EvaluationFixtures.flyers {
             let ocr = makeOCR(flyer.lines)
             let clock = ContinuousClock.now

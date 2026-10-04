@@ -66,7 +66,7 @@ struct EventUnderstandingPipelineTests {
         #expect(result.route == .onDeviceModel)
         let best = try #require(result.events.first?.best)
         #expect(best.start.provenance == .modelInterpretation)
-        #expect(Calendar.current.component(.hour, from: best.start.value) == 20)
+        #expect(testCalendar.component(.hour, from: best.start.value) == 20)
         #expect(best.doorsTime != nil)
     }
 

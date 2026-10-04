@@ -61,7 +61,7 @@ struct DateSnapInferenceTests {
     func testNumericDateLocaleDisambiguation() {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
-        let anchor = Date()
+        let anchor = testAnchor
 
         let timeDummy: DateInference.TimeInfo = (hasTime: false, startHour: nil, startMinute: nil, endHour: nil, endMinute: nil, doorsHour: nil, doorsMinute: nil)
 
@@ -291,7 +291,7 @@ struct DateSnapInferenceTests {
 
     @Test("Receipts, shipping notices, and pure timestamps are rejected as false positives")
     func testFalsePositiveFiltering() {
-        let anchor = Date()
+        let anchor = testAnchor
 
         // Grocery / restaurant receipt
         let receiptText = """
