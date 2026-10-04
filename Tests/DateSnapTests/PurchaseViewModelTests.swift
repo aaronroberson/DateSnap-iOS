@@ -32,6 +32,11 @@ struct PurchaseViewModelTests {
 private struct OfflineSubscriptionService: SubscriptionServiceProtocol {
     var currentTier: SubscriptionTier { .starter }
     var isSubscribed: Bool { false }
+    var entitlementSnapshot: EntitlementSnapshot {
+        EntitlementSnapshot(tier: currentTier, state: .verified, evaluatedAt: Date(), provenance: .none)
+    }
+
+    func refreshEntitlements(_ provenance: EntitlementProvenance) async {}
 
     func fetchProducts() async throws -> [Product] {
         throw URLError(.notConnectedToInternet)

@@ -13,6 +13,7 @@
 		071BA06AFB1CA36EB2D65BD1 /* ScanFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BE3C61707DF08BEE6EC9B3 /* ScanFlowViews.swift */; };
 		08CB0F2787F589C0AABDA003 /* EventReviewViewModel+Interpretation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8898168BD83A0BF6DA692A /* EventReviewViewModel+Interpretation.swift */; };
 		0EC46973BCA434CE74478472 /* InterpretationRecordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFA1093859A31B599707112 /* InterpretationRecordTests.swift */; };
+		1265CA6830F19E8FFF2585DE /* SceneActivationRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EA3487B810BEF142CD1AE6 /* SceneActivationRefreshTests.swift */; };
 		12B4374B0516C77DCCE73121 /* MarketingKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850A036788CAC8DA0EEEE06F /* MarketingKitView.swift */; };
 		15BDAB1B0AF49847C558A6D5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9163CE168D33CAFEB6C4463 /* Colors.swift */; };
 		16472F46D8B0CC9C933EE865 /* AppleFoundationModelInterpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480D82BA047E5B777F2BA01A /* AppleFoundationModelInterpreter.swift */; };
@@ -160,6 +161,7 @@
 		A9BE3C61707DF08BEE6EC9B3 /* ScanFlowViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanFlowViews.swift; sourceTree = "<group>"; };
 		AB4CC6AE4E1EBD17B5A02909 /* SubscriptionEntitlementResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEntitlementResolver.swift; sourceTree = "<group>"; };
 		AC72F417245B2C15484F57A6 /* DateSnap-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DateSnap-Release.xcconfig"; sourceTree = "<group>"; };
+		B9EA3487B810BEF142CD1AE6 /* SceneActivationRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneActivationRefreshTests.swift; sourceTree = "<group>"; };
 		BCADB942FEA26C318100B80D /* DateSnap-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "DateSnap-Debug.xcconfig"; sourceTree = "<group>"; };
 		C3F224096BFB25D58987AA7F /* EvidenceValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceValidator.swift; sourceTree = "<group>"; };
 		C4AD9CF639664B9DE3B5DD12 /* HomeEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeEmptyStateView.swift; sourceTree = "<group>"; };
@@ -247,6 +249,7 @@
 				CAFA1093859A31B599707112 /* InterpretationRecordTests.swift */,
 				17AA918A3F1A384D8BEA4BCC /* MockDataCleanupTests.swift */,
 				24295C2A50C212D3157CF521 /* PurchaseViewModelTests.swift */,
+				B9EA3487B810BEF142CD1AE6 /* SceneActivationRefreshTests.swift */,
 			);
 			path = DateSnapTests;
 			sourceTree = "<group>";
@@ -549,6 +552,7 @@
 				0EC46973BCA434CE74478472 /* InterpretationRecordTests.swift in Sources */,
 				78D1B41AC6B099D2850D2B8F /* MockDataCleanupTests.swift in Sources */,
 				481E9B794D0FCDC4A2E56D85 /* PurchaseViewModelTests.swift in Sources */,
+				1265CA6830F19E8FFF2585DE /* SceneActivationRefreshTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
