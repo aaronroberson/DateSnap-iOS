@@ -21,6 +21,8 @@ extension NotificationServiceProtocol {
     public func scheduleLocalNotifications(title: String, body: String, triggerDates: [Date], eventId: String?) async throws -> [String] {
         try await scheduleLocalNotifications(title: title, body: body, triggerDates: triggerDates, eventId: eventId, actionURL: nil)
     }
+
+    public func removeAllPendingNotifications() {}
 }
 
 // MARK: - Production Notification Service

@@ -91,7 +91,7 @@ struct SavedEventActions {
         try? modelContext.save()
     }
 
-    /// Erases every scan, candidate and saved record DateSnap holds (Calendar and Reminders entries are kept).
+    /// Erases every scan, candidate and saved record DateSnap holds and cancels all pending local notifications (Calendar and Reminders entries are kept).
     func eraseAllLocalData() {
         services.notifications.removeAllPendingNotifications()
         try? modelContext.delete(model: InterpretationRecord.self)
