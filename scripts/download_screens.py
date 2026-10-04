@@ -1,10 +1,9 @@
-import os
-import sys
-import subprocess
+import argparse
 import json
+import os
+import subprocess
+import sys
 import urllib.request
-
-PROJECT_ID = "454854512779783540"
 
 SCREENS = [
     {"id": "6c145dff8ec540b9a51f806629e55c70", "slug": "01_premium_paywall", "title": "DateSnap - Premium Paywall"},
@@ -23,8 +22,54 @@ def get_token():
     res = subprocess.run(["gcloud", "auth", "print-access-token"], capture_output=True, text=True, check=True)
     return res.stdout.strip()
 
-def main():
+def parse_args(args=None):
+    parser = argparse.ArgumentParser(
+        description="Download screen metadata and assets from Stitch API."
+    )
+    parser.add_argument(
+        "--project-id",
+        help="Stitch Project ID (env: STITCH_PROJECT_ID)"
+    )
+    parser.add_argument(
+        "--user-project",
+        "--google-user-project",
+        dest="user_project",
+        help="Google User Project ID for billing/quota (env: GOOGLE_CLOUD_PROJECT or GOOGLE_USER_PROJECT)"
+    )
+    return parser.parse_args(args)
+
+def resolve_config(cli_args=None, env=None):
+    if env is None:
+        env = os.environ
+    args = parse_args(cli_args)
+    project_id = args.project_id or env.get("STITCH_PROJECT_ID")
+    user_project = args.user_project or env.get("GOOGLE_CLOUD_PROJECT") or env.get("GOOGLE_USER_PROJECT")
+    return project_id, user_project
+
+def build_headers(token, user_project=None, warn_func=None):
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    if user_project:
+        headers["X-Goog-User-Project"] = user_project
+    elif warn_func:
+        warn_func(
+            "Warning: Google User Project ID not provided. "
+            "Set --user-project CLI flag or GOOGLE_CLOUD_PROJECT / GOOGLE_USER_PROJECT environment variable "
+            "to include X-Goog-User-Project header.\n"
+        )
+    return headers
+
+def main(cli_args=None):
+    project_id, user_project = resolve_config(cli_args)
+    if not project_id:
+        sys.stderr.write(
+            "Error: Stitch Project ID is required. Pass --project-id or set STITCH_PROJECT_ID env var.\n"
+        )
+        sys.exit(1)
+
     token = get_token()
+    headers = build_headers(token, user_project, warn_func=sys.stderr.write)
     out_dir = os.path.abspath(".stitch/screens")
     os.makedirs(out_dir, exist_ok=True)
     
@@ -36,13 +81,10 @@ def main():
         title = item["title"]
         print(f"Fetching screen metadata: {title} ({screen_id})...")
         
-        url = f"https://stitch.googleapis.com/v1/projects/{PROJECT_ID}/screens/{screen_id}"
+        url = f"https://stitch.googleapis.com/v1/projects/{project_id}/screens/{screen_id}"
         req = urllib.request.Request(
             url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "X-Goog-User-Project": "gen-lang-client-0738580358"
-            }
+            headers=headers
         )
         try:
             with urllib.request.urlopen(req) as resp:
