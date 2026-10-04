@@ -12,3 +12,4 @@ lancedb/
 
 # Graphify knowledge-graph generated output (regenerable; never source)
 graphify-out/
+.vscode/mcp.json
