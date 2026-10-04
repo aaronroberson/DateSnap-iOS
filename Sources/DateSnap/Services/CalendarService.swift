@@ -134,7 +134,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         return items.compactMap { $0 as? EKEvent }.first ?? eventStore.event(withIdentifier: externalIdentifier)
     }
 
-    private func apply(candidate: EventCandidate, alarms: [TimeInterval], to event: EKEvent) {
+    func apply(candidate: EventCandidate, alarms: [TimeInterval] = [], to event: EKEvent) {
         event.title = candidate.title
         event.isAllDay = candidate.isAllDay
         event.startDate = candidate.startDate
