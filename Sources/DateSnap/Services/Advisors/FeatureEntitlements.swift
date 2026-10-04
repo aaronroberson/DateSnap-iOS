@@ -142,10 +142,18 @@ public enum FeatureAccessPolicy {
         for feature: PremiumFeature,
         snapshot: EntitlementSnapshot
     ) -> FeatureAccessDecision {
-        if snapshot.state == .verified && snapshot.tier.includes(feature) {
-            return .allowed
+        switch snapshot.state {
+        case .checking:
+            return .denied(.checkingEntitlements)
+        case .unverified:
+            return .denied(.unverified)
+        case .unavailable:
+            return .denied(.unavailable)
+        case .verified:
+            return snapshot.tier.includes(feature)
+                ? .allowed
+                : .denied(.requiresTier(feature.requiredTier))
         }
-        return .denied(.requiresTier(snapshot.tier))
     }
 }
 

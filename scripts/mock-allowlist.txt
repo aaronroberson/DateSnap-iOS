@@ -1,0 +1,2 @@
+# category|path-glob|matching text or *|owner|reason
+# Keep entries narrow. Every entry is a pending signoff item for its named owner.

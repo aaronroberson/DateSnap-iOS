@@ -1,8 +1,7 @@
 import SwiftUI
 
-// Settings Hub — root of the Settings cluster. Every row is wired:
-// destination rows push screens, toggles bind to SettingsState,
-// and one-off actions confirm via the shared toast.
+// Settings Hub — root of the Settings cluster. Rows navigate to working
+// screens or invoke an explicit StoreKit action.
 struct SettingsHubView: View {
     @Environment(\.services) private var services
     @EnvironmentObject private var appState: AppState
@@ -21,9 +20,8 @@ struct SettingsHubView: View {
                 sectionBilling
                 sectionSupport
                 SettingsFooterNote(
-                    lines: ["Version \(appVersion) · Apple Neural Engine Optimized",
-                            "Strict Zero-Telemetry Policy · StoreKit 2"],
-                    systemImage: "infinity"
+                    lines: ["Version \(appVersion)", "Subscriptions are managed by the App Store"],
+                    systemImage: "info.circle"
                 )
             }
             .padding(.horizontal, 16)
@@ -79,7 +77,7 @@ struct SettingsHubView: View {
                             .foregroundStyle(Color.dsForeground)
                         ValueChip(text: tierChipText, tint: .dsAccent, filled: true)
                     }
-                    Text("No account needed · data stays on this iPhone")
+                    Text("No DateSnap account is required")
                         .font(DSTypography.caption())
                         .foregroundStyle(Color.dsMutedForeground)
                 }
@@ -107,11 +105,12 @@ struct SettingsHubView: View {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundStyle(Color.dsAccent2)
-                Text("Neural Intake Engine")
+                Text("On-device scan and review")
                     .font(DSTypography.labelChip())
                     .foregroundStyle(Color.dsForeground)
                 Spacer()
-                ValueChip(text: "Unlimited Fast Scan", tint: .dsSuccess)
+                Image(systemName: "iphone")
+                    .foregroundStyle(Color.dsMutedForeground)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
@@ -124,46 +123,15 @@ struct SettingsHubView: View {
 
     private var sectionScanning: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "camera.viewfinder", title: "Scanning & Capture",
-                                  tint: .dsSecondary, trailing: "AI Vision 2.4")
+            SettingsSectionHeader(icon: "camera.viewfinder", title: "Scanning",
+                                  tint: .dsSecondary)
             VStack(spacing: 14) {
                 Button {
                     navigate(.automationSettings)
                 } label: {
-                    SettingRow(icon: "cpu.fill", iconTint: .dsSecondary,
-                               title: "Automation & Routine",
-                               subtitle: "Auto-detect screenshots on launch") {
-                        ValueChip(text: settings.scanProfile.badge, tint: .dsWarning)
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Color.dsBorder)
-
-                Button {
-                    navigate(.automationSettings)
-                } label: {
-                    SettingRow(icon: "photo.on.rectangle.angled", iconTint: .dsInfo,
-                               title: "Photo Library Intake",
-                               subtitle: "Screenshots, posters, flyers") {
-                        ValueChip(text: settings.captureScopeCameraPhotos ? "All Media" : "All Captures", tint: .dsSecondary)
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Color.dsBorder)
-
-                Button {
-                    navigate(.automationSettings)
-                } label: {
-                    SettingRow(icon: "gauge.with.needle", iconTint: .dsAccent,
-                               title: "Confidence Threshold",
-                               subtitle: "Minimum certainty for auto-fill") {
-                        ValueChip(text: "High \(Int(settings.confidence))%+", tint: .dsSuccess)
+                    SettingRow(icon: "wand.and.sparkles", iconTint: .dsSecondary,
+                               title: "Enhanced Interpretation",
+                               subtitle: "Optional Apple Intelligence help for ambiguous flyers") {
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
@@ -179,43 +147,20 @@ struct SettingsHubView: View {
 
     private var sectionDestinations: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "bell.badge.fill", title: "Destinations & Reminders", tint: .dsPrimary)
+            SettingsSectionHeader(icon: "bell.badge.fill", title: "Reminders", tint: .dsPrimary)
             VStack(spacing: 14) {
                 Button {
                     navigate(.reminderSettings)
                 } label: {
                     SettingRow(icon: "bell.badge.fill", iconTint: .dsPrimary,
-                               title: "Default Alert Schedule",
+                               title: "Reminder Preview",
                                subtitle: "1 day before · 2 hours before") {
-                        ValueChip(text: "\(settings.timedAlerts.count) Alerts", tint: .dsWarning)
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
 
-                Divider().overlay(Color.dsBorder)
-
-                Button {
-                    appState.showToast("iCloud, Google Work & Reminders stay connected")
-                } label: {
-                    SettingRow(icon: "calendar", iconTint: .dsInfo,
-                               title: "Connected Calendars",
-                               subtitle: "iCloud · Google Work · Reminders") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Color.dsBorder)
-
-                SettingRow(icon: "lock.shield.fill", iconTint: .dsSuccess,
-                           title: "Zero Cloud Stored",
-                           subtitle: "Nothing ever leaves this device") {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Color.dsSuccess)
-                }
             }
             .padding(16)
             .dsGlassCard()
@@ -226,34 +171,20 @@ struct SettingsHubView: View {
 
     private var sectionPrivacy: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "lock.fill", title: "Privacy & Security", tint: .dsError)
+            SettingsSectionHeader(icon: "lock.fill", title: "Privacy", tint: .dsError)
             VStack(spacing: 14) {
                 Button {
                     navigate(.privacyCenter)
                 } label: {
-                    SettingRow(icon: "shield.lefthalf.filled", iconTint: .dsSuccess,
-                               title: "Privacy Architecture",
-                               subtitle: "Neural processing on Apple Silicon") {
-                        ValueChip(text: "100% Local", tint: .dsSuccess)
+                    SettingRow(icon: "lock.iphone", iconTint: .dsSuccess,
+                               title: "Privacy Center",
+                               subtitle: "Clear stored scan text or erase DateSnap history") {
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
 
-                Divider().overlay(Color.dsBorder)
-
-                SettingToggleRow(icon: "clock.arrow.circlepath", iconTint: .dsAccent2,
-                                 title: "Screenshot Auto-Purge",
-                                 subtitle: "Clean photos app after scheduling",
-                                 isOn: $settings.screenshotAutoPurge)
-
-                Divider().overlay(Color.dsBorder)
-
-                SettingToggleRow(icon: "faceid", iconTint: .dsPrimary,
-                                 title: "FaceID Protection",
-                                 subtitle: "Require authentication to open vault",
-                                 isOn: $settings.faceIDProtection)
             }
             .padding(16)
             .dsGlassCard()
@@ -271,7 +202,7 @@ struct SettingsHubView: View {
                 } label: {
                     SettingRow(icon: "crown.fill", iconTint: .dsWarning,
                                title: appState.subscriptionTier.displayName,
-                               subtitle: appState.subscriptionTier == .starter ? "Upgrade for automatic detection & PDF import" : "View renewal & billing") {
+                               subtitle: "View available plans and manage billing") {
                         ValueChip(text: "Manage", tint: .dsSecondary)
                         SettingsChevron()
                     }
@@ -351,7 +282,7 @@ struct SettingsHubView: View {
                 } label: {
                     SettingRow(icon: "heart.fill", iconTint: .dsError,
                                title: "Request Feature / Feedback",
-                               subtitle: "Speak directly with engineers") {
+                               subtitle: "Contact DateSnap support") {
                         Image(systemName: "arrow.up.forward.app")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(Color.dsMutedForeground)

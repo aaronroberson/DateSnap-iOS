@@ -173,11 +173,22 @@ public final class EventReviewViewModel: ObservableObject {
 
     /// Requests Calendar access if it has never been asked, then refreshes the destination pickers.
     public func prepareDestinations() async {
+        errorMessage = nil
         if calendarService.authorizationStatus() == .notDetermined {
-            _ = try? await calendarService.requestEventAccess()
+            do {
+                _ = try await calendarService.requestEventAccess()
+            } catch {
+                errorMessage = error.localizedDescription
+                return
+            }
         }
         if reminderService.authorizationStatus() == .notDetermined {
-            _ = try? await reminderService.requestReminderAccess()
+            do {
+                _ = try await reminderService.requestReminderAccess()
+            } catch {
+                errorMessage = error.localizedDescription
+                return
+            }
         }
         loadCalendarData()
     }
@@ -216,19 +227,35 @@ public final class EventReviewViewModel: ObservableObject {
         recordCorrections()
     }
 
-    private func savedEventRecord(in context: ModelContext?) -> SavedEvent {
+    private func savedEventRecord(in context: ModelContext) -> SavedEvent {
         if let existing = candidate.savedEvent {
             return existing
         }
         let record = SavedEvent(candidate: candidate)
-        context?.insert(candidate)
-        context?.insert(record)
+        context.insert(candidate)
+        context.insert(record)
         candidate.savedEvent = record
         return record
     }
 
+    private func persist(_ context: ModelContext, using saveOperation: (() throws -> Void)?) throws {
+        if let saveOperation {
+            try saveOperation()
+        } else {
+            try context.save()
+        }
+    }
+
     // MARK: - Save Draft (no Calendar / Reminders writes)
-    public func saveDraft(modelContext: ModelContext?) {
+    public func saveDraft(
+        modelContext: ModelContext?,
+        saveOperation: (() throws -> Void)? = nil
+    ) -> MutationResult {
+        guard let modelContext else {
+            let message = "Local event storage is unavailable."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
         applyEdits()
         let record = savedEventRecord(in: modelContext)
         if record.status != .saved {
@@ -237,27 +264,61 @@ public final class EventReviewViewModel: ObservableObject {
         record.alertOffsets = selectedOffsets.map(\.timeInterval)
         record.targetCalendar = selectedCalendar?.title ?? record.targetCalendar
         record.targetRemindersList = selectedReminderList?.title ?? record.targetRemindersList
-        try? modelContext?.save()
+        do {
+            try persist(modelContext, using: saveOperation)
+        } catch {
+            errorMessage = error.localizedDescription
+            isSavedSuccessfully = false
+            return .failure(MutationFailure(error))
+        }
         isDraftOnly = true
         isSavedSuccessfully = true
+        errorMessage = nil
+        return .success
     }
 
     /// Removes an unsaved candidate from the review queue.
-    public func discard(modelContext: ModelContext?) {
-        guard candidate.savedEvent == nil, let context = modelContext else { return }
+    public func discard(
+        modelContext: ModelContext?,
+        saveOperation: (() throws -> Void)? = nil
+    ) -> MutationResult {
+        guard candidate.savedEvent == nil, let context = modelContext else {
+            let message = modelContext == nil
+                ? "Local event storage is unavailable."
+                : "This event has already been saved and cannot be discarded from the review queue."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
         context.delete(candidate)
-        try? context.save()
+        do {
+            try persist(context, using: saveOperation)
+            errorMessage = nil
+            return .success
+        } catch {
+            context.rollback()
+            errorMessage = error.localizedDescription
+            return .failure(MutationFailure(error))
+        }
     }
 
     // MARK: - Commit to Apple Calendar & Reminders
     /// Writes the reviewed event to Calendar, Reminders and local alerts. Only called on explicit user confirmation.
-    public func commitEvent(modelContext: ModelContext? = nil) async -> Bool {
+    public func commitEvent(
+        modelContext: ModelContext? = nil,
+        saveOperation: (() throws -> Void)? = nil
+    ) async -> MutationResult {
         isSaving = true
         errorMessage = nil
         calendarAccessDenied = false
         notificationsSkipped = false
+        isSavedSuccessfully = false
         defer { isSaving = false }
 
+        guard let modelContext else {
+            let message = "Local event storage is unavailable."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
         applyEdits()
         let offsets = selectedOffsets
         let alarmIntervals = offsets.map { $0.alarmOffset(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay) }
@@ -283,11 +344,13 @@ public final class EventReviewViewModel: ObservableObject {
         } catch DateSnapError.calendar(.accessDenied) {
             calendarAccessDenied = true
             errorMessage = DateSnapError.calendar(.accessDenied).localizedDescription
-            return false
+            return .failure(MutationFailure(message: errorMessage ?? "Calendar access was denied."))
         } catch {
             errorMessage = error.localizedDescription
-            return false
+            return .failure(MutationFailure(error))
         }
+
+        var issues: [String] = []
 
         // 2. Apple Reminders (non-fatal if the user denied Reminders)
         var reminderIds = existing?.externalReminderIds ?? []
@@ -310,19 +373,31 @@ public final class EventReviewViewModel: ObservableObject {
             }
         } catch {
             Self.logger.warning("Notice: Reminder creation skipped or denied: \(error.localizedDescription, privacy: .public)")
+            issues.append("Reminders: \(error.localizedDescription)")
         }
 
         // 2b. Accepted RSVP-deadline reminder (created once)
         var deadlineReminderId = existing?.deadlineReminderId
         if deadlineReminderEnabled, deadlineReminderId == nil, let due = deadlineReminderDate {
-            deadlineReminderId = try? await reminderService.createDeadlineReminder(
-                title: "RSVP: \(candidate.title)", due: due, url: candidate.rsvpUrl, list: selectedReminderList
-            )
+            do {
+                deadlineReminderId = try await reminderService.createDeadlineReminder(
+                    title: "RSVP: \(candidate.title)", due: due, url: candidate.rsvpUrl, list: selectedReminderList
+                )
+            } catch {
+                issues.append("RSVP deadline reminder: \(error.localizedDescription)")
+            }
         }
 
         // 3. Local push alerts, replacing any previously scheduled for this event
         notificationService.removePendingNotifications(identifiers: existing?.scheduledNotificationIds ?? [])
-        let scheduledNotifIds = await scheduleAlerts(offsets: offsets)
+        let scheduledNotifIds: [String]
+        switch await scheduleAlerts(offsets: offsets) {
+        case .success(let identifiers):
+            scheduledNotifIds = identifiers
+        case .failure(let error):
+            scheduledNotifIds = []
+            issues.append("Local notifications: \(error.localizedDescription)")
+        }
 
         // 4. Persist to SwiftData
         let record = savedEventRecord(in: modelContext)
@@ -334,29 +409,48 @@ public final class EventReviewViewModel: ObservableObject {
         record.targetRemindersList = selectedReminderList?.title ?? reminderService.defaultReminderList()?.title ?? "Reminders"
         record.status = .saved
         record.deadlineReminderId = deadlineReminderId
+        do {
+            try persist(modelContext, using: saveOperation)
+        } catch {
+            errorMessage = "Calendar and reminder changes were made, but DateSnap could not save the event: \(error.localizedDescription)"
+            isSavedSuccessfully = false
+            return .failure(MutationFailure(message: errorMessage ?? "DateSnap could not save the event."))
+        }
+
+        isDraftOnly = false
+        isSavedSuccessfully = issues.isEmpty
         if let calendar = selectedCalendar {
             calendarRecommender.recordChoice(calendarIdentifier: calendar.calendarIdentifier, for: category)
         }
-        try? modelContext?.save()
-
-        isDraftOnly = false
-        isSavedSuccessfully = true
-        return true
+        if !issues.isEmpty {
+            errorMessage = "Event saved with incomplete reminders: \(issues.joined(separator: "; "))"
+            return .partial(issues)
+        }
+        errorMessage = nil
+        return .success
     }
 
-    private func scheduleAlerts(offsets: [ReminderOffset]) async -> [String] {
+    private func scheduleAlerts(offsets: [ReminderOffset]) async -> Result<[String], MutationFailure> {
         let triggerDates = offsets.map { $0.triggerDate(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay) }
         do {
-            return try await notificationService.scheduleLocalNotifications(
+            return .success(try await notificationService.scheduleLocalNotifications(
                 title: candidate.title,
                 body: EventAlertText.body(for: candidate),
                 triggerDates: triggerDates,
                 eventId: candidate.id,
                 actionURL: candidate.rsvpUrl
-            )
+            ))
+        } catch DateSnapError.notifications(.accessDenied) {
+            // Handoff 2026-10-02 open loop 2: a denied permission is an expected,
+            // recoverable state, so the review surface shows the human-readable
+            // outcome and where to fix it instead of echoing an infra error.
+            notificationsSkipped = true
+            return .failure(MutationFailure(
+                message: "Notifications are denied. Enable them in iOS Settings > Notifications > DateSnap."
+            ))
         } catch {
             notificationsSkipped = true
-            return []
+            return .failure(MutationFailure(error))
         }
     }
 }

@@ -2,7 +2,7 @@ name: DateSnap
 options:
   bundleIdPrefix: com.datesnap
   deploymentTarget:
-    iOS: "18.0"
+    iOS: "17.0"
   createIntermediateGroups: true
   generateEmptyDirectories: true
 configs:
@@ -17,7 +17,7 @@ targets:
   DateSnap:
     type: application
     platform: iOS
-    deploymentTarget: "18.0"
+    deploymentTarget: "17.0"
     sources:
       - path: Sources/DateSnap
     resources:
@@ -41,7 +41,7 @@ targets:
   DateSnapTests:
     type: bundle.unit-test
     platform: iOS
-    deploymentTarget: "18.0"
+    deploymentTarget: "17.0"
     sources:
       - path: Tests/DateSnapTests
     dependencies:
