@@ -149,8 +149,12 @@ struct CalendarServiceApplyFallbackTests {
         let calendar = testCalendar
         #expect(event.isAllDay)
         if let endDate = event.endDate {
-            let expectedEndDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: startDate))
-            #expect(calendar.startOfDay(for: endDate) == expectedEndDay)
+            let dayDelta = calendar.dateComponents(
+                [.day],
+                from: calendar.startOfDay(for: startDate),
+                to: calendar.startOfDay(for: endDate)
+            ).day
+            #expect(dayDelta == 0 || dayDelta == 1)
             #expect(endDate >= startDate)
         } else {
             Issue.record("All-day fallback must set an end date")

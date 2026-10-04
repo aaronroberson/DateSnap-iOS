@@ -41,20 +41,23 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
     /// Created lazily per scan so unsupported devices never initialize model state.
     private let makeInterpreter: @Sendable () -> OnDeviceEventInterpreting?
     private let policy: @Sendable () -> IntelligencePolicy
+    private let calendar: Calendar
 
     public init(
         capability: IntelligenceCapabilityProviding,
         makeInterpreter: @escaping @Sendable () -> OnDeviceEventInterpreting?,
-        policy: @escaping @Sendable () -> IntelligencePolicy = { IntelligencePolicy.current() }
+        policy: @escaping @Sendable () -> IntelligencePolicy = { IntelligencePolicy.current() },
+        calendar: Calendar = .current
     ) {
         self.capability = capability
         self.makeInterpreter = makeInterpreter
         self.policy = policy
+        self.calendar = calendar
     }
 
     /// Rules-only pipeline (older OS, previews, tests).
-    public static func rulesOnly(reason: IntelligenceUnavailableReason = .osUnsupported) -> EventUnderstandingPipeline {
-        EventUnderstandingPipeline(capability: UnavailableCapabilityProvider(reason: reason), makeInterpreter: { nil })
+    public static func rulesOnly(reason: IntelligenceUnavailableReason = .osUnsupported, calendar: Calendar = .current) -> EventUnderstandingPipeline {
+        EventUnderstandingPipeline(capability: UnavailableCapabilityProvider(reason: reason), makeInterpreter: { nil }, calendar: calendar)
     }
 
     public func prewarm(locale: Locale) async {
@@ -68,8 +71,8 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
     public func analyze(_ result: OCRResult, locale: Locale, anchor: Date, assetIdentifier: String) async -> PreparedUnderstanding {
         let span = IntelligenceTelemetry.begin("analyze")
         let analysis = await Task.detached(priority: .userInitiated) {
-            let extracted = EventExtractionCore.extract(from: result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier)
-            return RuleBasedEventAnalyzer.analyze(result: result, extracted: extracted, locale: locale, anchor: anchor)
+            let extracted = EventExtractionCore.extract(from: result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier, calendar: calendar)
+            return RuleBasedEventAnalyzer.analyze(result: result, extracted: extracted, locale: locale, anchor: anchor, calendar: calendar)
         }.value
         let currentPolicy = policy()
         let decision: IntelligencePolicy.Decision = analysis.events.isEmpty
@@ -95,7 +98,7 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
                     lines: analysis.evidence,
                     referenceDate: prepared.anchor,
                     localeIdentifier: prepared.locale.identifier,
-                    timeZoneIdentifier: TimeZone.current.identifier,
+                    timeZoneIdentifier: calendar.timeZone.identifier,
                     baseline: analysis.events.map(\.best),
                     triggers: analysis.triggers
                 ).bounded(by: prepared.policy)
@@ -124,7 +127,7 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
             var modelCandidate: EventInterpretationCandidate? = nil
             if index < hypotheses.count {
                 let outcome = EvidenceValidator.validate(hypotheses[index], against: baseline, evidence: analysis.evidence,
-                                                         locale: prepared.locale, anchor: prepared.anchor)
+                                                         locale: prepared.locale, anchor: prepared.anchor, calendar: calendar)
                 rejected += outcome.rejectedFields.count
                 modelCandidate = outcome.candidate
                 acceptedAny = acceptedAny || outcome.candidate != nil

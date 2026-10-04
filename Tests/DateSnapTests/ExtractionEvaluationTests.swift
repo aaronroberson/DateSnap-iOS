@@ -143,7 +143,7 @@ enum ExtractionEvaluator {
     static func duplicateFalseMergeRate(anchor: Date) async -> (falseMerges: Int, pairs: Int, sameEventMatched: Bool) {
         var entries: [EventSimilarityService.Entry] = []
         for flyer in EvaluationFixtures.flyers where flyer.expected != nil {
-            let result = await EventUnderstandingPipeline.rulesOnly().understand(makeOCR(flyer.lines), locale: Locale(identifier: flyer.locale), anchor: anchor, assetIdentifier: flyer.name)
+            let result = await EventUnderstandingPipeline.rulesOnly(calendar: testCalendar).understand(makeOCR(flyer.lines), locale: Locale(identifier: flyer.locale), anchor: anchor, assetIdentifier: flyer.name)
             if let best = result.events.first?.best {
                 entries.append(.init(id: flyer.name, similarityKey: best.similarityKey, title: best.title.value, start: best.start.value, isSaved: true))
             }
@@ -155,7 +155,7 @@ enum ExtractionEvaluator {
         // Same flyer, different screenshot (slightly different crop/casing and asset).
         let first = EvaluationFixtures.flyers[0]
         let reshot = makeOCR(first.lines.map { ($0.0.capitalized, $0.1 * 0.9) })
-        let again = await EventUnderstandingPipeline.rulesOnly().understand(reshot, locale: Locale(identifier: "en_US"), anchor: anchor, assetIdentifier: "reshot")
+        let again = await EventUnderstandingPipeline.rulesOnly(calendar: testCalendar).understand(reshot, locale: Locale(identifier: "en_US"), anchor: anchor, assetIdentifier: "reshot")
         let reshotEntry = again.events.first.map {
             EventSimilarityService.Entry(id: "reshot", similarityKey: $0.best.similarityKey, title: $0.best.title.value, start: $0.best.start.value, isSaved: false)
         }
@@ -169,7 +169,7 @@ enum ExtractionEvaluator {
 struct ExtractionEvaluationTests {
     @Test("Rules-only route meets release thresholds on the labeled set")
     func rulesOnlyThresholds() async {
-        let report = await ExtractionEvaluator.evaluate(EventUnderstandingPipeline.rulesOnly(), route: "rulesOnly", anchor: testAnchor)
+        let report = await ExtractionEvaluator.evaluate(EventUnderstandingPipeline.rulesOnly(calendar: testCalendar), route: "rulesOnly", anchor: testAnchor)
         print(report)
         // Thresholds set from the hand-labeled baseline; raise them as the corpus and engine improve.
         #expect(report.rate(report.titleCorrect, report.total) >= 0.9)
@@ -203,7 +203,7 @@ struct ExtractionEvaluationTests {
         let report = await ExtractionEvaluator.evaluate(IntelligenceComposition.liveUnderstanding(), route: "live", anchor: testAnchor)
         print(report)
         // The model may only improve on, never regress, validated fields relative to rules.
-        let rules = await ExtractionEvaluator.evaluate(EventUnderstandingPipeline.rulesOnly(), route: "rulesOnly", anchor: testAnchor)
+        let rules = await ExtractionEvaluator.evaluate(EventUnderstandingPipeline.rulesOnly(calendar: testCalendar), route: "rulesOnly", anchor: testAnchor)
         #expect(report.rate(report.dateCorrect, report.total) >= rules.rate(rules.dateCorrect, rules.total))
         #expect(report.rate(report.nonEventsRejected, report.nonEventsTotal) == 1)
     }

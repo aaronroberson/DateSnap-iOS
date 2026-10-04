@@ -16,7 +16,7 @@ struct InterpretationRecordTests {
     @Test("Review bundles round-trip and are deleted with their candidate")
     func roundTripAndCascade() async throws {
         let ocr = makeOCR([("Book Club", 0.08), ("04/05/2027 7pm", 0.04), ("RSVP by March 30 at books.example.org", 0.03)])
-        let result = await EventUnderstandingPipeline.rulesOnly().understand(ocr, locale: Locale(identifier: "en_001"), anchor: testAnchor)
+        let result = await EventUnderstandingPipeline.rulesOnly(calendar: testCalendar).understand(ocr, locale: Locale(identifier: "en_001"), anchor: testAnchor)
         let understanding = try #require(result.events.first)
         #expect(!understanding.alternatives.isEmpty)
 

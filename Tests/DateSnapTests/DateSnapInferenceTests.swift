@@ -271,20 +271,20 @@ struct DateSnapInferenceTests {
     @Test("RSVP deadlines and on-sale dates are not taken as the event date")
     func testDeadlineIsNotEventDate() async {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = .current
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         let anchor = calendar.date(from: DateComponents(year: 2026, month: 9, day: 1))!
         let text = "Autumn Gala\nRSVP by October 3, 2026\nSaturday, October 17, 2026 at 7pm\nTickets on sale September 5"
         let result = OCRResult(fullText: text, lines: text.components(separatedBy: "\n").enumerated().map {
             OCRLine(text: $1, confidence: 0.95, boundingBox: CGRect(x: 0, y: 0.9 - Double($0) * 0.1, width: 1, height: 0.05))
         }, meanConfidence: 0.95)
-        let candidates = EventExtractionCore.extract(from: result, locale: Locale(identifier: "en_US"), anchor: anchor)
+        let candidates = EventExtractionCore.extract(from: result, locale: Locale(identifier: "en_US"), anchor: anchor, calendar: calendar)
         #expect(candidates.count == 1)
         #expect(candidates.first.map { calendar.dateComponents([.month, .day, .hour], from: $0.startDate) } == DateComponents(month: 10, day: 17, hour: 19))
         // A deadline-only flyer still yields its date.
         #expect(!EventExtractionCore.extract(from: OCRResult(fullText: "Applications\nDeadline October 3, 2026", lines: [
             OCRLine(text: "Applications", confidence: 0.95, boundingBox: CGRect(x: 0, y: 0.8, width: 1, height: 0.08)),
             OCRLine(text: "Deadline October 3, 2026", confidence: 0.95, boundingBox: CGRect(x: 0, y: 0.6, width: 1, height: 0.05))
-        ], meanConfidence: 0.95), locale: Locale(identifier: "en_US"), anchor: anchor).isEmpty)
+        ], meanConfidence: 0.95), locale: Locale(identifier: "en_US"), anchor: anchor, calendar: calendar).isEmpty)
     }
 
     // MARK: - 6. False-Positive Filtering Tests

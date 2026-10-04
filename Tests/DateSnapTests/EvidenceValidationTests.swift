@@ -16,8 +16,8 @@ struct EvidenceValidationTests {
     ])
 
     func analysis() -> RuleBasedEventAnalyzer.Analysis {
-        let extracted = EventExtractionCore.extract(from: poster, locale: locale, anchor: testAnchor)
-        return RuleBasedEventAnalyzer.analyze(result: poster, extracted: extracted, locale: locale, anchor: testAnchor)
+        let extracted = EventExtractionCore.extract(from: poster, locale: locale, anchor: testAnchor, calendar: testCalendar)
+        return RuleBasedEventAnalyzer.analyze(result: poster, extracted: extracted, locale: locale, anchor: testAnchor, calendar: testCalendar)
     }
 
     @Test("Grounded hypotheses are merged with model provenance")
@@ -34,7 +34,7 @@ struct EvidenceValidationTests {
             category: "concert",
             reason: "The headliner set is the main event; the lounge opening is doors."
         )
-        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor)
+        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor, calendar: testCalendar)
         let merged = try #require(outcome.candidate)
         #expect(outcome.rejectedFields.isEmpty)
         #expect(merged.title.value == "SUMMER NIGHTS")
@@ -57,7 +57,7 @@ struct EvidenceValidationTests {
             category: "rave",                                           // not a category
             notesSummary: "Tickets at https://scam.example"             // introduces a link
         )
-        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor)
+        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor, calendar: testCalendar)
         #expect(outcome.candidate == nil)
         #expect(Set(outcome.rejectedFields).isSuperset(of: ["title", "venue", "date", "startTime", "category", "notes"]))
     }
@@ -70,7 +70,7 @@ struct EvidenceValidationTests {
         #expect(testCalendar.component(.hour, from: baseline.start.value) == 20)
         let hypothesis = EventHypothesis(startTimeLineID: 4, startTimeText: "7:00 PM", doorsTimeLineID: 4, doorsTimeText: "7:00 PM",
                                          reason: "startTimeLine")
-        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor)
+        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor, calendar: testCalendar)
         #expect(outcome.rejectedFields.contains("startTime"))
         let merged = outcome.candidate
         #expect(merged.map { testCalendar.component(.hour, from: $0.start.value) } ?? 20 == 20)
@@ -96,8 +96,8 @@ struct EvidenceValidationTests {
     func ambiguousDateQuestion() throws {
         let ocr = makeOCR([("Book Club", 0.08), ("04/05/2027 7pm", 0.04)])
         let loc = Locale(identifier: "en_001")
-        let extracted = EventExtractionCore.extract(from: ocr, locale: loc, anchor: testAnchor)
-        let a = RuleBasedEventAnalyzer.analyze(result: ocr, extracted: extracted, locale: loc, anchor: testAnchor)
+        let extracted = EventExtractionCore.extract(from: ocr, locale: loc, anchor: testAnchor, calendar: testCalendar)
+        let a = RuleBasedEventAnalyzer.analyze(result: ocr, extracted: extracted, locale: loc, anchor: testAnchor, calendar: testCalendar)
         let baseline = try #require(a.events.first?.best)
         let alternatives = InterpretationRanker.deterministicAlternatives(for: baseline, titleCandidates: [])
         #expect(alternatives.count == 1)

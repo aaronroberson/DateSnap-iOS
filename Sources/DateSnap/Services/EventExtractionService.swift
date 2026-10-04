@@ -171,7 +171,8 @@ public enum EventExtractionCore {
         from result: OCRResult,
         locale: Locale,
         anchor: Date,
-        assetIdentifier: String = "local_asset"
+        assetIdentifier: String = "local_asset",
+        calendar: Calendar = .current
     ) -> [ExtractedCandidateData] {
         let trimmed = result.fullText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
@@ -183,7 +184,7 @@ public enum EventExtractionCore {
 
         // Step 2: Line segmentation into blocks, then per-block inference
         return DateInference.segmentIntoEventBlocks(result: result).flatMap { block in
-            DateInference.inferCandidates(from: block, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier)
+            DateInference.inferCandidates(from: block, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier, calendar: calendar)
         }
     }
 }
@@ -216,10 +217,10 @@ public enum DateInference {
         title: String,
         startDate: Date,
         venueOrLocation: String?,
-        assetIdentifier: String
+        assetIdentifier: String,
+        calendar: Calendar = .current
     ) -> String {
         let normTitle = normalizeText(title)
-        let calendar = Calendar.current
         let comps = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: startDate)
         let roundedTimeStr = "\(comps.year ?? 0)-\(comps.month ?? 0)-\(comps.day ?? 0)T\(comps.hour ?? 0):\(comps.minute ?? 0)"
         let normLoc = normalizeText(venueOrLocation ?? "")
@@ -298,14 +299,14 @@ public enum DateInference {
         from block: EventBlock,
         locale: Locale,
         anchor: Date,
-        assetIdentifier: String
+        assetIdentifier: String,
+        calendar: Calendar = .current
     ) -> [ExtractedCandidateData] {
         let blockText = block.fullText
-        let calendar = Calendar.current
 
         // B1 & B2 & B3: Detect candidate dates, ignoring RSVP-deadline and on-sale lines when another date exists
-        let eventDateText = textExcludingDeadlineLines(blockText, locale: locale, anchor: anchor)
-        let dateResults = detectDates(in: eventDateText, locale: locale, anchor: anchor)
+        let eventDateText = textExcludingDeadlineLines(blockText, locale: locale, anchor: anchor, calendar: calendar)
+        let dateResults = detectDates(in: eventDateText, locale: locale, anchor: anchor, calendar: calendar)
         guard !dateResults.isEmpty else { return [] }
 
         // B8: Infer Title from visual hierarchy
@@ -344,7 +345,8 @@ public enum DateInference {
                 title: title,
                 startDate: dateItem.startDate,
                 venueOrLocation: venue ?? location,
-                assetIdentifier: assetIdentifier
+                assetIdentifier: assetIdentifier,
+                calendar: calendar
             )
 
             let candidate = buildCandidateData(
@@ -465,8 +467,7 @@ public enum DateInference {
         public var sourceReliability: Float
     }
 
-    public static func detectDates(in text: String, locale: Locale, anchor: Date) -> [DetectedDateItem] {
-        let calendar = Calendar.current
+    public static func detectDates(in text: String, locale: Locale, anchor: Date, calendar: Calendar = .current) -> [DetectedDateItem] {
         var items: [DetectedDateItem] = []
 
         // B6: Parse times and windows across the text
@@ -957,12 +958,12 @@ public enum DateInference {
     }
 
     /// Block text without deadline/on-sale lines, when the remaining lines still contain a date.
-    static func textExcludingDeadlineLines(_ text: String, locale: Locale, anchor: Date) -> String {
+    static func textExcludingDeadlineLines(_ text: String, locale: Locale, anchor: Date, calendar: Calendar = .current) -> String {
         let lines = text.components(separatedBy: "\n")
         let kept = lines.filter { !isDeadlineLine($0) }
         guard kept.count < lines.count else { return text }
         let keptText = kept.joined(separator: "\n")
-        return detectDates(in: keptText, locale: locale, anchor: anchor).isEmpty ? text : keptText
+        return detectDates(in: keptText, locale: locale, anchor: anchor, calendar: calendar).isEmpty ? text : keptText
     }
 
     /// Words that mark the main start ("Show 8:30", "8:30 Headliner set").

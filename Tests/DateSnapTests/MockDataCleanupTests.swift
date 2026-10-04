@@ -53,7 +53,7 @@ struct MockDataCleanupTests {
             reminders: reminders,
             notifications: notifications,
             subscription: subscription,
-            understanding: EventUnderstandingPipeline.rulesOnly()
+            understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
         )
     }
 
@@ -453,7 +453,7 @@ struct RescueRegressionRestorationTests {
             reminders: TestReminderService(),
             notifications: TestNotificationService(),
             subscription: OfflineSubscriptionService(),
-            understanding: EventUnderstandingPipeline.rulesOnly()
+            understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
         )
     }
 
@@ -537,7 +537,7 @@ struct RescueRegressionRestorationTests {
                 reminders: TestReminderService(),
                 notifications: DeniedNotificationService(),
                 subscription: OfflineSubscriptionService(),
-                understanding: EventUnderstandingPipeline.rulesOnly()
+                understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
             )
         )
 
@@ -590,7 +590,7 @@ struct GenADenialRestorationTests {
             reminders: reminders,
             notifications: notifications,
             subscription: OfflineSubscriptionService(),
-            understanding: EventUnderstandingPipeline.rulesOnly()
+            understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
         )
     }
 

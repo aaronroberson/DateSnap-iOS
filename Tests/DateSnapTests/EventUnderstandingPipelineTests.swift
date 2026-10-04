@@ -39,7 +39,8 @@ struct EventUnderstandingPipelineTests {
         EventUnderstandingPipeline(
             capability: AvailableCapabilityProvider(),
             makeInterpreter: { ScriptedInterpreter(script: script) },
-            policy: { IntelligencePolicy(userEnabled: userEnabled, timeout: timeout) }
+            policy: { IntelligencePolicy(userEnabled: userEnabled, timeout: timeout) },
+            calendar: testCalendar
         )
     }
 
@@ -49,7 +50,7 @@ struct EventUnderstandingPipelineTests {
 
     @Test("Rules-only pipeline returns the deterministic interpretation")
     func rulesOnly() async throws {
-        let result = await EventUnderstandingPipeline.rulesOnly().understand(poster, locale: Locale(identifier: "en_US"), anchor: testAnchor)
+        let result = await EventUnderstandingPipeline.rulesOnly(calendar: testCalendar).understand(poster, locale: Locale(identifier: "en_US"), anchor: testAnchor)
         #expect(result.route == .rulesOnly)
         #expect(result.fallbackReason == IntelligenceUnavailableReason.osUnsupported.rawValue)
         let best = try #require(result.events.first?.best)
@@ -105,7 +106,7 @@ struct EventUnderstandingPipelineTests {
 
     @Test("Interpretation candidates materialize into the canonical value snapshot")
     func materialization() async throws {
-        let result = await EventUnderstandingPipeline.rulesOnly().understand(poster, locale: Locale(identifier: "en_US"), anchor: testAnchor)
+        let result = await EventUnderstandingPipeline.rulesOnly(calendar: testCalendar).understand(poster, locale: Locale(identifier: "en_US"), anchor: testAnchor)
         let best = try #require(result.events.first?.best)
         let data = best.toExtractedData()
         #expect(data.id == best.id)

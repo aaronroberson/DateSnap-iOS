@@ -14,7 +14,6 @@ func makeOCR(_ lines: [(String, CGFloat)], confidence: Float = 0.95) -> OCRResul
 }
 
 let testAnchor: Date = {
-    NSTimeZone.default = TimeZone(secondsFromGMT: 0)!
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = TimeZone(secondsFromGMT: 0)!
     return calendar.date(from: DateComponents(year: 2026, month: 9, day: 1, hour: 12))!
@@ -46,8 +45,8 @@ struct RuleBasedEventAnalyzerTests {
     ])
 
     func analyze(_ result: OCRResult) -> RuleBasedEventAnalyzer.Analysis {
-        let extracted = EventExtractionCore.extract(from: result, locale: Locale(identifier: "en_US"), anchor: testAnchor)
-        return RuleBasedEventAnalyzer.analyze(result: result, extracted: extracted, locale: Locale(identifier: "en_US"), anchor: testAnchor)
+        let extracted = EventExtractionCore.extract(from: result, locale: Locale(identifier: "en_US"), anchor: testAnchor, calendar: testCalendar)
+        return RuleBasedEventAnalyzer.analyze(result: result, extracted: extracted, locale: Locale(identifier: "en_US"), anchor: testAnchor, calendar: testCalendar)
     }
 
     @Test("Temporal fragments are labeled by role")
@@ -120,8 +119,8 @@ struct RuleBasedEventAnalyzerTests {
         let clear = makeOCR([("Book Club", 0.08), ("October 20, 2026 at 7pm", 0.04), ("Central Library", 0.03)])
         #expect(analyze(clear).triggers.isEmpty)
         let ambiguous = makeOCR([("Book Club", 0.08), ("04/05/2027 7pm", 0.04)])
-        let extracted = EventExtractionCore.extract(from: ambiguous, locale: Locale(identifier: "en_001"), anchor: testAnchor)
-        let analysis = RuleBasedEventAnalyzer.analyze(result: ambiguous, extracted: extracted, locale: Locale(identifier: "en_001"), anchor: testAnchor)
+        let extracted = EventExtractionCore.extract(from: ambiguous, locale: Locale(identifier: "en_001"), anchor: testAnchor, calendar: testCalendar)
+        let analysis = RuleBasedEventAnalyzer.analyze(result: ambiguous, extracted: extracted, locale: Locale(identifier: "en_001"), anchor: testAnchor, calendar: testCalendar)
         #expect(analysis.triggers.contains("ambiguousDate"))
     }
 }

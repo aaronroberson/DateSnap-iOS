@@ -195,7 +195,7 @@ public enum EvidenceValidator {
         var dateEvidence = baseline.start.evidence
         if let dateLineID = hypothesis.dateLineID {
             if let source = line(dateLineID),
-               let detected = DateInference.detectDates(in: source.text, locale: locale, anchor: anchor).first {
+               let detected = DateInference.detectDates(in: source.text, locale: locale, anchor: anchor, calendar: calendar).first {
                 day = detected.startDate
                 dateEvidence = reference(source)
                 if !calendar.isDate(day, inSameDayAs: baseline.start.value) { accepted.append("date") }
