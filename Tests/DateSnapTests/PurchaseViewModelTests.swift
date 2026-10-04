@@ -14,6 +14,7 @@ struct PurchaseViewModelTests {
         #expect(purchases.displayPrice(.premium, annual: false) == nil)
         #expect(purchases.monthlyEquivalent(.plus) == nil)
         #expect(!purchases.canPurchase(.plus, annual: true))
+        #expect(!purchases.canPurchase(.premium, annual: false))
     }
 
     @Test("StoreKit lookup failure remains visible and cannot be purchased")
