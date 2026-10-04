@@ -2,9 +2,15 @@ import Foundation
 import SwiftUI
 import EventKit
 import SwiftData
+import OSLog
 
 @MainActor
 public final class EventReviewViewModel: ObservableObject {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "com.datesnap.app",
+        category: "EventReviewViewModel"
+    )
+
     private let calendarService: CalendarServiceProtocol
     private let reminderService: ReminderServiceProtocol
     private let notificationService: NotificationServiceProtocol
@@ -303,7 +309,7 @@ public final class EventReviewViewModel: ObservableObject {
                 reminderIds = [id]
             }
         } catch {
-            print("Notice: Reminder creation skipped or denied: \(error.localizedDescription)")
+            Self.logger.warning("Notice: Reminder creation skipped or denied: \(error.localizedDescription, privacy: .public)")
         }
 
         // 2b. Accepted RSVP-deadline reminder (created once)

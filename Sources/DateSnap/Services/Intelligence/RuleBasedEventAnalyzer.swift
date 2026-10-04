@@ -266,21 +266,26 @@ public enum RuleBasedEventAnalyzer {
 
     // MARK: - Category
 
+    private static let categoryRules: [(EventCategory, [String])] = [
+        (.appointment, ["appointment", "dds", "dentist", "dr.", "clinic", "checkup", "check-up", "consultation", "reservation for"]),
+        (.deadline, ["deadline", "due by", "submit by", "applications close"]),
+        (.conference, ["conference", "summit", "keynote", "panel", "talk", "webinar", "meetup", "expo"]),
+        (.classOrWorkshop, ["workshop", "class", "course", "lesson", "training", "bootcamp"]),
+        (.festival, ["festival", "fest ", "fair"]),
+        (.sports, ["vs.", " vs ", "game day", "tipoff", "kickoff", "match", "tournament", "race"]),
+        (.concert, ["concert", "live music", "tour", "show", "band", "orchestra", "doors", "tickets"]),
+        (.nightlife, ["dj", "club", "rooftop", "party", "21+", "nightlife", "lounge"]),
+        (.social, ["mixer", "birthday", "wedding", "dinner", "brunch", "potluck", "networking", "reunion", "meet & greet"])
+    ]
+
     public static func classifyCategory(text: String) -> EventCategory {
         let lower = text.lowercased()
-        let rules: [(EventCategory, [String])] = [
-            (.appointment, ["appointment", "dds", "dentist", "dr.", "clinic", "checkup", "check-up", "consultation", "reservation for"]),
-            (.deadline, ["deadline", "due by", "submit by", "applications close"]),
-            (.conference, ["conference", "summit", "keynote", "panel", "talk", "webinar", "meetup", "expo"]),
-            (.classOrWorkshop, ["workshop", "class", "course", "lesson", "training", "bootcamp"]),
-            (.festival, ["festival", "fest ", "fair"]),
-            (.sports, ["vs.", " vs ", "game day", "tipoff", "kickoff", "match", "tournament", "race"]),
-            (.concert, ["concert", "live music", "tour", "show", "band", "orchestra", "doors", "tickets"]),
-            (.nightlife, ["dj", "club", "rooftop", "party", "21+", "nightlife", "lounge"]),
-            (.social, ["mixer", "birthday", "wedding", "dinner", "brunch", "potluck", "networking", "reunion", "meet & greet"])
-        ]
-        for (category, keywords) in rules where keywords.contains(where: lower.contains) {
-            return category
+        for (category, keywords) in categoryRules {
+            for keyword in keywords {
+                if lower.contains(keyword) {
+                    return category
+                }
+            }
         }
         return .other
     }
