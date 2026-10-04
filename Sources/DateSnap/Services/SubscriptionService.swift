@@ -182,6 +182,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             case .unverified(let transaction, _):
                 // Keep the unverifiable payload so the resolver fails the snapshot closed
                 // (mirrors the audited "failed verification fails the snapshot closed" contract).
+                Self.logger.warning("Entitlement verification failed for \(transaction.productID); resolver will fail the snapshot closed")
                 records.append(SubscriptionEntitlementRecord(
                     productID: transaction.productID,
                     expirationDate: transaction.expirationDate,
@@ -203,7 +204,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     }
 
     // MARK: - Verify Cryptographic JWS Signature
-    nonisolated private static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    nonisolated internal static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified:
             throw DateSnapError.subscription(.verificationFailed)

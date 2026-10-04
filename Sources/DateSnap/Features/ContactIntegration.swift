@@ -75,7 +75,9 @@ public enum ContactAuthorizationStatus {
 // MARK: - iOS 18+ Implementation
 
 @available(iOS 18.0, *)
-public final class ContactIntegrationService: ContactIntegrationServiceProtocol {
+public final class ContactIntegrationService: ContactIntegrationServiceProtocol, @unchecked Sendable {
+    // EKEventStore is not Sendable; access is confined to this service instance —
+    // same opt-out pattern as CalendarService/ReminderService/NotificationService.
     private let eventStore: EKEventStore
     
     public init(eventStore: EKEventStore = EKEventStore()) {

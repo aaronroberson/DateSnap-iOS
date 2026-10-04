@@ -2,8 +2,8 @@ import SwiftUI
 
 // MARK: - Enhanced ScrollView Utilities (iOS 18+)
 
-/// ScrollView performance and measurement utilities for iOS 18+
-@available(iOS 18.0, *)
+/// ScrollView measurement values. Not availability-gated: the struct itself uses
+/// no iOS 18 APIs — only the iOS 18 scroll modifiers that populate it are.
 public struct ScrollViewMetrics {
     public let contentSize: CGSize
     public let visibleRect: CGRect
@@ -63,7 +63,6 @@ public struct EnhancedScrollView<Content: View>: View {
                     }
                 )
         }
-        .scrollPosition($scrollPosition)
         .scrollTargetBehavior(.paging)
         .onScrollPhaseChange { oldPhase, newPhase in
             isScrolling = newPhase.isScrolling
@@ -177,13 +176,13 @@ extension View {
     }
     
     /// Add scroll position tracking
+    ///
+    /// No-op for now: iOS 18's `scrollPosition(_:)` binding takes SwiftUI's
+    /// `ScrollPosition` (identifier + anchor semantics), not a raw `CGPoint`.
+    /// `EnhancedScrollView` already reports offsets through `onScrollChange`.
     @ViewBuilder
     public func trackScrollPosition(_ position: Binding<CGPoint>) -> some View {
-        if #available(iOS 18.0, *) {
-            self.scrollPosition(position)
-        } else {
-            self
-        }
+        self
     }
 }
 

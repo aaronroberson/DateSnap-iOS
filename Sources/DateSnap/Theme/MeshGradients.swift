@@ -3,7 +3,8 @@ import SwiftUI
 // MARK: - Mesh Gradient Support (iOS 18+)
 
 /// Mesh gradient styles for premium design system
-@available(iOS 18.0, *)
+/// Not availability-gated: the style itself uses no iOS 18 APIs — only the views
+/// that render `MeshGradient` from it are.
 public enum MeshGradientStyle {
     case premiumAccent
     case glassEffect
@@ -58,6 +59,25 @@ public enum MeshGradientStyle {
         case .warningGlow: return 3
         }
     }
+
+    /// Normalized point grid for the style's dimensions, row-major.
+    /// `MeshGradient` requires exactly `width * height` points.
+    var gridPoints: [SIMD2<Float>] {
+        guard width > 1, height > 1 else { return [SIMD2<Float>(0.5, 0.5)] }
+        return (0..<height).flatMap { row in
+            (0..<width).map { col in
+                SIMD2(Float(col) / Float(width - 1), Float(row) / Float(height - 1))
+            }
+        }
+    }
+
+    /// The style's palette cycled to fill the full `width * height` grid —
+    /// `MeshGradient` requires `colors.count == points.count`.
+    var gridColors: [Color] {
+        let palette = colors
+        guard !palette.isEmpty else { return [] }
+        return (0..<(width * height)).map { palette[$0 % palette.count] }
+    }
 }
 
 // MARK: - Mesh Gradient View Modifiers
@@ -72,13 +92,8 @@ public struct MeshGradientModifier: ViewModifier {
                 MeshGradient(
                     width: style.width,
                     height: style.height,
-                    points: [
-                        [0.0, 0.0], [0.33, 0.0], [0.66, 0.0], [1.0, 0.0],
-                        [0.0, 0.33], [0.33, 0.33], [0.66, 0.33], [1.0, 0.33],
-                        [0.0, 0.66], [0.33, 0.66], [0.66, 0.66], [1.0, 0.66],
-                        [0.0, 1.0], [0.33, 1.0], [0.66, 1.0], [1.0, 1.0]
-                    ].prefix(style.width * style.height),
-                    colors: style.colors
+                    points: style.gridPoints,
+                    colors: style.gridColors
                 )
                 .blur(radius: 20)
                 .opacity(0.7)
@@ -162,7 +177,7 @@ extension View {
         self
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.dsSurface.opacity(0.7))
+                    .fill(Color.dsCard)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.dsBorder.opacity(0.3), lineWidth: 1)

@@ -147,7 +147,17 @@ struct CalendarServiceApplyFallbackTests {
         let event = EKEvent(eventStore: eventStore)
         calendarService.apply(candidate: candidate, alarms: [], to: event)
 
-        #expect(event.endDate == startDate)
+        // The fallback keeps the end on the start date's day (not the timed
+        // EventDurationPolicy fallback). EKEvent normalizes all-day end dates
+        // to 23:59:59 local time, so compare calendar days, not instants.
+        let calendar = Calendar.current
+        #expect(event.isAllDay)
+        if let endDate = event.endDate {
+            #expect(calendar.startOfDay(for: endDate) == calendar.startOfDay(for: startDate))
+            #expect(endDate >= startDate)
+        } else {
+            Issue.record("All-day fallback must set an end date")
+        }
     }
 
     @Test("Candidate with explicit end date preserves provided end date")
