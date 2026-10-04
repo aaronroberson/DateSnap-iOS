@@ -8,7 +8,7 @@ struct DateSnapApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(services: services)
-                .environment(\.services, services)
+                .dateSnapServices(services)
         }
         .modelContainer(for: [
             UserSettings.self,
