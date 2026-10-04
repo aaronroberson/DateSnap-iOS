@@ -18,7 +18,7 @@ You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI
 | `Sources/DateSnap/Persistence/SwiftDataEntities.swift` | `ScannedAsset.candidates` cascade relationship (:57-58), `EventCandidate` (:81-128) — note **no dedupe key, no per-field confidences, no ambiguity flag, no timezone field yet**. `SavedEvent` (:131-165). |
 | `Sources/DateSnap/ViewModels/ScanViewModel.swift` | The 3-stage pipeline `fetchingImage → processingOCR → extractingEvents → complete/noDatesFound/failed` (:13-36) and persistence step (:96-112). |
 | `Sources/DateSnap/ViewModels/EventReviewViewModel.swift` | Review/commit flow; already surfaces `yearAssumed` (:54) and caps reminders at 3 offsets (:102-110). |
-| `Sources/DateSnap/Models/SettingsState.swift` | `confidence` threshold (default 85, :70) and `draftLowConfidence` (:71) — extraction output must be consumable by these gates. |
+| `Sources/DateSnap/Models/SettingsState.swift` | Settings navigation state only. Production extraction behavior must not depend on removed prototype confidence or draft toggles. |
 | `Sources/DateSnap/Views/HelpFeedbackView.swift` | Product promises to the user: relative dates ("Tomorrow 10am"), ambiguous dates are **prompted, not guessed** (:32), confidence threshold gating (:45). |
 | `Sources/DateSnap/Views/EventReviewEditView.swift`, `NoDatesFoundView.swift` | Where ambiguity review and empty states render. |
 
@@ -132,7 +132,7 @@ Rejected blocks must not appear in `extractedCandidates`; if **everything** is r
 1. `ScanViewModel.scanImage` stays the orchestrator; if you add `recognizeLines`, route OCR → extraction with line metadata passed through (extend the extraction entry point additively, e.g. `extractCandidates(from: OCRResult, locale: Locale)`, with a default implementation that flattens to text so the old signature still works).
 2. Persist `ScannedAsset.rawOcrText/ocrConfidence/candidateCount` as today; set `candidateCount` to the **post-dedup** count.
 3. `EventReviewViewModel`: surface `yearAssumed` (already a published property) and the new ambiguity/tier fields; if `isAmbiguousDate`, present the month/day swap control **before** `commitEvent` is enabled.
-4. Honor `SettingsState.confidence` (85) and `draftLowConfidence` as the gate between auto-commit and review-tray — extraction must return the raw score, the VM applies the threshold.
+4. Return calibrated confidence and ambiguity evidence for review. Do not reintroduce auto-commit, configurable confidence gates, or low-confidence routing without a persisted setting, a production consumer, and tests documented in the settings-to-consumer ledger.
 5. Keep `ServiceContainer.live()`/`.mock()` the single composition root; no service may instantiate another service directly.
 
 ## 5. ACCEPTANCE CRITERIA
