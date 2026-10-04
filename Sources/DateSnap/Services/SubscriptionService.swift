@@ -43,7 +43,7 @@ public protocol SubscriptionServiceProtocol: Sendable {
 public final class SubscriptionService: ObservableObject, SubscriptionServiceProtocol {
     public static let shared = SubscriptionService()
 
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.datesnap.app", category: "SubscriptionService")
+    nonisolated private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.datesnap.app", category: "SubscriptionService")
 
     @Published public private(set) var currentTier: SubscriptionTier = .starter
     @Published public private(set) var availableProducts: [Product] = []
