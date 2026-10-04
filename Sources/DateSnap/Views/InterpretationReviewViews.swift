@@ -333,15 +333,30 @@ struct EventActionsChecklist: View {
     }
 
     private func url(for action: ActionSuggestion) -> URL? {
+        Self.validatedActionURL(for: action)
+    }
+
+    static func validatedActionURL(for action: ActionSuggestion) -> URL? {
+        let allowedSchemes: Set<String> = ["http", "https", "tel", "mailto"]
+        let rawURL: URL?
         switch action.kind {
         case .call:
             let digits = action.target.filter { $0.isNumber || $0 == "+" }
-            return digits.isEmpty ? nil : URL(string: "tel:\(digits)")
+            rawURL = digits.isEmpty ? nil : URL(string: "tel:\(digits)")
         case .email:
-            return URL(string: "mailto:\(action.target)")
+            let trimmed = action.target.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty, !trimmed.contains(" ") else { return nil }
+            rawURL = URL(string: "mailto:\(trimmed)")
         default:
-            return NotificationService.validatedLink(action.target)
+            rawURL = NotificationService.validatedLink(action.target)
         }
+
+        guard let url = rawURL,
+              let scheme = url.scheme?.lowercased(),
+              allowedSchemes.contains(scheme) else {
+            return nil
+        }
+        return url
     }
 }
 

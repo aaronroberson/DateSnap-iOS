@@ -92,3 +92,43 @@ struct IntelligenceUsagePolicyTests {
         #expect(policy.consume(.documentImport, count: 3, tier: .premium, now: day) == 3)
     }
 }
+
+@Suite("Event action link validation")
+struct EventActionLinkValidationTests {
+    @Test("Validates and restricts action link schemes to allowed set")
+    func actionLinkValidation() {
+        // Call actions
+        let validCall = ActionSuggestion(kind: .call, target: "+1 (555) 123-4567")
+        #expect(EventActionsChecklist.validatedActionURL(for: validCall)?.absoluteString == "tel:+15551234567")
+
+        let invalidCall = ActionSuggestion(kind: .call, target: "no-digits-here")
+        #expect(EventActionsChecklist.validatedActionURL(for: invalidCall) == nil)
+
+        // Email actions
+        let validEmail = ActionSuggestion(kind: .email, target: "rsvp@example.com")
+        #expect(EventActionsChecklist.validatedActionURL(for: validEmail)?.absoluteString == "mailto:rsvp@example.com")
+
+        let invalidEmailWithSpaces = ActionSuggestion(kind: .email, target: "rsvp @ example.com")
+        #expect(EventActionsChecklist.validatedActionURL(for: invalidEmailWithSpaces) == nil)
+
+        let emptyEmail = ActionSuggestion(kind: .email, target: "")
+        #expect(EventActionsChecklist.validatedActionURL(for: emptyEmail) == nil)
+
+        // Web / RSVP / Ticket actions
+        let validWeb = ActionSuggestion(kind: .website, target: "https://example.com/tickets")
+        #expect(EventActionsChecklist.validatedActionURL(for: validWeb)?.absoluteString == "https://example.com/tickets")
+
+        let validRSVP = ActionSuggestion(kind: .rsvp, target: "datesnap.app/rsvp")
+        #expect(EventActionsChecklist.validatedActionURL(for: validRSVP)?.absoluteString == "https://datesnap.app/rsvp")
+
+        // Malicious schemes
+        let javascriptScheme = ActionSuggestion(kind: .website, target: "javascript:alert(1)")
+        #expect(EventActionsChecklist.validatedActionURL(for: javascriptScheme) == nil)
+
+        let fileScheme = ActionSuggestion(kind: .rsvp, target: "file:///etc/passwd")
+        #expect(EventActionsChecklist.validatedActionURL(for: fileScheme) == nil)
+
+        let dataScheme = ActionSuggestion(kind: .buyTickets, target: "data:text/html,<script>alert(1)</script>")
+        #expect(EventActionsChecklist.validatedActionURL(for: dataScheme) == nil)
+    }
+}
