@@ -1039,9 +1039,9 @@ public enum DateInference {
         if detectedTimes.count >= 2 {
             // Earliest as start, latest as end
             let sorted = detectedTimes.sorted { minutes($0) < minutes($1) }
-            let earliest = sorted.first!
-            let latest = sorted.last!
-            return (true, earliest.hour, earliest.minute, latest.hour, latest.minute, nil, nil)
+            if let earliest = sorted.first, let latest = sorted.last {
+                return (true, earliest.hour, earliest.minute, latest.hour, latest.minute, nil, nil)
+            }
         }
 
         let first = detectedTimes[0]
