@@ -58,8 +58,9 @@ public struct DefaultCalendarStore: Sendable {
 /// 5. The first writable calendar (deterministic fallback).
 public enum DestinationCalendarResolver {
     /// Anything with a stable identifier and display title; `EKCalendar` conforms.
+    /// (EventKit identifiers are never nil, so the requirement is non-optional.)
     public protocol Option {
-        var calendarIdentifier: String? { get }
+        var calendarIdentifier: String { get }
         var title: String { get }
     }
 
@@ -71,8 +72,8 @@ public enum DestinationCalendarResolver {
         systemDefault: T?
     ) -> T? {
         available.first { $0.title == savedTitle }
-            ?? available.first { $0.calendarIdentifier != nil && $0.calendarIdentifier == userDefaultIdentifier }
-            ?? available.first { $0.calendarIdentifier != nil && $0.calendarIdentifier == recommendedIdentifier }
+            ?? available.first { $0.calendarIdentifier == userDefaultIdentifier }
+            ?? available.first { $0.calendarIdentifier == recommendedIdentifier }
             ?? systemDefault
             ?? available.first
     }

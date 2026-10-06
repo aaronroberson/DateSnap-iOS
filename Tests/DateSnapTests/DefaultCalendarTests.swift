@@ -46,9 +46,9 @@ struct DefaultCalendarStoreTests {
 struct DestinationCalendarResolverTests {
 
     private struct Option: DestinationCalendarResolver.Option {
-        let id: String?
+        let id: String
         let title: String
-        var calendarIdentifier: String? { id }
+        var calendarIdentifier: String { id }
     }
 
     private let home = Option(id: "cal-home", title: "Home")
@@ -128,15 +128,14 @@ struct DestinationCalendarResolverTests {
         #expect(picked?.title == "Work")
     }
 
-    @Test("The user default never selects an option without an identifier")
-    func requiresIdentifier() {
-        let noID = Option(id: nil, title: "Ghost")
+    @Test("An option whose identifier matches nothing is never selected on its own")
+    func unmatchedIdentifierIsSkipped() {
         let picked = DestinationCalendarResolver.select(
-            [noID, home],
+            options,
             savedTitle: nil,
-            userDefaultIdentifier: nil,
+            userDefaultIdentifier: "cal-nothing",
             recommendedIdentifier: nil,
-            systemDefault: nil
+            systemDefault: home
         )
         #expect(picked?.title == "Home")
     }
