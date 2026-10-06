@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 
 struct HomeEmptyStateView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.services) private var services
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var scanViewModel: ScanViewModel
@@ -13,7 +14,7 @@ struct HomeEmptyStateView: View {
     @Query private var scannedAssets: [ScannedAsset]
 
     @State private var scanLaserDown: Bool = false
-    @State private var selectedPhotoItem: PhotosPickerItem? = nil
+    @State private var selectedPhotoItems: [PhotosPickerItem] = []
     @State private var showPhotoPicker: Bool = false
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
@@ -464,20 +465,19 @@ struct HomeEmptyStateView: View {
             }
             .dsScreenBackground()
             .overlay { ScanProgressOverlay(scan: scanViewModel) }
+            .overlay { BatchScanProgressOverlay() }
             .animation(.easeInOut(duration: 0.2), value: scanViewModel.isProcessing)
             .onAppear {
                 scanLaserDown = true
             }
-            .photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItem, matching: .images, photoLibrary: .shared())
-            .onChange(of: selectedPhotoItem) { _, item in
-                guard let item else { return }
-                selectedPhotoItem = nil
-                runScan {
-                    guard let data = try? await item.loadTransferable(type: Data.self) else {
-                        scanViewModel.stage = .failed("That photo could not be loaded.")
-                        return
-                    }
-                    await scanViewModel.scanImageData(data, assetIdentifier: item.itemIdentifier ?? UUID().uuidString, modelContext: modelContext)
+            .photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItems, matching: .images, photoLibrary: .shared())
+            .onChange(of: selectedPhotoItems) { _, items in
+                guard !items.isEmpty else { return }
+                selectedPhotoItems = []
+                if items.count == 1 {
+                    runSinglePhotoScan(items[0])
+                } else {
+                    runBatchPhotoScan(items)
                 }
             }
             .onChange(of: appState.requestPhotoPicker) { _, requested in
@@ -514,6 +514,28 @@ struct HomeEmptyStateView: View {
         Task {
             await work()
             await appState.handleScanOutcome(scanViewModel)
+        }
+    }
+
+    /// Single-photo pick keeps the classic full-review flow.
+    private func runSinglePhotoScan(_ item: PhotosPickerItem) {
+        runScan {
+            guard let data = try? await item.loadTransferable(type: Data.self) else {
+                scanViewModel.stage = .failed("That photo could not be loaded.")
+                return
+            }
+            await scanViewModel.scanImageData(data, assetIdentifier: item.itemIdentifier ?? UUID().uuidString, modelContext: modelContext)
+        }
+    }
+
+    /// Multi-photo pick: scan every selected screenshot, then review all together.
+    private func runBatchPhotoScan(_ items: [PhotosPickerItem]) {
+        Task {
+            await appState.startBatchScan(
+                sources: items.map { BatchScanSource.photoPicker($0) },
+                services: services,
+                modelContext: modelContext
+            )
         }
     }
 

@@ -98,6 +98,7 @@ struct ScanProgressOverlay: View {
 // MARK: - Recent Screenshots Gallery
 struct RecentScreenshotsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.services) private var services
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var homeViewModel: HomeViewModel
@@ -106,13 +107,22 @@ struct RecentScreenshotsView: View {
 
     private let columns = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
 
+    @State private var isSelecting = false
+    @State private var selectedAssetIDs: Set<String> = []
+
     private var scannedIds: Set<String> { Set(scannedAssets.map(\.assetIdentifier)) }
+
+    private var selectedAssets: [PHAsset] {
+        homeViewModel.recentScreenshots.filter { selectedAssetIDs.contains($0.localIdentifier) }
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Pick a screenshot of a flyer, invite, or ticket. Text is read on this iPhone only.")
+                    Text(isSelecting
+                         ? "Tap screenshots to add them to the batch. Each event keeps its own calendar and reminders."
+                         : "Pick a screenshot of a flyer, invite, or ticket. Text is read on this iPhone only.")
                         .font(DSTypography.caption())
                         .foregroundStyle(Color.dsMutedForeground)
 
@@ -139,36 +149,113 @@ struct RecentScreenshotsView: View {
                         LazyVGrid(columns: columns, spacing: 10) {
                             ForEach(homeViewModel.recentScreenshots, id: \.localIdentifier) { asset in
                                 Button {
-                                    scan(asset)
+                                    if isSelecting {
+                                        toggleSelection(asset)
+                                    } else {
+                                        scan(asset)
+                                    }
                                 } label: {
                                     AssetThumbnail(asset: asset)
                                         .overlay(alignment: .topTrailing) {
-                                            if scannedIds.contains(asset.localIdentifier) {
-                                                Label("Scanned", systemImage: "checkmark.circle.fill")
-                                                    .labelStyle(.iconOnly)
-                                                    .font(.system(size: 18))
-                                                    .foregroundStyle(Color.dsSuccess)
-                                                    .padding(6)
-                                                    .accessibilityLabel("Already scanned")
-                                            }
+                                            badge(for: asset)
                                         }
                                 }
                                 .accessibilityLabel("Screenshot from \(asset.creationDate?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")")
+                                .accessibilityAddTraits(isSelecting && selectedAssetIDs.contains(asset.localIdentifier) ? .isSelected : [])
                             }
                         }
                     }
                 }
                 .padding()
+                .padding(.bottom, isSelecting ? 120 : 0)
             }
             .dsScreenBackground()
             .navigationTitle("Recent Screenshots")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button(isSelecting ? "Cancel" : "Close") {
+                        if isSelecting {
+                            isSelecting = false
+                            selectedAssetIDs.removeAll()
+                        } else {
+                            dismiss()
+                        }
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    if !homeViewModel.recentScreenshots.isEmpty {
+                        Button(isSelecting ? "Done" : "Select") {
+                            isSelecting.toggle()
+                            if !isSelecting { selectedAssetIDs.removeAll() }
+                        }
+                    }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                if isSelecting {
+                    batchScanBar
                 }
             }
             .task { homeViewModel.loadRecentScreenshots(limit: 30) }
+        }
+    }
+
+    @ViewBuilder
+    private func badge(for asset: PHAsset) -> some View {
+        if isSelecting {
+            Image(systemName: selectedAssetIDs.contains(asset.localIdentifier) ? "checkmark.circle.fill" : "circle")
+                .font(.system(size: 20))
+                .foregroundStyle(selectedAssetIDs.contains(asset.localIdentifier) ? Color.dsPrimary : Color.white)
+                .shadow(color: .black.opacity(0.6), radius: 3)
+                .padding(6)
+        } else if scannedIds.contains(asset.localIdentifier) {
+            Label("Scanned", systemImage: "checkmark.circle.fill")
+                .labelStyle(.iconOnly)
+                .font(.system(size: 18))
+                .foregroundStyle(Color.dsSuccess)
+                .padding(6)
+                .accessibilityLabel("Already scanned")
+        }
+    }
+
+    private var batchScanBar: some View {
+        HStack(spacing: 12) {
+            Text("\(selectedAssetIDs.count) selected")
+                .font(DSTypography.bodyCompact())
+                .foregroundStyle(Color.dsForeground)
+            Spacer()
+            Button {
+                startBatchScan()
+            } label: {
+                HStack(spacing: 8) {
+                    if appState.isBatchScanning {
+                        ProgressView().tint(Color.dsPrimaryForeground)
+                        Text("Scanning…")
+                    } else {
+                        Image(systemName: "square.stack.3d.up.fill")
+                        Text("Scan Batch")
+                        Image(systemName: "arrow.right")
+                    }
+                }
+            }
+            .buttonStyle(DSPrimaryButtonStyle())
+            .disabled(selectedAssetIDs.isEmpty || appState.isBatchScanning)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Rectangle()
+                .fill(Color.dsBackground.opacity(0.95))
+                .ignoresSafeArea(edges: .bottom)
+        )
+    }
+
+    private func toggleSelection(_ asset: PHAsset) {
+        if selectedAssetIDs.contains(asset.localIdentifier) {
+            selectedAssetIDs.remove(asset.localIdentifier)
+        } else {
+            selectedAssetIDs.insert(asset.localIdentifier)
         }
     }
 
@@ -178,6 +265,69 @@ struct RecentScreenshotsView: View {
             await scanViewModel.scanAsset(asset, modelContext: modelContext)
             await appState.handleScanOutcome(scanViewModel)
         }
+    }
+
+    /// Starts the batch on the shared AppState so progress and the review sheet
+    /// outlive this picker sheet.
+    private func startBatchScan() {
+        let sources = selectedAssets.map { BatchScanSource.asset($0) }
+        isSelecting = false
+        selectedAssetIDs.removeAll()
+        dismiss()
+        Task { @MainActor in
+            await appState.startBatchScan(
+                sources: sources,
+                services: services,
+                modelContext: modelContext
+            )
+        }
+    }
+}
+
+// MARK: - Batch Scan Progress Overlay
+/// Sequential progress for a multi-screenshot scan ("Screenshot 2 of 5"), shown while
+/// a batch started from any screen is still running.
+struct BatchScanProgressOverlay: View {
+    @EnvironmentObject private var appState: AppState
+
+    var body: some View {
+        if appState.isBatchScanning, let scanner = appState.activeBatchScan {
+            BatchScanProgressContent(scanner: scanner)
+        }
+    }
+}
+
+private struct BatchScanProgressContent: View {
+    @ObservedObject var scanner: BatchScanViewModel
+
+    var body: some View {
+        ZStack {
+            Color.dsBackground.opacity(0.72).ignoresSafeArea()
+            VStack(spacing: 14) {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(Color.dsPrimary)
+                Text("Scanning screenshots on device…")
+                    .font(DSTypography.bodyStrong())
+                    .foregroundStyle(Color.dsForeground)
+                Text(scanner.currentLabel.isEmpty ? "Preparing…" : scanner.currentLabel)
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+                if !scanner.items.isEmpty {
+                    Text("\(scanner.items.filter(\.isResolved).count + 1)/\(scanner.items.count)")
+                        .font(DSTypography.overlineConfidence())
+                        .foregroundStyle(Color.dsPrimary)
+                }
+                Label("Private, on-device processing", systemImage: "lock.shield.fill")
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+            }
+            .padding(28)
+            .dsGlassCard(cornerRadius: 24, elevated: true, borderColor: Color.dsPrimary.opacity(0.3))
+        }
+        .transition(.opacity)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.updatesFrequently)
     }
 }
 

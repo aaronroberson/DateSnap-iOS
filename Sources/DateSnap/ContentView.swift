@@ -100,6 +100,14 @@ struct ContentView: View {
             .environmentObject(homeViewModel)
             .dateSnapServices(services)
         }
+        .sheet(item: $appState.batchReviewSession) { session in
+            BatchReviewView(session: session)
+                .environmentObject(appState)
+                .environmentObject(settingsState)
+                .environmentObject(scanViewModel)
+                .environmentObject(homeViewModel)
+                .dateSnapServices(services)
+        }
         .onAppear {
             appState.bind(subscription: services.subscription)
             openPendingDeepLink()
