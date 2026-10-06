@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import SwiftData
 
 @MainActor
 protocol ToastDismissalScheduling {
@@ -83,6 +84,29 @@ final class AppState: ObservableObject {
     private(set) var sourceImages: [String: UIImage] = [:]
     /// Set by "Scan another photo" flows to reopen the photo picker from Home.
     @Published var requestPhotoPicker: Bool = false
+    /// Multi-screenshot batch session; presented as its own sheet with per-event destinations.
+    @Published var batchReviewSession: BatchReviewSession? = nil
+    /// In-flight multi-screenshot scan, kept here so progress survives picker dismissal.
+    @Published private(set) var activeBatchScan: BatchScanViewModel? = nil
+    @Published private(set) var isBatchScanning = false
+
+    /// Scans every source in one sequential batch, then presents the combined review session.
+    /// A single-selection batch still uses this path, so progress and routing stay identical.
+    func startBatchScan(
+        sources: [BatchScanSource],
+        services: ServiceContainer,
+        modelContext: ModelContext?
+    ) async {
+        guard !sources.isEmpty, !isBatchScanning else { return }
+        let scanner = BatchScanViewModel(services: services)
+        activeBatchScan = scanner
+        isBatchScanning = true
+        await scanner.scan(sources, modelContext: modelContext)
+        isBatchScanning = false
+
+        let session = BatchReviewSession(scan: scanner, services: services)
+        await presentBatchReview(session)
+    }
 
     // Toast Feedback
     @Published var toastMessage: String? = nil
@@ -128,5 +152,15 @@ final class AppState: ObservableObject {
     /// Opens the review screen for a scanned candidate.
     func review(_ candidate: EventCandidate) {
         activeModal = .eventReviewEdit(candidate.toDateSnapEvent())
+    }
+
+    /// Presents the batch review sheet, first dismissing any sheet already on screen.
+    func presentBatchReview(_ session: BatchReviewSession) async {
+        batchReviewSession = nil
+        if activeModal != nil {
+            activeModal = nil
+            try? await Task.sleep(for: .milliseconds(400))
+        }
+        batchReviewSession = session
     }
 }
