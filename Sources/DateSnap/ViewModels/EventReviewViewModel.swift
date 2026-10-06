@@ -71,6 +71,8 @@ public final class EventReviewViewModel: ObservableObject {
     /// Saved or pending events that may be the same event from another screenshot.
     @Published public var duplicateMatches: [EventSimilarityService.Match] = []
     let calendarRecommender = CalendarRecommendationService()
+    /// Reads the user's DateSnap-wide default calendar choice (Settings → Destinations).
+    let defaultCalendarStore = DefaultCalendarStore()
 
     /// The candidate being reviewed. Edits are written back to it on save.
     public let candidate: EventCandidate
@@ -163,10 +165,13 @@ public final class EventReviewViewModel: ObservableObject {
         let recommendedID = calendarRecommender.suggestedCalendarIdentifier(
             for: category, available: availableCalendars.map(\.calendarIdentifier)
         )
-        self.selectedCalendar = availableCalendars.first(where: { $0.title == savedTitle })
-            ?? availableCalendars.first(where: { $0.calendarIdentifier == recommendedID })
-            ?? calendarService.defaultCalendar()
-            ?? availableCalendars.first
+        self.selectedCalendar = DestinationCalendarResolver.select(
+            availableCalendars,
+            savedTitle: savedTitle,
+            userDefaultIdentifier: defaultCalendarStore.defaultCalendarIdentifier(),
+            recommendedIdentifier: recommendedID,
+            systemDefault: calendarService.defaultCalendar()
+        )
 
         self.availableReminderLists = reminderService.fetchReminderLists()
         let savedList = candidate.savedEvent?.targetRemindersList
