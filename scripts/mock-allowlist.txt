@@ -1,16 +1,23 @@
 # category|path-glob|matching text or *|owner|reason
 # Keep entries narrow. Every entry is a pending signoff item for its named owner.
 # 2026-10-04 recovery-closure disposition (aaron): test fixtures intentionally
-# construct mocks/samples; that is what tests are for. SampleFlyer is
-# DEBUG-gated sample content (PRs #19/#22); release-content verify enforces it.
+# construct mocks/samples; that is what tests are for.
+# 2026-10-06 CORRECTION (aaron): the earlier claim that SampleFlyer is
+# "DEBUG-gated sample content" was factually wrong and is corrected below.
+# SampleFlyer.swift contains no #if directives; the "Try Sample Flyer" button at
+# HomeEmptyStateView.swift:392 sits OUTSIDE the #if DEBUG block that opens at
+# :420; ScanViewModel.swift:97 scanSampleFlyer() is public and ungated; and the
+# Release binary carries its sample strings plus the datesnap-sample-flyer asset
+# id. release_forbidden deliberately omits datesnap-sample, so the release gate
+# was authored expecting this to ship. It is an intentional onboarding feature.
 mock-prefix|*Tests/*|*|aaron|test fixtures intentionally construct mocks
 sample-title|*Tests/*|*|aaron|test fixtures intentionally use sample titles
 simulation-copy|*Tests/*|*|aaron|test fixtures intentionally reference simulation copy
 stitch-id|*Tests/*|*|aaron|tests assert against stitch design identifiers
 hard-coded-price|*Tests/*|*|aaron|tests exercise paywall price strings
-mock-prefix|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
-sample-title|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
-simulation-copy|*SampleFlyer.swift|*|aaron|DEBUG-gated sample content (PR #19/#22 release gating)
+mock-prefix|*SampleFlyer.swift|*|aaron|intentional shipped onboarding sample (Try Sample Flyer, HomeEmptyStateView:392); NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
+sample-title|*SampleFlyer.swift|*|aaron|intentional shipped onboarding sample (Try Sample Flyer, HomeEmptyStateView:392); NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
+simulation-copy|*SampleFlyer.swift|*|aaron|intentional shipped onboarding sample (Try Sample Flyer, HomeEmptyStateView:392); NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
 # 2026-10-04 per-line adjudication (round34h evidence):
 hard-coded-price|*PurchaseViewModel.swift|*|aaron|doc-comment example ("e.g. $3.33"), not executable price logic
 stitch-id|*download_screens.py|*|aaron|design-fetch tooling; Stitch identifiers intrinsic to its purpose
