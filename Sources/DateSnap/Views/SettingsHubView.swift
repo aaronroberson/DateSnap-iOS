@@ -164,6 +164,8 @@ struct SettingsHubView: View {
             }
             .padding(16)
             .dsGlassCard()
+
+            DefaultCalendarSection()
         }
     }
 
