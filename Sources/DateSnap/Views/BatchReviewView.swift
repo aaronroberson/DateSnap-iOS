@@ -167,9 +167,9 @@ struct BatchReviewView: View {
                                 .lineLimit(2)
                         }
                         Spacer()
-                        Image(systemName: skipIcon(for: item.stage))
+                        Image(systemName: Self.skipIcon(for: item.stage))
                             .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(skipColor(for: item.stage))
+                            .foregroundStyle(Self.skipColor(for: item.stage))
                     }
                     .accessibilityElement(children: .combine)
                 }
