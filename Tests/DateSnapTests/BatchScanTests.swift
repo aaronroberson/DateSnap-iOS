@@ -17,13 +17,18 @@ private struct BatchOCRUnavailable: Error {}
 
 private final class BatchTestCalendarService: CalendarServiceProtocol, @unchecked Sendable {
     let createError: Error?
+    private let lock = NSLock()
+    private var _createdTitles: [String] = []
     init(createError: Error? = nil) { self.createError = createError }
+    /// Titles of events actually written to Calendar, in creation order.
+    var createdTitles: [String] { lock.withLock { _createdTitles } }
     func requestEventAccess() async throws -> Bool { true }
     func authorizationStatus() -> EKAuthorizationStatus { .fullAccess }
     func fetchWritableCalendars() -> [EKCalendar] { [] }
     func defaultCalendar() -> EKCalendar? { nil }
     func createEvent(candidate: EventCandidate, calendar: EKCalendar?, alarms: [TimeInterval]) async throws -> String {
         if let createError { throw createError }
+        lock.withLock { _createdTitles.append(candidate.title) }
         return "batch-calendar-id-\(candidate.id)"
     }
     func updateEvent(externalIdentifier: String, candidate: EventCandidate, calendar: EKCalendar?, alarms: [TimeInterval]) async throws -> String {
@@ -33,12 +38,17 @@ private final class BatchTestCalendarService: CalendarServiceProtocol, @unchecke
 }
 
 private final class BatchTestReminderService: ReminderServiceProtocol, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _createdTitles: [String] = []
+    /// Titles of events actually written to Reminders, in creation order.
+    var createdTitles: [String] { lock.withLock { _createdTitles } }
     func requestReminderAccess() async throws -> Bool { true }
     func authorizationStatus() -> EKAuthorizationStatus { .fullAccess }
     func fetchReminderLists() -> [EKCalendar] { [] }
     func defaultReminderList() -> EKCalendar? { nil }
     func createReminder(candidate: EventCandidate, list: EKCalendar?, offsets: [ReminderOffset]) async throws -> String {
-        "batch-reminder-id"
+        lock.withLock { _createdTitles.append(candidate.title) }
+        return "batch-reminder-id"
     }
     func updateReminder(externalIdentifier: String, candidate: EventCandidate, list: EKCalendar?, offsets: [ReminderOffset]) async throws -> String {
         externalIdentifier
@@ -101,7 +111,8 @@ struct BatchScanTests {
 
     private func makeItem(
         title: String,
-        calendar: BatchTestCalendarService = BatchTestCalendarService()
+        calendar: BatchTestCalendarService = BatchTestCalendarService(),
+        reminders: BatchTestReminderService = BatchTestReminderService()
     ) -> BatchEventItem {
         let candidate = EventCandidate(title: title, startDate: testFutureDate)
         return BatchEventItem(
@@ -109,7 +120,7 @@ struct BatchScanTests {
             screenshotID: UUID(),
             screenshotLabel: BatchScanViewModel.label(forIndex: 1),
             screenshotImage: nil,
-            services: services(calendar: calendar)
+            services: services(calendar: calendar, reminders: reminders)
         )
     }
 
@@ -250,6 +261,37 @@ struct BatchScanTests {
         // The failed event stays actionable so the user can retry it.
         #expect(bad.isActionable)
         #expect(!good.isActionable)
+    }
+
+    @Test("Save All writes every kept event to both Apple Calendar and Reminders in one action")
+    func saveAllWritesCalendarAndRemindersForEachEvent() async throws {
+        let container = try modelContainer()
+        let calendar = BatchTestCalendarService()
+        let reminders = BatchTestReminderService()
+        let first = makeItem(title: "Concert Night", calendar: calendar, reminders: reminders)
+        let second = makeItem(title: "Dinner Meetup", calendar: calendar, reminders: reminders)
+
+        let session = BatchReviewSession(events: [first, second])
+        let summary = await session.saveAll(modelContext: container.mainContext)
+
+        #expect(summary.savedCount == 2)
+        #expect(summary.isAllSaved)
+        // Each item runs the same single-item commit path (EventReviewViewModel.commitEvent),
+        // so one Calendar event and one Reminders entry are created per selected event.
+        #expect(calendar.createdTitles == ["Concert Night", "Dinner Meetup"])
+        #expect(reminders.createdTitles == ["Concert Night", "Dinner Meetup"])
+        #expect(first.status == .saved)
+        #expect(second.status == .saved)
+
+        // Persisted end state: each event's record carries both external IDs, not
+        // just an in-memory status — this is what the user would see in Apple apps.
+        let saved = try container.mainContext.fetch(FetchDescriptor<SavedEvent>())
+        #expect(saved.count == 2)
+        #expect(Set(saved.compactMap { $0.candidate?.title }) == ["Concert Night", "Dinner Meetup"])
+        #expect(saved.allSatisfy { $0.status == .saved })
+        #expect(saved.allSatisfy { $0.externalCalendarEventId?.hasPrefix("batch-calendar-id-") == true })
+        #expect(saved.allSatisfy { $0.externalReminderIds == ["batch-reminder-id"] })
+        #expect(saved.allSatisfy { $0.scheduledNotificationIds == ["batch-notification-id"] })
     }
 
     @Test("Discard removes an unsaved event from the session and persists deletion")
