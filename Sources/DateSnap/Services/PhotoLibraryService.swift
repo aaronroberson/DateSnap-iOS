@@ -91,7 +91,12 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                 options: options
             ) { image, info in
                 if let isDegraded = info?[PHImageResultIsDegradedKey] as? Bool, isDegraded {
-                    // Wait for full resolution
+                    // Provide whatever image we have rather than hanging
+                    if let image = image {
+                        continuation.resume(returning: image)
+                    } else {
+                        continuation.resume(throwing: DateSnapError.photoLibrary(.imageConversionFailed))
+                    }
                     return
                 }
 
