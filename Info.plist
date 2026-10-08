@@ -20,8 +20,20 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>DateSnap requires full calendar access to schedule extracted events with alarm offsets directly in your Apple Calendar.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>DateSnap requires calendar access to create and sync events extracted from your flyers and screenshots.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>DateSnap analyzes screenshots and event flyers directly on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>DateSnap requires reminders access to schedule multi-tiered countdown alerts in Apple Reminders prior to your events.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>DateSnap requires reminders access to create reminder lists and alerts for your upcoming events.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>
@@ -35,25 +47,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-	<!-- Privacy Usage Descriptions (Mandatory for App Store & Runtime) -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>DateSnap analyzes screenshots and event flyers directly on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
-
-	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>DateSnap requires full calendar access to schedule extracted events with alarm offsets directly in your Apple Calendar.</string>
-
-	<key>NSCalendarsUsageDescription</key>
-	<string>DateSnap requires calendar access to create and sync events extracted from your flyers and screenshots.</string>
-
-	<key>NSRemindersFullAccessUsageDescription</key>
-	<string>DateSnap requires reminders access to schedule multi-tiered countdown alerts in Apple Reminders prior to your events.</string>
-
-	<key>NSRemindersUsageDescription</key>
-	<string>DateSnap requires reminders access to create reminder lists and alerts for your upcoming events.</string>
-
-	<!-- Export Compliance (Bypasses manual TestFlight compliance questionnaire) -->
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>

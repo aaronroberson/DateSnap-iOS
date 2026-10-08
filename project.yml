@@ -21,9 +21,10 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: Sources/DateSnap
-    resources:
       - path: Assets.xcassets
+        buildPhase: resources
       - path: PrivacyInfo.xcprivacy
+        buildPhase: resources
     configFiles:
       Debug: Config/DateSnap-Debug.xcconfig
       Release: Config/DateSnap-Release.xcconfig
