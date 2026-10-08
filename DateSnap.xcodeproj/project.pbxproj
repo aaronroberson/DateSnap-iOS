@@ -28,6 +28,7 @@
 		28AF3827AAFB48EFD956D694 /* InterpretationRanker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5FAB10A61B2B540B9CB8CD /* InterpretationRanker.swift */; };
 		2903461A55AD5CDE86B8771D /* CalendarRecommendationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC3BF5CB43096B2E1B3BFB5 /* CalendarRecommendationService.swift */; };
 		2E7CDD848102039CE629D592 /* PrivacyCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DF75D865F7EA907578C01D /* PrivacyCenterView.swift */; };
+		361299C864BBCEB1DE19B795 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F287F0336F4E747491E9D6D /* Assets.xcassets */; };
 		396C5C08D6BE0EACD9E7F7FD /* SampleFlyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA4842108BB5E2D6333435A /* SampleFlyer.swift */; };
 		3E16D4A72175E779CD10D78B /* EventDurationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9646C6E197EB5B8F6BC6DD0E /* EventDurationPolicy.swift */; };
 		481E9B794D0FCDC4A2E56D85 /* PurchaseViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24295C2A50C212D3157CF521 /* PurchaseViewModelTests.swift */; };
@@ -38,6 +39,7 @@
 		5369677363BADC9B9C26B8C9 /* ReminderStrategyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60822BA3B4B45FCE3F0326E /* ReminderStrategyService.swift */; };
 		538963F81E5D0D2B7BCEF827 /* EvidenceValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F042DEA95A5BCDE0A6F3E7 /* EvidenceValidationTests.swift */; };
 		57A9F8EB93960112A3DE45E9 /* EnhancedScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B68BF572F24483552478D7 /* EnhancedScrollView.swift */; };
+		5DEFCA787DD1B4D35B47B204 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6B23572F6E3FF3CB686565D0 /* PrivacyInfo.xcprivacy */; };
 		653487C48FBE3A9BB96E7EE0 /* BatchReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C48AAA6FB75E6296C67442 /* BatchReviewView.swift */; };
 		6B2F69F41E34FDB7E78BF172 /* EventUnderstandingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504B3DC4C54C69736B86F92C /* EventUnderstandingPipeline.swift */; };
 		74E627445E3B3C67B4F3860C /* NotificationPermissionDeniedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEA10D6A5634F7223DEF4E01 /* NotificationPermissionDeniedView.swift */; };
@@ -130,7 +132,7 @@
 		395E68BB9D5EEC5E4D5D8C26 /* EntitlementPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitlementPolicyTests.swift; sourceTree = "<group>"; };
 		3C86BC46FAFA0EDCED3073D8 /* ServiceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceContainer.swift; sourceTree = "<group>"; };
 		435B9A5E763375C3CD1F7297 /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
-		4464E4DF303C20C3C4C66759 /* DateSnap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DateSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4464E4DF303C20C3C4C66759 /* DateSnap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DateSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45AD4F1919BD7DD965C86702 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		480D82BA047E5B777F2BA01A /* AppleFoundationModelInterpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationModelInterpreter.swift; sourceTree = "<group>"; };
 		49DBB25E8C03100CCBC42E92 /* FeatureEntitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureEntitlements.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 		4D99C50F1AD06F38847D0799 /* ScreenGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGalleryView.swift; sourceTree = "<group>"; };
 		4DC3BF5CB43096B2E1B3BFB5 /* CalendarRecommendationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarRecommendationService.swift; sourceTree = "<group>"; };
 		4E09A6F427402F6FE1AC56BD /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
+		4F287F0336F4E747491E9D6D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504B3DC4C54C69736B86F92C /* EventUnderstandingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingPipeline.swift; sourceTree = "<group>"; };
 		5162294B3F95C67021094F5C /* EventModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModels.swift; sourceTree = "<group>"; };
 		51F925C66B8AD24D4EF607F4 /* DateSnap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSnap.swift; sourceTree = "<group>"; };
@@ -150,6 +153,7 @@
 		5EA98102BA8DCBF41B1D8FA8 /* AppleIntelligenceLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceLiveTests.swift; sourceTree = "<group>"; };
 		66872204135AD2BD7E23BC2B /* HistoryArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryArchiveView.swift; sourceTree = "<group>"; };
 		67641BE307903D632C86E36D /* BatchScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchScanViewModel.swift; sourceTree = "<group>"; };
+		6B23572F6E3FF3CB686565D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6B6CEAE02011D09BA111F3F6 /* EventUnderstandingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingTests.swift; sourceTree = "<group>"; };
 		6C947E824B44CADFC33B6AE0 /* NoDatesFoundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDatesFoundView.swift; sourceTree = "<group>"; };
 		6DF74BA5AA1B149806EF9BEB /* AppStateImageStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateImageStateTests.swift; sourceTree = "<group>"; };
@@ -203,7 +207,7 @@
 		DFE323656DAE7A805CD2EC71 /* AdvisorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvisorTests.swift; sourceTree = "<group>"; };
 		E9163CE168D33CAFEB6C4463 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		F0646AB168D094F1ADAFE4C6 /* EventSimilarityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventSimilarityService.swift; sourceTree = "<group>"; };
-		F21A4B11D48075D4C6CC43FC /* DateSnapTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DateSnapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F21A4B11D48075D4C6CC43FC /* DateSnapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DateSnapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2DF75D865F7EA907578C01D /* PrivacyCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyCenterView.swift; sourceTree = "<group>"; };
 		F4CC51E81B43393FEA908592 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F5BA386EFC39C626817475CD /* SavedEventDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedEventDetailView.swift; sourceTree = "<group>"; };
@@ -395,6 +399,8 @@
 		A62A505067573CA6429724D2 = {
 			isa = PBXGroup;
 			children = (
+				4F287F0336F4E747491E9D6D /* Assets.xcassets */,
+				6B23572F6E3FF3CB686565D0 /* PrivacyInfo.xcprivacy */,
 				18676E1C5366AF58E9597EBA /* Config */,
 				CA64075D255C3764C8E15ED1 /* Sources */,
 				4AA5568DC0B719195B34ECBE /* Tests */,
@@ -444,6 +450,7 @@
 			buildConfigurationList = 7D8273DD5C99B804588C9FC5 /* Build configuration list for PBXNativeTarget "DateSnap" */;
 			buildPhases = (
 				7957889F6E0C6F5A2090B74F /* Sources */,
+				46C233670EDB0FA80C6C715E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -481,12 +488,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
-					532071A09C74E47713F1E4DA = {
-						DevelopmentTeam = WGKKDYY866;
-						ProvisioningStyle = Automatic;
-					};
 					C1CF9569442346BC0667F211 = {
 						DevelopmentTeam = WGKKDYY866;
 					};
@@ -511,6 +514,18 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		46C233670EDB0FA80C6C715E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				361299C864BBCEB1DE19B795 /* Assets.xcassets in Resources */,
+				5DEFCA787DD1B4D35B47B204 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7957889F6E0C6F5A2090B74F /* Sources */ = {
@@ -671,6 +686,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -725,6 +741,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -739,10 +756,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = DateSnap.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DateSnap;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				PRODUCT_BUNDLE_IDENTIFIER = com.datesnap.app;
 				SDKROOT = iphoneos;
 			};
@@ -754,19 +774,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = DateSnap.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = WGKKDYY866;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DateSnap;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				PRODUCT_BUNDLE_IDENTIFIER = com.datesnap.app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
 		EAA3550058D2531927EBD4AB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AC72F417245B2C15484F57A6 /* DateSnap-Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -814,6 +842,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
