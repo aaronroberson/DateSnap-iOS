@@ -68,6 +68,7 @@ public enum ContactAuthorizationStatus {
     case restricted
     case denied
     case authorized
+    case writeOnly
     @available(iOS 18.0, *)
     case fullAccess
 }
@@ -102,20 +103,19 @@ public final class ContactIntegrationService: ContactIntegrationServiceProtocol,
     
     public func contactAuthorizationStatus() -> ContactAuthorizationStatus {
         let status = EKEventStore.authorizationStatus(for: .event)
-        switch status {
-        case .notDetermined:
-            return .notDetermined
-        case .restricted:
+        if status == .restricted {
             return .restricted
-        case .denied:
-            return .denied
-        case .authorized:
-            return .authorized
-        case .fullAccess:
-            return .fullAccess
-        @unknown default:
-            return .notDetermined
         }
+        if status == .denied {
+            return .denied
+        }
+        if status == .writeOnly {
+            return .writeOnly
+        }
+        if status == .fullAccess {
+            return .fullAccess
+        }
+        return .notDetermined
     }
     
     public func fetchContacts() async throws -> [EventContact] {
@@ -130,12 +130,6 @@ public final class ContactIntegrationService: ContactIntegrationServiceProtocol,
         event.title = eventTitle
         event.startDate = date
         event.endDate = date.addingTimeInterval(3600) // 1 hour default
-        
-        if let email = contact.emailAddresses.first {
-            let attendee = EKParticipant()
-            // Note: EKParticipant creation with email would require more implementation
-            // This is a placeholder for the concept
-        }
         
         // Save event
         try eventStore.save(event, span: .thisEvent)
