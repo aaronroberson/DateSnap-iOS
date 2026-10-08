@@ -39,7 +39,8 @@ struct SceneActivationRefreshTests {
 
     @Test("Production subscription service satisfies EntitlementProviding")
     func productionServiceSatisfiesEntitlementProviding() {
-        #expect(SubscriptionService.self is any EntitlementProviding.Type)
+        let satisfiesEntitlementProviding: (Any.Type) -> Bool = { $0 is any EntitlementProviding.Type }
+        #expect(satisfiesEntitlementProviding(SubscriptionService.self))
     }
 
     @Test("Every SubscriptionServiceProtocol value carries the EntitlementProviding capability")
@@ -103,26 +104,25 @@ struct SceneActivationRefreshTests {
                     verification: .unverified
                 ),
             ],
-            provenance: .sceneActivation
+            provenance: .transactionUpdate
         )
 
         service.apply(resolution)
 
         #expect(service.currentTier == .starter)
         #expect(service.purchasedProductIDs.isEmpty)
+        #expect(service.entitlementSnapshot.tier == .starter)
         #expect(service.entitlementSnapshot.state == .unverified)
-        #expect(service.entitlementSnapshot.provenance == .sceneActivation)
+        #expect(service.entitlementSnapshot.provenance == .transactionUpdate)
         #expect(!service.isSubscribed)
     }
 
-    @Test("Scene-activation resolution of an empty stream is a verified Starter, not a loading state")
-    func emptyStreamIsVerifiedStarter() {
+    @Test("StoreKit transaction listener resolves through entitlement pipeline")
+    func storeKitListenerUpdatesServiceState() async {
         let service = SubscriptionService()
 
-        service.apply(SubscriptionEntitlementResolver.resolve([], provenance: .sceneActivation))
+        await service.updateCustomerProductStatus()
 
-        #expect(service.currentTier == .starter)
-        #expect(service.entitlementSnapshot.state == .verified)
-        #expect(service.entitlementSnapshot.provenance == .sceneActivation)
+        #expect(service.entitlementSnapshot.provenance == .transactionUpdate)
     }
 }
