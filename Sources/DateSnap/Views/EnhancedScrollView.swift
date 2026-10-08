@@ -204,7 +204,7 @@ extension ScrollPhase {
         switch self {
         case .idle:
             return false
-        case .interacting, .animating:
+        case .tracking, .interacting, .decelerating, .animating:
             return true
         @unknown default:
             return false
