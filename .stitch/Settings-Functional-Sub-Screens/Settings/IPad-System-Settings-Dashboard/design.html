@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-surface":"#e1e0ff","secondary-container":"#670fac","tertiary-fixed":"#ffd9dc","on-background":"#e1e0ff","secondary":"#deb7ff","surface-variant":"#32334a","primary-fixed":"#ffdbc8","on-tertiary":"#670020","on-primary":"#522300","secondary-fixed":"#f0dbff","on-secondary-fixed":"#2c0050","on-secondary":"#4a007f","error-container":"#93000a","on-surface-variant":"#e0c0af","on-tertiary-fixed":"#400011","surface-container-high":"#27283f","surface-bright":"#36374f","tertiary-fixed-dim":"#ffb2ba","on-primary-container":"#5c2800","primary-container":"#ff7a00","on-primary-fixed":"#321200","background":"#101127","primary-fixed-dim":"#ffb68b","surface-container-lowest":"#0b0c22","surface-container":"#1d1e34","surface-container-highest":"#32334a","on-primary-fixed-variant":"#753400","surface":"#101127","error":"#ffb4ab","secondary-fixed-dim":"#deb7ff","inverse-surface":"#e1e0ff","tertiary-container":"#ff7288","on-error-container":"#ffdad6","outline-variant":"#584235","on-secondary-fixed-variant":"#670fac","inverse-on-surface":"#2d2e46","on-secondary-container":"#d2a0ff","surface-container-low":"#181930","on-error":"#690005","surface-tint":"#ffb68b","outline":"#a78b7c","primary":"#ffb68b","on-tertiary-fixed-variant":"#910030","tertiary":"#ffb2ba","inverse-primary":"#994700","surface-dim":"#101127","on-tertiary-container":"#730025"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-desktop":"1.75rem","space-md":"1rem","space-3xl":"4.5rem","margin-desktop":"2.5rem","space-sm":"0.5rem","space-xs":"0.375rem",gutter:"1.25rem","space-2xs":"0.25rem","space-2xl":"3rem",margin:"1rem","space-xl":"2rem","space-lg":"1.5rem","margin-tablet":"1.5rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"]},fontSize:{"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"700"}],"headline-xl":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg":["56px",{lineHeight:"64px",letterSpacing:"-0.03em",fontWeight:"800"}],"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"26px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"headline-xl-mobile":["30px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-sm":["18px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"display-lg-mobile":["38px",{lineHeight:"44px",letterSpacing:"-0.025em",fontWeight:"800"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-56 bg-surface-container-low/90 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-lg px-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-xs px-space-xs"><img alt="pencild-logo-grey.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UbJn2tG-043LYiFglNpXUcE74x0ZdteTyUcYni7UiFtzhlwrrK7hYAIhPXxL0XHazw3JZ5g9uHCn43j3Z_hlrMK8HDCadp3TTip5zPhva8qGDC63w4-_LHsCJWQIzJUgYA1rRlKFLW0j0LMndN5uY3C3Ox1IR8DftoYXFDlfzHdO-cgsLemvwVnfUBs4ZECDgxS8u0kJMkkdiLdQR8YNwHq_8gE6qwOUpHa0MkeawK-l7Yf-NjDLfaXTbqJQFQQwRY9lojgh1TrA"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Pencil'd</span></div><div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="material-symbols-outlined text-primary text-[16px]">cloud_done</span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">iCloud Synced</span></div><nav class="flex flex-col gap-space-2xs" data-active-classes="bg-surface-container-high text-on-surface font-label-md rounded-xl"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="calendar-agenda" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span>Calendar Agenda</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="scanner-studio" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span>Scanner Studio</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="verification-queue" href="#"><span class="material-symbols-outlined text-[20px]">fact_check</span><span>Verification Queue</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="screenshot-radar" href="#"><span class="material-symbols-outlined text-[20px]">screenshot_region</span><span>Screenshot Radar</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="document-archive" href="#"><span class="material-symbols-outlined text-[20px]">folder_zip</span><span>Document Archive</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="settings-vault" href="#"><span class="material-symbols-outlined text-[20px]">lock</span><span>Settings &amp; Vault</span></a></nav></div><div class="px-space-xs"><div class="flex items-center justify-between p-space-xs rounded-xl bg-surface-container-lowest"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary text-[18px]">memory</span><span class="font-label-sm text-label-sm text-on-surface-variant">Neural Engine</span></div><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span></div></div></aside><div class="pl-56"><header class="fixed top-0 left-56 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-margin-tablet"><div class="flex items-center gap-space-md"><img alt="pencild-logo-grey.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UbJn2tG-043LYiFglNpXUcE74x0ZdteTyUcYni7UiFtzhlwrrK7hYAIhPXxL0XHazw3JZ5g9uHCn43j3Z_hlrMK8HDCadp3TTip5zPhva8qGDC63w4-_LHsCJWQIzJUgYA1rRlKFLW0j0LMndN5uY3C3Ox1IR8DftoYXFDlfzHdO-cgsLemvwVnfUBs4ZECDgxS8u0kJMkkdiLdQR8YNwHq_8gE6qwOUpHa0MkeawK-l7Yf-NjDLfaXTbqJQFQQwRY9lojgh1TrA"/><span class="font-label-lg text-label-lg text-on-surface-variant">iPad Pro • Tuesday, Oct 24</span></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-surface-container"><span class="material-symbols-outlined text-secondary text-[16px]">bolt</span><span class="font-label-sm text-label-sm text-secondary">Neural OCR Active</span></div><button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[0_8px_24px_rgba(255,122,0,0.45)] hover:bg-primary transition-all"><span class="material-symbols-outlined text-[18px]">add_a_photo</span><span>Quick Capture</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-surface w-full px-space-lg min-h-screen"><div class="flex flex-col w-full">
+<div class="relative w-full pb-space-3xl">
+<!-- Ambient Backdrop Aura -->
+<div class="absolute -top-12 left-1/4 w-96 h-96 bg-secondary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 right-10 w-80 h-80 bg-primary-container/15 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Unified Split Workbench Layout -->
+<div class="relative flex flex-col lg:flex-row gap-gutter-desktop items-start">
+<!-- LEFT CONFIGURATION PANE (280px / w-72) -->
+<div class="w-full lg:w-72 flex-shrink-0 flex flex-col gap-space-md">
+<!-- Profile Identity Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-lg relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-gradient-to-br from-primary-container/30 to-secondary-container/20 rounded-full blur-xl group-hover:scale-125 transition-transform"></div>
+<div class="flex items-center gap-space-sm mb-space-sm">
+<div class="relative w-12 h-12 rounded-full overflow-hidden bg-surface-container-highest flex-shrink-0 shadow-md">
+<img class="w-full h-full object-cover" data-alt="Portrait photo of Alex Vance, clean studio portrait with soft rim lighting reflecting warm amber and cool purple neon tones in dark tech setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl-kdNRF-h648K2db02n0LUuBKcNVPou-0meOSByoUWZnQKbtPk_lTA_7nd2tzl8OJDtwCnOH3K2CznZHeeo1CGqgRXLQLM_DJHY2_ESnlYqKArmsiaNP-_8GS1nfDSxPWEMhaYTBcaHti3mPyguEdje3vGX64bN9XZR7EdWojO8rwM8TO4KoZ9qhfXdFCWDjAT-KOH_urC6_6G9Nrk7Sr5mZmv6jA8Im1os9UHdhjuDTSCCybRoE5"/>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-space-2xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Alex Vance</h2>
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">alex.vance@example.com</p>
+</div>
+</div>
+<div class="inline-flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-gradient-to-r from-primary-container/20 via-tertiary-container/20 to-secondary-container/20 text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary-fixed">Lifetime Patron Access</span>
+</div>
+</div>
+<!-- Preferences Section Group List -->
+<div class="bg-surface-container-low p-space-xs rounded-xl shadow-md flex flex-col gap-space-2xs">
+<div class="px-space-sm pt-space-xs pb-space-2xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Device Consoles</span>
+</div>
+<!-- Account & Verification -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">badge</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Account &amp; Verification</span>
+</div>
+<span class="material-symbols-outlined text-[14px] text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+<!-- AI Intelligence & Models (Active State) -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left bg-gradient-to-r from-primary-container/25 via-secondary-container/30 to-surface-container-high shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label-md text-label-md text-on-surface truncate">AI Intelligence &amp; Models</span>
+</div>
+<span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded-full bg-primary-container text-on-primary-container">CoreML v4.2</span>
+</button>
+<!-- Automatic Capture & Radar -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">radar</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Automatic Capture &amp; Radar</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-space-2xs rounded">Bg Active</span>
+</button>
+<!-- Notification & SMS Alerts -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">sms</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Notification &amp; SMS Alerts</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-container/20 px-space-2xs rounded">Push + SMS</span>
+</button>
+<!-- Calendar Accounts & Sync -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">sync_alt</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Calendar Accounts &amp; Sync</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 Linked</span>
+</button>
+<!-- Reminder Cadences & Presets -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">tune</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Reminder Cadences</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 Sets</span>
+</button>
+<div class="my-space-2xs h-px bg-surface-container"></div>
+<!-- Privacy & Neural Vault -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">security</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Privacy &amp; Neural Vault</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary">Zero Cloud</span>
+</button>
+<!-- Subscription Management -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">card_membership</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Subscription Tier</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Lifetime</span>
+</button>
+<!-- Help, FAQs & Diagnostics -->
+<button class="w-full flex items-center justify-between px-space-sm py-space-xs rounded-lg text-left hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-on-surface">terminal</span>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface truncate">Diagnostics &amp; Vault</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">b2026.10</span>
+</button>
+</div>
+<!-- Telemetry Small Callout -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Neural Core Co-Processor</span>
+<span class="font-label-sm text-label-sm text-primary">ANE Active</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-container via-tertiary-container to-secondary-container w-[78%] rounded-full"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant font-body-sm text-body-sm">
+<span>Core Usage</span>
+<span class="text-on-surface font-label-md">16 Cores Reserved</span>
+</div>
+</div>
+</div>
+<!-- RIGHT DETAIL CANVAS (Main Settings Workbench) -->
+<div class="flex-1 min-w-0 flex flex-col gap-space-lg w-full">
+<!-- Detail Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm bg-surface-container-low p-space-lg rounded-xl shadow-md relative overflow-hidden">
+<div class="absolute -top-16 -right-16 w-48 h-48 bg-primary-container/20 rounded-full blur-2xl pointer-events-none"></div>
+<div>
+<div class="flex items-center gap-space-xs mb-space-2xs">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">iPad Pro Hardware Harness</span>
+<span class="text-on-surface-variant">•</span>
+<span class="font-label-sm text-label-sm text-secondary">Neural OS 18.4</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">AI Intelligence, Conflict Radar &amp; Neural Engine</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-2xs max-w-2xl">
+              Configure on-device machine learning models, OCR sensitivity, handwriting parsing vectors, and calendar collision thresholds without remote latency.
+            </p>
+</div>
+<div class="flex items-center gap-space-xs self-start md:self-auto flex-shrink-0">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[0_8px_24px_rgba(255,122,0,0.35)] hover:bg-primary transition-all active:scale-95" onclick="simulateSave(this)">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Sync Neural Vault</span>
+</button>
+</div>
+</div>
+<!-- 2x2 Bento Configuration Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- CARD 1: Apple Silicon Neural Engine (ANE) Status -->
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-lg flex flex-col justify-between relative overflow-hidden group">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[24px]">memory</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Apple Silicon Neural Engine</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">CoreML Temporal Precision Engine v4.2</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-space-xs py-space-2xs rounded-full bg-primary-container/20 text-primary-fixed uppercase tracking-wider">100% On-Device</span>
+</div>
+<!-- Telemetry Metrics Strip -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-2xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Inference Latency</span>
+<div class="flex items-baseline gap-space-2xs">
+<span class="font-headline-md text-headline-md text-on-surface">16.2</span>
+<span class="font-label-sm text-label-sm text-primary">ms avg</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-space-2xs">
+<div class="bg-primary h-full w-[88%]"></div>
+</div>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-2xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Precision Rating</span>
+<div class="flex items-baseline gap-space-2xs">
+<span class="font-headline-md text-headline-md text-secondary">99.8</span>
+<span class="font-label-sm text-label-sm text-secondary">% F1-score</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-space-2xs">
+<div class="bg-secondary h-full w-[99%]"></div>
+</div>
+</div>
+</div>
+<!-- Setting Toggle -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container">
+<div class="flex flex-col gap-space-2xs pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface">Hardware Acceleration via M-Series ANE</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Routes handwriting stroke vectors directly to neural tensor cores.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" id="toggle-ane" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<!-- Bottom Cache Action Bar -->
+<div class="mt-space-md pt-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">inventory_2</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Local Model Weights Cache: <strong class="text-on-surface">184 MB</strong></span>
+</div>
+<button class="flex items-center gap-space-2xs px-space-sm py-space-2xs rounded-full bg-surface-container text-primary hover:bg-surface-container-high transition-all font-label-sm text-label-sm" onclick="purgeCache(this)">
+<span class="material-symbols-outlined text-[14px]">refresh</span>
+<span>Purge &amp; Re-index</span>
+</button>
+</div>
+</div>
+<!-- CARD 2: Conflict Radar Parameters -->
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-lg flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-secondary shadow-inner">
+<span class="material-symbols-outlined text-[24px]">radar</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Conflict Radar Parameters</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Proactive collision alerts &amp; transit margins</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-space-xs py-space-2xs rounded-full bg-secondary-container/30 text-secondary uppercase tracking-wider">Predictive</span>
+</div>
+<!-- Sensitivity Slider Widget -->
+<div class="p-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Collision Sensitivity Buffer</span>
+<span class="font-label-md text-label-md text-primary font-bold" id="buffer-val">45 min buffer</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Minimum breathing room required between scanned schedule intervals.</p>
+<div class="py-space-2xs">
+<input class="w-full h-1.5 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary-container" id="buffer-slider" max="90" min="15" oninput="updateBuffer(this.value)" step="15" type="range" value="45"/>
+<div class="flex justify-between text-on-surface-variant font-label-sm text-label-sm mt-space-2xs">
+<span>15m (Tight)</span>
+<span>45m (Standard)</span>
+<span>90m (Airy)</span>
+</div>
+</div>
+</div>
+<!-- Toggles Stack -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container">
+<div class="flex flex-col gap-space-2xs pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface">Transit Buffer (Apple Maps API)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Auto-injects dynamic transit commute times for physical locations.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container">
+<div class="flex flex-col gap-space-2xs pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface">Tentative Double-Booking Guard</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Pencils overlapping options in ghost status until explicit approval.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-space-2xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>Active Conflict Rule: <strong class="text-on-surface">Strict Priority</strong></span>
+</span>
+<span class="text-secondary font-label-sm">Geo-Fence Armed</span>
+</div>
+</div>
+<!-- CARD 3: OCR Parsing & Document Intelligence -->
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-lg flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary-fixed shadow-inner">
+<span class="material-symbols-outlined text-[24px]">document_scanner</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">OCR Parsing &amp; Document Vision</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Syllabus analysis, handwritten margin parsing</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-space-xs py-space-2xs rounded-full bg-surface-container text-primary uppercase tracking-wider">Multi-Modal</span>
+</div>
+<!-- Parallel Mode Selector Banner -->
+<div class="p-space-sm rounded-lg bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">dataset</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Multi-Page Syllabus Chunking</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">8-Core vectorized parallel ingestion</span>
+</div>
+</div>
+<div class="flex items-center gap-space-2xs px-space-sm py-space-2xs rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">speed</span>
+<span>Turbo</span>
+</div>
+</div>
+<!-- Recognition Toggles -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container">
+<div class="flex flex-col gap-space-2xs pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface">Handwriting &amp; Scribble Recognition</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Decodes messy cursive arrows, circle callouts &amp; stars.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container">
+<div class="flex flex-col gap-space-2xs pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface">Academic Course Code Auto-Tagging</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Auto-detects course codes like CS301, ARCH420, BIO102.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Supported Codes Strip -->
+<div class="mt-space-md pt-space-sm flex items-center gap-space-xs overflow-x-auto">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase flex-shrink-0">Trained Syntaxes:</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-primary">BIO / CHEM</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-secondary">CS / ENG</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-tertiary">ARCH / DES</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">+18 more</span>
+</div>
+</div>
+<!-- CARD 4: Notification & SMS Dispatch Rules -->
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-lg flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[24px]">forward_to_inbox</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Notification &amp; SMS Dispatch</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Automated reminders &amp; verification triggers</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-space-xs py-space-2xs rounded-full bg-surface-container text-secondary uppercase tracking-wider">Active Gateway</span>
+</div>
+<!-- Dispatch Matrix -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-2xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">notifications_active</span>
+<span class="font-label-md text-label-md text-on-surface">Standard Push Alert</span>
+</div>
+<span class="font-label-sm text-label-sm px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface">1 Hour Prior</span>
+</div>
+<div class="h-px bg-surface-container-high"></div>
+<div class="flex items-center justify-between pt-space-2xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">sms</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">SMS Text Alert</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">+1 (555) 010-0001</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-space-sm py-0.5 rounded-full bg-surface-container-high text-secondary">2 Hours Prior</span>
+</div>
+</div>
+<!-- Quiet Hours Warning -->
+<div class="p-space-sm rounded-lg bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-tertiary">bedtime</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Sleep &amp; Focus Suppression</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Zero SMS alerts dispatched between 22:00 - 07:00</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">toggle_on</span>
+</div>
+</div>
+<!-- Test Action Bar -->
+<div class="mt-space-md pt-space-sm flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Carrier Gateway: <strong class="text-on-surface">Verified Direct</strong></span>
+<button class="flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface transition-all font-label-md text-label-md active:scale-95 shadow-sm" id="sms-btn" onclick="sendTestSms(this)">
+<span class="material-symbols-outlined text-[16px] text-secondary">send</span>
+<span>Send Test SMS Alert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Telemetry Live Stream Strip (Visual Component) -->
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<!-- Inline SVG Activity Radar Meter -->
+<div class="relative w-16 h-16 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary-container transition-all duration-1000" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="3.2"></path>
+</svg>
+<span class="absolute font-label-sm text-label-sm font-bold text-on-surface">94%</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Neural Health Index</span>
+<span class="font-label-sm text-label-sm px-space-2xs py-0.5 rounded bg-primary-container/20 text-primary uppercase">Optimal</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                Last checked 4 minutes ago on iPad A16Z Bionic Neural Array. 0 unresolved timeline conflicts detected.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-stretch md:self-auto justify-end">
+<div class="flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-surface-container">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Live Core Synced</span>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-md text-label-md transition-all active:scale-95" onclick="runDiagnostics(this)">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span>Run Audit</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function updateBuffer(val) {
+    const el = document.getElementById('buffer-val');
+    if (el) {
+      el.textContent = val + ' min buffer';
+    }
+  }
+
+  function simulateSave(btn) {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span><span>Syncing...</span>';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span><span>Vault Synced!</span>';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }, 900);
+  }
+
+  function purgeCache(btn) {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">progress_activity</span><span>Purging...</span>';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[14px]">done_all</span><span>Clean (0 MB)</span>';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2200);
+    }, 1100);
+  }
+
+  function sendTestSms(btn) {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span><span>Dispatching...</span>';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span><span>SMS Sent!</span>';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2500);
+    }, 1300);
+  }
+
+  function runDiagnostics(btn) {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span>Auditing...</span>';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-secondary">verified</span><span>Audit 100% Passed</span>';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }, 1400);
+  }
+</script></main></div></body></html>

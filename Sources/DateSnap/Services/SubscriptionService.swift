@@ -12,9 +12,9 @@ public enum SubscriptionTier: String, CaseIterable, Identifiable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .starter: return "DateSnap Starter"
-        case .plus: return "DateSnap Plus"
-        case .premium: return "DateSnap Premium"
+        case .starter: return "Pencil'd Free"
+        case .plus: return "Pencil'd Plus"
+        case .premium: return "Pencil'd Premium"
         }
     }
 

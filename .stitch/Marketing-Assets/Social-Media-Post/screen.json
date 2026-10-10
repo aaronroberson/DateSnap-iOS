@@ -1,0 +1,18 @@
+{
+  "screenshot": {
+    "name": "projects/9850514973960087780/screens/7de387b55bc44943b9db4fc1a3a63bb8/fileEntries/screenshot"
+  },
+  "id": "7de387b55bc44943b9db4fc1a3a63bb8",
+  "generatedBy": "interactive_ui_controller",
+  "width": "1024",
+  "height": "1024",
+  "title": "A high-impact social media post graphic for the iOS calendar and productivity app 'Pencil'd'. Dark midnight navy theme (#101127) with luminous neon orange (#ff7a00), coral (#ff5277), and purple/violet accents. Bold typographic headline: 'Turn Any Schedule Into Calendar Events Instantly'. Featuring a sleek 3D rendered calendar notebook icon with a glowing gradient pencil and floating UI elements showing automated schedule scanning, neural OCR, and iOS calendar sync badges. Clean, modern, highly engaging for Instagram and Twitter, polished Apple-like marketing presentation.",
+  "prompt": "A high-impact social media post graphic for the iOS calendar and productivity app 'Pencil'd'. Dark midnight navy theme (#101127) with luminous neon orange (#ff7a00), coral (#ff5277), and purple/violet accents. Bold typographic headline: 'Turn Any Schedule Into Calendar Events Instantly'. Featuring a sleek 3D rendered calendar notebook icon with a glowing gradient pencil and floating UI elements showing automated schedule scanning, neural OCR, and iOS calendar sync badges. Clean, modern, highly engaging for Instagram and Twitter, polished Apple-like marketing presentation.",
+  "name": "projects/9850514973960087780/screens/7de387b55bc44943b9db4fc1a3a63bb8",
+  "theme": {},
+  "screenType": "IMAGE",
+  "screenMetadata": {
+    "agentType": "PRO_AGENT",
+    "status": "COMPLETE"
+  }
+}

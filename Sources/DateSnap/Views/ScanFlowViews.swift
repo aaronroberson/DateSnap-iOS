@@ -137,7 +137,7 @@ struct RecentScreenshotsView: View {
                                 .font(DSTypography.bodyStrong())
                                 .foregroundStyle(Color.dsForeground)
                             Text(homeViewModel.photoAuthorizationStatus == .limited
-                                 ? "DateSnap can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
+                                 ? "Pencil'd can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
                                  : "Take a screenshot of an event, then come back.")
                                 .font(DSTypography.caption())
                                 .foregroundStyle(Color.dsMutedForeground)

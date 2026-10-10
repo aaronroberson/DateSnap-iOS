@@ -27,26 +27,26 @@ struct HelpFeedbackView: View {
     }
 
     let faqs: [FAQTopic] = [
-        FAQTopic(id: 1, icon: "cpu.fill", question: "How does DateSnap find dates in screenshots?",
-                 answer: "DateSnap uses Apple Vision to recognize text. Rules-based extraction is the default; if Apple Intelligence is available and enabled, it can help interpret ambiguous flyers. Review the event details before saving."),
+        FAQTopic(id: 1, icon: "cpu.fill", question: "How does Pencil'd find dates in screenshots?",
+                 answer: "Pencil'd uses Apple Vision to recognize text. Rules-based extraction is the default; if Apple Intelligence is available and enabled, it can help interpret ambiguous flyers. Review the event details before saving."),
         FAQTopic(id: 2, icon: "arrow.triangle.2.circlepath", question: "Why did an event scan with the wrong time?",
                  answer: "Posters with stylized serif typography or multi-timezone notices (e.g. \"7 PM EST / 4 PM PST\") can sometimes lead to ambiguous matches. You can tap any parsed event card to manually adjust the time or date pill before saving, or use the crop preview tool to pinpoint the specific time lockup."),
         FAQTopic(id: 3, icon: "lock.shield.fill", question: "Are private photos uploaded to a cloud?",
-                 answer: "Image text recognition runs on the device. If you save an event, DateSnap writes it to the Calendar or Reminders destination you choose. Apple may sync those destinations according to your account settings."),
+                 answer: "Image text recognition runs on the device. If you save an event, Pencil'd writes it to the Calendar or Reminders destination you choose. Apple may sync those destinations according to your account settings."),
         FAQTopic(id: 4, icon: "arrow.left.arrow.right", question: "How do I export to Google or Outlook?",
-                 answer: "DateSnap can add an event to a calendar available through Apple Calendar. To use Google or Outlook calendars, add the account in iOS Settings > Calendar > Accounts and select its calendar when saving."),
+                 answer: "Pencil'd can add an event to a calendar available through Apple Calendar. To use Google or Outlook calendars, add the account in iOS Settings > Calendar > Accounts and select its calendar when saving."),
     ]
 
     let topics: [SupportTopic] = [
         SupportTopic(id: "quickStart", icon: "book.fill", title: "Quick Start",
                      subtitle: "Scan and review an event",
-                     body: "1. Choose a flyer image in DateSnap.\n2. Review the dates and event details found in the image.\n3. Correct any details that need adjustment.\n4. Save the event to a Calendar or Reminders destination you choose."),
+                     body: "1. Choose a flyer image in Pencil'd.\n2. Review the dates and event details found in the image.\n3. Correct any details that need adjustment.\n4. Save the event to a Calendar or Reminders destination you choose."),
         SupportTopic(id: "troubleshootOCR", icon: "doc.text.viewfinder.fill", title: "Troubleshoot OCR",
                      subtitle: "Fix unread or blurred flyer dates",
                      body: "Blurred, small, or stylized text can be hard to recognize. Try a clearer image with the event details in focus. Check and correct the extracted date, time, and location before saving."),
         SupportTopic(id: "permissions", icon: "lock.open.fill", title: "Permissions",
                      subtitle: "Choose images and save destinations",
-                     body: "Select an image when scanning. Calendar and Reminders access is requested when you choose to save an event there. You can review granted access in iOS Settings > Apps > DateSnap."),
+                     body: "Select an image when scanning. Calendar and Reminders access is requested when you choose to save an event there. You can review granted access in iOS Settings > Apps > Pencil'd."),
     ]
 
     var filteredFAQs: [FAQTopic] {
@@ -296,7 +296,7 @@ struct HelpFeedbackView: View {
                                   tint: .dsInfo)
             VStack(spacing: 14) {
                 Button {
-                    if let url = URL(string: "mailto:support@datesnap.app?subject=DateSnap%20Support%20Request") {
+                    if let url = URL(string: "mailto:support@datesnap.app?subject=Pencil'd%20Support%20Request") {
                         UIApplication.shared.open(url)
                     }
                 } label: {
@@ -353,7 +353,7 @@ struct HelpFeedbackView: View {
                 SettingsSectionHeader(icon: "terminal", title: "App Environment",
                                   tint: .dsInfo)
             VStack(spacing: 12) {
-                envRow("DateSnap Version", appVersion)
+                envRow("Pencil'd Version", appVersion)
                 envRow("iOS Version", UIDevice.current.systemVersion)
 
                 Divider().overlay(Color.dsBorder)
@@ -394,9 +394,9 @@ struct HelpFeedbackView: View {
 
     private var diagnosticSummary: String {
         """
-        DateSnap Diagnostic Summary
+        Pencil'd Diagnostic Summary
         ---------------------------
-        DateSnap Version: \(appVersion)
+        Pencil'd Version: \(appVersion)
         iOS Version: \(UIDevice.current.systemVersion)
         """
     }

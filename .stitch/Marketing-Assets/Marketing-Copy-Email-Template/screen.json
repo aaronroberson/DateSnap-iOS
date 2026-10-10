@@ -1,0 +1,22 @@
+{
+  "screenshot": {
+    "name": "projects/9850514973960087780/screens/a71e5d0aabda40b2ac31b4b9d953dc1e/fileEntries/screenshot"
+  },
+  "htmlCode": {
+    "name": "projects/9850514973960087780/screens/a71e5d0aabda40b2ac31b4b9d953dc1e/fileEntries/html",
+    "mimeType": "text/html"
+  },
+  "id": "a71e5d0aabda40b2ac31b4b9d953dc1e",
+  "generatedBy": "create_datastore_entry",
+  "width": "2560",
+  "height": "3704",
+  "title": "Pencil'd - Marketing Copy & Email Template",
+  "name": "projects/9850514973960087780/screens/a71e5d0aabda40b2ac31b4b9d953dc1e",
+  "theme": {},
+  "deviceType": "DESKTOP",
+  "screenType": "DESIGN",
+  "screenMetadata": {
+    "agentType": "PRO_AGENT",
+    "status": "COMPLETE"
+  }
+}

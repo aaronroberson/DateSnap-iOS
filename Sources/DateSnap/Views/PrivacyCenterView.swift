@@ -22,13 +22,13 @@ struct PrivacyCenterView: View {
         }
         .dsScreenBackground()
         .confirmationDialog(
-            "Reset DateSnap data and history?",
+            "Reset Pencil'd data and history?",
             isPresented: $confirmReset,
             titleVisibility: .visible
         ) {
             Button("Erase Everything", role: .destructive) {
                 let result = SavedEventActions(services: services, modelContext: modelContext).eraseAllLocalData()
-                report(result, success: "DateSnap data and history erased") {
+                report(result, success: "Pencil'd data and history erased") {
                     appState.clearSourceImages()
                 }
             }
@@ -45,10 +45,10 @@ struct PrivacyCenterView: View {
                 .foregroundStyle(Color.dsPrimary)
                 .frame(width: 48, height: 48)
                 .background(Circle().fill(Color.dsPrimary.opacity(0.12)))
-            Text("Your scans stay in DateSnap until you choose an action.")
+            Text("Your scans stay in Pencil'd until you choose an action.")
                 .font(DSTypography.headlineSection())
                 .foregroundStyle(Color.dsForeground)
-            Text("Apple Vision recognizes text on this device. DateSnap stores scan text locally; saving an event can also write to the Apple Calendar or Reminders list you select.")
+            Text("Apple Vision recognizes text on this device. Pencil'd stores scan text locally; saving an event can also write to the Apple Calendar or Reminders list you select.")
                 .font(DSTypography.caption())
                 .foregroundStyle(Color.dsMutedForeground)
         }
@@ -61,7 +61,7 @@ struct PrivacyCenterView: View {
         VStack(alignment: .leading, spacing: 10) {
             SettingsSectionHeader(icon: "internaldrive", title: "Local Data", tint: .dsInfo)
             VStack(spacing: 12) {
-                Text("Clear scan text and interpretation records while keeping event history. Reset removes DateSnap scans and event history.")
+                Text("Clear scan text and interpretation records while keeping event history. Reset removes Pencil'd scans and event history.")
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,7 +92,7 @@ struct PrivacyCenterView: View {
                     SettingRow(
                         icon: "arrow.counterclockwise",
                         iconTint: .dsError,
-                        title: "Reset DateSnap Data & History",
+                        title: "Reset Pencil'd Data & History",
                         subtitle: "Calendar and Reminders items remain in Apple apps"
                     ) {
                         SettingsChevron()

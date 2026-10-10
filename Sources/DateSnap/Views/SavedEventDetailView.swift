@@ -56,7 +56,7 @@ struct SavedEventDetailView: View {
                                 Image(systemName: "calendar.badge.clock")
                                     .font(.system(size: 20))
                                     .foregroundStyle(Color.dsPrimary)
-                                Text("DateSnap")
+                                Text("Pencil'd")
                                     .font(DSTypography.headlineCard())
                                     .foregroundStyle(Color.dsForeground)
                             }
@@ -81,7 +81,7 @@ struct SavedEventDetailView: View {
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundStyle(Color(red: 4/255, green: 27/255, blue: 16/255))
                             }
-                            Text(isInCalendar ? (hasReminder ? "SAVED TO APPLE CALENDAR & REMINDERS" : "SAVED TO APPLE CALENDAR") : (saved?.status == .archived ? "ARCHIVED IN DATESNAP" : "NOT YET IN CALENDAR"))
+                            Text(isInCalendar ? (hasReminder ? "SAVED TO APPLE CALENDAR & REMINDERS" : "SAVED TO APPLE CALENDAR") : (saved?.status == .archived ? "ARCHIVED IN PENCIL'D" : "NOT YET IN CALENDAR"))
                                 .font(DSTypography.overlineConfidence())
                                 .foregroundStyle(Color.dsSuccess)
                         }
@@ -405,7 +405,7 @@ struct SavedEventDetailView: View {
                                         Image(systemName: "sparkles")
                                             .font(.system(size: 10))
                                             .foregroundStyle(Color.dsPrimary)
-                                        Text("Extracted by DateSnap OCR Engine")
+                                        Text("Extracted by Pencil'd OCR")
                                             .font(.system(size: 10))
                                             .foregroundStyle(Color.dsMutedForeground)
                                     }

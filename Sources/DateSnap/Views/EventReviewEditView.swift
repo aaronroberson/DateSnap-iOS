@@ -165,7 +165,7 @@ struct EventReviewForm: View {
                 Image(systemName: "calendar.badge.clock")
                     .font(.system(size: 20))
                     .foregroundStyle(Color.dsPrimary)
-                Text("DateSnap")
+                Text("Pencil'd")
                     .font(DSTypography.headlineCard())
                     .foregroundStyle(Color.dsForeground)
             }
@@ -480,7 +480,7 @@ struct EventReviewForm: View {
             }
 
             if viewModel.yearAssumed {
-                Label("Year wasn't on the flyer — DateSnap picked the next upcoming one.", systemImage: "info.circle")
+                Label("Year wasn't on the flyer — Pencil'd picked the next upcoming one.", systemImage: "info.circle")
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsWarning)
                     .frame(maxWidth: .infinity, alignment: .leading)

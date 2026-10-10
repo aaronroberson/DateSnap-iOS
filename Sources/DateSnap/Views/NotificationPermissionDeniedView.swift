@@ -83,7 +83,7 @@ struct NotificationPermissionDeniedView: View {
                             .foregroundStyle(Color.dsForeground)
                             .multilineTextAlignment(.center)
                         
-                        Text("Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.")
+                        Text("Without notification permission, Pencil'd can't send local alerts before your saved events.")
                             .font(DSTypography.bodyBase())
                             .foregroundStyle(Color.dsMutedForeground)
                             .multilineTextAlignment(.center)
@@ -147,7 +147,7 @@ struct NotificationPermissionDeniedView: View {
                     HStack(spacing: 6) {
                         Text("Settings")
                         Image(systemName: "chevron.right").font(.system(size: 10))
-                        Text("DateSnap")
+                        Text("Pencil'd")
                         Image(systemName: "chevron.right").font(.system(size: 10))
                         Text("Notifications")
                         Image(systemName: "chevron.right").font(.system(size: 10))

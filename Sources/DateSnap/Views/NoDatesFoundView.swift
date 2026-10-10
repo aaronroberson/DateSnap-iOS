@@ -172,7 +172,7 @@ struct NoDatesFoundView: View {
                             .font(DSTypography.displayTitle())
                             .foregroundStyle(Color.dsForeground)
                         
-                        Text("DateSnap analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.")
+                        Text("Pencil'd analyzed this image on your device, but didn't find a date or time to review.")
                             .font(DSTypography.bodyBase())
                             .foregroundStyle(Color.dsMutedForeground)
                             .multilineTextAlignment(.center)

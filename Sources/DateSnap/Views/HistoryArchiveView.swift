@@ -222,8 +222,8 @@ struct HistoryArchiveView: View {
                 titleVisibility: .visible,
                 presenting: pendingDelete
             ) { saved in
-                Button("Delete from DateSnap Only", role: .destructive) {
-                    reportMutation(actions.delete(saved, removeFromCalendar: false), success: "Removed from DateSnap history")
+                Button("Delete from Pencil'd Only", role: .destructive) {
+                    reportMutation(actions.delete(saved, removeFromCalendar: false), success: "Removed from Pencil'd history")
                 }
                 if saved.externalCalendarEventId != nil {
                     Button("Delete from Calendar & Reminders Too", role: .destructive) {
@@ -231,7 +231,7 @@ struct HistoryArchiveView: View {
                     }
                 }
             } message: { _ in
-                Text("Pending DateSnap alerts for this event will be cancelled.")
+                Text("Pending Pencil'd alerts for this event will be cancelled.")
             }
         }
     }

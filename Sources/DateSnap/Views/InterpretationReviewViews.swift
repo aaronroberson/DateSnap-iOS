@@ -9,7 +9,7 @@ struct EngineRouteBadge: View {
         HStack(spacing: 6) {
             Image(systemName: route == .onDeviceModel ? "wand.and.sparkles" : "cpu")
                 .font(.system(size: 12, weight: .semibold))
-            Text(route == .onDeviceModel ? "Interpreted on device with Apple Intelligence" : "Read by DateSnap's on-device rules")
+            Text(route == .onDeviceModel ? "Interpreted on device with Apple Intelligence" : "Read by Pencil'd's on-device rules")
                 .font(DSTypography.caption())
         }
         .foregroundStyle(route == .onDeviceModel ? Color.dsPrimary : Color.dsMutedForeground)

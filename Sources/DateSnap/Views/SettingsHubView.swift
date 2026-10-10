@@ -72,12 +72,12 @@ struct SettingsHubView: View {
                     .background(Circle().fill(Color.dsMuted))
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
-                        Text("Your DateSnap")
+                        Text("Your Pencil'd")
                             .font(DSTypography.headlineCard())
                             .foregroundStyle(Color.dsForeground)
                         ValueChip(text: tierChipText, tint: .dsAccent, filled: true)
                     }
-                    Text("No DateSnap account is required")
+                    Text("No Pencil'd account is required")
                         .font(DSTypography.caption())
                         .foregroundStyle(Color.dsMutedForeground)
                 }
@@ -180,7 +180,7 @@ struct SettingsHubView: View {
                 } label: {
                     SettingRow(icon: "lock.iphone", iconTint: .dsSuccess,
                                title: "Privacy Center",
-                               subtitle: "Clear stored scan text or erase DateSnap history") {
+                               subtitle: "Clear stored scan text or erase Pencil'd history") {
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
@@ -286,7 +286,7 @@ struct SettingsHubView: View {
                 } label: {
                     SettingRow(icon: "heart.fill", iconTint: .dsError,
                                title: "Request Feature / Feedback",
-                               subtitle: "Contact DateSnap support") {
+                               subtitle: "Contact Pencil'd support") {
                         Image(systemName: "arrow.up.forward.app")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(Color.dsMutedForeground)

@@ -211,7 +211,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
             }
         }
         if candidate.yearAssumed {
-            notesComponents.append("Note: Year was inferred automatically by DateSnap.")
+            notesComponents.append("Note: Year was inferred automatically by Pencil'd.")
         }
         if !candidate.rawTextSnippet.isEmpty {
             notesComponents.append("Extracted Text:\n\(candidate.rawTextSnippet)")

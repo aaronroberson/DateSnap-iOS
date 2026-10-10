@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-surface-variant": "#e0c0af", "primary-container": "#ff7a00", "on-primary-fixed": "#321200", "on-secondary-fixed": "#2c0050", "inverse-surface": "#e1e0ff", "primary-fixed-dim": "#ffb68b", "surface-container-low": "#181930", "on-surface": "#e1e0ff", "on-primary-fixed-variant": "#753400", "surface-container-highest": "#32334a", "on-error": "#690005", "outline": "#a78b7c", "on-tertiary-container": "#730025", "outline-variant": "#584235", "inverse-on-surface": "#2d2e46", "on-error-container": "#ffdad6", "tertiary": "#ffb2ba", "on-primary-container": "#5c2800", "tertiary-fixed-dim": "#ffb2ba", "on-secondary-container": "#d2a0ff", "on-background": "#e1e0ff", "surface-container-lowest": "#0b0c22", "surface-dim": "#101127", "surface-variant": "#32334a", "secondary": "#deb7ff", "surface-container-high": "#27283f", "surface-container": "#1d1e34", "surface-bright": "#36374f", "on-secondary": "#4a007f", "surface-tint": "#ffb68b", "tertiary-fixed": "#ffd9dc", "error-container": "#93000a", "secondary-fixed-dim": "#deb7ff", "on-secondary-fixed-variant": "#670fac", "surface": "#101127", "on-tertiary-fixed": "#400011", "secondary-fixed": "#f0dbff", "primary-fixed": "#ffdbc8", "inverse-primary": "#994700", "secondary-container": "#670fac", "primary": "#ffb68b", "tertiary-container": "#ff7288", "on-tertiary-fixed-variant": "#910030", "background": "#101127", "error": "#ffb4ab", "on-tertiary": "#670020", "on-primary": "#522300" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "space-2xs": "0.25rem", "margin-desktop": "2.5rem", "margin": "1rem", "space-sm": "0.5rem", "space-xs": "0.375rem", "margin-tablet": "1.5rem", "gutter-desktop": "1.75rem", "space-2xl": "3rem", "space-xl": "2rem", "space-3xl": "4.5rem", "gutter": "1.25rem", "space-md": "1rem" }, "fontFamily": { "headline-xl-mobile": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "display-lg-mobile": [ "Plus Jakarta Sans" ], "display-lg": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "headline-xl": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ] }, "fontSize": { "headline-xl-mobile": [ "30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-lg": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "headline-lg": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "display-lg-mobile": [ "38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" } ], "display-lg": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" } ], "body-lg": [ "16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-sm": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "body-md": [ "14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-md": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "label-sm": [ "10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" } ], "headline-xl": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "body-sm": [ "12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed select-none"><aside class="fixed left-0 top-0 h-full w-56 bg-surface-container-low/90 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-md px-space-xs shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-md"><div class="px-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs"><img alt="pencild-logo-grey.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UbJn2tG-043LYiFglNpXUcE74x0ZdteTyUcYni7UiFtzhlwrrK7hYAIhPXxL0XHazw3JZ5g9uHCn43j3Z_hlrMK8HDCadp3TTip5zPhva8qGDC63w4-_LHsCJWQIzJUgYA1rRlKFLW0j0LMndN5uY3C3Ox1IR8DftoYXFDlfzHdO-cgsLemvwVnfUBs4ZECDgxS8u0kJMkkdiLdQR8YNwHq_8gE6qwOUpHa0MkeawK-l7Yf-NjDLfaXTbqJQFQQwRY9lojgh1TrA"/><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface font-bold">Pencil'd</span></div><div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_rgba(255,122,0,0.6)]"></div></div><div class="mx-space-xs px-space-xs py-space-2xs rounded-full bg-surface-container-high/60 backdrop-blur-md flex items-center justify-between"><div class="flex items-center gap-space-2xs"><span class="material-symbols-outlined text-[14px] text-secondary">cloud_done</span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">iCloud Synced</span></div><span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse"></span></div><nav class="flex flex-col gap-space-2xs px-space-xs mt-space-2xs" data-active-classes="bg-surface-container-highest text-primary font-label-md"><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="verification-queue" href="#"><span class="material-symbols-outlined text-[20px]">fact_check</span><span class="font-label-md text-label-md">Verification Queue</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="syllabus-pdf-hub" href="#"><span class="material-symbols-outlined text-[20px]">auto_stories</span><span class="font-label-md text-label-md">Syllabus &amp; Hub</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="scanner-viewfinder" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-md text-label-md">Scanner View</span></a><a aria-current="page" class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg transition-colors bg-surface-container-highest text-primary font-label-md" data-path="conflict-radar" href="#"><span class="material-symbols-outlined text-[20px]">radar</span><span class="font-label-md text-label-md">Conflict Radar</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="calendar-agenda" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-label-md text-label-md">Calendar Agenda</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-md text-label-md">Settings</span></a></nav></div><div class="mx-space-xs p-space-xs rounded-xl bg-surface-container/70 backdrop-blur-md flex flex-col gap-space-2xs"><div class="flex items-center justify-between"><div class="flex items-center gap-space-2xs"><span class="material-symbols-outlined text-[16px] text-primary">stylus_note</span><span class="font-label-sm text-label-sm text-on-surface font-bold">Pencil Pro</span></div><span class="font-label-sm text-label-sm text-primary font-bold">94%</span></div><div class="w-full h-1 rounded-full bg-surface-container-highest overflow-hidden"><div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full" style="width: 94%"></div></div><div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-space-2xs"><span class="flex items-center gap-1"><span class="w-1 h-1 rounded-full bg-secondary"></span>Squeeze Ready</span><span class="text-[10px] text-on-surface-variant/70">Haptic On</span></div></div></aside><div class="pl-56 min-h-screen flex flex-col bg-background"><header class="fixed top-0 left-56 right-0 h-16 bg-surface/75 backdrop-blur-2xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-md flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-baseline gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">9:41 AM</span><span class="font-label-md text-label-md text-on-surface-variant">Tue, Oct 24</span></div><div class="hidden md:flex items-center gap-space-xs px-space-xs py-space-2xs rounded-full bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-primary">fiber_manual_record</span><span class="font-label-sm text-label-sm">Optical OCR Active</span></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs bg-surface-container-lowest/80 px-space-sm py-space-2xs rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.35)]"><span class="material-symbols-outlined text-[18px] text-on-surface-variant">search</span><span class="font-body-sm text-body-sm text-on-surface-variant/70 pr-space-md">Search scans or agenda...</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-mono">⌘K</span></div><button class="flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-gradient-to-r from-primary to-secondary text-on-primary-fixed shadow-[0_0_20px_rgba(255,122,0,0.3)] hover:brightness-110 active:scale-95 transition-all" type="button"><span class="material-symbols-outlined text-[18px] text-on-primary-fixed">add_circle</span><span class="font-label-md text-label-md text-on-primary-fixed font-bold">Quick Capture</span></button><div class="flex items-center gap-space-2xs px-space-xs py-space-2xs rounded-full bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">battery_charging_full</span><span class="font-label-sm text-label-sm font-semibold">100%</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(255,182,139,0.3)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-space-md bg-background flex-1"><div class="flex flex-col w-full pb-space-2xl">
+<!-- Top Ambient Glow Field (contained) -->
+<div class="relative w-full overflow-hidden">
+<div class="absolute -top-24 left-1/4 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -top-28 right-1/4 w-96 h-96 bg-secondary-container/15 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Alert / Incident Banner -->
+<div class="w-full bg-gradient-to-r from-surface-container-high via-surface-container to-surface-container-high p-space-md rounded-xl shadow-xl mb-space-lg">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_rgba(255,122,0,0.35)]">
+<span class="material-symbols-outlined text-primary-container text-[24px]">warning</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-sm text-label-sm uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary-container/15 text-primary font-bold">Collision Detected</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Friday, Oct 24, 2026</span>
+<span class="inline-block w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-sm text-label-sm text-error font-semibold">45m Overlap Clash</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-normal mt-0.5">
+              New scanned invitation directly overlaps with your scheduled work team engagement at SOHO Bistro.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-center">
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-surface-container-highest text-secondary font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">psychology</span> AI Neural Triage
+          </span>
+<button class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors" title="Dismiss Alert" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Expansive 2-Column iPad Pro Conflict Resolver -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg w-full">
+<!-- LEFT PANE: 55% Width Timeline & Event Comparisons -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- Visual Timeline Rail (4:00 PM - 12:00 AM) -->
+<div class="bg-surface-container/80 backdrop-blur-xl p-space-lg rounded-xl shadow-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">view_timeline</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Visual Collision Rail</span>
+</div>
+<div class="flex items-center gap-space-sm font-label-sm text-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span> Existing</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span> Scanned</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span> Overlap</span>
+</div>
+</div>
+<!-- 24h Rail Visualization -->
+<div class="relative w-full pt-space-xs pb-space-sm">
+<!-- Time Markers (4pm to 12am = 8 hours total) -->
+<div class="grid grid-cols-8 text-center text-on-surface-variant font-label-sm text-label-sm opacity-80 mb-space-xs">
+<span>4:00 PM</span>
+<span>5:00 PM</span>
+<span>6:00 PM</span>
+<span>7:00 PM</span>
+<span>8:00 PM</span>
+<span>9:00 PM</span>
+<span>10:00 PM</span>
+<span>11:00 PM</span>
+</div>
+<!-- Base Ruler Line with Hour Ticks -->
+<div class="relative w-full h-24 bg-surface-container-lowest rounded-xl p-2 overflow-hidden shadow-inner flex flex-col justify-between">
+<!-- Hour division grid lines -->
+<div class="absolute inset-0 grid grid-cols-8 pointer-events-none opacity-10">
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+<div class="border-r border-on-surface"></div>
+</div>
+<!-- Existing Event Block: 6:00 PM - 8:15 PM (starts at 25%, duration 28.125%) -->
+<div class="relative w-full h-8">
+<div class="absolute top-0 rounded-lg bg-surface-container-highest shadow-md flex items-center px-2 text-on-surface truncate cursor-pointer transition-transform hover:scale-[1.01]" style="left: 25%; width: 28.125%; height: 100%;">
+<div class="flex items-center gap-1 min-w-0">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary shrink-0"></span>
+<span class="font-label-sm text-label-sm truncate font-bold text-secondary">Team Dinner (6:00–8:15p)</span>
+</div>
+</div>
+</div>
+<!-- Hashed Collision Zone Pill overlaying between 7:30 PM (43.75%) and 8:15 PM (53.125%) -->
+<div class="absolute top-1 bottom-1 rounded-md pointer-events-none z-10 flex items-center justify-center overflow-hidden shadow-[0_0_12px_rgba(255,77,109,0.4)]" style="left: 43.75%; width: 9.375%; background: repeating-linear-gradient(45deg, rgba(255, 122, 0, 0.35), rgba(255, 122, 0, 0.35) 4px, rgba(255, 180, 171, 0.15) 4px, rgba(255, 180, 171, 0.15) 8px);">
+<span class="font-label-sm text-label-sm text-on-surface font-extrabold uppercase tracking-tighter bg-surface-container-lowest/90 px-1 py-0.5 rounded shadow">45m</span>
+</div>
+<!-- Scanned Incoming Event Block: 7:30 PM - 10:00 PM (starts at 43.75%, duration 31.25%) -->
+<div class="relative w-full h-8">
+<div class="absolute bottom-0 rounded-lg bg-gradient-to-r from-primary-container/80 to-tertiary-container/80 shadow-md flex items-center px-2 text-on-primary-container truncate cursor-pointer transition-transform hover:scale-[1.01]" style="left: 43.75%; width: 31.25%; height: 100%;">
+<div class="flex items-center gap-1 min-w-0">
+<span class="material-symbols-outlined text-[13px] text-on-primary shrink-0">stylus_note</span>
+<span class="font-label-sm text-label-sm truncate font-bold text-on-primary">Midnight Jazz (7:30–10:00p)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Collision Zone Indicator Description -->
+<div class="flex items-center justify-between mt-space-xs text-on-surface-variant font-body-sm text-body-sm px-1">
+<span class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]">priority_high</span> Overlap Window: 7:30 PM – 8:15 PM
+            </span>
+<span class="font-mono text-label-sm text-label-sm text-on-surface-variant/80">Delta: +0h 45m conflict</span>
+</div>
+</div>
+</div>
+<!-- Side-by-Side Detailed Event Comparison Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- CARD A: Incoming Scanned Intent -->
+<div class="bg-surface-container/90 rounded-xl p-space-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:bg-surface-container transition-all">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">document_scanner</span> Scanned Intent
+              </span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary-fixed-dim font-mono">
+                CoreML 99.4%
+              </span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">Midnight Jazz Sessions</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span> 7:30 PM – 10:00 PM (2h 30m)
+              </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">location_on</span> Blue Note Jazz Club • Greenwich
+              </p>
+</div>
+<!-- OCR Capture Source Thumbnail / Preview snippet -->
+<div class="p-space-xs rounded-lg bg-surface-container-lowest/80 flex items-center gap-space-sm mt-space-xs">
+<div class="w-12 h-12 rounded bg-surface-container-high overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close-up macro photograph of a handwritten paper flyer for a live midnight jazz performance, with stylized script ink writing and warm atmospheric concert club lighting in amber and violet tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfQUvz8btIMjgAn--XkOAZgVOICAl1wVkmyTbABpDvQXkoBYGIEnEyYt8MsEcpmBP-K5PmtSKNhPznuO0oEaVrot7Ys9aZ6me7AZ5Q7k4VwYSbqu6VTwkdHPE_GE7umFMUZ7dxc3adNof4NwQKzsdqa2nhM_HxU1T3T3dcLJd4e7MMeboIv3WAe94gHa-yxpy9CFQkaTF5U0PC7MQfT2SIVL4gZ8BiVszbIzhL0psojww5Sr2M8mOs"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface font-medium truncate">Flyer_Capture_24Oct.png</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Scribe OCR: "Friday night sets start 7:30 sharp..."</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="text-primary-fixed-dim">Target: Personal Calendar</span>
+<span class="material-symbols-outlined text-[18px] text-primary-container">arrow_outward</span>
+</div>
+</div>
+<!-- CARD B: Existing Calendar Event -->
+<div class="bg-surface-container/90 rounded-xl p-space-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:bg-surface-container transition-all">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary-container/20 text-secondary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">calendar_today</span> Confirmed Sync
+              </span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant">
+                iCloud (Work)
+              </span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">Team Quarterly Dinner</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span> 6:00 PM – 8:15 PM (2h 15m)
+              </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">restaurant</span> SOHO Bistro &amp; Lounge • Table 14
+              </p>
+</div>
+<!-- Attendees Avatar Stack -->
+<div class="p-space-xs rounded-lg bg-surface-container-lowest/80 flex items-center justify-between mt-space-xs">
+<div class="flex items-center -space-x-2 overflow-hidden">
+<div class="w-7 h-7 rounded-full bg-surface-container-high overflow-hidden shadow">
+<img class="w-full h-full object-cover" data-alt="Portrait photo of a young professional woman with glasses smiling softly in modern studio lighting with purple ambient glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA8QWOvHDdHBC0Aca9_hjeEnkWbuSbPHvz46bXch1RqEIM2UG9f8czsw9YixrgMuEbrfFEOqMnL470IpHI6CboUZRbM9h1hGElIuUKLbrsRl2wzNOlQVQrrFfU_ydMyvnFrTCYPsTacv5FIC01rHzbdLA0zS5ZFwY6he4-ASE_UlS-VCZuehYfFR6357V4PBqIkXlGndJh1WQfpNlSAvtjl8fwLvm2XpmGEyI0gpSTRjBJ-SBF6dHz"/>
+</div>
+<div class="w-7 h-7 rounded-full bg-surface-container-highest overflow-hidden shadow">
+<img class="w-full h-full object-cover" data-alt="Portrait photo of a male creative director in black turtleneck with gentle orange studio rim lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYvv0gl0NNo8SPJz1igFwmr4eihcmRxhXhkLACkRFsPhZffgHS0np9fryV9DmUlMT5BT5Pb-BiaSOvGVeMEOBan5YrEXXlY3Q79oe-ANvZsat0qT5VNVcSgiyWmF6_QGr91Wr8yxj-h4tnEHPmNcQKX6z5nbaoEC8Oz2wH4-hxeAQOhbbsQhN95OTh4k6VRRo2BBWstjd01rPYIYNyMV2D-KmrufAfy8ByigJQ4JUcXYC_0MHLxu6d"/>
+</div>
+<div class="w-7 h-7 rounded-full bg-surface-container-high overflow-hidden shadow">
+<img class="w-full h-full object-cover" data-alt="Portrait of an executive planner woman looking confidently forward with crisp warm architectural backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdXq7-jLMBugyejjLziGhl8iA73a2HCuYYB59I00ueYp7hvX-7ShkKuIdj85s3-huY7J8Sy9Jy1oqneaLIHq0R4xWKtXLdG3KJSSNLOPOPuelfvO7ytebF70pe8ceD1KIvXJDa0I9FQUgKdmnz2c8oXFKznXaNdxDV1PCRgxH1y-jRhXn4qob1bI57ocpBRiYGPbbU9TOemKrogQFRECy6r0rksiu4gQS1S5Atef9E33r-p7jWSbp5"/>
+</div>
+<div class="w-7 h-7 rounded-full bg-surface-bright flex items-center justify-center font-label-sm text-label-sm text-on-surface font-bold shadow">
+                  +4
+                </div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">7 Attending (Accepted)</span>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="text-error font-medium">Clashes 45m with Jazz</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+</div>
+</div>
+</div>
+<!-- Real-Time Geospatial Buffer Calculation Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">directions_subway</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-bold">Transit Feasibility: 14m Travel Time</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary">MTA Line C</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">SOHO Bistro → Blue Note is 0.8 miles. A 15-minute gap provides sufficient buffer.</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary px-2.5 py-1 rounded-full bg-primary-container/10 font-bold shrink-0">
+          Feasible Shift
+        </span>
+</div>
+</div>
+<!-- RIGHT PANE: 45% Width AI Resolution Strategies & Action Center -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Strategy Selector Container -->
+<div class="bg-surface-container/80 backdrop-blur-xl p-space-lg rounded-xl shadow-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">auto_fix_high</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Resolution Strategies</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Select 1 of 4</span>
+</div>
+<!-- Strategy Radio Choices -->
+<div class="flex flex-col gap-space-sm" id="strategy-group">
+<!-- Option 1: Adjust Scanned Time (Recommended) -->
+<div class="strategy-option cursor-pointer p-space-md rounded-xl bg-gradient-to-r from-primary-container/20 via-surface-container-high to-surface-container shadow-md transition-all group" data-selected="true">
+<div class="flex items-start gap-space-sm">
+<!-- Radio Circle -->
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest mt-0.5 flex items-center justify-center shrink-0 shadow-[0_0_8px_rgba(255,122,0,0.5)]">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container"></div>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Adjust Scanned Time</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-bold tracking-tight">Recommended</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Shift Midnight Jazz start from <span class="line-through text-on-surface-variant/60">7:30 PM</span> to <span class="text-primary font-bold">8:30 PM</span> (allowing Team Dinner conclusion + 15m commute).
+                </p>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-container/20 px-2 py-0.5 rounded-full font-medium">New: 8:30 PM – 11:00 PM</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">+15m Buffer Safe</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Option 2: Pencil In Anyway (Keep Both) -->
+<div class="strategy-option cursor-pointer p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-all group" data-selected="false">
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest mt-0.5 flex items-center justify-center shrink-0">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Pencil In Anyway</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Double-Book</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Insert Midnight Jazz concurrently on parallel timeline track. Both events will be highlighted with a soft striped collision indicator.
+                </p>
+</div>
+</div>
+</div>
+<!-- Option 3: Replace Existing Event -->
+<div class="strategy-option cursor-pointer p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-all group" data-selected="false">
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest mt-0.5 flex items-center justify-center shrink-0">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Replace Team Dinner</span>
+<span class="font-label-sm text-label-sm text-error font-medium">Decline Event</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Decline and archive the Team Quarterly Dinner in Work calendar; prioritize and commit strictly to the jazz session.
+                </p>
+</div>
+</div>
+</div>
+<!-- Option 4: Save as Tentative Draft -->
+<div class="strategy-option cursor-pointer p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-all group" data-selected="false">
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest mt-0.5 flex items-center justify-center shrink-0">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Stage as Tentative Draft</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Draft Tray</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Hold in Pencil'd Verification Staging Tray without modifying or writing changes to Apple Calendar or Google Calendar.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Target Calendar & Settings Configuration -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest/90 flex flex-col gap-space-sm mt-space-2xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Output Destination</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">tune</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Write To Calendar</label>
+<div class="flex items-center justify-between bg-surface-container-high px-space-sm py-2 rounded-lg text-on-surface cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-1.5 truncate">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-sm text-body-sm truncate font-medium">Personal (iCloud)</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Collision Alert Rule</label>
+<div class="flex items-center justify-between bg-surface-container-high px-space-sm py-2 rounded-lg text-on-surface cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-1.5 truncate">
+<span class="material-symbols-outlined text-[14px] text-secondary">notifications_active</span>
+<span class="font-body-sm text-body-sm truncate font-medium">Notify 30m prior</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar & Resolve CTA -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-center gap-space-sm justify-between">
+<button class="w-full sm:w-auto px-space-md py-space-sm rounded-full text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-md text-label-md transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+<span>Discard Scanned</span>
+</button>
+<button class="w-full sm:w-auto flex-1 flex items-center justify-center gap-space-xs px-space-lg py-space-md rounded-full bg-gradient-to-r from-primary-container via-primary to-secondary text-on-primary-fixed shadow-[0_0_24px_rgba(255,122,0,0.35)] hover:shadow-[0_0_32px_rgba(255,122,0,0.55)] active:scale-[0.98] transition-all" id="resolve-cta-btn" type="button">
+<span class="material-symbols-outlined text-[20px] text-on-primary-fixed font-bold">check_circle</span>
+<span class="font-label-lg text-label-lg text-on-primary-fixed font-bold">Resolve &amp; Pencil In →</span>
+</button>
+</div>
+</div>
+<!-- Quick Context Micro-Card -->
+<div class="p-space-md rounded-xl bg-surface-container/60 backdrop-blur-md flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[22px]">history_edu</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Undoable Conflict Resolution</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">All shifts are tracked in Pencil'd Event Changelog.</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant/80 font-mono">#TR-8092</span>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Micro-interaction for Strategy Selector Cards
+  document.querySelectorAll('.strategy-option').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.strategy-option').forEach(c => {
+        c.setAttribute('data-selected', 'false');
+        c.classList.remove('bg-gradient-to-r', 'from-primary-container/20', 'via-surface-container-high', 'to-surface-container', 'shadow-md');
+        c.classList.add('bg-surface-container-low');
+        const dot = c.querySelector('.rounded-full > div');
+        if (dot) dot.classList.replace('bg-primary-container', 'bg-transparent');
+        const containerDot = c.querySelector('.w-5.h-5');
+        if (containerDot) containerDot.classList.remove('shadow-[0_0_8px_rgba(255,122,0,0.5)]');
+      });
+
+      card.setAttribute('data-selected', 'true');
+      card.classList.remove('bg-surface-container-low');
+      card.classList.add('bg-gradient-to-r', 'from-primary-container/20', 'via-surface-container-high', 'to-surface-container', 'shadow-md');
+      const activeDot = card.querySelector('.rounded-full > div');
+      if (activeDot) activeDot.classList.replace('bg-transparent', 'bg-primary-container');
+      const activeContainerDot = card.querySelector('.w-5.h-5');
+      if (activeContainerDot) activeContainerDot.classList.add('shadow-[0_0_8px_rgba(255,122,0,0.5)]');
+    });
+  });
+
+  // Micro-interaction on Resolve Action Button
+  const resolveBtn = document.getElementById('resolve-cta-btn');
+  if (resolveBtn) {
+    resolveBtn.addEventListener('click', () => {
+      resolveBtn.classList.add('brightness-125');
+      resolveBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[20px] text-on-primary-fixed animate-spin">sync</span>
+        <span class="font-label-lg text-label-lg text-on-primary-fixed font-bold">Penciling Into Calendar...</span>
+      `;
+      setTimeout(() => {
+        resolveBtn.classList.remove('brightness-125');
+        resolveBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[20px] text-on-primary-fixed">task_alt</span>
+          <span class="font-label-lg text-label-lg text-on-primary-fixed font-bold">Scheduled & Synced!</span>
+        `;
+      }, 1200);
+    });
+  }
+</script></main></div></body></html>

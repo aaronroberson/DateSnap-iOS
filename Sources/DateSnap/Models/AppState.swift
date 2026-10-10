@@ -19,6 +19,7 @@ private struct LiveToastDismissalScheduler: ToastDismissalScheduling {
 
 enum ActiveTab: String, CaseIterable, Identifiable, Sendable {
     case home = "Home"
+    case agenda = "Agenda"
     case review = "Review"
     case history = "History"
     case settings = "Settings"
@@ -28,9 +29,33 @@ enum ActiveTab: String, CaseIterable, Identifiable, Sendable {
     var iconName: String {
         switch self {
         case .home: return "viewfinder"
+        case .agenda: return "calendar"
         case .review: return "sparkles"
         case .history: return "clock.arrow.circlepath"
         case .settings: return "gearshape.fill"
+        }
+    }
+}
+
+enum AgendaDateFilter: String, CaseIterable, Identifiable {
+    case upcoming = "Upcoming"
+    case today = "Today"
+    case next7Days = "Next 7 Days"
+    case past = "Past"
+    case all = "All"
+
+    var id: String { rawValue }
+
+    func includes(_ date: Date, relativeTo today: Date, calendar: Calendar = .current) -> Bool {
+        let startOfToday = calendar.startOfDay(for: today)
+        switch self {
+        case .upcoming: return date >= startOfToday
+        case .today: return calendar.isDate(date, inSameDayAs: today)
+        case .next7Days:
+            let end = calendar.date(byAdding: .day, value: 7, to: startOfToday) ?? startOfToday
+            return date >= startOfToday && date < end
+        case .past: return date < startOfToday
+        case .all: return true
         }
     }
 }

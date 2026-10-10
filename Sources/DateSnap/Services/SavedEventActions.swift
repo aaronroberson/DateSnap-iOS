@@ -201,7 +201,7 @@ struct SavedEventActions {
             for item in saved { modelContext.insert(item) }
             for asset in assets { modelContext.insert(asset) }
             for item in interpretations { modelContext.insert(item) }
-            return .failure(MutationFailure(message: "Could not erase local DateSnap data: \(error.localizedDescription)"))
+            return .failure(MutationFailure(message: "Could not erase local Pencil'd data: \(error.localizedDescription)"))
         }
     }
 

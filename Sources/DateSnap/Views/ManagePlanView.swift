@@ -34,7 +34,7 @@ struct ManagePlanView: View {
                 if tier != .premium { upsell }
                 controls
                 SettingsFooterNote(
-                    lines: ["Subscriptions are handled securely through your Apple ID. Modify or cancel anytime in iPhone Settings at least 24 hours before renewal. DateSnap never receives, parses, or stores payment credentials."],
+                    lines: ["Subscriptions are managed by Apple through your Apple ID. Manage or cancel them in iPhone Settings. Pencil'd does not receive or store payment credentials."],
                     systemImage: "info.circle.fill"
                 )
                 footerLinks
@@ -96,7 +96,7 @@ struct ManagePlanView: View {
 
     private var planName: String {
         switch tier {
-        case .starter: return "DateSnap Starter"
+        case .starter: return "Pencil'd Free"
         case .plus, .premium:
             guard let entitlement else { return tier.displayName }
             return "\(tier.displayName) (\(entitlement.isAnnual ? "Annual" : "Monthly"))"

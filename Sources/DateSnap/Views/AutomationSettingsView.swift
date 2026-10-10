@@ -52,7 +52,7 @@ struct AutomationSettingsView: View {
                     Label("Rules-based extraction remains available", systemImage: "text.magnifyingglass")
                         .font(DSTypography.bodyStrong())
                         .foregroundStyle(Color.dsForeground)
-                    Text("When Apple Intelligence is turned off or unavailable, DateSnap continues with deterministic text extraction and asks you to review any event it finds.")
+                    Text("When Apple Intelligence is off or unavailable, Pencil'd continues with on-device text extraction and asks you to review events before saving.")
                         .font(DSTypography.caption())
                         .foregroundStyle(Color.dsMutedForeground)
                 }

@@ -4,7 +4,19 @@ import Photos
 import PhotosUI
 import UniformTypeIdentifiers
 
+enum HomeBrandCopy {
+    static let welcomeHeading = "Welcome to Pencil'd"
+    static let scanDescription = "Take a screenshot of a flyer, text invite, or ticket, and Pencil'd will instantly turn it into a calendar event with custom reminders."
+    static let howItWorksHeading = "How Pencil'd Works"
+    static let openAppTutorialTitle = "2. Open Pencil'd"
+    static let photoLibraryPermissionMessage = "Pencil'd needs Photo Library access to find your recent screenshots. You can still pick individual photos without it."
+    static let premiumActiveToast = "Pencil'd Premium Active"
+    static let premiumFileImportAccessibilityHint = "Requires Pencil'd Premium"
+    static let plusScreenshotExplanation = "Pencil'd Plus checks new screenshots on your device and highlights likely events. Nothing is saved until you review it."
+}
+
 struct HomeEmptyStateView: View {
+
     @Environment(\.modelContext) private var modelContext
     @Environment(\.services) private var services
     @Environment(\.openURL) private var openURL
@@ -19,7 +31,7 @@ struct HomeEmptyStateView: View {
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
 
-    /// Screenshots the library observer has seen that DateSnap has not scanned yet (Plus auto-detection).
+    /// Screenshots the library observer has seen that Pencil'd has not scanned yet.
     private var newScreenshots: [PHAsset] {
         let scanned = Set(scannedAssets.map(\.assetIdentifier))
         let unscanned = homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }
@@ -42,7 +54,7 @@ struct HomeEmptyStateView: View {
                             }
                             .foregroundStyle(Color.dsPrimary)
                             
-                            Text("Welcome to DateSnap")
+                            Text(HomeBrandCopy.welcomeHeading)
                                 .font(DSTypography.displayTitle())
                                 .foregroundStyle(Color.dsForeground)
                             
@@ -56,7 +68,7 @@ struct HomeEmptyStateView: View {
                         // Paywall / Tier Pill
                         Button {
                             if appState.isPremiumMember {
-                                appState.showToast("DateSnap Premium Active")
+                                appState.showToast(HomeBrandCopy.premiumActiveToast)
                             } else if appState.isPlusMember {
                                 appState.activeModal = .premiumPaywall
                             } else {
@@ -257,7 +269,7 @@ struct HomeEmptyStateView: View {
                                 .foregroundStyle(Color.dsForeground)
                                 .multilineTextAlignment(.center)
                             
-                            Text("Take a screenshot of a flyer, text invite, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.")
+                            Text(HomeBrandCopy.scanDescription)
                                 .font(DSTypography.bodyCompact())
                                 .foregroundStyle(Color.dsMutedForeground)
                                 .multilineTextAlignment(.center)
@@ -315,7 +327,7 @@ struct HomeEmptyStateView: View {
                                 .frame(maxWidth: .infinity, minHeight: 44)
                             }
                             .disabled(scanViewModel.isProcessing)
-                            .accessibilityHint(appState.isPremiumMember ? "Scan a PDF or image from Files" : "Requires DateSnap Premium")
+                            .accessibilityHint(appState.isPremiumMember ? "Scan a PDF or image from Files" : HomeBrandCopy.premiumFileImportAccessibilityHint)
                         }
                         .padding(.top, 4)
                     }
@@ -325,10 +337,10 @@ struct HomeEmptyStateView: View {
 
                     autoDetectedScreenshotsCard
                     
-                    // "How DateSnap Works" 3 Effortless Steps
+                    // "How Pencil'd Works" 3 Effortless Steps
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
-                            Text("How DateSnap Works")
+                            Text(HomeBrandCopy.howItWorksHeading)
                                 .font(DSTypography.headlineCard())
                                 .foregroundStyle(Color.dsForeground)
                             Spacer()
@@ -347,7 +359,7 @@ struct HomeEmptyStateView: View {
                         stepCard(
                             icon: "bolt.fill",
                             iconColor: Color.dsPrimary,
-                            title: "2. Open DateSnap",
+                            title: HomeBrandCopy.openAppTutorialTitle,
                             description: "On-device neural vision parses dates, venue locations, and start/end times in 0.4 seconds."
                         )
                         
@@ -504,7 +516,7 @@ struct HomeEmptyStateView: View {
                 Button("Choose a Photo Instead") { showPhotoPicker = true }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("DateSnap needs Photo Library access to find your recent screenshots. You can still pick individual photos without it.")
+                Text(HomeBrandCopy.photoLibraryPermissionMessage)
             }
         }
     }
@@ -589,7 +601,7 @@ struct HomeEmptyStateView: View {
                         }
                     }
                 }
-                Text("DateSnap Plus watches your Screenshots album, checks new ones on device, and shows likely events first. Nothing is saved until you review it.")
+                Text(HomeBrandCopy.plusScreenshotExplanation)
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }

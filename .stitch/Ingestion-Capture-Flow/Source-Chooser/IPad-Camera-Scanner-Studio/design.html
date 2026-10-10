@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-surface-variant": "#e0c0af", "primary-container": "#ff7a00", "on-primary-fixed": "#321200", "on-secondary-fixed": "#2c0050", "inverse-surface": "#e1e0ff", "primary-fixed-dim": "#ffb68b", "surface-container-low": "#181930", "on-surface": "#e1e0ff", "on-primary-fixed-variant": "#753400", "surface-container-highest": "#32334a", "on-error": "#690005", "outline": "#a78b7c", "on-tertiary-container": "#730025", "outline-variant": "#584235", "inverse-on-surface": "#2d2e46", "on-error-container": "#ffdad6", "tertiary": "#ffb2ba", "on-primary-container": "#5c2800", "tertiary-fixed-dim": "#ffb2ba", "on-secondary-container": "#d2a0ff", "on-background": "#e1e0ff", "surface-container-lowest": "#0b0c22", "surface-dim": "#101127", "surface-variant": "#32334a", "secondary": "#deb7ff", "surface-container-high": "#27283f", "surface-container": "#1d1e34", "surface-bright": "#36374f", "on-secondary": "#4a007f", "surface-tint": "#ffb68b", "tertiary-fixed": "#ffd9dc", "error-container": "#93000a", "secondary-fixed-dim": "#deb7ff", "on-secondary-fixed-variant": "#670fac", "surface": "#101127", "on-tertiary-fixed": "#400011", "secondary-fixed": "#f0dbff", "primary-fixed": "#ffdbc8", "inverse-primary": "#994700", "secondary-container": "#670fac", "primary": "#ffb68b", "tertiary-container": "#ff7288", "on-tertiary-fixed-variant": "#910030", "background": "#101127", "error": "#ffb4ab", "on-tertiary": "#670020", "on-primary": "#522300" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "space-2xs": "0.25rem", "margin-desktop": "2.5rem", "margin": "1rem", "space-sm": "0.5rem", "space-xs": "0.375rem", "margin-tablet": "1.5rem", "gutter-desktop": "1.75rem", "space-2xl": "3rem", "space-xl": "2rem", "space-3xl": "4.5rem", "gutter": "1.25rem", "space-md": "1rem" }, "fontFamily": { "headline-xl-mobile": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "display-lg-mobile": [ "Plus Jakarta Sans" ], "display-lg": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "headline-xl": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ] }, "fontSize": { "headline-xl-mobile": [ "30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-lg": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "headline-lg": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "display-lg-mobile": [ "38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" } ], "display-lg": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" } ], "body-lg": [ "16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-sm": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "body-md": [ "14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-md": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "label-sm": [ "10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" } ], "headline-xl": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "body-sm": [ "12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed select-none"><aside class="fixed left-0 top-0 h-full w-56 bg-surface-container-low/90 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-md px-space-xs shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-md"><div class="px-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs"><img alt="pencild-logo-grey.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UbJn2tG-043LYiFglNpXUcE74x0ZdteTyUcYni7UiFtzhlwrrK7hYAIhPXxL0XHazw3JZ5g9uHCn43j3Z_hlrMK8HDCadp3TTip5zPhva8qGDC63w4-_LHsCJWQIzJUgYA1rRlKFLW0j0LMndN5uY3C3Ox1IR8DftoYXFDlfzHdO-cgsLemvwVnfUBs4ZECDgxS8u0kJMkkdiLdQR8YNwHq_8gE6qwOUpHa0MkeawK-l7Yf-NjDLfaXTbqJQFQQwRY9lojgh1TrA"/><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface font-bold">Pencil'd</span></div><div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_rgba(255,122,0,0.6)]"></div></div><div class="mx-space-xs px-space-xs py-space-2xs rounded-full bg-surface-container-high/60 backdrop-blur-md flex items-center justify-between"><div class="flex items-center gap-space-2xs"><span class="material-symbols-outlined text-[14px] text-secondary">cloud_done</span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">iCloud Synced</span></div><span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse"></span></div><nav class="flex flex-col gap-space-2xs px-space-xs mt-space-2xs" data-active-classes="bg-surface-container-highest text-primary font-label-md"><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="verification-queue" href="#"><span class="material-symbols-outlined text-[20px]">fact_check</span><span class="font-label-md text-label-md">Verification Queue</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="syllabus-pdf-hub" href="#"><span class="material-symbols-outlined text-[20px]">auto_stories</span><span class="font-label-md text-label-md">Syllabus &amp; Hub</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="scanner-viewfinder" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-md text-label-md">Scanner View</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="conflict-radar" href="#"><span class="material-symbols-outlined text-[20px]">radar</span><span class="font-label-md text-label-md">Conflict Radar</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="calendar-agenda" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-label-md text-label-md">Calendar Agenda</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-md text-label-md">Settings</span></a></nav></div><div class="mx-space-xs p-space-xs rounded-xl bg-surface-container/70 backdrop-blur-md flex flex-col gap-space-2xs"><div class="flex items-center justify-between"><div class="flex items-center gap-space-2xs"><span class="material-symbols-outlined text-[16px] text-primary">stylus_note</span><span class="font-label-sm text-label-sm text-on-surface font-bold">Pencil Pro</span></div><span class="font-label-sm text-label-sm text-primary font-bold">94%</span></div><div class="w-full h-1 rounded-full bg-surface-container-highest overflow-hidden"><div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full" style="width: 94%"></div></div><div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-space-2xs"><span class="flex items-center gap-1"><span class="w-1 h-1 rounded-full bg-secondary"></span>Squeeze Ready</span><span class="text-[10px] text-on-surface-variant/70">Haptic On</span></div></div></aside><div class="pl-56 min-h-screen flex flex-col bg-background"><header class="fixed top-0 left-56 right-0 h-16 bg-surface/75 backdrop-blur-2xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-md flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-baseline gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">9:41 AM</span><span class="font-label-md text-label-md text-on-surface-variant">Tue, Oct 24</span></div><div class="hidden md:flex items-center gap-space-xs px-space-xs py-space-2xs rounded-full bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-primary">fiber_manual_record</span><span class="font-label-sm text-label-sm">Optical OCR Active</span></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs bg-surface-container-lowest/80 px-space-sm py-space-2xs rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.35)]"><span class="material-symbols-outlined text-[18px] text-on-surface-variant">search</span><span class="font-body-sm text-body-sm text-on-surface-variant/70 pr-space-md">Search scans or agenda...</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-mono">⌘K</span></div><button class="flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-gradient-to-r from-primary to-secondary text-on-primary-fixed shadow-[0_0_20px_rgba(255,122,0,0.3)] hover:brightness-110 active:scale-95 transition-all" type="button"><span class="material-symbols-outlined text-[18px] text-on-primary-fixed">add_circle</span><span class="font-label-md text-label-md text-on-primary-fixed font-bold">Quick Capture</span></button><div class="flex items-center gap-space-2xs px-space-xs py-space-2xs rounded-full bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">battery_charging_full</span><span class="font-label-sm text-label-sm font-semibold">100%</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(255,182,139,0.3)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-space-md bg-background flex-1"><div class="flex flex-col w-full pb-space-xl">
+<div class="flex flex-col xl:flex-row gap-space-lg w-full max-w-[1440px] mx-auto min-h-[calc(100vh-6rem)]">
+<!-- LEFT PANE: Optical Viewfinder & Hardware HUD (65%) -->
+<section class="xl:w-[65%] flex flex-col gap-space-md min-w-0">
+<!-- Studio Header Controls Bar -->
+<div class="flex items-center justify-between px-space-md py-space-xs rounded-xl bg-surface-container/80 backdrop-blur-xl shadow-md">
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-space-2xs px-space-xs py-1 rounded-full bg-primary-container/20 text-primary-container">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest font-bold">4K Sensor Live</span>
+</div>
+<span class="text-outline/40">/</span>
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">hdr_auto</span> Ultra-Wide 0.5x
+          </span>
+<span class="text-outline/40">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">ISO 125 • ƒ/1.8 • 1/240s</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<!-- Multi-Page Burst Toggle -->
+<button class="flex items-center gap-space-2xs px-space-xs py-1.5 rounded-full bg-surface-container-high hover:bg-surface-bright text-on-surface transition-all" id="burstBtn">
+<span class="material-symbols-outlined text-[16px] text-primary">burst_mode</span>
+<span class="font-label-sm text-label-sm">Burst Mode</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-highest text-primary font-mono text-[10px]">ON</span>
+</button>
+<!-- Auto / Manual Focus Switch -->
+<div class="flex items-center p-0.5 rounded-full bg-surface-container-highest">
+<button class="px-space-xs py-1 rounded-full bg-primary-container text-on-primary-fixed font-label-sm text-label-sm font-bold shadow-sm">AUTO</button>
+<button class="px-space-xs py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm">MANUAL</button>
+</div>
+<!-- Flash LED State -->
+<button class="w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-bright flex items-center justify-center text-on-surface transition-all">
+<span class="material-symbols-outlined text-[18px]">flash_on</span>
+</button>
+</div>
+</div>
+<!-- Main Live Viewfinder Frame -->
+<div class="relative w-full flex-1 min-h-[580px] rounded-xl overflow-hidden bg-surface-container-lowest shadow-2xl flex items-center justify-center">
+<!-- Physical Document Subject In Viewfinder -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 scale-[1.02]" data-alt="Overhead bird-eye perspective of a textured graphic design indie concert flyer poster on a dark wooden studio table, illuminated by a warm ambient desk lamp. Bold typography reads SOLARIS SOUND SYMPOSIUM with vibrant chromatic orange, magenta, and deep indigo geometric gradients. Surrounding work items include a metallic stylus, a paper clip, and a ceramic coffee saucer." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAl2nWm6z4Ct_xPcgjTcwcqvN4lewcTCKktizHO_c9k3RoXD1Oz7_Y-xP61e4rUnLbpsam3c3jDbt1agubxgRRYvRy1umpV1ZLxp4Qiu4Yv8xT_aeiVVTQnuBCR9sr9iq-mTrrTaxEfbLJqiI2syhGLtSLTL6uomNbj7DC1RInQjrgFun1TeMiXW4zs2EJSkoK2SEOSWXDEJwRt0r_THxE_QDDZQS7TFlVQdJFLmcewuEOk_86tvEN9')"></div>
+<!-- Ambient Optical Vignette & Sensor Grid Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 via-transparent to-surface-container-lowest/40 pointer-events-none"></div>
+<!-- Keystone Reticle & Dynamic Optical Alignment Grid -->
+<div class="absolute inset-8 pointer-events-none flex flex-col justify-between">
+<!-- Golden Ratio Thirds Grid Overlay -->
+<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 opacity-20">
+<div class="border-r border-b border-primary/40"></div>
+<div class="border-r border-b border-primary/40"></div>
+<div class="border-b border-primary/40"></div>
+<div class="border-r border-b border-primary/40"></div>
+<div class="border-r border-b border-primary/40"></div>
+<div class="border-b border-primary/40"></div>
+<div class="border-r border-primary/40"></div>
+<div class="border-r border-primary/40"></div>
+<div></div>
+</div>
+<!-- 4 Floating Corner Alignment Reticles -->
+<div class="flex justify-between items-start">
+<div class="w-7 h-7 flex flex-col justify-between">
+<span class="w-full h-1 bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+<span class="w-1 h-full bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+</div>
+<div class="w-7 h-7 flex flex-col items-end justify-between">
+<span class="w-full h-1 bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+<span class="w-1 h-full bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+</div>
+</div>
+<!-- Center Gyroscope Level Indicator -->
+<div class="self-center flex flex-col items-center gap-1 opacity-70">
+<div class="w-16 h-0.5 bg-secondary rounded-full shadow-[0_0_6px_rgba(222,183,255,0.7)]"></div>
+<span class="font-label-sm text-label-sm text-secondary font-mono tracking-wider">0.0° LEVELED</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="w-7 h-7 flex flex-col justify-between">
+<span class="w-1 h-full bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+<span class="w-full h-1 bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+</div>
+<div class="w-7 h-7 flex flex-col items-end justify-between">
+<span class="w-1 h-full bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+<span class="w-full h-1 bg-primary-container rounded-full shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+</div>
+</div>
+</div>
+<!-- REAL-TIME OCR BOUNDING DETECTIONS (Luminous Glass Bounding Boxes) -->
+<!-- Detection 1: Title -->
+<div class="absolute top-[22%] left-[16%] right-[22%] p-2 rounded-lg bg-surface-container-high/40 backdrop-blur-md shadow-lg animate-pulse" style="animation-duration: 4s;">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-container text-on-primary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[13px] text-on-primary-fixed">title</span>
+<span class="font-label-sm text-label-sm font-extrabold uppercase tracking-tight">TITLE DETECTED • 98% CONFIDENCE</span>
+</div>
+<span class="font-label-sm text-label-sm font-mono text-primary font-bold">#EVENT_NAME</span>
+</div>
+<div class="mt-1 font-headline-md text-headline-md text-on-surface font-extrabold tracking-tight drop-shadow-md">
+            SOLARIS SOUND SYMPOSIUM
+          </div>
+</div>
+<!-- Detection 2: Date & Time -->
+<div class="absolute top-[48%] left-[20%] right-[32%] p-2 rounded-lg bg-surface-container-high/40 backdrop-blur-md shadow-lg">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-container text-secondary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[13px]">schedule</span>
+<span class="font-label-sm text-label-sm font-extrabold uppercase tracking-tight">DATE DETECTED</span>
+</div>
+<span class="font-label-sm text-label-sm font-mono text-secondary font-bold">iCal Ready</span>
+</div>
+<div class="mt-1 font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">
+            NOV 14, 2026 • 8:00 PM EST
+          </div>
+</div>
+<!-- Detection 3: Venue / Location -->
+<div class="absolute bottom-[28%] left-[20%] right-[36%] p-2 rounded-lg bg-surface-container-high/40 backdrop-blur-md shadow-lg">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container shadow-sm">
+<span class="material-symbols-outlined text-[13px]">pin_drop</span>
+<span class="font-label-sm text-label-sm font-extrabold uppercase tracking-tight">LOCATION PIN</span>
+</div>
+<span class="font-label-sm text-label-sm font-mono text-tertiary font-bold">GeoMatched</span>
+</div>
+<div class="mt-1 font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">
+            BLUE BASEMENT / 447 ST. JOHN'S RD
+          </div>
+</div>
+<!-- Bottom Floating HUD & Shutter Trigger Deck -->
+<div class="absolute bottom-6 inset-x-0 flex items-center justify-center gap-space-lg pointer-events-auto">
+<!-- Secondary Action: Document Auto-Straighten Toggle -->
+<button class="flex items-center gap-space-2xs px-space-md py-2.5 rounded-full bg-surface-container-high/90 hover:bg-surface-bright backdrop-blur-xl text-on-surface shadow-lg transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px] text-primary">crop_rotate</span>
+<span class="font-label-sm text-label-sm font-semibold">Keystone Lock</span>
+</button>
+<!-- Core Shutter Button (Glowing Gradient Ring) -->
+<div class="relative flex items-center justify-center">
+<div class="absolute w-24 h-24 rounded-full bg-gradient-to-r from-primary via-primary-container to-secondary opacity-70 blur-md animate-pulse"></div>
+<button aria-label="Capture Optical Frame" class="relative w-20 h-20 rounded-full p-1 bg-gradient-to-r from-primary-container via-tertiary-container to-secondary flex items-center justify-center shadow-2xl transition-transform active:scale-90 hover:scale-105" id="shutterBtn">
+<div class="w-full h-full rounded-full bg-surface-container-lowest flex items-center justify-center p-1.5">
+<div class="w-full h-full rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary-fixed shadow-inner">
+<span class="material-symbols-outlined text-[28px]">camera</span>
+</div>
+</div>
+</button>
+</div>
+<!-- Quick Mode: Document / Syllabus Switcher -->
+<button class="flex items-center gap-space-2xs px-space-md py-2.5 rounded-full bg-surface-container-high/90 hover:bg-surface-bright backdrop-blur-xl text-on-surface shadow-lg transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px] text-secondary">auto_stories</span>
+<span class="font-label-sm text-label-sm font-semibold">Syllabus Preset</span>
+</button>
+</div>
+<!-- Real-Time Optical Status Chip (Bottom Right) -->
+<div class="absolute bottom-4 right-4 flex items-center gap-2 px-space-xs py-1 rounded-full bg-surface-container-lowest/80 backdrop-blur-md shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">3 PARSED FIELDS</span>
+</div>
+</div>
+<!-- Lower Scanner Metadata Strip -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+<div class="p-space-sm rounded-xl bg-surface-container flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">auto_fix_high</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Glare Reduction</span>
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Polarized Neural Filter Active</span>
+</div>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">aspect_ratio</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Edge Snap</span>
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Automatic 4-Corner Rectify</span>
+</div>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">font_download</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">OCR Pipeline</span>
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Latin, Math &amp; Hand-script v4.2</span>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT PANE: Filmstrip Tray & Real-Time Extraction HUD (35%) -->
+<aside class="xl:w-[35%] flex flex-col gap-space-md min-w-0">
+<!-- Session Tray Header -->
+<div class="p-space-md rounded-xl bg-surface-container shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[22px] text-primary">collections_bookmark</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">Session Captures</h2>
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-sm text-label-sm font-bold">4</span>
+</div>
+<button class="font-label-sm text-label-sm text-on-surface-variant hover:text-error transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">delete_sweep</span>
+<span>Clear All</span>
+</button>
+</div>
+<!-- Batch Action Primary CTA -->
+<button class="w-full py-space-sm px-space-md rounded-full bg-gradient-to-r from-primary-container to-secondary text-on-primary-fixed shadow-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-on-primary-fixed">checklist_rtl</span>
+<span class="font-label-lg text-label-lg text-on-primary-fixed font-bold tracking-wide">Pencil All In Batch (4)</span>
+</button>
+</div>
+<!-- Filmstrip Capture Queue List -->
+<div class="flex flex-col gap-space-sm overflow-y-auto max-h-[440px] pr-1">
+<!-- ITEM 1: Active In-Focus Capture (Warm subtle gradient fill, NO asymmetric left border) -->
+<article class="p-space-sm rounded-xl bg-gradient-to-br from-surface-container-high via-surface-container-high to-primary-container/15 shadow-md flex gap-space-sm cursor-pointer transition-all hover:bg-surface-bright">
+<div class="relative w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-lowest shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Micro photo thumbnail of concert flyer poster showing geometric typography and neon colors on deep blue stage light background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDFVL5n6GL7fe1wrrQcSbIxI5H8xzcDBDh2E_n66hrPnehLZxyLsQhMTtu30c6PjoBk-1LhY0WLwFqXPZ-cuX7BbiXQ54OsRPeOpBmCeiFh1JBABE2_SUMEE0AfCeZNNVwgycMct3Jr5tSwe84gwNZLsIqYPwi8qXqRapG8kFGVeUUrvRNLXbB_UlBsi8zqO1QvmM0SAx-1tqDWuF1RxDxQhv1tW3aDXeh6i5tCgsRckPf7EoOvbDrt')"></div>
+<span class="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-surface-container-lowest/90 font-mono text-[9px] text-primary font-bold">#01</span>
+<span class="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full bg-primary-container shadow-sm"></span>
+</div>
+<div class="flex flex-col justify-between flex-1 min-w-0">
+<div>
+<div class="flex items-center justify-between gap-1">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-label-sm text-label-sm font-bold truncate">PARSED 99.4%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">10s ago</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold truncate mt-1">Solaris Sound Symposium</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Nov 14 • 8:00 PM • Blue Basement</p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-secondary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">event_available</span> Cal Synced
+              </span>
+<button class="w-6 h-6 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+</article>
+<!-- ITEM 2: Architecture Guest Lecture -->
+<article class="p-space-sm rounded-xl bg-surface-container shadow-sm flex gap-space-sm cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="relative w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-lowest shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Monochrome minimalist university architectural poster thumbnail with blueprint drawings and modernist typography pinned to a corkboard." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAuIZzHA944fPauIOMmLyd2OpJVCbfxtcVYsmiLFWEwdi8L737cK2cmSBAi6VFSSRg8z7q__vqRGQpoL0cnsRahdupRoJ0wFwH9nDeVTJkzI7BOePSA7JeNR-cdcmEqnhFxsFTCDgPr-qPRhDneXvTOYB0PrPP2gvbhisa9yLzIxY0C6umqGYVfWSptrncbPMU7Esu4vpZKKuGXGtFuCYTPfewDntceU3s3dqiWj5e8LGGiCUbwtUei')"></div>
+<span class="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-surface-container-lowest/90 font-mono text-[9px] text-on-surface-variant font-bold">#02</span>
+<span class="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full bg-secondary shadow-sm"></span>
+</div>
+<div class="flex flex-col justify-between flex-1 min-w-0">
+<div>
+<div class="flex items-center justify-between gap-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm font-bold truncate">READY FOR REVIEW</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">1m ago</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold truncate mt-1">Arch 401: Spatial Syntax</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Oct 29 • 2:15 PM • Hall B auditorium</p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline">alarm</span> 1 Reminder
+              </span>
+<button class="w-6 h-6 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+</article>
+<!-- ITEM 3: Biology Lab Syllabus -->
+<article class="p-space-sm rounded-xl bg-surface-container shadow-sm flex gap-space-sm cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="relative w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-lowest shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Printed academic course syllabus sheet page showing weekly milestone tables and chemistry lab safety protocols." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCaLIsWl1oEfRyVDQHIuWG5Zn29lQVGhRq6V0k9Ui2-IX0DxK9F5A_KrNlmr4H_OQ1iFbiX6SNn3dYXmlua3LLQCNdFuWBmV1prXkx_CC8mdc7VdeZibpxxY0I_ZoLHWxyPl8FO66Z8bRaoHN1Tqx4mclFJu004PvwUQnQhGtZhjPborlP0FRiIOE6M4G9pVhN-tqh1B26DfDReqDMj8-LepugHqHq2Z898KhNLBNtZpVhcqYIwHTM7')"></div>
+<span class="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-surface-container-lowest/90 font-mono text-[9px] text-on-surface-variant font-bold">#03</span>
+<span class="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full bg-secondary shadow-sm"></span>
+</div>
+<div class="flex flex-col justify-between flex-1 min-w-0">
+<div>
+<div class="flex items-center justify-between gap-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm font-bold truncate">SYLLABUS • 14 DEADLINES</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">3m ago</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold truncate mt-1">BIO 210 Semester Plan P.1</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Midterm Nov 03 • 9 Labs Indexed</p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">school</span> Semester Hub
+              </span>
+<button class="w-6 h-6 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+</article>
+<!-- ITEM 4: Incoming Burst Item -->
+<article class="p-space-sm rounded-xl bg-surface-container-low shadow-sm flex gap-space-sm opacity-75">
+<div class="w-20 h-24 rounded-lg bg-surface-container-highest flex flex-col items-center justify-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px] animate-spin text-primary">sync</span>
+<span class="font-label-sm text-label-sm font-mono">INGEST</span>
+</div>
+<div class="flex flex-col justify-center flex-1 min-w-0">
+<span class="font-label-sm text-label-sm text-primary font-bold">FRAME 04 DE-WARPING...</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold truncate">Processing Keystone Grid</h3>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest mt-2 overflow-hidden">
+<div class="h-full bg-primary rounded-full animate-pulse" style="width: 68%;"></div>
+</div>
+</div>
+</article>
+</div>
+<!-- Quick Action Deck -->
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="flex items-center justify-center gap-space-2xs py-2.5 px-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">crop</span>
+<span>Adjust Crop</span>
+</button>
+<button class="flex items-center justify-center gap-space-2xs py-2.5 px-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-error">replay</span>
+<span>Retake Frame</span>
+</button>
+</div>
+<!-- Real-Time Hardware Performance HUD Card -->
+<div class="mt-auto p-space-md rounded-xl bg-surface-container-low shadow-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">memory</span>
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-on-surface">Apple Silicon ANE HUD</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-mono font-bold text-[10px]">M-Series CoreML</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm pt-1">
+<!-- Metric 1: Latency -->
+<div class="p-2.5 rounded-lg bg-surface-container flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Neural Inference</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-sm text-headline-sm text-primary font-mono font-bold">16.2</span>
+<span class="font-label-sm text-label-sm text-primary font-mono">ms</span>
+</div>
+<!-- Latency Mini Sparkline -->
+<svg class="w-full h-5 mt-1 text-primary" fill="none" viewbox="0 0 100 20">
+<path d="M0 16 L20 14 L40 17 L60 8 L80 12 L100 9" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Metric 2: Confidence -->
+<div class="p-2.5 rounded-lg bg-surface-container flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Model Precision</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-sm text-headline-sm text-secondary font-mono font-bold">99.1</span>
+<span class="font-label-sm text-label-sm text-secondary font-mono">%</span>
+</div>
+<!-- Precision Progress Micro Bar -->
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest mt-3 overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 99.1%"></div>
+</div>
+</div>
+</div>
+<!-- Privacy & Security Guarantee -->
+<div class="flex items-center justify-between pt-1 px-1 text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+<span>Zero Cloud Upload • 100% On-Device</span>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant/60">AirDrop Ready</span>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for camera shutter button click
+  const shutterBtn = document.getElementById('shutterBtn');
+  if (shutterBtn) {
+    shutterBtn.addEventListener('click', () => {
+      shutterBtn.classList.add('scale-90');
+      setTimeout(() => shutterBtn.classList.remove('scale-90'), 150);
+    });
+  }
+
+  // Toggle burst mode feedback
+  const burstBtn = document.getElementById('burstBtn');
+  if (burstBtn) {
+    burstBtn.addEventListener('click', () => {
+      const badge = burstBtn.querySelector('span:last-child');
+      if (badge) {
+        badge.innerText = badge.innerText === 'ON' ? 'OFF' : 'ON';
+      }
+    });
+  }
+</script></main></div></body></html>

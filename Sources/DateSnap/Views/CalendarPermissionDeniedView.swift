@@ -119,7 +119,7 @@ struct CalendarPermissionDeniedView: View {
                             .foregroundStyle(Color.dsForeground)
                             .multilineTextAlignment(.center)
                         
-                        Text("DateSnap needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.")
+                        Text("Pencil'd needs access to add dates to your calendar after you review them. Your existing calendar events are not read or stored.")
                             .font(DSTypography.bodyBase())
                             .foregroundStyle(Color.dsMutedForeground)
                             .multilineTextAlignment(.center)
@@ -151,7 +151,7 @@ struct CalendarPermissionDeniedView: View {
                         
                         abilityRow(
                             icon: "bell.badge.fill",
-                            title: "DateSnap Local Push Alerts",
+                            title: "Pencil'd Local Push Alerts",
                             description: "Receive intelligent on-device notifications & pre-event sound cues for snapped screenshots."
                         )
                         
@@ -177,7 +177,7 @@ struct CalendarPermissionDeniedView: View {
                         
                         VStack(alignment: .leading, spacing: 6) {
                             stepRow(number: "1", text: "Open iPhone Settings")
-                            stepRow(number: "2", text: "Scroll down to select DateSnap")
+                            stepRow(number: "2", text: "Scroll down to select Pencil'd")
                             stepRow(number: "3", text: "Tap Calendars → select 'Add Events Only' or 'Full Access'")
                         }
                         .padding(.top, 4)

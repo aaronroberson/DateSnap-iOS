@@ -1,0 +1,351 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-container": "#ff7a00", "on-secondary-fixed-variant": "#670fac", "surface-container": "#1d1e34", "surface-container-lowest": "#0b0c22", "tertiary-fixed": "#ffd9dc", "on-secondary": "#4a007f", "on-surface": "#e1e0ff", "surface-container-low": "#181930", "tertiary-container": "#ff7288", "inverse-on-surface": "#2d2e46", "secondary-fixed": "#f0dbff", "primary-fixed-dim": "#ffb68b", "on-primary-fixed": "#321200", "on-tertiary-fixed-variant": "#910030", "surface-tint": "#ffb68b", "on-primary-fixed-variant": "#753400", "tertiary-fixed-dim": "#ffb2ba", "error": "#ffb4ab", "secondary-fixed-dim": "#deb7ff", "secondary": "#deb7ff", "on-surface-variant": "#e0c0af", "primary": "#ffb68b", "on-error-container": "#ffdad6", "inverse-surface": "#e1e0ff", "error-container": "#93000a", "surface-dim": "#101127", "surface-container-highest": "#32334a", "tertiary": "#ffb2ba", "surface": "#101127", "outline-variant": "#584235", "surface-bright": "#36374f", "surface-variant": "#32334a", "on-tertiary-fixed": "#400011", "on-tertiary-container": "#730025", "on-primary": "#522300", "on-secondary-fixed": "#2c0050", "on-background": "#e1e0ff", "background": "#101127", "surface-container-high": "#27283f", "on-error": "#690005", "inverse-primary": "#994700", "on-primary-container": "#5c2800", "on-tertiary": "#670020", "secondary-container": "#670fac", "outline": "#a78b7c", "primary-fixed": "#ffdbc8", "on-secondary-container": "#d2a0ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-xl": "2rem", "space-md": "1rem", "space-xs": "0.375rem", "space-2xs": "0.25rem", "space-2xl": "3rem", "gutter": "1.25rem", "margin": "1rem", "gutter-desktop": "1.75rem", "margin-tablet": "1.5rem", "margin-desktop": "2.5rem", "space-3xl": "4.5rem", "space-lg": "1.5rem" }, "fontFamily": { "headline-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"] }, "fontSize": { "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg-mobile": ["38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><h1 class="font-headline-md text-headline-md tracking-tight text-on-surface">History &amp; Archive</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Search Archive" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">search</span></button><button aria-label="Filter Archive" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-2xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface px-margin"><div class="flex flex-col w-full pb-8 space-y-5">
+<!-- Top Intro Section (No secondary duplicate H1, pure contextual framing) -->
+<div class="flex flex-col space-y-1">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm tracking-widest uppercase text-primary font-bold">REPOSITORY &amp; LOGS</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">History &amp; Archive</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm">Review extracted calendar events, original capture artifacts, and synced timeline entries.</p>
+</div>
+<!-- Search & Storage Metric Widget -->
+<div class="flex flex-col gap-2.5">
+<!-- Search Bar with frosted recessed layer -->
+<div class="relative flex items-center bg-surface-container-low rounded-xl px-3.5 py-2.5 shadow-inner">
+<span class="material-symbols-outlined text-outline text-[20px] mr-2.5 select-none">search</span>
+<input class="w-full bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none placeholder:text-body-sm" id="archive-search" placeholder="Search past events, venues, or files..." type="text">
+<button aria-label="Clear or voice search" class="text-outline hover:text-primary transition-colors flex items-center justify-center p-1 rounded-full">
+<span class="material-symbols-outlined text-[18px]">mic</span>
+</button>
+</div>
+<!-- Storage health indicator pill -->
+<div class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container/60 shadow-sm">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-6 h-6 rounded-full bg-secondary-container/60 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[14px]">sd_storage</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold truncate">24.2 MB On-Device History</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant leading-tight">Retained 90 days • Auto-purged</span>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded-full bg-surface-container-highest text-secondary text-label-sm font-label-sm hover:bg-surface-bright transition-colors shrink-0">
+        Manage
+      </button>
+</div>
+</div>
+<!-- Filter Carousel / Horizontal Chips -->
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" id="filter-chip-group">
+<button class="filter-btn active flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-primary-container to-secondary-container text-on-surface font-label-sm text-label-sm shadow-md shrink-0 transition-transform active:scale-95" data-filter="all">
+<span class="">All</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-lowest/40 text-[10px] font-bold">42</span>
+</button>
+<button class="filter-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm shrink-0 transition-colors" data-filter="synced">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="">Saved to Calendar</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px]">36</span>
+</button>
+<button class="filter-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm shrink-0 transition-colors" data-filter="scans">
+<span class="material-symbols-outlined text-[13px] text-secondary">document_scanner</span>
+<span class="">Archived Scans</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px]">6</span>
+</button>
+<button class="filter-btn flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm shrink-0 transition-colors" data-filter="pdf">
+<span class="material-symbols-outlined text-[13px] text-tertiary">picture_as_pdf</span>
+<span class="">PDFs</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px]">4</span>
+</button>
+</div>
+<!-- Feed Section: Chronological Groupings -->
+<div class="flex flex-col space-y-6">
+<!-- Group 1: This Week -->
+<div class="flex flex-col space-y-3">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">This Week</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">2 extracted</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline">Nov 10 – Nov 16</span>
+</div>
+<!-- Card 1: Kygo World Tour -->
+<div class="archive-card group relative bg-surface-container-low rounded-xl p-3.5 shadow-md flex flex-col gap-3 transition-all hover:bg-surface-container overflow-hidden" data-category="synced">
+<!-- Brand spectrum decorative left ribbon -->
+
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<!-- Thumbnail Visual -->
+<div class="relative w-12 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container-highest shadow-inner">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up neon concert ticket stub PassKit boarding card glow in dark arena vibrant orange and violet stage laser lighting graphic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrZbhDVifngaLkBF5xFN6R5YKYo6Sv-kKHZGxcgGBkDM49Ls_ryC75kYIZuHJZuaYXKf4lxRJ9l9Mg2FUhs5lW4Fk8N171PQIDyV7zD4R3Wv1jegLlwcSHKTOPmyRhofW3Yvh3y3aaR3AcyoKaUYtx2eL8Xostf5T6ZzW_-RZ9buDpe0g3GRNAwKMcyfTY4QJDIAO1XjieKs3YyrlDfTdsqvxPQrk7l-ZrHepDA8IvIm-zEEIjogGK">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 via-transparent to-transparent flex items-end justify-center pb-0.5">
+<span class="material-symbols-outlined text-primary text-[12px]">qr_code_2</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/15 text-primary text-label-sm font-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                  Synced
+                </span>
+<span class="text-label-sm font-label-sm text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">cloud_done</span>
+                  iCloud Personal
+                </span>
+</div>
+<h3 class="font-headline-sm text-[16px] leading-tight text-on-surface font-semibold truncate mt-1">Kygo World Tour 2026</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-primary">event</span>
+                Nov 14, 2026 • 8:00 PM
+              </p>
+</div>
+</div>
+<!-- Options button -->
+<button aria-label="Card actions" class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Meta row: Source pill & OCR confidence -->
+<div class="flex items-center justify-between pt-1 border-t border-transparent text-label-sm font-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] text-outline">wallet</span>
+              PassKit Apple Wallet
+            </span>
+<span class="text-[11px] text-outline">OCR 99.4%</span>
+</div>
+<button class="flex items-center gap-1 text-primary hover:text-primary-container transition-colors text-label-sm font-semibold">
+<span class="">Inspect</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Dr. Thorne Biannual Cleaning -->
+<div class="archive-card group relative bg-surface-container-low rounded-xl p-3.5 shadow-md flex flex-col gap-3 transition-all hover:bg-surface-container overflow-hidden" data-category="synced">
+<!-- Brand spectrum subtle ribbon -->
+
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<!-- Thumbnail Visual -->
+<div class="relative w-12 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container-highest shadow-inner">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Screenshot of an iPhone SMS text reminder message appointment card bubble on sleek dark interface clean dental clinic calendar note" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqyONCGXTYUYhvlUaRsU9pR1QaAqhCUBpIWxquo_Cei17fQNZetJhQf4YrgvPmDxqv2C4u80EZAmU4BO_HS4MYN2QJT0YcpnJOTTPdKV3YdJ4W5fiFqTKH7GpayykKCDtXxPxmOQdyplx1cKhaeE_iaVJZ7aWtsCGoTrhzhkaGtKBWdxP_IG9IBD2ZT4VIjYtzX0zHPBlJofRHY1hHdZQG6BlNlF3SQl6e3PgzVYAR5ssvqn7YSEsd">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 via-transparent to-transparent flex items-end justify-center pb-0.5">
+<span class="material-symbols-outlined text-secondary text-[12px]">chat</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/15 text-primary text-label-sm font-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                  Synced
+                </span>
+<span class="text-label-sm font-label-sm text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">cloud_done</span>
+                  iCloud Personal
+                </span>
+</div>
+<h3 class="font-headline-sm text-[16px] leading-tight text-on-surface font-semibold truncate mt-1">Dr. Thorne Biannual Cleaning</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-primary">schedule</span>
+                Dec 02, 2026 • 10:30 AM
+              </p>
+</div>
+</div>
+<button aria-label="Card actions" class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-1 text-label-sm font-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] text-outline">sms</span>
+              SMS Screenshot
+            </span>
+<span class="text-[11px] text-outline">Parsed</span>
+</div>
+<button class="flex items-center gap-1 text-primary hover:text-primary-container transition-colors text-label-sm font-semibold">
+<span class="">Inspect</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Group 2: Last Month -->
+<div class="flex flex-col space-y-3">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Last Month</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">4 extracted</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline">October 2026</span>
+</div>
+<!-- Card 3: Academic Move-In Weekend (PDF source) -->
+<div class="archive-card group relative bg-surface-container-low rounded-xl p-3.5 shadow-md flex flex-col gap-3 transition-all hover:bg-surface-container overflow-hidden" data-category="pdf">
+
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<!-- Thumbnail Visual -->
+<div class="relative w-12 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container-highest shadow-inner">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="University syllabus document page preview graphic academic calendar PDF layout crisp typography subtle paper grid texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKBQu7zkUIXy70Vbjca0fphO5zf1GEgtQ8FQvBn_xnIXbSsmNs3rQFLzJ-wQ7lXl4fr8lw82Yc1Mqvg3G8J-OpR4mxHjljoi--0U0x4AggQMDeE123M9OWToiJ4HslZNkLK57Wo8eGng23A1O8SOmSOzI8FmmMbEUxrNr54LOR0PuofLzhBXeRZImB0gDheJwNCCBUZ1XVqpRMvpLURqqz-lpyxA1udFfNNSrV6bhwp346FGhs7co6">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 via-transparent to-transparent flex items-end justify-center pb-0.5">
+<span class="material-symbols-outlined text-tertiary text-[12px]">picture_as_pdf</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/15 text-primary text-label-sm font-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                  Synced
+                </span>
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">school</span>
+                  Campus Cal
+                </span>
+</div>
+<h3 class="font-headline-sm text-[16px] leading-tight text-on-surface font-semibold truncate mt-1">Fall Semester Move-In Weekend</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-tertiary">calendar_month</span>
+                Aug 28, 2026 • All Day
+              </p>
+</div>
+</div>
+<button aria-label="Card actions" class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-1 text-label-sm font-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] text-tertiary">description</span>
+              Academic_2026.pdf (p.1)
+            </span>
+<span class="text-[11px] text-outline">Multi-Event</span>
+</div>
+<button class="flex items-center gap-1 text-primary hover:text-primary-container transition-colors text-label-sm font-semibold">
+<span class="">Inspect</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Osteria Morini Dinner (Archived/Dismissed scan) -->
+<div class="archive-card group relative bg-surface-container-low rounded-xl p-3.5 shadow-md flex flex-col gap-3 transition-all hover:bg-surface-container overflow-hidden opacity-90" data-category="scans">
+<!-- Neutral / muted purple accent strip -->
+
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<!-- Thumbnail Visual -->
+<div class="relative w-12 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container-highest shadow-inner">
+<img class="w-full h-full object-cover grayscale-[30%] group-hover:scale-105 transition-transform duration-300" data-alt="Food menu handwritten restaurant bill receipt paper with warm candlelight aesthetic cozy Italian dining table top shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJwxaF0WN3sYK9g1rRUWeLJTNVni3XDMzDuugIoeNH7heGtlgLNH8D-eJn32bv-gzsOKKZwTvuvWrmB_VHRmoeGbwklwGz7T1GL6K_pawmCsvgo1AaBbuXxxM3Rz_W84x71xtHqt4reYcEfsFclVtLKyUM8VrrHRo5DjK7Oufs9dzccqGTvkwG22f83TE4VQezoQ23zCLUCQqs-RyKslf6RLOY-ndhujmYISXDw2uf3hh4pHf-dSDL">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 via-transparent to-transparent flex items-end justify-center pb-0.5">
+<span class="material-symbols-outlined text-outline text-[12px]">archive</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-outline text-label-sm font-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                  Archived / Unsynced
+                </span>
+<span class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">forum</span>
+                  Group Chat OCR
+                </span>
+</div>
+<h3 class="font-headline-sm text-[16px] leading-tight text-on-surface-variant font-semibold truncate mt-1">Osteria Morini Dinner</h3>
+<p class="font-body-sm text-body-sm text-outline flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">event_busy</span>
+                Oct 24, 2026 • 7:30 PM (Discarded)
+              </p>
+</div>
+</div>
+<button aria-label="Card actions" class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-1 text-label-sm font-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] text-outline">photo</span>
+              IMG_8819.HEIC
+            </span>
+<span class="text-[11px] text-outline">Dismissed by user</span>
+</div>
+<button class="flex items-center gap-1 text-secondary hover:text-primary transition-colors text-label-sm font-semibold">
+<span class="">Restore</span>
+<span class="material-symbols-outlined text-[14px]">unarchive</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Ambient Pencil'd Bottom Delight Banner -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low p-4 shadow-lg flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary-container via-tertiary-container to-secondary flex items-center justify-center shrink-0 shadow-md">
+<span class="material-symbols-outlined text-surface-container-lowest text-[22px] font-bold">edit_note</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-[14px] text-on-surface font-semibold">Need to digitize a past flyer?</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant leading-tight">Batch scan legacy agendas or camera roll archives in seconds.</span>
+</div>
+<button class="ml-auto px-3 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0">
+      Scan Now
+    </button>
+</div>
+</div>
+<script>
+  // Filter chips interaction
+  (function () {
+    const filterButtons = document.querySelectorAll('#filter-chip-group .filter-btn');
+    const cards = document.querySelectorAll('.archive-card');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-gradient-to-r', 'from-primary-container', 'to-secondary-container', 'text-on-surface', 'shadow-md');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        btn.classList.add('bg-gradient-to-r', 'from-primary-container', 'to-secondary-container', 'text-on-surface', 'shadow-md');
+
+        const filterVal = btn.getAttribute('data-filter');
+        cards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          if (filterVal === 'all') {
+            card.style.display = 'flex';
+          } else if (filterVal === 'synced' && category === 'synced') {
+            card.style.display = 'flex';
+          } else if (filterVal === 'scans' && category === 'scans') {
+            card.style.display = 'flex';
+          } else if (filterVal === 'pdf' && category === 'pdf') {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Real-time client search filtering
+    const searchInput = document.getElementById('archive-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        cards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          if (text.includes(query)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.1)]" data-active-classes="text-primary-container font-label-md"><div class="h-16 px-margin flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-1" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm tracking-normal">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-1" data-path="agenda" href="#"><span class="material-symbols-outlined text-[22px]">calendar_today</span><span class="font-label-sm text-label-sm tracking-normal">Agenda</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-1" data-path="review" href="#"><span class="material-symbols-outlined text-[22px]">rate_review</span><span class="font-label-sm text-label-sm tracking-normal">Review</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-1" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm tracking-normal">Settings</span></a></div></nav>
+
+</body></html>

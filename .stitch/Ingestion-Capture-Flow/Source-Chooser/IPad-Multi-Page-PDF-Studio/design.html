@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+      body { overscroll-behavior: none; }
+    }
+    .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 9999px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#101127",
+            "surface-dim": "#101127",
+            "surface-bright": "#36374f",
+            "surface-container-lowest": "#0b0c22",
+            "surface-container-low": "#181930",
+            "surface-container": "#1d1e34",
+            "surface-container-high": "#27283f",
+            "surface-container-highest": "#32334a",
+            "primary": "#ffb68b",
+            "primary-container": "#ff7a00",
+            "on-primary": "#522300",
+            "on-primary-container": "#5c2800",
+            "secondary": "#deb7ff",
+            "secondary-container": "#670fac",
+            "tertiary": "#ffb2ba",
+            "tertiary-container": "#ff7288",
+            "on-surface": "#e1e0ff",
+            "on-surface-variant": "#e0c0af",
+            "outline": "#a78b7c",
+            "outline-variant": "#584235"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#101127] text-on-surface font-sans antialiased h-screen w-screen flex overflow-hidden select-none">
+<!-- 1. Compact Left Sidebar -->
+<aside class="w-60 bg-[#0b0c22] border-r border-white/10 flex flex-col justify-between py-4 px-3 shrink-0 z-30">
+<div class="flex flex-col gap-4">
+<!-- Brand Lockup -->
+<div class="px-2 pt-1 flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#ff7a00] to-[#deb7ff] p-[1.5px] shadow-[0_0_15px_rgba(255,122,0,0.35)] shrink-0">
+<div class="w-full h-full bg-[#0b0c22] rounded-[10px] flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px] text-primary">edit_note</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-bold text-[16px] text-white tracking-tight leading-none">Pencil'd</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#ff7a00]/20 text-primary uppercase tracking-wider">AI</span>
+</div>
+<span class="text-[10px] text-on-surface-variant/80 tracking-widest uppercase font-semibold mt-0.5">Precision Engine</span>
+</div>
+</div>
+<!-- Sync Pill -->
+<div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-surface-container-low border border-white/5 text-[11px]">
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[15px] animate-spin" style="animation-duration: 9s;">sync</span>
+<span class="font-medium text-white/90">iCloud Synced</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
+</div>
+<!-- Navigation -->
+<nav class="flex flex-col gap-1 mt-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[19px]">fact_check</span>
+<span>Verification Queue</span>
+</a>
+<!-- Active Syllabus & PDF Hub -->
+<a class="flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-r from-[#ff7a00]/25 to-surface-container border border-[#ff7a00]/40 shadow-[0_4px_20px_-2px_rgba(255,122,0,0.25)]" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[19px] text-primary">picture_as_pdf</span>
+<span>Syllabus &amp; PDF Hub</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-[#ff7a00] shadow-[0_0_8px_#ff7a00]"></span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[19px]">radar</span>
+<span>Screenshot Radar</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[19px]">calendar_month</span>
+<span>Calendar Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[19px]">neurology</span>
+<span>Settings &amp; Neural Engine</span>
+</a>
+</nav>
+</div>
+<!-- Apple Pencil Pro Widget -->
+<div class="p-3 rounded-2xl bg-surface-container-low/90 border border-white/10 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-[#ff7a00]/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">draw</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[12px] font-bold text-white">Apple Pencil Pro</span>
+<span class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Connected
+            </span>
+</div>
+</div>
+<div class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container text-[11px] font-semibold text-primary">
+<span class="material-symbols-outlined text-[14px]">battery_5_bar</span>
+<span>88%</span>
+</div>
+</div>
+<div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-on-surface-variant">
+<span>Latency Status</span>
+<span class="font-mono text-secondary font-medium">CoreML 16ms</span>
+</div>
+</div>
+</aside>
+<!-- Main Right Container -->
+<div class="flex-1 flex flex-col h-full overflow-hidden bg-[#101127]">
+<!-- 2. Main Workspace Header -->
+<header class="h-16 border-b border-white/10 px-5 flex items-center justify-between shrink-0 bg-surface/90 backdrop-blur-md z-20">
+<div class="flex items-center gap-4">
+<!-- iPad OS Status item -->
+<div class="flex items-center gap-2 text-[12px] text-on-surface-variant font-medium pr-3 border-r border-white/10">
+<span class="text-white font-semibold tracking-tight">9:41 AM</span>
+<span class="material-symbols-outlined text-[15px]">wifi</span>
+</div>
+<!-- Document Title Pill -->
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container border border-white/10">
+<span class="material-symbols-outlined text-[18px] text-primary">description</span>
+<span class="text-[13px] font-semibold text-white tracking-tight">Fall 2026 Biology 101 Syllabus.pdf</span>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-[#ff7a00]/20 text-primary font-medium">14 Pages • 28 Detected Events</span>
+</div>
+</div>
+<!-- Filter Pills & Primary Action -->
+<div class="flex items-center gap-3">
+<div class="hidden xl:flex items-center gap-1 bg-surface-container-lowest p-1 rounded-xl border border-white/5 text-[12px]">
+<button class="px-3 py-1 rounded-lg bg-surface-container text-white font-medium border border-white/10 shadow-sm">All Events (28)</button>
+<button class="px-3 py-1 rounded-lg text-on-surface-variant hover:text-white transition-colors">Exams &amp; Quizzes (6)</button>
+<button class="px-3 py-1 rounded-lg text-on-surface-variant hover:text-white transition-colors">Lectures &amp; Labs (18)</button>
+<button class="px-3 py-1 rounded-lg text-on-surface-variant hover:text-white transition-colors">Assignments (4)</button>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9800] text-[#321200] font-bold text-[13px] shadow-[0_4px_16px_rgba(255,122,0,0.35)] hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span>Pencil In Selected (28)</span>
+</button>
+</div>
+</header>
+<!-- 3. Three-Column Ingestion Canvas -->
+<div class="flex-1 flex overflow-hidden p-3 gap-3">
+<!-- Left Pane: Page Thumbnails -->
+<div class="w-52 bg-surface-container-lowest rounded-2xl border border-white/10 p-3 flex flex-col gap-2 shrink-0 overflow-hidden">
+<div class="flex items-center justify-between px-1 pb-1 border-b border-white/5">
+<span class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Pages Overview</span>
+<span class="text-[11px] text-primary font-mono font-medium">14 pgs</span>
+</div>
+<div class="flex-1 overflow-y-auto space-y-3 custom-scroll pr-1">
+<!-- Page 1 -->
+<div class="cursor-pointer group p-2 rounded-xl bg-surface-container-low border border-white/5 hover:border-white/20 transition-all flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="font-semibold text-white/80">Page 1</span>
+<span class="text-[10px] text-on-surface-variant">2 events</span>
+</div>
+<div class="aspect-[3/4] w-full bg-white/5 rounded-lg p-2 flex flex-col gap-1 text-[7px] text-white/30 overflow-hidden select-none border border-white/5">
+<div class="w-3/4 h-2 bg-white/20 rounded-sm mb-1"></div>
+<div class="w-full h-1 bg-white/10 rounded-sm"></div>
+<div class="w-5/6 h-1 bg-white/10 rounded-sm"></div>
+<div class="w-4/6 h-1 bg-white/10 rounded-sm"></div>
+<div class="mt-2 w-full h-8 border border-white/10 rounded bg-white/[0.02] p-1 flex flex-col gap-1">
+<div class="w-2/3 h-1 bg-white/15 rounded-sm"></div>
+<div class="w-1/2 h-1 bg-white/10 rounded-sm"></div>
+</div>
+</div>
+</div>
+<!-- Page 2 (ACTIVE) -->
+<div class="cursor-pointer p-2 rounded-xl bg-gradient-to-b from-[#ff7a00]/15 to-surface-container border-2 border-[#ff7a00] shadow-[0_0_15px_rgba(255,122,0,0.25)] flex flex-col gap-1.5 relative">
+<div class="flex items-center justify-between text-[11px]">
+<span class="font-bold text-white flex items-center gap-1.5">
+                Page 2
+                <span class="w-1.5 h-1.5 rounded-full bg-[#ff7a00] animate-ping"></span>
+</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#ff7a00] text-black">7 events</span>
+</div>
+<div class="aspect-[3/4] w-full bg-surface-container-high rounded-lg p-2 flex flex-col gap-1 border border-[#ff7a00]/40 overflow-hidden relative">
+<div class="w-2/3 h-2 bg-primary/40 rounded-sm mb-1"></div>
+<!-- Mini OCR box simulations -->
+<div class="w-full h-4 rounded border border-amber-400 bg-amber-400/20 mb-0.5"></div>
+<div class="w-full h-4 rounded border border-purple-400 bg-purple-400/20 mb-0.5"></div>
+<div class="w-full h-4 rounded border border-rose-400 bg-rose-400/20 mb-0.5"></div>
+<div class="w-full h-4 rounded border border-purple-400 bg-purple-400/20"></div>
+</div>
+</div>
+<!-- Page 3 -->
+<div class="cursor-pointer group p-2 rounded-xl bg-surface-container-low border border-white/5 hover:border-white/20 transition-all flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="font-semibold text-white/80">Page 3</span>
+<span class="text-[10px] text-on-surface-variant">5 events</span>
+</div>
+<div class="aspect-[3/4] w-full bg-white/5 rounded-lg p-2 flex flex-col gap-1 text-[7px] text-white/30 overflow-hidden border border-white/5">
+<div class="w-1/2 h-2 bg-white/20 rounded-sm mb-1"></div>
+<div class="w-full h-1 bg-white/10 rounded-sm"></div>
+<div class="w-full h-1 bg-white/10 rounded-sm"></div>
+<div class="w-4/5 h-1 bg-white/10 rounded-sm"></div>
+<div class="mt-2 w-full h-10 border border-white/10 rounded bg-white/[0.02]"></div>
+</div>
+</div>
+<!-- Page 4 -->
+<div class="cursor-pointer group p-2 rounded-xl bg-surface-container-low border border-white/5 hover:border-white/20 transition-all flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="font-semibold text-white/80">Page 4</span>
+<span class="text-[10px] text-on-surface-variant">4 events</span>
+</div>
+<div class="aspect-[3/4] w-full bg-white/5 rounded-lg p-2 flex flex-col gap-1 border border-white/5">
+<div class="w-2/3 h-2 bg-white/20 rounded-sm mb-1"></div>
+<div class="w-full h-1 bg-white/10 rounded-sm"></div>
+<div class="w-3/4 h-1 bg-white/10 rounded-sm"></div>
+</div>
+</div>
+<!-- Page 5 & 6 -->
+<div class="cursor-pointer group p-2 rounded-xl bg-surface-container-low border border-white/5 hover:border-white/20 transition-all flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="font-semibold text-white/80">Page 5</span>
+<span class="text-[10px] text-on-surface-variant">6 events</span>
+</div>
+<div class="aspect-[3/4] w-full bg-white/5 rounded-lg p-2 border border-white/5">
+<div class="w-full h-2 bg-white/15 rounded-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Center Pane: Document Inspection Canvas -->
+<div class="flex-1 bg-surface-container-lowest rounded-2xl border border-white/10 flex flex-col overflow-hidden relative">
+<!-- Canvas Toolbar -->
+<div class="h-10 border-b border-white/10 px-4 flex items-center justify-between bg-surface-container-low/70">
+<div class="flex items-center gap-2 text-[12px] text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[16px] text-primary">visibility</span>
+<span class="text-white">Page 2 of 14</span>
+<span class="text-white/40">•</span>
+<span>Course Schedule &amp; Grading Milestones</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Exam OCR
+            </span>
+<span class="inline-flex items-center gap-1.5 text-[11px] text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-400/20 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Topic OCR
+            </span>
+<span class="inline-flex items-center gap-1.5 text-[11px] text-rose-300 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-400/20 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Deadline OCR
+            </span>
+</div>
+</div>
+<!-- Rendered Document View -->
+<div class="flex-1 overflow-y-auto p-6 flex justify-center custom-scroll bg-[#080816]">
+<div class="w-full max-w-2xl bg-[#14152e] rounded-xl border border-white/15 shadow-2xl p-8 flex flex-col gap-6 text-slate-200">
+<!-- Syllabus Header inside doc -->
+<div class="border-b border-white/10 pb-4">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-[20px] font-extrabold text-white tracking-tight">BIOLOGY 101: CELLULAR &amp; MOLECULAR BIOLOGY</h1>
+<p class="text-[12px] text-on-surface-variant mt-0.5">Department of Biological Sciences • Fall Semester 2026</p>
+</div>
+<span class="text-[10px] font-mono uppercase bg-white/5 border border-white/10 px-2 py-1 rounded text-white/70">SEC-04 • 4.0 CREDITS</span>
+</div>
+</div>
+<!-- Schedule Intro -->
+<div class="text-[12px] leading-relaxed text-slate-300">
+<p class="font-semibold text-white mb-1">PART III: SEMESTER SCHEDULE OF EXAMINATIONS, LABS &amp; SUBMISSIONS</p>
+<p class="text-slate-400 text-[11px]">Attendance at all listed laboratory sessions and midterm evaluations is mandatory. Unexcused absences forfeit corresponding grade weight.</p>
+</div>
+<!-- Schedule Table with highlighted OCR bounding boxes -->
+<div class="rounded-xl border border-white/10 overflow-hidden bg-surface-container-low/40">
+<table class="w-full text-left text-[12px] border-collapse">
+<thead>
+<tr class="bg-surface-container-high/80 text-[11px] text-on-surface-variant uppercase tracking-wider border-b border-white/10">
+<th class="p-2.5 font-bold">Date &amp; Time</th>
+<th class="p-2.5 font-bold">Curriculum Module / Topic</th>
+<th class="p-2.5 font-bold">Location</th>
+<th class="p-2.5 font-bold">Grading Impact</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5 text-[12px]">
+<!-- OCR Box 1: Midterm (Amber Highlight) -->
+<tr class="bg-amber-500/10 transition-colors relative group">
+<td class="p-2.5 font-mono text-amber-300 font-semibold align-top relative">
+<div class="absolute inset-1 border-2 border-amber-400 rounded-md pointer-events-none shadow-[0_0_10px_rgba(251,191,36,0.3)]"></div>
+                      Oct 22, 2026<br/><span class="text-[11px] text-amber-200/80">10:00 - 11:50 AM</span>
+</td>
+<td class="p-2.5 align-top">
+<div class="font-bold text-white flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        MIDTERM EXAMINATION 1
+                      </div>
+<span class="text-[11px] text-slate-400">Chapters 1-7: Macromolecules, Enzymes &amp; ATP</span>
+</td>
+<td class="p-2.5 align-top text-slate-300">Hall B</td>
+<td class="p-2.5 align-top">
+<span class="px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 font-bold text-[10px] border border-amber-400/30">25% OF FINAL</span>
+</td>
+</tr>
+<!-- OCR Box 2: Lab Report (Rose Highlight) -->
+<tr class="bg-rose-500/10 transition-colors relative">
+<td class="p-2.5 font-mono text-rose-300 font-semibold align-top relative">
+<div class="absolute inset-1 border-2 border-rose-400 rounded-md pointer-events-none shadow-[0_0_10px_rgba(251,113,133,0.3)]"></div>
+                      Oct 27, 2026<br/><span class="text-[11px] text-rose-200/80">11:59 PM (Hard)</span>
+</td>
+<td class="p-2.5 align-top">
+<div class="font-bold text-white flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                        Cell Respiration Lab Report Due
+                      </div>
+<span class="text-[11px] text-slate-400">Submit electronic PDF via Portal</span>
+</td>
+<td class="p-2.5 align-top text-slate-300">Canvas / Portal</td>
+<td class="p-2.5 align-top">
+<span class="px-2 py-0.5 rounded bg-rose-400/20 text-rose-300 font-bold text-[10px] border border-rose-400/30">DUE DATE</span>
+</td>
+</tr>
+<!-- OCR Box 3: Guest Lecture (Purple Highlight) -->
+<tr class="bg-purple-500/10 transition-colors relative">
+<td class="p-2.5 font-mono text-purple-300 font-semibold align-top relative">
+<div class="absolute inset-1 border-2 border-purple-400 rounded-md pointer-events-none shadow-[0_0_10px_rgba(192,132,252,0.3)]"></div>
+                      Oct 29, 2026<br/><span class="text-[11px] text-purple-200/80">2:00 PM - 3:30 PM</span>
+</td>
+<td class="p-2.5 align-top">
+<div class="font-bold text-white flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                        Guest Lecture: Dr. Aris Thorne
+                      </div>
+<span class="text-[11px] text-slate-400">Mitochondrial Biogenesis &amp; Gene Editing</span>
+</td>
+<td class="p-2.5 align-top text-slate-300">Auditorium 3</td>
+<td class="p-2.5 align-top">
+<span class="px-2 py-0.5 rounded bg-purple-400/20 text-purple-300 font-bold text-[10px] border border-purple-400/30">SPECIAL LECTURE</span>
+</td>
+</tr>
+<!-- OCR Box 4: Quiz 4 (Amber/Orange Highlight) -->
+<tr class="bg-amber-500/10 transition-colors relative">
+<td class="p-2.5 font-mono text-amber-300 font-semibold align-top relative">
+<div class="absolute inset-1 border-2 border-amber-400 rounded-md pointer-events-none shadow-[0_0_10px_rgba(251,191,36,0.3)]"></div>
+                      Nov 03, 2026<br/><span class="text-[11px] text-amber-200/80">10:00 - 10:30 AM</span>
+</td>
+<td class="p-2.5 align-top">
+<div class="font-bold text-white flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        Quiz 4: Membrane Transport
+                      </div>
+<span class="text-[11px] text-slate-400">Active vs Passive Ion Transport</span>
+</td>
+<td class="p-2.5 align-top text-slate-300">Hall B</td>
+<td class="p-2.5 align-top">
+<span class="px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 font-bold text-[10px] border border-amber-400/30">QUIZ (5%)</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer note inside PDF -->
+<div class="flex items-center justify-between text-[11px] text-slate-400 pt-3 border-t border-white/10">
+<span>Instructor: Dr. Eleanor Vance, Ph.D.</span>
+<span>Page 2 of 14</span>
+</div>
+</div>
+</div>
+<!-- Interactive Zoom HUD (Bottom Right) -->
+<div class="absolute bottom-4 right-4 bg-surface-container-high/90 backdrop-blur-md border border-white/15 rounded-xl shadow-xl flex items-center p-1 gap-1 text-white z-10">
+<button class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="text-[11px] font-mono px-2 font-semibold">100%</span>
+<button class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<div class="w-[1px] h-4 bg-white/20 mx-1"></div>
+<button class="px-2.5 h-8 rounded-lg hover:bg-white/10 flex items-center gap-1 text-[11px] font-medium transition-colors">
+<span class="material-symbols-outlined text-[16px]">fit_screen</span>
+<span>Fit Width</span>
+</button>
+</div>
+</div>
+<!-- Right Pane: Parsed Event Triage & Batch Inspector -->
+<div class="w-96 bg-surface-container-lowest rounded-2xl border border-white/10 p-3.5 flex flex-col justify-between shrink-0 overflow-hidden">
+<!-- Header -->
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2">
+<span class="text-[14px] font-bold text-white tracking-tight">Page 2 Events</span>
+<span class="px-2 py-0.5 rounded-full bg-[#ff7a00]/20 text-[#ffb68b] text-[11px] font-bold">7 Detected</span>
+</div>
+<label class="flex items-center gap-1.5 text-[12px] text-on-surface-variant font-medium cursor-pointer hover:text-white">
+<input checked="" class="rounded border-white/20 bg-surface-container text-[#ff7a00] focus:ring-0 w-3.5 h-3.5" type="checkbox"/>
+<span>Select All</span>
+</label>
+</div>
+<!-- Parsed Events List -->
+<div class="overflow-y-auto max-h-[calc(100vh-250px)] space-y-2.5 mt-3 pr-1 custom-scroll">
+<!-- Card 1: Midterm Examination 1 -->
+<div class="p-3 rounded-xl bg-surface-container-low border border-amber-500/40 hover:border-amber-400 transition-all flex flex-col gap-2 relative shadow-[0_2px_12px_rgba(251,191,36,0.08)]">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-2">
+<input checked="" class="mt-0.5 rounded border-white/20 bg-surface-container text-[#ff7a00] focus:ring-0 w-4 h-4" type="checkbox"/>
+<div>
+<h3 class="text-[13px] font-bold text-white leading-tight">Midterm Examination 1</h3>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[13px]">schedule</span>
+<span>Oct 22, 2026 • 10:00 - 11:50 AM</span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px]">room</span>
+<span>Hall B</span>
+</div>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">99.8% Conf.</span>
+</div>
+<div class="flex items-center gap-1.5 pt-1 border-t border-white/5">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300">EXAM</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-white/80">25% WEIGHT</span>
+</div>
+</div>
+<!-- Card 2: Lab Report Due -->
+<div class="p-3 rounded-xl bg-surface-container-low border border-rose-500/40 hover:border-rose-400 transition-all flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-2">
+<input checked="" class="mt-0.5 rounded border-white/20 bg-surface-container text-[#ff7a00] focus:ring-0 w-4 h-4" type="checkbox"/>
+<div>
+<h3 class="text-[13px] font-bold text-white leading-tight">Cell Respiration Lab Report Due</h3>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[13px]">schedule</span>
+<span>Oct 27, 2026 • 11:59 PM</span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px]">cloud_upload</span>
+<span>Canvas / Portal</span>
+</div>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">98.4%</span>
+</div>
+<div class="flex items-center gap-1.5 pt-1 border-t border-white/5">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-400/20 text-rose-300">DUE DATE</span>
+</div>
+</div>
+<!-- Card 3: Guest Lecture (Conflict Radar) -->
+<div class="p-3 rounded-xl bg-surface-container-low border border-purple-500/40 hover:border-purple-400 transition-all flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-2">
+<input checked="" class="mt-0.5 rounded border-white/20 bg-surface-container text-[#ff7a00] focus:ring-0 w-4 h-4" type="checkbox"/>
+<div>
+<h3 class="text-[13px] font-bold text-white leading-tight">Guest Lecture: Dr. Aris Thorne</h3>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[13px]">schedule</span>
+<span>Oct 29, 2026 • 2:00 PM</span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px]">room</span>
+<span>Auditorium 3</span>
+</div>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">97.2%</span>
+</div>
+<!-- Conflict Warning Tag -->
+<div class="p-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center gap-1.5 text-[10px] text-amber-300 font-medium">
+<span class="material-symbols-outlined text-[14px] text-amber-400 shrink-0">warning</span>
+<span>Conflict Radar: Overlaps with Team Standup (2:30 PM)</span>
+</div>
+<div class="flex items-center gap-1.5 pt-0.5">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-400/20 text-purple-300">SPECIAL LECTURE</span>
+</div>
+</div>
+<!-- Card 4: Quiz 4 -->
+<div class="p-3 rounded-xl bg-surface-container-low border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-2">
+<input checked="" class="mt-0.5 rounded border-white/20 bg-surface-container text-[#ff7a00] focus:ring-0 w-4 h-4" type="checkbox"/>
+<div>
+<h3 class="text-[13px] font-bold text-white leading-tight">Quiz 4: Membrane Transport</h3>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[13px]">schedule</span>
+<span>Nov 03, 2026 • 10:00 AM</span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px]">room</span>
+<span>Hall B</span>
+</div>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">99.1%</span>
+</div>
+<div class="flex items-center gap-1.5 pt-1 border-t border-white/5">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300">QUIZ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Card Footer & Action -->
+<div class="pt-3 border-t border-white/10 flex flex-col gap-2.5">
+<label class="flex items-center gap-2 text-[11px] text-on-surface-variant cursor-pointer hover:text-white">
+<input checked="" class="rounded border-white/20 bg-surface-container text-[#ff7a00] focus:ring-0 w-3.5 h-3.5" type="checkbox"/>
+<span>Add original PDF crop to Apple Calendar notes</span>
+</label>
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-xl bg-surface-container border border-white/10 text-white font-semibold text-[12px] hover:bg-surface-container-high transition-colors">
+              Review Single Event
+            </button>
+<button class="py-2 px-3 rounded-xl bg-[#ff7a00] text-black font-bold text-[12px] hover:bg-[#ff9800] transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

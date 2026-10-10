@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#101127;color:#e1e0ff;font-family:'Plus Jakarta Sans',sans-serif;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"secondary":"#deb7ff","surface-container":"#1d1e34","on-error-container":"#ffdad6","on-primary-container":"#5c2800","secondary-container":"#670fac","primary":"#ffb68b","on-surface":"#e1e0ff","surface-dim":"#101127","on-secondary-container":"#d2a0ff","on-tertiary":"#670020","on-primary-fixed":"#321200","tertiary-fixed-dim":"#ffb2ba","primary-fixed-dim":"#ffb68b","tertiary":"#ffb2ba","secondary-fixed-dim":"#deb7ff","primary-container":"#ff7a00","secondary-fixed":"#f0dbff","surface-container-high":"#27283f","on-tertiary-container":"#730025","outline-variant":"#584235","outline":"#a78b7c","on-primary":"#522300","surface":"#101127","on-secondary":"#4a007f","on-secondary-fixed-variant":"#670fac","primary-fixed":"#ffdbc8","on-primary-fixed-variant":"#753400","surface-bright":"#36374f","inverse-surface":"#e1e0ff","tertiary-container":"#ff7288","tertiary-fixed":"#ffd9dc","inverse-on-surface":"#2d2e46","surface-container-highest":"#32334a","on-tertiary-fixed-variant":"#910030","surface-container-low":"#181930","background":"#101127","surface-container-lowest":"#0b0c22","error":"#ffb4ab","error-container":"#93000a","inverse-primary":"#994700","on-error":"#690005","surface-tint":"#ffb68b","surface-variant":"#32334a","on-tertiary-fixed":"#400011","on-secondary-fixed":"#2c0050","on-surface-variant":"#e0c0af","on-background":"#e1e0ff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","gutter-desktop":"1.75rem","margin":"1rem","space-lg":"1.5rem","space-2xl":"3rem","space-2xs":"0.25rem","space-sm":"0.5rem","space-xl":"2rem","space-xs":"0.375rem","space-3xl":"4.5rem","margin-tablet":"1.5rem","margin-desktop":"2.5rem","gutter":"1.25rem"},"fontFamily":{"headline-lg":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"]},"fontSize":{"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.015em","fontWeight":"700"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.06em","fontWeight":"700"}],"headline-xl":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-xl-mobile":["30px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","letterSpacing":"0em","fontWeight":"400"}],"display-lg":["56px",{"lineHeight":"64px","letterSpacing":"-0.03em","fontWeight":"800"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"600"}],"headline-md":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"400"}],"display-lg-mobile":["38px",{"lineHeight":"44px","letterSpacing":"-0.025em","fontWeight":"800"}],"body-lg":["16px",{"lineHeight":"26px","letterSpacing":"0em","fontWeight":"400"}]}}}};</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-container selection:text-white"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs flex items-center justify-center rounded-full text-on-surface transition-colors active:bg-surface-container" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface truncate">Smart Suggestions</h1></div><div class="flex items-center"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface"><div class="flex flex-col w-full pb-32">
+<div class="px-margin pt-space-md flex flex-col gap-space-xs">
+<div class="inline-flex items-center gap-space-2xs w-fit px-2.5 py-1 rounded-full bg-secondary-container/30 text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase">Discovery Radar</span>
+</div>
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface tracking-tight">Smart Suggestions</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Pencil'd privately noticed potential event flyers, invitations, and ticket receipts in your recent camera roll.
+      </p>
+</div>
+</div>
+<div class="px-margin mt-space-lg">
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-high shadow-xl p-space-lg flex flex-col gap-space-md">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-16 -left-12 w-52 h-52 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40 mix-blend-screen" fill="none" preserveaspectratio="none" viewbox="0 0 360 260">
+<path d="M-20 220C80 180 140 240 240 120C310 30 360 80 400 40" stroke="url(#paint0_linear)" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M0 60C110 30 180 190 280 150C330 130 360 60 400 90" stroke="url(#paint1_linear)" stroke-dasharray="4 6" stroke-width="1.8"></path>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear" x1="-20" x2="380" y1="220" y2="40">
+<stop stop-color="#ff7a00"></stop>
+<stop offset="0.45" stop-color="#ff7288"></stop>
+<stop offset="1" stop-color="#deb7ff"></stop>
+</lineargradient>
+<lineargradient gradientunits="userSpaceOnUse" id="paint1_linear" x1="0" x2="380" y1="60" y2="120">
+<stop stop-color="#ffb68b"></stop>
+<stop offset="1" stop-color="#670fac"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="relative z-10 flex items-center justify-between">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 text-primary">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-sm text-label-sm font-semibold tracking-wide">High Confidence Match • 99%</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+</div>
+</div>
+<div class="relative z-10 flex flex-col gap-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Summer Sunset Rooftop Jazz</h3>
+<div class="flex flex-col gap-1 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-primary">calendar_today</span>
+<span class="font-label-lg text-label-lg text-on-surface font-medium">Friday, July 24, 2026 • 7:30 PM</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-tertiary">location_on</span>
+<span class="font-body-md text-body-md">The Standard Rooftop • Downtown</span>
+</div>
+</div>
+</div>
+<div class="relative z-10 grid grid-cols-2 gap-space-sm pt-space-xs">
+<button class="w-full h-11 px-4 rounded-full bg-gradient-to-r from-primary-container via-tertiary-container to-secondary flex items-center justify-center gap-1.5 text-on-primary-fixed font-label-lg text-label-lg shadow-lg active:scale-[0.98] transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+<span>Review &amp; Pencil In</span>
+</button>
+<button class="w-full h-11 px-4 rounded-full bg-surface-container hover:bg-surface-bright flex items-center justify-center text-on-surface-variant font-label-lg text-label-lg active:scale-[0.98] transition-colors" type="button">
+<span>Dismiss</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-margin mt-space-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wider">Other Candidates</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">2 found</span>
+</div>
+<button class="text-primary font-label-md text-label-md active:opacity-70" type="button">Select All</button>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/15 via-surface-container to-secondary/15 p-space-md flex items-start gap-space-md transition-all active:scale-[0.99] cursor-pointer" id="item-flight">
+<button aria-label="Toggle flight selection" class="mt-1 w-6 h-6 rounded-lg bg-gradient-to-tr from-primary-container to-secondary flex items-center justify-center text-on-primary shadow-sm shrink-0" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+<div class="flex-1 min-w-0 flex flex-col gap-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Board Flight AA 1284 - SFO to JFK</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-label-sm whitespace-nowrap">94% match</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span class="font-body-md text-body-md">Aug 12, 2026 • 8:15 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-secondary">flight</span>
+<span class="font-label-sm text-label-sm">Screenshot from Airline App</span>
+</div>
+</div>
+</div>
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-low p-space-md flex items-start gap-space-md transition-all active:scale-[0.99] cursor-pointer" id="item-dentist">
+<button aria-label="Toggle dentist selection" class="mt-1 w-6 h-6 rounded-lg bg-surface-container flex items-center justify-center text-transparent shrink-0" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+<div class="flex-1 min-w-0 flex flex-col gap-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Dentist Checkup &amp; Cleaning</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm whitespace-nowrap">88% match</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-tertiary">event</span>
+<span class="font-body-md text-body-md">Sep 04, 2026 • 2:00 PM</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-tertiary">chat</span>
+<span class="font-label-sm text-label-sm">SMS text preview</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 inset-x-0 z-40 px-margin pb-6 pt-3 bg-gradient-to-t from-background via-background/95 to-transparent flex flex-col gap-space-sm items-center">
+<div class="flex items-center gap-2 w-full max-w-md">
+<button class="flex-1 h-13 px-5 py-3 rounded-full bg-gradient-to-r from-primary-container via-tertiary-container to-secondary flex items-center justify-center gap-2 text-on-primary-fixed font-label-lg text-label-lg shadow-lg active:scale-[0.98] transition-transform" id="review-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">edit_calendar</span>
+<span id="review-label">Review Selected Events (1)</span>
+</button>
+<button aria-label="Scan New Flyer" class="h-13 w-13 p-3 rounded-full bg-surface-container-high flex items-center justify-center text-primary active:scale-[0.95] transition-transform" type="button">
+<span class="material-symbols-outlined text-[22px]">document_scanner</span>
+</button>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest/80 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-secondary">verified_user</span>
+<span class="font-label-sm text-label-sm">100% on-device private radar • Zero cloud photo scanning</span>
+</div>
+</div>
+</div>
+<script>
+  (() => {
+    const flightCard = document.getElementById('item-flight');
+    const dentistCard = document.getElementById('item-dentist');
+    const reviewLabel = document.getElementById('review-label');
+
+    let selectedCount = 1;
+
+    const updateLabel = () => {
+      reviewLabel.textContent = `Review Selected Events (${selectedCount})`;
+    };
+
+    const toggleState = (card, force) => {
+      const btn = card.querySelector('button');
+      const isSelected = typeof force === 'boolean' ? force : !card.classList.contains('bg-gradient-to-r');
+
+      if (isSelected) {
+        card.className = "relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/15 via-surface-container to-secondary/15 p-space-md flex items-start gap-space-md transition-all active:scale-[0.99] cursor-pointer";
+        btn.className = "mt-1 w-6 h-6 rounded-lg bg-gradient-to-tr from-primary-container to-secondary flex items-center justify-center text-on-primary shadow-sm shrink-0";
+      } else {
+        card.className = "relative overflow-hidden rounded-2xl bg-surface-container-low p-space-md flex items-start gap-space-md transition-all active:scale-[0.99] cursor-pointer";
+        btn.className = "mt-1 w-6 h-6 rounded-lg bg-surface-container flex items-center justify-center text-transparent shrink-0";
+      }
+      return isSelected;
+    };
+
+    if (flightCard) {
+      flightCard.addEventListener('click', (e) => {
+        const isSelected = flightCard.classList.contains('bg-gradient-to-r');
+        const next = toggleState(flightCard, !isSelected);
+        selectedCount += next ? 1 : -1;
+        updateLabel();
+      });
+    }
+
+    if (dentistCard) {
+      dentistCard.addEventListener('click', (e) => {
+        const isSelected = dentistCard.classList.contains('bg-gradient-to-r');
+        const next = toggleState(dentistCard, !isSelected);
+        selectedCount += next ? 1 : -1;
+        updateLabel();
+      });
+    }
+  })();
+</script></main></body></html>

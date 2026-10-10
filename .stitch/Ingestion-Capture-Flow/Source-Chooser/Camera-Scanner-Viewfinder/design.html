@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#deb7ff", "on-secondary-fixed": "#2c0050", "tertiary": "#ffb2ba", "surface-container-lowest": "#0b0c22", "primary": "#ffb68b", "tertiary-fixed-dim": "#ffb2ba", "on-surface-variant": "#e0c0af", "surface-container-highest": "#32334a", "on-secondary": "#4a007f", "surface-container-high": "#27283f", "surface-container-low": "#181930", "on-secondary-container": "#d2a0ff", "on-tertiary-fixed-variant": "#910030", "on-error-container": "#ffdad6", "surface-variant": "#32334a", "on-tertiary-fixed": "#400011", "surface-tint": "#ffb68b", "on-error": "#690005", "on-tertiary": "#670020", "primary-container": "#ff7a00", "inverse-primary": "#994700", "primary-fixed": "#ffdbc8", "outline-variant": "#584235", "on-background": "#e1e0ff", "outline": "#a78b7c", "surface-bright": "#36374f", "primary-fixed-dim": "#ffb68b", "secondary": "#deb7ff", "on-primary-fixed-variant": "#753400", "inverse-surface": "#e1e0ff", "inverse-on-surface": "#2d2e46", "tertiary-container": "#ff7288", "secondary-fixed": "#f0dbff", "secondary-container": "#670fac", "on-surface": "#e1e0ff", "on-primary-fixed": "#321200", "background": "#101127", "surface-dim": "#101127", "tertiary-fixed": "#ffd9dc", "on-primary": "#522300", "error-container": "#93000a", "on-primary-container": "#5c2800", "surface": "#101127", "surface-container": "#1d1e34", "on-tertiary-container": "#730025", "on-secondary-fixed-variant": "#670fac", "error": "#ffb4ab" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "space-xl": "2rem", "space-2xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "margin-desktop": "2.5rem", "space-2xl": "3rem", "gutter": "1.25rem", "margin-tablet": "1.5rem", "space-xs": "0.375rem", "margin": "1rem", "space-3xl": "4.5rem", "gutter-desktop": "1.75rem" }, fontFamily: { "headline-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "display-lg-mobile": ["38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Dismiss or Back" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-variant/40 transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span></button><img alt="pencild-logo-grey.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UbJn2tG-043LYiFglNpXUcE74x0ZdteTyUcYni7UiFtzhlwrrK7hYAIhPXxL0XHazw3JZ5g9uHCn43j3Z_hlrMK8HDCadp3TTip5zPhva8qGDC63w4-_LHsCJWQIzJUgYA1rRlKFLW0j0LMndN5uY3C3Ox1IR8DftoYXFDlfzHdO-cgsLemvwVnfUBs4ZECDgxS8u0kJMkkdiLdQR8YNwHq_8gE6qwOUpHa0MkeawK-l7Yf-NjDLfaXTbqJQFQQwRY9lojgh1TrA"/><h1 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Camera Scanner</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-2xl">close</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface px-margin"><div class="flex flex-col w-full relative select-none pb-space-lg">
+<!-- HUD Top Floating Guidance Bar -->
+<div class="w-full flex flex-col items-center gap-space-xs mb-space-sm">
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container/90 backdrop-blur-md shadow-lg">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-md text-label-md text-on-surface">Align flyer within frame • Hold steady</span>
+</div>
+<!-- Quick Tool HUD Pill -->
+<div class="flex items-center justify-between w-full px-space-sm py-space-xs rounded-full bg-surface-container-low/80 backdrop-blur-lg mt-space-2xs">
+<!-- Flash Toggle -->
+<button aria-label="Toggle Flash Mode" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest/60 text-primary transition-transform active:scale-95" id="flash-toggle" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">flash_auto</span>
+</button>
+<!-- Auto Detect State Badge -->
+<div class="flex items-center gap-space-2xs px-space-sm py-1 rounded-full bg-surface-container-high/80">
+<span class="material-symbols-outlined text-primary text-[16px]">document_scanner</span>
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">Auto-Detecting Edges</span>
+</div>
+<!-- Grid Overlay Toggle -->
+<button aria-label="Toggle Viewfinder Grid" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest/60 text-on-surface transition-transform active:scale-95" id="grid-toggle" type="button">
+<span class="material-symbols-outlined text-[20px]">grid_goldenratio</span>
+</button>
+</div>
+</div>
+<!-- Viewfinder Chamber -->
+<div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-lowest shadow-2xl flex items-center justify-center">
+<!-- Camera Feed Background Simulation -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-85 scale-[1.02]" data-alt="A textured analog flyer for a nocturnal jazz &amp; electronic symposium on dark textured concrete table. The poster has handwritten dates, typographic headers, artistic illustrations, cinematic angled lighting casting warm amber rim glows matching Pencil'd glowing dark aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBkcyn-pNE75Fzphg4CSF3bS_bB_FlpCLeDwakCd4d-Bx3FNNDDmaYLPAn80OBJkDoBUVKffT5XKUWfrSoSXg3zk5suoufL10gPBzzS8b4wRRft2X8VI4jQqT3T4zk2_NDnZgXOlDMyPLRAxhMUZP_Tck3oyVnb0K4ew1a-wm2FDKy1mAW11wihr0YQJOtAim_TI_kUgSp1kfecQF0I8KfmpfnX2Azth5bNeG78fG_uXHO7owiPmviF')"></div>
+<!-- Viewfinder Reticle Grid Overlay (Togglable) -->
+<div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 transition-opacity duration-300" id="grid-lines">
+<div class="bg-surface-tint/5"></div>
+<div class="bg-transparent"></div>
+<div class="bg-surface-tint/5"></div>
+<div class="bg-transparent"></div>
+<div class="bg-primary/5"></div>
+<div class="bg-transparent"></div>
+<div class="bg-surface-tint/5"></div>
+<div class="bg-transparent"></div>
+<div class="bg-surface-tint/5"></div>
+</div>
+<!-- Laser Scanning Beam Micro-interaction -->
+<div class="absolute inset-x-0 h-24 bg-gradient-to-b from-primary-container/20 via-primary/10 to-transparent pointer-events-none animate-pulse -translate-y-4"></div>
+<!-- Corner Alignment Brackets (Pencil'd Precision Viewfinder) -->
+<div class="absolute inset-4 pointer-events-none flex flex-col justify-between">
+<div class="flex justify-between w-full">
+<div class="w-7 h-7 rounded-tl-lg bg-gradient-to-br from-primary-container to-transparent p-0.5">
+<div class="w-full h-full bg-surface-container-lowest/40 rounded-tl-[6px]"></div>
+</div>
+<div class="w-7 h-7 rounded-tr-lg bg-gradient-to-bl from-primary-container to-transparent p-0.5">
+<div class="w-full h-full bg-surface-container-lowest/40 rounded-tr-[6px]"></div>
+</div>
+</div>
+<div class="flex justify-between w-full">
+<div class="w-7 h-7 rounded-bl-lg bg-gradient-to-tr from-primary-container to-transparent p-0.5">
+<div class="w-full h-full bg-surface-container-lowest/40 rounded-bl-[6px]"></div>
+</div>
+<div class="w-7 h-7 rounded-br-lg bg-gradient-to-tl from-primary-container to-transparent p-0.5">
+<div class="w-full h-full bg-surface-container-lowest/40 rounded-br-[6px]"></div>
+</div>
+</div>
+</div>
+<!-- Optical Target 1: Event Title / Headline -->
+<div class="absolute top-16 left-6 right-8 p-space-xs rounded-lg bg-surface-container-high/90 backdrop-blur-md shadow-lg flex flex-col gap-1 transition-all">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary tracking-widest font-extrabold uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary-container">auto_awesome</span>
+          TITLE DETECTED
+        </span>
+<span class="px-1.5 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-[9px] font-bold">98% CONFIDENCE</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface truncate">SOLARIS SOUND SYMPOSIUM</p>
+</div>
+<!-- Optical Target 2: Live Date Chip Box -->
+<div class="absolute top-[48%] left-8 px-space-sm py-1.5 rounded-lg bg-surface-container-highest/90 backdrop-blur-md shadow-md flex items-center gap-space-xs">
+<div class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary tracking-wider font-bold uppercase">DATE DETECTED</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Nov 14, 2026</span>
+</div>
+<span class="material-symbols-outlined text-primary-container text-[18px] ml-1">event</span>
+</div>
+<!-- Optical Target 3: Live Time Chip Box -->
+<div class="absolute top-[62%] right-6 px-space-sm py-1.5 rounded-lg bg-surface-container-highest/90 backdrop-blur-md shadow-md flex items-center gap-space-xs">
+<div class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-tertiary tracking-wider font-bold uppercase">TIME DETECTED</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">8:00 PM EST</span>
+</div>
+<span class="material-symbols-outlined text-tertiary-container text-[18px] mr-1">schedule</span>
+</div>
+<!-- Center Crosshairs Subtle Dot -->
+<div class="w-3 h-3 rounded-full bg-primary/40 pointer-events-none flex items-center justify-center">
+<div class="w-1 h-1 rounded-full bg-primary-container"></div>
+</div>
+</div>
+<!-- Neural Engine Latency Diagnostic Pill -->
+<div class="w-full flex justify-center mt-space-sm">
+<div class="flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-high/80 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">neurology</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold tracking-wide">CoreML 16ms • Instant OCR Ready</span>
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+</div>
+</div>
+<!-- Bottom Console: Camera Capture Controls -->
+<div class="w-full mt-space-md px-space-xs flex items-center justify-between">
+<!-- Previous Scan Gallery Thumbnail -->
+<div class="flex flex-col items-center gap-1">
+<button aria-label="Open scanned notes gallery" class="relative w-14 h-14 rounded-xl overflow-hidden bg-surface-container-high p-0.5 shadow-md group active:scale-95 transition-transform" type="button">
+<div class="w-full h-full bg-cover bg-center rounded-[10px]" data-alt="A previously scanned high-contrast study schedule on ivory paper with hand-drawn pencil checkboxes and highlighter accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtlnS8Z3vRT7GlbFkRxwWEwKjPDMWaIftLHf_i7R5gG5MUkRIahLS2aQsAxmiMU_AV5k3S6UR36ONjALnQX23yQLqLFGG9GeXIVgZnEWMwgMLZH_qxRA2ieyekZxc6lW5DguiWR7BZrllvCDfarqxZVKvLo0L9LlDcwBUS2Y_VcpWLlfeJyyYtvPbFJ8-xg8RZQBchK6AEqubCTk2hFLNJsqV9Lg9EUeHQY_0fDbebS2xLovVXFLeO')"></div>
+<div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-on-secondary shadow-sm">
+<span class="font-label-sm text-[9px] font-bold">4</span>
+</div>
+</button>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Tray</span>
+</div>
+<!-- Shutter Primary Action Button -->
+<div class="flex flex-col items-center">
+<button aria-label="Capture Flyer Page" class="relative w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-primary-container via-primary to-secondary flex items-center justify-center shadow-xl active:scale-90 transition-all duration-150" id="shutter-btn" type="button">
+<div class="w-full h-full rounded-full bg-surface-container-lowest flex items-center justify-center">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary-container to-tertiary-container flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-on-primary-container text-[28px]" style="font-variation-settings: 'FILL' 1;">lens</span>
+</div>
+</div>
+</button>
+</div>
+<!-- Batch Mode Switch Component -->
+<div class="flex flex-col items-center gap-1">
+<button aria-label="Toggle Batch Scan Mode" class="w-14 h-14 rounded-xl bg-surface-container-high flex flex-col items-center justify-center gap-0.5 shadow-md active:scale-95 transition-transform" id="batch-toggle" type="button">
+<span class="material-symbols-outlined text-[20px] text-on-surface">layers</span>
+<span class="font-label-sm text-[10px] text-primary font-bold">SINGLE</span>
+</button>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Batch</span>
+</div>
+</div>
+<!-- Interactive Feed Script for Micro-interactions -->
+<script>
+    (function() {
+      const shutter = document.getElementById('shutter-btn');
+      const gridToggle = document.getElementById('grid-toggle');
+      const gridLines = document.getElementById('grid-lines');
+      const flashToggle = document.getElementById('flash-toggle');
+      const batchToggle = document.getElementById('batch-toggle');
+
+      if (shutter) {
+        shutter.addEventListener('click', function() {
+          const originalTransform = shutter.style.transform;
+          shutter.style.transform = 'scale(0.88)';
+          setTimeout(() => {
+            shutter.style.transform = originalTransform;
+          }, 120);
+        });
+      }
+
+      if (gridToggle && gridLines) {
+        let gridVisible = true;
+        gridToggle.addEventListener('click', function() {
+          gridVisible = !gridVisible;
+          gridLines.style.opacity = gridVisible ? '1' : '0';
+          gridToggle.classList.toggle('text-primary');
+          gridToggle.classList.toggle('text-on-surface');
+        });
+      }
+
+      if (flashToggle) {
+        const modes = ['flash_auto', 'flash_on', 'flash_off'];
+        let modeIdx = 0;
+        flashToggle.addEventListener('click', function() {
+          modeIdx = (modeIdx + 1) % modes.length;
+          const icon = flashToggle.querySelector('.material-symbols-outlined');
+          if (icon) icon.textContent = modes[modeIdx];
+        });
+      }
+
+      if (batchToggle) {
+        let isBatch = false;
+        batchToggle.addEventListener('click', function() {
+          isBatch = !isBatch;
+          const label = batchToggle.querySelector('span:nth-child(2)');
+          if (label) {
+            label.textContent = isBatch ? 'BATCH' : 'SINGLE';
+            label.className = isBatch
+              ? 'font-label-sm text-[10px] text-secondary font-bold'
+              : 'font-label-sm text-[10px] text-primary font-bold';
+          }
+        });
+      }
+    })();
+  </script>
+</div></main></body></html>

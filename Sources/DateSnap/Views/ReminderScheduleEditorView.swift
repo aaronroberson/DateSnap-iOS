@@ -51,7 +51,7 @@ struct ReminderScheduleEditorView: View {
                                 Image(systemName: "calendar.badge.clock")
                                     .font(.system(size: 20))
                                     .foregroundStyle(Color.dsPrimary)
-                                Text("DateSnap")
+                                Text("Pencil'd")
                                     .font(DSTypography.headlineCard())
                                     .foregroundStyle(Color.dsForeground)
                             }

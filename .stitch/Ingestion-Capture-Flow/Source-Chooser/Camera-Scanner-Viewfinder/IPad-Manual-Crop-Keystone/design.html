@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-surface-variant": "#e0c0af", "primary-container": "#ff7a00", "on-primary-fixed": "#321200", "on-secondary-fixed": "#2c0050", "inverse-surface": "#e1e0ff", "primary-fixed-dim": "#ffb68b", "surface-container-low": "#181930", "on-surface": "#e1e0ff", "on-primary-fixed-variant": "#753400", "surface-container-highest": "#32334a", "on-error": "#690005", "outline": "#a78b7c", "on-tertiary-container": "#730025", "outline-variant": "#584235", "inverse-on-surface": "#2d2e46", "on-error-container": "#ffdad6", "tertiary": "#ffb2ba", "on-primary-container": "#5c2800", "tertiary-fixed-dim": "#ffb2ba", "on-secondary-container": "#d2a0ff", "on-background": "#e1e0ff", "surface-container-lowest": "#0b0c22", "surface-dim": "#101127", "surface-variant": "#32334a", "secondary": "#deb7ff", "surface-container-high": "#27283f", "surface-container": "#1d1e34", "surface-bright": "#36374f", "on-secondary": "#4a007f", "surface-tint": "#ffb68b", "tertiary-fixed": "#ffd9dc", "error-container": "#93000a", "secondary-fixed-dim": "#deb7ff", "on-secondary-fixed-variant": "#670fac", "surface": "#101127", "on-tertiary-fixed": "#400011", "secondary-fixed": "#f0dbff", "primary-fixed": "#ffdbc8", "inverse-primary": "#994700", "secondary-container": "#670fac", "primary": "#ffb68b", "tertiary-container": "#ff7288", "on-tertiary-fixed-variant": "#910030", "background": "#101127", "error": "#ffb4ab", "on-tertiary": "#670020", "on-primary": "#522300" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "space-2xs": "0.25rem", "margin-desktop": "2.5rem", "margin": "1rem", "space-sm": "0.5rem", "space-xs": "0.375rem", "margin-tablet": "1.5rem", "gutter-desktop": "1.75rem", "space-2xl": "3rem", "space-xl": "2rem", "space-3xl": "4.5rem", "gutter": "1.25rem", "space-md": "1rem" }, "fontFamily": { "headline-xl-mobile": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "display-lg-mobile": [ "Plus Jakarta Sans" ], "display-lg": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "headline-xl": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ] }, "fontSize": { "headline-xl-mobile": [ "30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-lg": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" } ], "headline-lg": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "display-lg-mobile": [ "38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" } ], "display-lg": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" } ], "body-lg": [ "16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-sm": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "body-md": [ "14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-md": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "label-sm": [ "10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" } ], "headline-xl": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "body-sm": [ "12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased selection:bg-primary selection:text-on-primary-fixed select-none"><aside class="fixed left-0 top-0 h-full w-56 bg-surface-container-low/90 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-md px-space-xs shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-md"><div class="px-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs"><img alt="pencild-logo-grey.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UbJn2tG-043LYiFglNpXUcE74x0ZdteTyUcYni7UiFtzhlwrrK7hYAIhPXxL0XHazw3JZ5g9uHCn43j3Z_hlrMK8HDCadp3TTip5zPhva8qGDC63w4-_LHsCJWQIzJUgYA1rRlKFLW0j0LMndN5uY3C3Ox1IR8DftoYXFDlfzHdO-cgsLemvwVnfUBs4ZECDgxS8u0kJMkkdiLdQR8YNwHq_8gE6qwOUpHa0MkeawK-l7Yf-NjDLfaXTbqJQFQQwRY9lojgh1TrA"/><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface font-bold">Pencil'd</span></div><div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_rgba(255,122,0,0.6)]"></div></div><div class="mx-space-xs px-space-xs py-space-2xs rounded-full bg-surface-container-high/60 backdrop-blur-md flex items-center justify-between"><div class="flex items-center gap-space-2xs"><span class="material-symbols-outlined text-[14px] text-secondary">cloud_done</span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">iCloud Synced</span></div><span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse"></span></div><nav class="flex flex-col gap-space-2xs px-space-xs mt-space-2xs" data-active-classes="bg-surface-container-highest text-primary font-label-md"><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="verification-queue" href="#"><span class="material-symbols-outlined text-[20px]">fact_check</span><span class="font-label-md text-label-md">Verification Queue</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="syllabus-pdf-hub" href="#"><span class="material-symbols-outlined text-[20px]">auto_stories</span><span class="font-label-md text-label-md">Syllabus &amp; Hub</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="scanner-viewfinder" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-md text-label-md">Scanner View</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="conflict-radar" href="#"><span class="material-symbols-outlined text-[20px]">radar</span><span class="font-label-md text-label-md">Conflict Radar</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="calendar-agenda" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-label-md text-label-md">Calendar Agenda</span></a><a class="flex items-center gap-space-xs px-space-xs py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-md text-label-md">Settings</span></a></nav></div><div class="mx-space-xs p-space-xs rounded-xl bg-surface-container/70 backdrop-blur-md flex flex-col gap-space-2xs"><div class="flex items-center justify-between"><div class="flex items-center gap-space-2xs"><span class="material-symbols-outlined text-[16px] text-primary">stylus_note</span><span class="font-label-sm text-label-sm text-on-surface font-bold">Pencil Pro</span></div><span class="font-label-sm text-label-sm text-primary font-bold">94%</span></div><div class="w-full h-1 rounded-full bg-surface-container-highest overflow-hidden"><div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full" style="width: 94%"></div></div><div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-space-2xs"><span class="flex items-center gap-1"><span class="w-1 h-1 rounded-full bg-secondary"></span>Squeeze Ready</span><span class="text-[10px] text-on-surface-variant/70">Haptic On</span></div></div></aside><div class="pl-56 min-h-screen flex flex-col bg-background"><header class="fixed top-0 left-56 right-0 h-16 bg-surface/75 backdrop-blur-2xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-md flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-baseline gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">9:41 AM</span><span class="font-label-md text-label-md text-on-surface-variant">Tue, Oct 24</span></div><div class="hidden md:flex items-center gap-space-xs px-space-xs py-space-2xs rounded-full bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-primary">fiber_manual_record</span><span class="font-label-sm text-label-sm">Optical OCR Active</span></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs bg-surface-container-lowest/80 px-space-sm py-space-2xs rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.35)]"><span class="material-symbols-outlined text-[18px] text-on-surface-variant">search</span><span class="font-body-sm text-body-sm text-on-surface-variant/70 pr-space-md">Search scans or agenda...</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-mono">⌘K</span></div><button class="flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-gradient-to-r from-primary to-secondary text-on-primary-fixed shadow-[0_0_20px_rgba(255,122,0,0.3)] hover:brightness-110 active:scale-95 transition-all" type="button"><span class="material-symbols-outlined text-[18px] text-on-primary-fixed">add_circle</span><span class="font-label-md text-label-md text-on-primary-fixed font-bold">Quick Capture</span></button><div class="flex items-center gap-space-2xs px-space-xs py-space-2xs rounded-full bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">battery_charging_full</span><span class="font-label-sm text-label-sm font-semibold">100%</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(255,182,139,0.3)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-space-md bg-background flex-1"><div class="flex flex-col w-full pb-space-2xl">
+<!-- Top Context Header Ribbon -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<a class="flex items-center justify-center w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-highest transition-colors text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</a>
+<div>
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">Perspective Keystone &amp; Optical Tuning</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm uppercase tracking-wider">iPad Pro Mode</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">ARCH_204_Syllabus_FallQuarter.pdf • Page 1 of 4 • 4K Optical Feed</p>
+</div>
+</div>
+<!-- Quick Status Badges -->
+<div class="flex items-center gap-space-xs">
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_rgba(255,122,0,0.8)]"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold tracking-wide uppercase">Apple Pencil Hover Active</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-secondary">grid_4x4</span>
+<span class="font-label-sm text-label-sm font-medium">Auto Keystone Locked</span>
+</div>
+</div>
+</div>
+<!-- Expansive 2-Column iPad Pro Studio Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+<!-- LEFT PANE: 70% width Image Workbench (Col span 8 on lg, 8/12 = 66.6% -> spans 8 or 9) -->
+<div class="lg:col-span-8 flex flex-col gap-space-sm">
+<!-- Workbench Container with Dark Precision Mat -->
+<div class="relative w-full rounded-xl bg-surface-container-lowest p-space-sm overflow-hidden shadow-2xl flex flex-col items-center">
+<!-- Floating Canvas Filter Toolbar -->
+<div class="w-full flex items-center justify-between z-20 mb-space-sm px-space-xs">
+<div class="flex items-center gap-space-2xs overflow-x-auto py-1 px-1 rounded-full bg-surface-container-low/90 backdrop-blur-md">
+<button class="canvas-filter-btn px-3 py-1 rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface transition-all" type="button">Original</button>
+<button class="canvas-filter-btn px-3 py-1 rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface transition-all" type="button">Document B&amp;W</button>
+<button class="canvas-filter-btn active px-3 py-1 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-bold shadow-sm transition-all flex items-center gap-1" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              High Contrast OCR
+            </button>
+<button class="canvas-filter-btn px-3 py-1 rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface transition-all flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[13px] text-secondary">flare</span>
+              Neural De-Glare
+            </button>
+<button class="canvas-filter-btn px-3 py-1 rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface transition-all" type="button">Invert Colors</button>
+</div>
+<!-- Document Snap HUD -->
+<div class="hidden sm:flex items-center gap-space-2xs bg-surface-container-low/90 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary">auto_fix_high</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Mesh Snapping: On</span>
+</div>
+</div>
+<!-- Central Work Canvas / Document Display Area -->
+<div class="relative w-full h-[520px] rounded-lg bg-surface-dim flex items-center justify-center overflow-hidden cursor-crosshair select-none" id="cropWorkbench">
+<!-- Background Grid Texture of Cutting Mat -->
+<div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle, rgba(224,192,175,0.25) 1px, transparent 1px); background-size: 24px 24px;"></div>
+<!-- Perspective Document Container -->
+<div class="relative w-[380px] sm:w-[480px] h-[400px] flex items-center justify-center transition-transform duration-200" id="skewContainer" style="transform: perspective(900px) rotateX(12deg) rotateY(-8deg) rotateZ(-1.5deg);">
+<!-- High-Res Document Preview (Architectural Course Syllabus Poster) -->
+<div class="relative w-full h-full rounded bg-surface-container-high overflow-hidden shadow-2xl">
+<img class="w-full h-full object-cover brightness-105 contrast-125 filter" data-alt="A macro studio shot of an architectural syllabus course guide poster pinned on a dark slate surface, with clean grid typography, lecture schedules, isometric blueprints, and glowing digital neon orange alignment lines projected across the paper stock." id="docImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFXBeqjaMSU8GsMKbbwi1D2RTInwguXuA4jevLODSIRBrrfkbI4Y7zjg8s4IFtxJtncKl0BXceCkW3P69Z_FTLRBklErgRw650v5NqjOqQYhUxXpNx1Ep-jKFCR3MOjMN0hGTlsxlDXuKCEKm6rkK5veqf9zrXsaA6r86ej32U8Fh7oiy87Q3SuiLYafewJzwd5979tFRZnB-HVepHkF9JhmByFYVlUl1k_1tQBQlM02PugtyM2fwK"/>
+<!-- Subtle High-Contrast Filter Overlay for Active Mode -->
+<div class="absolute inset-0 bg-primary/5 mix-blend-overlay pointer-events-none"></div>
+<!-- Extracted Detected Text Overlays (Light bounding boxes) -->
+<div class="absolute top-10 left-8 px-2 py-0.5 rounded bg-primary/20 backdrop-blur-xs text-[9px] font-mono text-primary font-bold tracking-tight">ARC 204: ADV DESIGN LAB</div>
+<div class="absolute top-24 left-8 px-2 py-0.5 rounded bg-secondary/20 backdrop-blur-xs text-[8px] font-mono text-secondary">FINAL CRITIQUE: DEC 14 @ 09:00 AM</div>
+<div class="absolute bottom-16 left-8 px-2 py-0.5 rounded bg-tertiary-container/20 backdrop-blur-xs text-[8px] font-mono text-tertiary">MIDTERM PINUP: NOV 02</div>
+</div>
+<!-- SVG 8-Point Keystone Mesh & Quadrilateral Lines -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Perspective outer polygon line -->
+<polygon fill="rgba(255, 122, 0, 0.08)" points="5,7 95,3 91,95 8,92" stroke="#ff7a00" stroke-dasharray="2,1" stroke-width="0.8"></polygon>
+<!-- Grid subdivision crosshairs -->
+<line stroke="rgba(255, 122, 0, 0.4)" stroke-dasharray="1,1" stroke-width="0.5" x1="50" x2="49.5" y1="5" y2="93.5"></line>
+<line stroke="rgba(255, 122, 0, 0.4)" stroke-dasharray="1,1" stroke-width="0.5" x1="6.5" x2="93" y1="49.5" y2="49"></line>
+</svg>
+<!-- 8 Interactive Mesh Control Pins -->
+<!-- 1. Top-Left (Active Pin with Highlight) -->
+<div class="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center shadow-[0_0_14px_rgba(255,122,0,0.9)] cursor-grab transform -translate-x-1/2 -translate-y-1/2 z-20 transition-transform hover:scale-125">
+<span class="w-2 h-2 rounded-full bg-white"></span>
+</div>
+<!-- 2. Top-Center Midpoint Handle -->
+<div class="absolute -top-2 left-1/2 w-4 h-4 rounded-full bg-surface-bright text-primary flex items-center justify-center shadow-md cursor-ns-resize transform -translate-x-1/2 -translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<!-- 3. Top-Right Pin -->
+<div class="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center shadow-[0_0_14px_rgba(255,122,0,0.9)] cursor-grab transform translate-x-1/2 -translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-2 h-2 rounded-full bg-white"></span>
+</div>
+<!-- 4. Right-Center Midpoint Handle -->
+<div class="absolute top-1/2 -right-2 w-4 h-4 rounded-full bg-surface-bright text-primary flex items-center justify-center shadow-md cursor-ew-resize transform translate-x-1/2 -translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<!-- 5. Bottom-Right Pin -->
+<div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center shadow-[0_0_14px_rgba(255,122,0,0.9)] cursor-grab transform translate-x-1/2 translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-2 h-2 rounded-full bg-white"></span>
+</div>
+<!-- 6. Bottom-Center Midpoint Handle -->
+<div class="absolute -bottom-2 left-1/2 w-4 h-4 rounded-full bg-surface-bright text-primary flex items-center justify-center shadow-md cursor-ns-resize transform -translate-x-1/2 translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<!-- 7. Bottom-Left Pin -->
+<div class="absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center shadow-[0_0_14px_rgba(255,122,0,0.9)] cursor-grab transform -translate-x-1/2 translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-2 h-2 rounded-full bg-white"></span>
+</div>
+<!-- 8. Left-Center Midpoint Handle -->
+<div class="absolute top-1/2 -left-2 w-4 h-4 rounded-full bg-surface-bright text-primary flex items-center justify-center shadow-md cursor-ew-resize transform -translate-x-1/2 -translate-y-1/2 z-20 hover:scale-125 transition-transform">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+</div>
+<!-- Precision Loupe Magnification Widget (3x Zoom Crosshair of Active Pin) -->
+<div class="absolute top-4 left-4 z-30 w-32 h-32 rounded-full bg-surface-container-high/95 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.7)] overflow-hidden flex items-center justify-center pointer-events-none">
+<!-- Simulated 3x Magnified Image Content -->
+<div class="relative w-full h-full flex items-center justify-center">
+<div class="absolute inset-0 bg-cover bg-center filter contrast-150 scale-[3.2]" data-alt="Close up texture of scanned crisp ivory cardstock corner with printed architectural schedule text and high contrast pencil ink grid." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDPh78gAfBvADp-l_UWJxmWGcKEWHmmugsEdq-VhIxiLo0KwdD0MBMvvMh0PYBA1uQqB9oNMvre7nr4jMSEwcv6Ep7o9ecSOvNHlXaVx_E4yHTPANS8lMEe-4Fn76HEpcD3wzuIxXiYU_mV1gj-qQRatltOnv1LLQs9gz2gQsNc2KoMdluXnQntBHGlLTgKD8m6kMzBgrYORzbE9LWALYUrSOnQihnjiGLFTqLdSYxZdoSPq5sm384B')"></div>
+<!-- Crosshair Grid lines -->
+<div class="absolute w-full h-[1px] bg-primary/70"></div>
+<div class="absolute h-full w-[1px] bg-primary/70"></div>
+<!-- Central Precision Target -->
+<div class="w-3.5 h-3.5 rounded-full bg-transparent shadow-[0_0_8px_#ff7a00] flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container shadow-[0_0_6px_#ff7a00]"></div>
+</div>
+<!-- Corner Pin Coordinates Pill -->
+<div class="absolute bottom-1 px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-[9px] font-mono text-primary font-bold">
+                X: 42 • Y: 18
+              </div>
+</div>
+</div>
+</div>
+<!-- Bottom Canvas Pan & Zoom HUD -->
+<div class="w-full flex flex-wrap items-center justify-between gap-space-xs mt-space-sm px-space-xs">
+<div class="flex items-center gap-space-2xs bg-surface-container-low px-2.5 py-1 rounded-full">
+<button class="w-7 h-7 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" id="zoomOutBtn" title="Zoom Out" type="button">
+<span class="material-symbols-outlined text-[17px]">remove</span>
+</button>
+<span class="font-label-md text-label-md text-on-surface px-1 font-mono" id="zoomValue">100%</span>
+<button class="w-7 h-7 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" id="zoomInBtn" title="Zoom In" type="button">
+<span class="material-symbols-outlined text-[17px]">add</span>
+</button>
+<button class="px-2.5 py-0.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-sm text-label-sm transition-colors" type="button">
+              Fit Width
+            </button>
+</div>
+<!-- Utility Transformation Controls -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all text-label-sm font-label-sm" id="rotateBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">rotate_right</span>
+<span>Rotate 90° CW</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all text-label-sm font-label-sm" id="resetMeshBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>Reset Grid</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Tips Bar for iPad Stylus -->
+<div class="flex items-center justify-between px-space-md py-space-xs rounded-xl bg-surface-container-low text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">draw</span>
+<span class="font-body-sm text-body-sm">Pencil Pro: Squeeze anywhere on canvas to summon magnetic corner finder. Double-tap to snap straight.</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant/70 font-mono">LATENCY: 4ms</span>
+</div>
+</div>
+<!-- RIGHT PANE: 30% width Adjustment Controls & OCR Confidence Inspector (Col span 4) -->
+<div class="lg:col-span-4 flex flex-col gap-space-sm">
+<!-- Panel Header & Step Tracker -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/20 text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">Step 2 of 3</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Capture Pipeline</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">Keystone &amp; Pre-Processing</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Correct camera optical slant and calibrate contrast thresholds before neural extraction.</p>
+</div>
+<!-- Precision Keystone Sliders Section -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">tune</span>
+            Precision Geometric Calibration
+          </span>
+<button class="text-primary hover:underline font-label-sm text-label-sm" id="autoLevelBtn" type="button">Auto-Level</button>
+</div>
+<!-- Slider 1: Perspective Keystone -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface font-medium">Perspective Keystone</span>
+<span class="text-primary font-mono font-bold" id="keystoneVal">-1.8°</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" id="keystoneRange" max="10" min="-10" step="0.1" type="range" value="-1.8"/>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant/70 font-mono">
+<span>-10.0°</span>
+<span>0.0° (Flat)</span>
+<span>+10.0°</span>
+</div>
+</div>
+<!-- Slider 2: Vertical Tilt -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface font-medium">Vertical Tilt</span>
+<span class="text-primary font-mono font-bold" id="tiltVal">+0.4°</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" id="tiltRange" max="10" min="-10" step="0.1" type="range" value="0.4"/>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant/70 font-mono">
+<span>-10.0°</span>
+<span>0.0°</span>
+<span>+10.0°</span>
+</div>
+</div>
+<!-- Slider 3: Horizontal Skew -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface font-medium">Horizontal Skew</span>
+<span class="text-primary font-mono font-bold" id="skewVal">0.0°</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" id="skewRange" max="10" min="-10" step="0.1" type="range" value="0.0"/>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant/70 font-mono">
+<span>-10.0°</span>
+<span>0.0°</span>
+<span>+10.0°</span>
+</div>
+</div>
+</div>
+<!-- Aspect Ratio Preset Selection -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Aspect Ratio Boundings</span>
+<div class="grid grid-cols-2 gap-space-xs mt-space-2xs">
+<button class="aspect-btn active flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-highest text-primary font-label-md text-label-md font-bold transition-all shadow-sm" type="button">
+<span>Freeform</span>
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+</button>
+<button class="aspect-btn flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" type="button">
+<span>Original 4:3</span>
+<span class="material-symbols-outlined text-[16px] opacity-0">check_circle</span>
+</button>
+<button class="aspect-btn flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" type="button">
+<span>16:9 Banner</span>
+<span class="material-symbols-outlined text-[16px] opacity-0">check_circle</span>
+</button>
+<button class="aspect-btn flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" type="button">
+<span>US Letter / A4</span>
+<span class="material-symbols-outlined text-[16px] opacity-0">check_circle</span>
+</button>
+</div>
+</div>
+<!-- Live Neural OCR Readability Score Card -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">insights</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Neural Readability Gauge</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/60 text-secondary font-label-sm text-label-sm font-semibold">Live Parser</span>
+</div>
+<!-- Gauge Visualization & Confidence Stat -->
+<div class="flex items-center gap-space-md bg-surface-container-low p-space-sm rounded-lg">
+<!-- Circular Score SVG Chart -->
+<div class="relative w-16 h-16 flex items-center justify-center flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<!-- Background Ring -->
+<path class="text-surface-container-highest" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<!-- Primary Progress Track (98.8%) -->
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="98.8, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-md text-label-md text-on-surface font-bold font-mono">98.8%</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold truncate">Excellent Quality</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">142 text tokens identified • 0 blurs</span>
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              Ready for Agenda Synthesis
+            </span>
+</div>
+</div>
+<!-- Extraction Previews Pill Strip -->
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-highest font-mono text-[11px] text-on-surface">3 Deadlines</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-highest font-mono text-[11px] text-on-surface">2 Exams</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-highest font-mono text-[11px] text-on-surface">1 Office Hours</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-highest font-mono text-[11px] text-secondary">Location Detected</span>
+</div>
+</div>
+<!-- Sticky / Bottom Action Dock -->
+<div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-space-xs mt-space-2xs">
+<button class="w-full flex items-center justify-center gap-space-xs py-3 px-space-md rounded-full bg-gradient-to-r from-primary-container to-tertiary-container text-white font-label-lg text-label-lg font-bold shadow-[0_8px_24px_rgba(255,122,0,0.35)] hover:brightness-110 active:scale-95 transition-all" type="button">
+<span>Confirm Crop &amp; Extract Events</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<button class="w-full flex items-center justify-center gap-space-xs py-2 px-space-md rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" id="resetAutoDetectBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">magic_button</span>
+<span>Reset to Auto-Detect</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initKeystoneStudio() {
+    const skewContainer = document.getElementById('skewContainer');
+    const keystoneRange = document.getElementById('keystoneRange');
+    const tiltRange = document.getElementById('tiltRange');
+    const skewRange = document.getElementById('skewRange');
+
+    const keystoneVal = document.getElementById('keystoneVal');
+    const tiltVal = document.getElementById('tiltVal');
+    const skewVal = document.getElementById('skewVal');
+
+    const zoomValue = document.getElementById('zoomValue');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const rotateBtn = document.getElementById('rotateBtn');
+    const resetMeshBtn = document.getElementById('resetMeshBtn');
+    const resetAutoDetectBtn = document.getElementById('resetAutoDetectBtn');
+    const autoLevelBtn = document.getElementById('autoLevelBtn');
+
+    let currentZoom = 100;
+    let currentRotation = 0;
+
+    function updatePerspective() {
+      const k = parseFloat(keystoneRange.value);
+      const t = parseFloat(tiltRange.value);
+      const s = parseFloat(skewRange.value);
+
+      keystoneVal.textContent = (k >= 0 ? '+' : '') + k.toFixed(1) + '°';
+      tiltVal.textContent = (t >= 0 ? '+' : '') + t.toFixed(1) + '°';
+      skewVal.textContent = (s >= 0 ? '+' : '') + s.toFixed(1) + '°';
+
+      if (skewContainer) {
+        // dynamic perspective update
+        const rotX = 12 + t * 1.5;
+        const rotY = -8 + s * 1.5;
+        const rotZ = -1.5 + k * 1.5 + currentRotation;
+        skewContainer.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg) scale(${currentZoom / 100})`;
+      }
+    }
+
+    if (keystoneRange && tiltRange && skewRange) {
+      keystoneRange.addEventListener('input', updatePerspective);
+      tiltRange.addEventListener('input', updatePerspective);
+      skewRange.addEventListener('input', updatePerspective);
+    }
+
+    if (zoomInBtn && zoomOutBtn) {
+      zoomInBtn.addEventListener('click', () => {
+        if (currentZoom < 200) currentZoom += 15;
+        zoomValue.textContent = currentZoom + '%';
+        updatePerspective();
+      });
+      zoomOutBtn.addEventListener('click', () => {
+        if (currentZoom > 50) currentZoom -= 15;
+        zoomValue.textContent = currentZoom + '%';
+        updatePerspective();
+      });
+    }
+
+    if (rotateBtn) {
+      rotateBtn.addEventListener('click', () => {
+        currentRotation = (currentRotation + 90) % 360;
+        updatePerspective();
+      });
+    }
+
+    function resetToDefaults() {
+      keystoneRange.value = -1.8;
+      tiltRange.value = 0.4;
+      skewRange.value = 0.0;
+      currentZoom = 100;
+      currentRotation = 0;
+      zoomValue.textContent = '100%';
+      updatePerspective();
+    }
+
+    if (resetMeshBtn) resetMeshBtn.addEventListener('click', resetToDefaults);
+    if (resetAutoDetectBtn) resetAutoDetectBtn.addEventListener('click', resetToDefaults);
+
+    if (autoLevelBtn) {
+      autoLevelBtn.addEventListener('click', () => {
+        keystoneRange.value = 0.0;
+        tiltRange.value = 0.0;
+        skewRange.value = 0.0;
+        updatePerspective();
+      });
+    }
+
+    // Filter Buttons Switcher
+    const filterButtons = document.querySelectorAll('.canvas-filter-btn');
+    const docImg = document.getElementById('docImage');
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-highest', 'text-primary', 'font-bold');
+          b.classList.add('text-on-surface-variant');
+        });
+        btn.classList.add('bg-surface-container-highest', 'text-primary', 'font-bold');
+        btn.classList.remove('text-on-surface-variant');
+
+        // Micro-switch image visual tone
+        if (btn.textContent.includes('Document B&W')) {
+          docImg.style.filter = 'grayscale(100%) contrast(150%) brightness(110%)';
+        } else if (btn.textContent.includes('Original')) {
+          docImg.style.filter = 'none';
+        } else if (btn.textContent.includes('Invert')) {
+          docImg.style.filter = 'invert(100%) contrast(120%)';
+        } else {
+          docImg.style.filter = 'contrast(125%) brightness(105%)';
+        }
+      });
+    });
+
+    // Aspect Ratio Buttons Switcher
+    const aspectButtons = document.querySelectorAll('.aspect-btn');
+    aspectButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        aspectButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-highest', 'text-primary', 'font-bold');
+          b.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+          const icon = b.querySelector('.material-symbols-outlined');
+          if (icon) icon.classList.add('opacity-0');
+        });
+        btn.classList.add('bg-surface-container-highest', 'text-primary', 'font-bold');
+        btn.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+        const activeIcon = btn.querySelector('.material-symbols-outlined');
+        if (activeIcon) activeIcon.classList.remove('opacity-0');
+      });
+    });
+  })();
+</script></main></div></body></html>

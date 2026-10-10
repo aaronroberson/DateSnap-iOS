@@ -431,9 +431,9 @@ public final class EventReviewViewModel: ObservableObject {
         do {
             try persist(modelContext, using: saveOperation)
         } catch {
-            errorMessage = "Calendar and reminder changes were made, but DateSnap could not save the event: \(error.localizedDescription)"
+            errorMessage = "Calendar and reminder changes were made, but Pencil'd could not save the event: \(error.localizedDescription)"
             isSavedSuccessfully = false
-            return .failure(MutationFailure(message: errorMessage ?? "DateSnap could not save the event."))
+            return .failure(MutationFailure(message: errorMessage ?? "Pencil'd could not save the event."))
         }
 
         isDraftOnly = false
@@ -465,7 +465,7 @@ public final class EventReviewViewModel: ObservableObject {
             // outcome and where to fix it instead of echoing an infra error.
             notificationsSkipped = true
             return .failure(MutationFailure(
-                message: "Notifications are denied. Enable them in iOS Settings > Notifications > DateSnap."
+                message: "Notifications are denied. Enable them in iOS Settings > Notifications > Pencil'd."
             ))
         } catch {
             notificationsSkipped = true

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-error-container": "#ffdad6", "on-tertiary-fixed-variant": "#910030", "surface-bright": "#36374f", "tertiary-fixed-dim": "#ffb2ba", "on-secondary-container": "#d2a0ff", "primary-fixed-dim": "#ffb68b", "on-primary-container": "#5c2800", "tertiary-fixed": "#ffd9dc", "on-secondary": "#4a007f", "surface-container-high": "#27283f", "primary-container": "#ff7a00", "inverse-primary": "#994700", "primary": "#ffb68b", "on-primary": "#522300", "secondary-fixed-dim": "#deb7ff", "outline-variant": "#584235", "surface-dim": "#101127", "surface-container-lowest": "#0b0c22", "on-background": "#e1e0ff", "outline": "a78b7c", "inverse-surface": "#e1e0ff", "tertiary": "#ffb2ba", "surface-container-low": "#181930", "error-container": "#93000a", "surface-tint": "#ffb68b", "on-secondary-fixed-variant": "#670fac", "error": "#ffb4ab", "background": "#101127", "on-surface-variant": "#e0c0af", "tertiary-container": "#ff7288", "on-tertiary-fixed": "#400011", "on-error": "#690005", "inverse-on-surface": "#2d2e46", "surface-container-highest": "#32334a", "primary-fixed": "#ffdbc8", "secondary": "#deb7ff", "on-primary-fixed-variant": "#753400", "surface": "#101127", "on-surface": "#e1e0ff", "on-tertiary": "#670020", "on-primary-fixed": "#321200", "secondary-container": "#670fac", "on-secondary-fixed": "#2c0050", "surface-container": "#1d1e34", "secondary-fixed": "#f0dbff", "surface-variant": "#32334a", "on-tertiary-container": "#730025" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "4.5rem", "gutter": "1.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-xl": "2rem", "space-2xl": "3rem", "margin-desktop": "2.5rem", "space-xs": "0.375rem", "gutter-desktop": "1.75rem", "space-2xs": "0.25rem", "space-lg": "1.5rem", "margin": "1rem", "margin-tablet": "1.5rem" }, "fontFamily": { "label-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"] }, "fontSize": { "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "display-lg-mobile": ["38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }] } } } }</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 active:scale-95 transition-all" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><h1 class="flex-1 text-center font-headline-sm text-headline-sm text-on-surface tracking-tight truncate px-space-xs">Help &amp; Support</h1><button aria-label="User Profile" class="min-w-[44px] min-h-[44px] flex items-center justify-center" type="button"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></button></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface"><div class="flex flex-col w-full pb-28">
+<!-- Sub-Header & Breadcrumb Bar -->
+<div class="px-margin pt-space-md pb-space-sm flex flex-col gap-space-2xs">
+<div class="flex items-center gap-space-xs text-primary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span>Assistance</span>
+</div>
+<p class="text-on-surface-variant font-body-sm text-body-sm">
+      Quick answers, direct assistance from the Pencil'd design team, and interactive tutorials.
+    </p>
+</div>
+<div class="px-margin flex flex-col gap-space-lg">
+<!-- 1. Hero Highlighted Concierge Card -->
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-high shadow-xl p-space-lg flex flex-col gap-space-md">
+<!-- Ambient Decorative Sweep Curves & Starfield Glow -->
+<div class="absolute -right-12 -top-16 w-56 h-56 rounded-full bg-primary-container/20 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-12 -bottom-16 w-52 h-52 rounded-full bg-secondary-container/30 blur-3xl pointer-events-none"></div>
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40" fill="none" preserveaspectratio="none" viewbox="0 0 360 220">
+<path d="M-20,180 C80,120 180,240 380,40" stroke="url(#conciergeGradient1)" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M-40,40 C120,90 220,-20 400,160" stroke="url(#conciergeGradient2)" stroke-dasharray="4 6" stroke-width="1.5"></path>
+<circle cx="85" cy="54" fill="#ffb68b" r="1.5"></circle>
+<circle cx="290" cy="110" fill="#deb7ff" r="1"></circle>
+<circle cx="210" cy="40" fill="#ffd9dc" r="1.5"></circle>
+<circle cx="160" cy="175" fill="#ff7288" r="1"></circle>
+<defs>
+<lineargradient id="conciergeGradient1" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ff7a00"></stop>
+<stop offset="50%" stop-color="#ff7288"></stop>
+<stop offset="100%" stop-color="#deb7ff"></stop>
+</lineargradient>
+<lineargradient id="conciergeGradient2" x1="0%" x2="100%" y1="100%" y2="0%">
+<stop offset="0%" stop-color="#deb7ff" stop-opacity="0.8"></stop>
+<stop offset="100%" stop-color="#ffb68b" stop-opacity="0.2"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- Badge & Lifebuoy Icon Row -->
+<div class="relative z-10 flex items-center justify-between">
+<div class="inline-flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-primary-container/15 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>DIRECT CONCIERGE SUPPORT</span>
+</div>
+<div class="w-9 h-9 rounded-full bg-surface-container-highest/80 flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+</div>
+</div>
+<!-- Headline -->
+<div class="relative z-10 flex flex-col gap-space-2xs">
+<h2 class="text-on-surface font-headline-md text-headline-md tracking-tight">How can we assist you today?</h2>
+<p class="text-on-surface-variant font-body-sm text-body-sm">Pencil'd engineers respond directly to help resolve capture or parsing anomalies.</p>
+</div>
+<!-- Integrated Search Input -->
+<div class="relative z-10 w-full">
+<div class="relative flex items-center">
+<span class="absolute left-3.5 material-symbols-outlined text-[18px] text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-12 py-3 bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/60 rounded-xl font-body-sm text-body-sm focus:outline-none focus:bg-surface-container transition-all" placeholder="Search articles, guides, or error codes..." type="text"/>
+<kbd class="absolute right-3 px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">⌘K</kbd>
+</div>
+</div>
+<!-- Quick Action Buttons -->
+<div class="relative z-10 grid grid-cols-2 gap-space-xs pt-space-2xs">
+<button class="flex items-center justify-center gap-space-xs py-2.5 px-3 rounded-xl bg-gradient-to-r from-primary-container to-tertiary-container text-on-primary font-label-md text-label-md active:scale-95 transition-transform shadow-md" type="button">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-on-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-on-primary"></span>
+</span>
+<span class="truncate">Live Chat</span>
+</button>
+<button class="flex items-center justify-center gap-space-xs py-2.5 px-3 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md active:scale-95 transition-transform" onclick="navigator.clipboard?.writeText('Diagnostics generated: UUID-' + Math.random().toString(36).substring(2, 9)); alert('Diagnostics bundle attached to draft.');" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">bug_report</span>
+<span class="truncate">Send Diagnostics</span>
+</button>
+</div>
+</div>
+<!-- 2. Recommended Help Topics -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Popular Guides</span>
+<span class="text-primary font-label-sm text-label-sm flex items-center gap-0.5 cursor-pointer">
+          View all 18
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+<!-- Top Recommended Guide Card -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low p-space-md shadow-md flex flex-col gap-space-xs cursor-pointer active:scale-[0.99] transition-transform">
+<div class="absolute -right-8 -bottom-8 w-28 h-28 rounded-full bg-primary-container/10 blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            Recommended Read
+          </span>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>2 min read</span>
+</div>
+</div>
+<h3 class="text-on-surface font-headline-sm text-headline-sm">Mastering Multi-Page PDF Extractions</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm line-clamp-2">
+          Harness local CoreML neural batching to capture entire college course syllabi, 4-day music festivals, and project sprints in a single continuous camera pass.
+        </p>
+<div class="flex items-center gap-2 pt-space-2xs text-secondary font-label-md text-label-md">
+<span>Read step-by-step walkthrough</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</div>
+</div>
+<!-- Standard Guide Card 2 -->
+<div class="rounded-2xl bg-surface-container p-space-md shadow-sm flex items-center justify-between gap-space-sm cursor-pointer active:scale-[0.99] transition-transform">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">sync_alt</span>
+</div>
+<div class="flex-1 min-w-0 flex flex-col">
+<h4 class="text-on-surface font-label-lg text-label-lg truncate">Syncing with Google Calendar &amp; CalDAV</h4>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Zero-latency background 2-way event syncing</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] shrink-0">chevron_right</span>
+</div>
+<!-- Standard Guide Card 3 -->
+<div class="rounded-2xl bg-surface-container p-space-md shadow-sm flex items-center justify-between gap-space-sm cursor-pointer active:scale-[0.99] transition-transform">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[20px]">draw</span>
+</div>
+<div class="flex-1 min-w-0 flex flex-col">
+<h4 class="text-on-surface font-label-lg text-label-lg truncate">Troubleshooting Notes &amp; Whiteboards</h4>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Glare correction and low-contrast cursive OCR</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] shrink-0">chevron_right</span>
+</div>
+</div>
+<!-- 3. Interactive Support Channels -->
+<div class="flex flex-col gap-space-sm">
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Get In Touch</span>
+<div class="grid grid-cols-1 gap-space-xs">
+<!-- Email Support -->
+<div class="rounded-2xl bg-surface-container p-space-md flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">mark_email_unread</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-on-surface font-label-lg text-label-lg">Email Support</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Human response within &lt; 2 hours</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm shrink-0 active:scale-95 transition-transform" type="button">
+            Compose
+          </button>
+</div>
+<!-- Join Community Discord -->
+<div class="rounded-2xl bg-surface-container p-space-md flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[20px]">forum</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-on-surface font-label-lg text-label-lg">Join Community Discord</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">3.4k active power planners</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-highest text-secondary font-label-sm text-label-sm shrink-0 active:scale-95 transition-transform" type="button">
+            Join Server
+          </button>
+</div>
+<!-- Feature Request Roadmap -->
+<div class="rounded-2xl bg-surface-container p-space-md flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[20px]">hotel_class</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-on-surface font-label-lg text-label-lg">Feature Roadmap &amp; Voting</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Vote on Apple Watch app &amp; OCR widgets</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-highest text-tertiary font-label-sm text-label-sm shrink-0 active:scale-95 transition-transform" type="button">
+            Submit Idea
+          </button>
+</div>
+</div>
+</div>
+<!-- 4. System Information & Build Metadata -->
+<div class="flex flex-col gap-space-sm">
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Device &amp; Diagnostics</span>
+<div class="rounded-2xl bg-surface-container-lowest p-space-md flex flex-col gap-space-sm shadow-inner">
+<div class="grid grid-cols-2 gap-y-space-xs text-body-sm font-body-sm">
+<div class="flex flex-col">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Build Release</span>
+<span class="text-on-surface font-label-md text-label-md">Pencil'd 2.4.1 (890)</span>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Device Model</span>
+<span class="text-on-surface font-label-md text-label-md">iPhone 16 Pro (iOS 18.2)</span>
+</div>
+<div class="flex flex-col col-span-2 pt-space-2xs">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Local Engine</span>
+<span class="text-on-surface font-label-md text-label-md flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+              Neural Model v3.2 CoreML (Apple Silicon Accelerated)
+            </span>
+</div>
+</div>
+<button class="w-full mt-space-2xs py-2 rounded-xl bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs active:bg-surface-container-high transition-colors" id="copyBundleBtn" onclick="const btn=this; btn.textContent='Copied to Clipboard!'; setTimeout(()=&gt;btn.textContent='Copy Diagnostic Bundle', 2200);" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span>Copy Diagnostic Bundle</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 5. Sticky Floating Bottom Action Dock -->
+<div class="fixed bottom-0 left-0 right-0 z-40 p-margin bg-surface/90 backdrop-blur-xl flex items-center justify-center max-w-lg mx-auto">
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-primary-container via-tertiary-container to-secondary-container text-white font-label-lg text-label-lg flex items-center justify-center gap-space-xs shadow-xl active:scale-[0.98] transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">forum</span>
+<span>Contact Support Team</span>
+</button>
+</div>
+</div></main></body></html>

@@ -1,0 +1,18 @@
+{
+  "screenshot": {
+    "name": "projects/9850514973960087780/screens/65a70a58868f45a6b2af0f64ff6ebc54/fileEntries/screenshot"
+  },
+  "id": "65a70a58868f45a6b2af0f64ff6ebc54",
+  "generatedBy": "interactive_ui_controller",
+  "width": "1376",
+  "height": "768",
+  "title": "A sleek digital banner ad for the iOS app 'Pencil'd'. Wide 16:9 landscape format. Deep midnight navy background with radiant atmospheric orange and violet light rays and subtle geometric orbital rings. On the left: crisp bold typography reading 'Pencil'd' with the tagline 'Scanned. Reviewed. Pencil'd.' and a subheadline 'AI Calendar Intelligence for Flyers, Syllabi & Notes'. On the right: an iPhone mockup showing the app interface with glowing feature callouts: 'Neural OCR', 'Instant Conflict Radar', 'Zero-Effort Scheduling'. Prominent vibrant CTA button: 'Try 7 Days Free'. High-end tech product advertising aesthetic.",
+  "prompt": "A sleek digital banner ad for the iOS app 'Pencil'd'. Wide 16:9 landscape format. Deep midnight navy background with radiant atmospheric orange and violet light rays and subtle geometric orbital rings. On the left: crisp bold typography reading 'Pencil'd' with the tagline 'Scanned. Reviewed. Pencil'd.' and a subheadline 'AI Calendar Intelligence for Flyers, Syllabi & Notes'. On the right: an iPhone mockup showing the app interface with glowing feature callouts: 'Neural OCR', 'Instant Conflict Radar', 'Zero-Effort Scheduling'. Prominent vibrant CTA button: 'Try 7 Days Free'. High-end tech product advertising aesthetic.",
+  "name": "projects/9850514973960087780/screens/65a70a58868f45a6b2af0f64ff6ebc54",
+  "theme": {},
+  "screenType": "IMAGE",
+  "screenMetadata": {
+    "agentType": "PRO_AGENT",
+    "status": "COMPLETE"
+  }
+}

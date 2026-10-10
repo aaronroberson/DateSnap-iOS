@@ -24,6 +24,8 @@ struct ContentView: View {
                 switch appState.selectedTab {
                 case .home:
                     HomeEmptyStateView()
+                case .agenda:
+                    AgendaView()
                 case .review:
                     ReviewQueueView()
                 case .history:
@@ -133,7 +135,7 @@ struct ContentView: View {
         }
         guard let eventId = DeepLinkInbox.shared.consume() else { return }
         guard let candidate = SavedEventActions.candidate(id: eventId, in: modelContext) else {
-            appState.showToast("That event is no longer in DateSnap")
+            appState.showToast("That event is no longer in Pencil'd")
             return
         }
         let event = candidate.toDateSnapEvent()
@@ -172,31 +174,6 @@ struct ContentView: View {
                 }
             }
             
-            #if DEBUG
-            // Screen Gallery / Direct Switcher Button
-            Button {
-                appState.activeModal = .screenGallery
-            } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "square.grid.2x2.fill")
-                        .font(.system(size: 19, weight: .bold))
-                    Text("Screens")
-                        .font(DSTypography.caption())
-                        .fontWeight(.bold)
-                }
-                .foregroundStyle(Color.dsAccent)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.dsAccent.opacity(0.14))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.dsAccent.opacity(0.4), lineWidth: 1)
-                        )
-                )
-            }
-            #endif
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)

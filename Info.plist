@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>DateSnap</string>
+	<string>Pencil'd</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,15 +25,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>DateSnap requires full calendar access to schedule extracted events with alarm offsets directly in your Apple Calendar.</string>
+	<string>Pencil'd needs full calendar access to schedule events with alarm offsets in Apple Calendar.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>DateSnap requires calendar access to create and sync events extracted from your flyers and screenshots.</string>
+	<string>Pencil'd needs calendar access to create events you extract from flyers and screenshots.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>DateSnap analyzes screenshots and event flyers directly on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
+	<string>Pencil'd analyzes selected screenshots and event flyers on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>
-	<string>DateSnap requires reminders access to schedule multi-tiered countdown alerts in Apple Reminders prior to your events.</string>
+	<string>Pencil'd needs Reminders access to schedule countdown alerts before your events.</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>DateSnap requires reminders access to create reminder lists and alerts for your upcoming events.</string>
+	<string>Pencil'd needs Reminders access to create reminder lists and alerts for upcoming events.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

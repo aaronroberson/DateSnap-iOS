@@ -173,7 +173,7 @@ struct ScreenGalleryView: View {
                 VStack(spacing: 16) {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("DATESNAP DESIGN SYSTEM")
+                            Text("PENCIL'D DESIGN SYSTEM")
                                 .font(DSTypography.overlineConfidence())
                                 .foregroundStyle(Color.dsPrimary)
                             Text("All 17 Stitch Screens")

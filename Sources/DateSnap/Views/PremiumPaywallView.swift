@@ -42,7 +42,7 @@ struct PremiumPaywallView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "sparkles")
                                 .font(.system(size: 12, weight: .bold))
-                            Text("DATESNAP PREMIUM")
+                            Text("PENCIL'D PREMIUM")
                                 .font(DSTypography.overlineConfidence())
                         }
                         .foregroundStyle(Color.dsWarning)
@@ -118,7 +118,7 @@ struct PremiumPaywallView: View {
                         featureRow(
                             icon: "infinity",
                             iconColor: Color.dsPrimary,
-                            title: "Everything in DateSnap Plus",
+                            title: "Everything in Pencil'd Plus",
                             subtitle: "Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization."
                         )
                         
@@ -359,7 +359,7 @@ struct PremiumPaywallView: View {
 
     private func purchase() async {
         guard await purchases.purchase(.premium, annual: selectedPlanIsAnnual) != nil else { return }
-        appState.showToast("🎉 Welcome to DateSnap Premium!")
+        appState.showToast("🎉 Welcome to Pencil'd Premium!")
         dismiss()
     }
 

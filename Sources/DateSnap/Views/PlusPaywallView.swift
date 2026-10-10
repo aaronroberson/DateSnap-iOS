@@ -43,7 +43,7 @@ struct PlusPaywallView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "bolt.fill")
                                 .font(.system(size: 12, weight: .bold))
-                            Text("DATESNAP PLUS")
+                            Text("PENCIL'D PLUS")
                                 .font(DSTypography.overlineConfidence())
                         }
                         .foregroundStyle(Color.dsPrimary)
@@ -134,7 +134,7 @@ struct PlusPaywallView: View {
                             icon: "arrow.triangle.2.circlepath",
                             iconColor: Color.dsSecondary,
                             title: "Calendar, Reminders & Push",
-                            subtitle: "Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push."
+                            subtitle: "Triple-destination sync across Apple Calendar, Reminders, and Pencil'd local push."
                         )
                         
                         featureRow(
@@ -272,7 +272,7 @@ struct PlusPaywallView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "doc.text.fill")
                                 .font(.system(size: 13))
-                            Text("Need Multi-Page PDF & Cloud Drive import? Explore DateSnap Premium")
+                            Text("Need Multi-Page PDF & Cloud Drive import? Explore Pencil'd Premium")
                                 .font(DSTypography.caption())
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 10))
@@ -354,7 +354,7 @@ struct PlusPaywallView: View {
 
     private func purchase() async {
         guard let tier = await purchases.purchase(.plus, annual: selectedPlanIsAnnual) else { return }
-        appState.showToast(tier == .premium ? "🎉 DateSnap Premium is active" : "🎉 Welcome to DateSnap Plus!")
+        appState.showToast(tier == .premium ? "🎉 Pencil'd Premium is active" : "🎉 Welcome to Pencil'd Plus!")
         dismiss()
     }
 

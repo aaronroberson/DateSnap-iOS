@@ -1,0 +1,125 @@
+<!DOCTYPE html><html class="h-full" lang="en" style=""><head></head><body class="h-full w-full m-0 p-0 text-white flex items-center justify-center bg-black"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Pencil’d — Launch</title>
+<!-- Tailwind CSS v3 with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: '#0b0c22',
+            surface: '#101127',
+            coral: '#ff5277',
+            amberGlow: '#ff7a00',
+            lavender: '#deb7ff'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'system-ui', 'sans-serif'],
+          },
+          letterSpacing: {
+            widestTracking: '0.18em'
+          }
+        }
+      }
+    };
+  </script>
+<!-- Typography & Smooth Rendering Styles -->
+<style data-purpose="typography">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: #0b0c22;
+      overflow: hidden;
+    }
+
+    /* Luminous brand gradient for primary wordmark */
+    .wordmark-gradient {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 52%, #FFE8D6 80%, #FFC19E 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+<!-- Lighting, Soft Glows and Ambient Backdrop Effects -->
+<style data-purpose="ambient-lighting">
+    /* Deep midnight vignette and atmospheric depth */
+    .viewport-canvas {
+      background: radial-gradient(circle at 50% 46%, #171838 0%, #10112a 45%, #0b0c22 85%, #070716 100%);
+    }
+
+    /* Diffuse warm-violet radial halo directly behind icon */
+    .hero-halo {
+      background: radial-gradient(circle, rgba(255, 122, 0, 0.16) 0%, rgba(255, 82, 119, 0.14) 34%, rgba(142, 68, 255, 0.08) 65%, transparent 75%);
+      filter: blur(48px);
+    }
+
+    /* Soft icon rim aura and elevation shadow */
+    .icon-elevation {
+      box-shadow:
+        0 24px 50px -12px rgba(11, 12, 34, 0.9),
+        0 18px 36px -10px rgba(255, 122, 0, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    /* Discreet pulse for ultra-refined launch readiness indicator */
+    @keyframes serenePulse {
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 0.65; transform: scale(1.08); }
+    }
+
+    .pulse-subtle {
+      animation: serenePulse 3.4s ease-in-out infinite;
+    }
+  </style>
+
+
+<!-- BEGIN: MobileDeviceFrame -->
+<!-- Constrained portrait viewport for mobile iOS form-factor -->
+<main class="viewport-canvas relative w-full max-w-[430px] h-full max-h-[932px] mx-auto flex flex-col justify-between overflow-hidden shadow-2xl">
+<!-- Ambient Center Halo Glow -->
+<div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 overflow-hidden"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvD24Iy4Dxr2aG2lNz_nFZVpIuuXEKpuUh77eh1JRT5ZRcP9uisqXiA7y3EHKq4Y2pMAM8ib_-V-Da9oRt5OE8s7cyimycqQxoWSYX89a-p4y11O8AoE9lf9AYFP9qu_P3JgbJa_tu_goDn4g03lajSo52mHoUUehAhhNPdzcuuHzqHJ-4gwQPPla-CUc4ceSG0p_XbwiRxgwySUsC2w6QhjWxUsKfMswsAZCNyJJb4STLtUpMPfVV" alt="Background Lines" class="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-90 pointer-events-none select-none z-0" style="transform: scale(1.15) translateY(4%); transform-origin: center bottom; mask-image: linear-gradient(transparent 0%, transparent 6%, black 14%, black 100%);"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full bg-gradient-to-tr from-amberGlow/15 via-coral/10 to-lavender/15 blur-3xl"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full hero-halo"></div><svg class="absolute inset-0 w-full h-full opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="gridGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#deb7ff" stop-opacity="0.4"></stop><stop offset="50%" stop-color="#ff5277" stop-opacity="0.2"></stop><stop offset="100%" stop-color="#ff7a00" stop-opacity="0.4"></stop></linearGradient></defs><circle cx="50%" cy="44%" r="120" fill="none" stroke="url(#gridGrad)" stroke-width="0.8" stroke-dasharray="3 3"></circle><circle cx="50%" cy="44%" r="190" fill="none" stroke="url(#gridGrad)" stroke-width="0.8"></circle><circle cx="50%" cy="44%" r="260" fill="none" stroke="url(#gridGrad)" stroke-width="0.6" stroke-opacity="0.6" stroke-dasharray="4 4"></circle><circle cx="50%" cy="44%" r="340" fill="none" stroke="url(#gridGrad)" stroke-width="0.5" stroke-opacity="0.4"></circle><line x1="0" y1="44%" x2="100%" y2="44%" stroke="url(#gridGrad)" stroke-width="0.5" stroke-dasharray="2 4"></line><line x1="50%" y1="0" x2="50%" y2="100%" stroke="url(#gridGrad)" stroke-width="0.5" stroke-dasharray="2 4"></line><ellipse cx="50%" cy="44%" rx="220" ry="130" fill="none" stroke="url(#gridGrad)" stroke-width="0.7" stroke-opacity="0.5" transform="rotate(-18 215 410)"></ellipse><ellipse cx="50%" cy="44%" rx="260" ry="150" fill="none" stroke="url(#gridGrad)" stroke-width="0.7" stroke-opacity="0.5" transform="rotate(24 215 410)"></ellipse></svg></div>
+<!-- BEGIN: iOSStatusBar -->
+<!-- Native iOS 17/18 style mobile header with Dynamic Island notch spacing -->
+
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: HeroIdentity -->
+<!-- Center-staged, distraction-free flagship launch composition -->
+<section class="relative z-10 w-full px-6 flex flex-col items-center justify-center pt-24" data-purpose="hero-launch-identity">
+<!-- Pencil'd App Icon Squircle Container -->
+<div class="relative mb-8 group" data-purpose="app-icon-wrapper"><img alt="Pencil’d App Icon" class="w-[140px] h-[140px] object-contain block select-none pointer-events-none drop-shadow-2xl" decoding="async" height="140" loading="eager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0IqlhSkZEm2zmbfjHEA8dGgoVHW8Frvo-3og3U3jl-QknTK4ovsdw1XLAgUJ3_0wwJcSD6PcBr7chrh07Yhfq5fYthg6cDmFUXdtkp04Df8EGZLTtB-dGK7YhuUcD9f2Wf3NpPHHlm3ZUj1EXNt6-R1IwRHHkYcbpux-TRTcHRrbaO5Bc153UrwB3FxBfR1XA2ojBVEnm1soG9OFQolL8Z4z00KqMluKTt4VO67MkimlSCotflF9RQJC674X8ge8F9w" width="140"></div>
+<!-- Wordmark Typography -->
+<h1 class="text-[44px] leading-tight font-extrabold tracking-tight text-center drop-shadow-sm select-none" data-purpose="wordmark" style="font-family: &quot;Plus Jakarta Sans&quot;, sans-serif; background: linear-gradient(135deg, rgb(255, 122, 0) 0%, rgb(255, 82, 119) 50%, rgb(222, 183, 255) 100%) text; -webkit-text-fill-color: transparent; color: transparent; display: inline-block;">Pencil’d</h1>
+<!-- Precise Triple-Beat Brand Slogan -->
+<p class="mt-3 text-[14px] leading-relaxed tracking-widestTracking font-medium text-slate-300/70 text-center uppercase select-none" data-purpose="slogan">
+        Scanned. Reviewed. Pencil’d.
+      </p>
+</section>
+<!-- END: HeroIdentity -->
+<!-- BEGIN: LaunchFooter -->
+<!-- Serene minimal bottom edge with launch sync indicator and iOS home bar -->
+<footer class="relative z-20 w-full pb-3 px-6 flex flex-col items-center justify-end" data-purpose="launch-footer">
+<!-- Minimalist loading micro-pill -->
+<div aria-hidden="true" class="mb-6 flex items-center justify-center space-x-1.5 opacity-40 pulse-subtle" title="Loading...">
+<span class="w-1.5 h-1.5 rounded-full bg-amberGlow"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-coral"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-lavender"></span>
+</div>
+<!-- iOS Standard Home Indicator Bar -->
+<div class="w-36 h-[5px] bg-white/35 rounded-full mb-1"></div>
+</footer>
+<!-- END: LaunchFooter -->
+</main>
+<!-- END: MobileDeviceFrame -->
+
+
+
+
+
+
+</body></html>

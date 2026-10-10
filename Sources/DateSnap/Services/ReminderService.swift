@@ -191,9 +191,9 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         reminder.addAlarm(EKAlarm(absoluteDate: due))
         if let url, let link = URL(string: url.hasPrefix("http") ? url : "https://\(url)") {
             reminder.url = link
-            reminder.notes = "Link from the flyer: \(url)\nCaptured on-device by DateSnap"
+            reminder.notes = "Link from the flyer: \(url)\nCaptured on-device by Pencil'd"
         } else {
-            reminder.notes = "Captured on-device by DateSnap"
+            reminder.notes = "Captured on-device by Pencil'd"
         }
         do {
             try eventStore.save(reminder, commit: true)
@@ -265,7 +265,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         if let rsvp = candidate.rsvpUrl {
             notesList.append("RSVP/Tickets: \(rsvp)")
         }
-        notesList.append("Captured on-device by DateSnap")
+        notesList.append("Captured on-device by Pencil'd")
         reminder.notes = notesList.joined(separator: "\n")
 
         // Up to 3 staggered alarms, replacing any existing ones
