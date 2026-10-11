@@ -5,16 +5,17 @@ import PhotosUI
 import UniformTypeIdentifiers
 
 enum HomeBrandCopy {
-    static let welcomeHeading = "Welcome to Pencil'd"
-    static let scanDescription = "Take a screenshot of a flyer, text invite, or ticket, and Pencil'd will instantly turn it into a calendar event with custom reminders."
-    static let howItWorksHeading = "How Pencil'd Works"
-    static let openAppTutorialTitle = "2. Open Pencil'd"
+    static let captureHeading = "Capture Events"
+    static let captureSubtitle = "Select a source and all the details will be Pencil'd in for you automatically once you confirm."
     static let photoLibraryPermissionMessage = "Pencil'd needs Photo Library access to find your recent screenshots. You can still pick individual photos without it."
-    static let premiumActiveToast = "Pencil'd Premium Active"
     static let premiumFileImportAccessibilityHint = "Requires Pencil'd Premium"
     static let plusScreenshotExplanation = "Pencil'd Plus checks new screenshots on your device and highlights likely events. Nothing is saved until you review it."
+    static let privacyHeading = "Private & On-Device Intelligence"
+    static let privacyBody = "Your photos, screenshots, and documents never leave this device. Neural parsing happens locally in secure memory."
 }
 
+/// Capture home (Stitch "Source Chooser"): pick where the next event comes from.
+/// Every source routes into the existing scan pipeline and review flow.
 struct HomeEmptyStateView: View {
 
     @Environment(\.modelContext) private var modelContext
@@ -24,8 +25,8 @@ struct HomeEmptyStateView: View {
     @EnvironmentObject private var scanViewModel: ScanViewModel
     @EnvironmentObject private var homeViewModel: HomeViewModel
     @Query private var scannedAssets: [ScannedAsset]
+    @Query(sort: \EventCandidate.createdAt, order: .reverse) private var candidates: [EventCandidate]
 
-    @State private var scanLaserDown: Bool = false
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
     @State private var showPhotoPicker: Bool = false
     @State private var showFileImporter: Bool = false
@@ -38,408 +39,36 @@ struct HomeEmptyStateView: View {
         guard appState.isEntitled(to: .likelyEventTriage) else { return unscanned }
         return PhotoCandidateRanker.rank(unscanned, scannedIDs: scanned, likelyEventIDs: homeViewModel.likelyEventIDs)
     }
-    
+
+    /// Candidates waiting on the user, same definition as the Review tab.
+    private var needingReviewCount: Int {
+        candidates.filter { $0.savedEvent == nil || $0.savedEvent?.status == .draft }.count
+    }
+
+    private var photosAuthorized: Bool {
+        homeViewModel.photoAuthorizationStatus == .authorized || homeViewModel.photoAuthorizationStatus == .limited
+    }
+
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 22) {
-                    // Header Bar with Membership Badge
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 11, weight: .bold))
-                                Text("AI TEMPORAL SYNC")
-                                    .font(DSTypography.overlineConfidence())
-                            }
-                            .foregroundStyle(Color.dsPrimary)
-                            
-                            Text(HomeBrandCopy.welcomeHeading)
-                                .font(DSTypography.displayTitle())
-                                .foregroundStyle(Color.dsForeground)
-                            
-                            Text("Your camera roll's calendar autopilot.")
-                                .font(DSTypography.bodyCompact())
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        
-                        Spacer()
-                        
-                        // Paywall / Tier Pill
-                        Button {
-                            if appState.isPremiumMember {
-                                appState.showToast(HomeBrandCopy.premiumActiveToast)
-                            } else if appState.isPlusMember {
-                                appState.activeModal = .premiumPaywall
-                            } else {
-                                appState.activeModal = .plusPaywall
-                            }
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: appState.isPremiumMember ? "crown.fill" : (appState.isPlusMember ? "bolt.fill" : "sparkle"))
-                                    .font(.system(size: 11))
-                                Text(appState.isPremiumMember ? "PREMIUM" : (appState.isPlusMember ? "PLUS" : "FREE"))
-                                    .font(DSTypography.overlineConfidence())
-                            }
-                            .foregroundStyle(appState.isPremiumMember ? Color.dsWarning : Color.dsPrimary)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule()
-                                    .fill(appState.isPremiumMember ? Color.dsWarning.opacity(0.16) : Color.dsPrimary.opacity(0.12))
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(appState.isPremiumMember ? Color.dsWarning.opacity(0.4) : Color.dsPrimary.opacity(0.3), lineWidth: 1)
-                                    )
-                            )
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 10)
-                    
-                    // Main Hero Container with Ambient Glows & 4-Corner Multi-Color Laser Brackets
-                    VStack(spacing: 16) {
-                        // Ticket Showcase Card with 4-Corner Neon Brackets & Scanning Laser
-                        ZStack {
-                            // Ambient Radial Glows behind flyer
-                            Circle()
-                                .fill(Color.dsSecondary.opacity(0.2))
-                                .frame(width: 140, height: 140)
-                                .blur(radius: 30)
-                                .offset(x: 40, y: -30)
-                            Circle()
-                                .fill(Color.dsPrimary.opacity(0.2))
-                                .frame(width: 140, height: 140)
-                                .blur(radius: 30)
-                                .offset(x: -40, y: 30)
-                            
-                            // Mock Ticket Outer Wrapper (with corner brackets)
-                            ZStack {
-                                // Corner 1: Top-Left (Cyan)
-                                VStack {
-                                    HStack {
-                                        RoundedCornerBracket(corner: .topLeft)
-                                            .stroke(Color.dsPrimary, lineWidth: 2.5)
-                                            .frame(width: 22, height: 22)
-                                            .shadow(color: Color.dsPrimary.opacity(0.8), radius: 6)
-                                        Spacer()
-                                    }
-                                    Spacer()
-                                }
-                                
-                                // Corner 2: Top-Right (Purple)
-                                VStack {
-                                    HStack {
-                                        Spacer()
-                                        RoundedCornerBracket(corner: .topRight)
-                                            .stroke(Color(red: 123/255, green: 97/255, blue: 255/255), lineWidth: 2.5)
-                                            .frame(width: 22, height: 22)
-                                            .shadow(color: Color(red: 123/255, green: 97/255, blue: 255/255).opacity(0.8), radius: 6)
-                                    }
-                                    Spacer()
-                                }
-                                
-                                // Corner 3: Bottom-Left (Orange)
-                                VStack {
-                                    Spacer()
-                                    HStack {
-                                        RoundedCornerBracket(corner: .bottomLeft)
-                                            .stroke(Color(red: 255/255, green: 138/255, blue: 61/255), lineWidth: 2.5)
-                                            .frame(width: 22, height: 22)
-                                            .shadow(color: Color(red: 255/255, green: 138/255, blue: 61/255).opacity(0.8), radius: 6)
-                                        Spacer()
-                                    }
-                                }
-                                
-                                // Corner 4: Bottom-Right (Cyan)
-                                VStack {
-                                    Spacer()
-                                    HStack {
-                                        Spacer()
-                                        RoundedCornerBracket(corner: .bottomRight)
-                                            .stroke(Color.dsPrimary, lineWidth: 2.5)
-                                            .frame(width: 22, height: 22)
-                                            .shadow(color: Color.dsPrimary.opacity(0.8), radius: 6)
-                                    }
-                                }
-                                
-                                // Inner Ticket Card
-                                VStack(spacing: 8) {
-                                    // Window control traffic dots + crop icon
-                                    HStack {
-                                        HStack(spacing: 4) {
-                                            Circle().fill(Color.dsError.opacity(0.8)).frame(width: 6, height: 6)
-                                            Circle().fill(Color.dsWarning.opacity(0.8)).frame(width: 6, height: 6)
-                                            Circle().fill(Color.dsSuccess.opacity(0.8)).frame(width: 6, height: 6)
-                                        }
-                                        Spacer()
-                                        Image(systemName: "viewfinder")
-                                            .font(.system(size: 11))
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                    }
-                                    
-                                    // Flyer Image Area with Animated Scanning Laser
-                                    ZStack(alignment: .top) {
-                                        // Poster Visual
-                                        LinearGradient(
-                                            colors: [
-                                                Color(red: 255/255, green: 79/255, blue: 179/255).opacity(0.6),
-                                                Color(red: 91/255, green: 124/255, blue: 255/255).opacity(0.5),
-                                                Color.dsBackground
-                                            ],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                        .frame(height: 76)
-                                        .cornerRadius(8)
-                                        .overlay(
-                                            VStack(spacing: 2) {
-                                                Image(systemName: "music.mic")
-                                                    .font(.system(size: 20))
-                                                    .foregroundStyle(Color.white.opacity(0.9))
-                                                Text("NEON MIRAGE")
-                                                    .font(.system(size: 9, weight: .black, design: .rounded))
-                                                    .foregroundStyle(Color.white)
-                                            }
-                                        )
-                                        
-                                        // Scanning Laser Beam
-                                        Rectangle()
-                                            .fill(
-                                                LinearGradient(
-                                                    colors: [
-                                                        Color(red: 255/255, green: 138/255, blue: 61/255),
-                                                        Color.dsPrimary,
-                                                        Color(red: 123/255, green: 97/255, blue: 255/255)
-                                                    ],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                            )
-                                            .frame(height: 2)
-                                            .shadow(color: Color.dsPrimary, radius: 4, y: 0)
-                                            .offset(y: scanLaserDown ? 70 : 4)
-                                            .animation(Animation.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: scanLaserDown)
-                                    }
-                                    
-                                    // Event Meta
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: 1) {
-                                            Text("Neon Mirage Tour")
-                                                .font(.system(size: 11, weight: .bold))
-                                                .foregroundStyle(Color.dsForeground)
-                                            Text("Oct 24 • 8:00 PM")
-                                                .font(.system(size: 9))
-                                                .foregroundStyle(Color.dsMutedForeground)
-                                        }
-                                        Spacer()
-                                        Image(systemName: "checkmark.seal.fill")
-                                            .font(.system(size: 13))
-                                            .foregroundStyle(Color.dsPrimary)
-                                    }
-                                    
-                                    // Bottom Sync Speed Strip
-                                    HStack {
-                                        Text("Ready to sync")
-                                            .font(.system(size: 10, weight: .medium))
-                                            .foregroundStyle(Color.dsPrimary)
-                                        Spacer()
-                                        Text("0.4s")
-                                            .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                    }
-                                }
-                                .padding(10)
-                                .frame(width: 170, height: 190)
-                                .background(Color.dsCardElevated.opacity(0.95))
-                                .cornerRadius(16)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                                )
-                            }
-                            .frame(width: 186, height: 206)
-                        }
-                        .padding(.top, 8)
-                        
-                        // Empty State Main Pitch
-                        VStack(spacing: 6) {
-                            Text(scannedAssets.isEmpty ? "No screenshots scanned yet" : "Ready for your next flyer")
-                                .font(DSTypography.headlineSection())
-                                .foregroundStyle(Color.dsForeground)
-                                .multilineTextAlignment(.center)
-                            
-                            Text(HomeBrandCopy.scanDescription)
-                                .font(DSTypography.bodyCompact())
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 16)
-                        }
-                        
-                        // Action Buttons
-                        VStack(spacing: 12) {
-                            Button {
-                                scanRecentScreenshots()
-                            } label: {
-                                HStack(spacing: 8) {
-                                    if scanViewModel.isProcessing {
-                                        ProgressView().tint(Color.dsPrimaryForeground)
-                                        Text("Analyzing Screenshot...")
-                                    } else {
-                                        Image(systemName: "camera.viewfinder")
-                                        Text("Scan Recent Screenshots")
-                                        Image(systemName: "arrow.right")
-                                    }
-                                }
-                            }
-                            .buttonStyle(DSPrimaryButtonStyle())
-                            .disabled(scanViewModel.isProcessing)
-                            
-                            Button {
-                                showPhotoPicker = true
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "photo.on.rectangle")
-                                    Text("Choose from Photo Library")
-                                }
-                            }
-                            .buttonStyle(DSSecondaryButtonStyle())
-                            .disabled(scanViewModel.isProcessing)
-
-                            Button {
-                                if appState.isEntitled(to: .documentImport) {
-                                    showFileImporter = true
-                                } else {
-                                    appState.activeModal = .premiumPaywall
-                                }
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: appState.isPremiumMember ? "doc.text.viewfinder" : "lock.fill")
-                                    Text("Import PDF or File")
-                                    if !appState.isPremiumMember {
-                                        Text("PREMIUM")
-                                            .font(DSTypography.overlineConfidence())
-                                            .foregroundStyle(Color.dsWarning)
-                                    }
-                                }
-                                .font(DSTypography.labelChip())
-                                .foregroundStyle(Color.dsForeground)
-                                .frame(maxWidth: .infinity, minHeight: 44)
-                            }
-                            .disabled(scanViewModel.isProcessing)
-                            .accessibilityHint(appState.isPremiumMember ? "Scan a PDF or image from Files" : HomeBrandCopy.premiumFileImportAccessibilityHint)
-                        }
-                        .padding(.top, 4)
-                    }
-                    .padding(20)
-                    .dsGlassCard(cornerRadius: 28, elevated: true, borderColor: Color.dsPrimary.opacity(0.2))
-                    .padding(.horizontal)
-
-                    autoDetectedScreenshotsCard
-                    
-                    // "How Pencil'd Works" 3 Effortless Steps
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack {
-                            Text(HomeBrandCopy.howItWorksHeading)
-                                .font(DSTypography.headlineCard())
-                                .foregroundStyle(Color.dsForeground)
-                            Spacer()
-                            Text("3 effortless steps")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsPrimary)
-                        }
-                        
-                        stepCard(
-                            icon: "camera.viewfinder",
-                            iconColor: Color(red: 255/255, green: 138/255, blue: 61/255),
-                            title: "1. Snap or Screenshot",
-                            description: "Capture Instagram stories, WhatsApp messages, concert posters, or emailed invitations."
-                        )
-                        
-                        stepCard(
-                            icon: "bolt.fill",
-                            iconColor: Color.dsPrimary,
-                            title: HomeBrandCopy.openAppTutorialTitle,
-                            description: "On-device neural vision parses dates, venue locations, and start/end times in 0.4 seconds."
-                        )
-                        
-                        stepCard(
-                            icon: "calendar.badge.checkmark",
-                            iconColor: Color(red: 123/255, green: 97/255, blue: 255/255),
-                            title: "3. One-Tap Save",
-                            description: "Inspect details, tap sync, and push directly to Apple Calendar, Google Calendar, or Reminders."
-                        )
-                    }
-                    .padding(18)
-                    .dsGlassCard(cornerRadius: 22)
-                    .padding(.horizontal)
-                    
-                    // "Curious how it works? Try Sample Flyer" — runs the real OCR + inference pipeline
-                    HStack(spacing: 12) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color(red: 255/255, green: 138/255, blue: 61/255), Color(red: 123/255, green: 97/255, blue: 255/255)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .frame(width: 48, height: 56)
-                            Image(systemName: "ticket.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(Color.white)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Curious how it works?")
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
-                            Text("Scan a sample concert flyer — no photo access needed.")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            runScan { await scanViewModel.scanSampleFlyer(modelContext: modelContext) }
-                        } label: {
-                            Text("Try Sample Flyer")
-                                .font(DSTypography.labelChip())
-                                .foregroundStyle(Color.dsPrimary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .frame(minHeight: 44)
-                                .background(Capsule().fill(Color.dsSecondary.opacity(0.18)))
-                        }
-                        .disabled(scanViewModel.isProcessing)
-                    }
-                    .padding(16)
-                    .dsGlassCard(cornerRadius: 20, elevated: true, borderColor: Color.dsSecondary.opacity(0.25))
-                    .padding(.horizontal)
-                    
-                    // On-Device Privacy Badge
-                    HStack(spacing: 6) {
-                        Image(systemName: "shield.lefthalf.filled")
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color.dsMutedForeground)
-                        Text("All processing runs private and on-device. Zero cloud storage.")
-                            .font(DSTypography.caption())
-                            .foregroundStyle(Color.dsMutedForeground)
-                    }
-                    .padding(.horizontal)
-                    
+                VStack(alignment: .leading, spacing: 16) {
+                    topBar
+                    titleBlock
+                    recentScreenshotsCard
+                    photoLibraryCard
+                    fileImportCard
+                    createEventCard
+                    sampleFlyerCard
+                    privacyFooter
                     Color.clear.frame(height: 90)
                 }
+                .padding(.horizontal, 20)
             }
-            .dsScreenBackground()
+            .background(Color.pdSurface.ignoresSafeArea())
             .overlay { ScanProgressOverlay(scan: scanViewModel) }
             .overlay { BatchScanProgressOverlay() }
             .animation(.easeInOut(duration: 0.2), value: scanViewModel.isProcessing)
-            .onAppear {
-                scanLaserDown = true
-            }
             .photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItems, matching: .images, photoLibrary: .shared())
             .onChange(of: selectedPhotoItems) { _, items in
                 guard !items.isEmpty else { return }
@@ -454,6 +83,12 @@ struct HomeEmptyStateView: View {
                 if requested {
                     appState.requestPhotoPicker = false
                     showPhotoPicker = true
+                }
+            }
+            .onChange(of: appState.requestFileImporter) { _, requested in
+                if requested {
+                    appState.requestFileImporter = false
+                    openFileImport()
                 }
             }
             .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.pdf, .image], allowsMultipleSelection: false) { result in
@@ -479,7 +114,311 @@ struct HomeEmptyStateView: View {
         }
     }
 
-    // MARK: - Scan Actions
+    // MARK: - Header
+
+    private var topBar: some View {
+        HStack {
+            Text("Capture")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(Color.pdOnSurface)
+            Spacer()
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { appState.selectedTab = .settings }
+            } label: {
+                Image(systemName: "person.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.pdPrimary)
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Color.pdSurfaceContainer))
+            }
+            .accessibilityLabel("Profile and settings")
+        }
+        .padding(.top, 6)
+    }
+
+    private var titleBlock: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("CAPTURE")
+                .font(.system(size: 11, weight: .bold))
+                .tracking(1.4)
+                .foregroundStyle(Color.pdPrimary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(Color.pdPrimary.opacity(0.12)))
+            Text(HomeBrandCopy.captureHeading)
+                .font(.system(size: 34, weight: .heavy))
+                .foregroundStyle(LinearGradient.pdSignature)
+            Text(HomeBrandCopy.captureSubtitle)
+                .font(.system(size: 15))
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+        }
+    }
+
+    // MARK: - Source cards
+
+    private var recentScreenshotsCard: some View {
+        let autoDetect = appState.isEntitled(to: .automaticScreenshotDetection)
+        return VStack(alignment: .leading, spacing: 14) {
+            Button(action: scanRecentScreenshots) {
+                HStack(alignment: .top, spacing: 14) {
+                    sourceIcon("photo.on.rectangle.angled")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Recent screenshots")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(Color.pdOnSurface)
+                        Text("Auto-detect event flyers, ticket bookings, and tour announcements.")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                            .multilineTextAlignment(.leading)
+                    }
+                    Spacer(minLength: 0)
+                }
+            }
+            .disabled(scanViewModel.isProcessing)
+            .accessibilityHint("Shows your recent screenshots to scan")
+
+            if photosAuthorized && !newScreenshots.isEmpty {
+                HStack(spacing: 8) {
+                    ForEach(newScreenshots.prefix(3), id: \.localIdentifier) { asset in
+                        Button {
+                            runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext) }
+                        } label: {
+                            AssetThumbnail(asset: asset, height: 72)
+                                .frame(width: 52)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                        .disabled(scanViewModel.isProcessing)
+                        .accessibilityLabel("Scan screenshot from \(asset.creationDate?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")")
+                    }
+                    if newScreenshots.count > 3 {
+                        Text("+\(newScreenshots.count - 3)")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                            .frame(width: 52, height: 72)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color.pdSurfaceContainerHigh))
+                    }
+                    Spacer(minLength: 0)
+                }
+                .task(id: homeViewModel.recentScreenshots.map(\.localIdentifier)) {
+                    if appState.isEntitled(to: .likelyEventTriage) {
+                        homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)))
+                    }
+                }
+            }
+
+            HStack(spacing: 10) {
+                if needingReviewCount > 0 {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { appState.selectedTab = .review }
+                    } label: {
+                        statusPill("\(needingReviewCount) Needing Review", icon: "checklist", tint: Color.pdCoral)
+                    }
+                }
+                Spacer(minLength: 0)
+                if autoDetect {
+                    Label("Auto-scanned", systemImage: "bolt.badge.automatic.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color.pdPrimary)
+                } else {
+                    Button {
+                        appState.activeModal = .plusPaywall
+                    } label: {
+                        Label("Auto-detect with Plus", systemImage: "lock.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.pdPrimary)
+                            .frame(minHeight: 44)
+                    }
+                    .accessibilityHint(HomeBrandCopy.plusScreenshotExplanation)
+                }
+            }
+        }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(LinearGradient(colors: [Color.pdSurfaceContainerHigh, Color.pdSurfaceContainer], startPoint: .topLeading, endPoint: .bottomTrailing))
+                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.pdPrimary.opacity(0.28), lineWidth: 1))
+        )
+    }
+
+    private var photoLibraryCard: some View {
+        sourceRow(
+            icon: "photo.stack",
+            title: "Photo library",
+            detail: "Choose from your saved photos, whiteboards, or custom albums.",
+            chips: ["Albums", "Camera Roll", "Favorites"]
+        ) {
+            showPhotoPicker = true
+        }
+    }
+
+    private var fileImportCard: some View {
+        let entitled = appState.isEntitled(to: .documentImport)
+        return sourceRow(
+            icon: entitled ? "doc.text.viewfinder" : "lock.fill",
+            title: "PDF or file import",
+            detail: "Multi-page conference schedules, syllabi, flight itineraries & documents.",
+            chips: entitled ? ["PDF", "Images", "iCloud Drive"] : ["PDF", "Images", "Premium"],
+            hint: entitled ? "Scan a PDF or image from Files" : HomeBrandCopy.premiumFileImportAccessibilityHint
+        ) {
+            openFileImport()
+        }
+    }
+
+    private var createEventCard: some View {
+        Button {
+            if let url = URL(string: "calshow://") { openURL(url) }
+        } label: {
+            HStack(spacing: 14) {
+                sourceIcon("calendar.badge.plus")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Create an event")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Color.pdOnSurface)
+                    Text("Opens the Calendar app for manually creating events and notifications.")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "plus")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color.pdPrimary)
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Color.pdPrimary.opacity(0.14)))
+            }
+            .padding(18)
+            .cardBackground()
+        }
+        .accessibilityHint("Opens the Calendar app")
+    }
+
+    private var sampleFlyerCard: some View {
+        Button {
+            runScan { await scanViewModel.scanSampleFlyer(modelContext: modelContext) }
+        } label: {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 14) {
+                    sourceIcon("wand.and.stars")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Try sample flyer")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(Color.pdOnSurface)
+                        Text("See how Pencil'd automatically extracts complex dates, recurring slots, and reminders in real-time.")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                            .multilineTextAlignment(.leading)
+                    }
+                    Spacer(minLength: 0)
+                }
+                HStack {
+                    statusPill("Interactive demo", icon: "play.circle.fill", tint: Color.pdLavender)
+                    Spacer()
+                    Text("No photo access needed")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+            }
+            .padding(18)
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color.pdLavender.opacity(0.08))
+                    .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.pdLavender.opacity(0.28), lineWidth: 1))
+            )
+        }
+        .disabled(scanViewModel.isProcessing)
+    }
+
+    private var privacyFooter: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "lock.shield")
+                .font(.system(size: 18))
+                .foregroundStyle(Color.pdPrimary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(HomeBrandCopy.privacyHeading)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Color.pdOnSurface)
+                Text(HomeBrandCopy.privacyBody)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 18).fill(Color.pdSurfaceLowest))
+        .padding(.top, 4)
+    }
+
+    // MARK: - Card building blocks
+
+    private func sourceIcon(_ systemName: String) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: 20, weight: .semibold))
+            .foregroundStyle(Color.pdPrimary)
+            .frame(width: 44, height: 44)
+            .background(RoundedRectangle(cornerRadius: 14).fill(Color.pdPrimary.opacity(0.14)))
+    }
+
+    private func statusPill(_ text: String, icon: String, tint: Color) -> some View {
+        Label(text, systemImage: icon)
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(tint.opacity(0.14)))
+    }
+
+    private func sourceRow(
+        icon: String,
+        title: String,
+        detail: String,
+        chips: [String],
+        hint: String? = nil,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 14) {
+                    sourceIcon(icon)
+                    Text(title)
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Color.pdOnSurface)
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+                Text(detail)
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .multilineTextAlignment(.leading)
+                HStack(spacing: 8) {
+                    ForEach(chips, id: \.self) { chip in
+                        Text(chip)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.pdOnSurface.opacity(0.85))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Capsule().fill(Color.pdSurfaceContainerHigh))
+                    }
+                }
+            }
+            .padding(18)
+            .cardBackground()
+        }
+        .disabled(scanViewModel.isProcessing)
+        .accessibilityHint(hint ?? "")
+    }
+
+    // MARK: - Actions
+
+    private func openFileImport() {
+        if appState.isEntitled(to: .documentImport) {
+            showFileImporter = true
+        } else {
+            appState.activeModal = .premiumPaywall
+        }
+    }
+
     private func runScan(_ work: @escaping @MainActor () async -> Void) {
         Task {
             await work()
@@ -519,107 +458,15 @@ struct HomeEmptyStateView: View {
             appState.activeModal = .recentScreenshots
         }
     }
+}
 
-    // MARK: - Plus: Automatic Screenshot Detection
-    @ViewBuilder
-    private var autoDetectedScreenshotsCard: some View {
-        let photosAuthorized = homeViewModel.photoAuthorizationStatus == .authorized || homeViewModel.photoAuthorizationStatus == .limited
-        if appState.isEntitled(to: .automaticScreenshotDetection) && photosAuthorized && !newScreenshots.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Label("New screenshots detected", systemImage: "bolt.badge.automatic.fill")
-                        .font(DSTypography.bodyStrong())
-                        .foregroundStyle(Color.dsForeground)
-                    Spacer()
-                    Text("\(newScreenshots.count) new")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsPrimary)
-                }
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(newScreenshots.prefix(8), id: \.localIdentifier) { asset in
-                            Button {
-                                runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext) }
-                            } label: {
-                                AssetThumbnail(asset: asset, height: 120)
-                                    .frame(width: 80)
-                                    .overlay(alignment: .bottom) {
-                                        if homeViewModel.likelyEventIDs.contains(asset.localIdentifier) {
-                                            Label("Event", systemImage: "calendar.badge.checkmark")
-                                                .font(.system(size: 10, weight: .bold))
-                                                .foregroundStyle(Color.dsBackground)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 3)
-                                                .background(Capsule().fill(Color.dsPrimary))
-                                                .padding(.bottom, 6)
-                                        }
-                                    }
-                            }
-                            .accessibilityLabel("Scan screenshot from \(asset.creationDate?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")")
-                        }
-                    }
-                }
-                Text(HomeBrandCopy.plusScreenshotExplanation)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
-            }
-            .padding(16)
-            .dsGlassCard(cornerRadius: 20, elevated: true, borderColor: Color.dsPrimary.opacity(0.3))
-            .padding(.horizontal)
-            .task(id: homeViewModel.recentScreenshots.map(\.localIdentifier)) {
-                if appState.isEntitled(to: .likelyEventTriage) {
-                    homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)))
-                }
-            }
-        } else if !appState.isEntitled(to: .automaticScreenshotDetection) {
-            Button {
-                appState.activeModal = .plusPaywall
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "bolt.badge.automatic.fill")
-                        .font(.system(size: 20))
-                        .foregroundStyle(Color.dsPrimary)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Automatic screenshot detection")
-                            .font(DSTypography.bodyStrong())
-                            .foregroundStyle(Color.dsForeground)
-                        Text("New event screenshots appear here automatically with Plus.")
-                            .font(DSTypography.caption())
-                            .foregroundStyle(Color.dsMutedForeground)
-                            .multilineTextAlignment(.leading)
-                    }
-                    Spacer()
-                    Image(systemName: "lock.fill")
-                        .foregroundStyle(Color.dsMutedForeground)
-                }
-                .padding(16)
-                .dsGlassCard(cornerRadius: 20)
-            }
-            .padding(.horizontal)
-        }
-    }
-    
-    @ViewBuilder
-    private func stepCard(icon: String, iconColor: Color, title: String, description: String) -> some View {
-        HStack(alignment: .top, spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(iconColor.opacity(0.16))
-                    .frame(width: 40, height: 40)
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(iconColor)
-            }
-            
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(DSTypography.bodyStrong())
-                    .foregroundStyle(Color.dsForeground)
-                Text(description)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
-            }
-        }
+private extension View {
+    func cardBackground() -> some View {
+        background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(Color.pdSurfaceContainer)
+                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.pdOutlineVariant.opacity(0.4), lineWidth: 1))
+        )
     }
 }
 

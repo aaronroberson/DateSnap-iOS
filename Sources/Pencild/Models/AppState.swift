@@ -109,6 +109,7 @@ final class AppState: ObservableObject {
     private(set) var sourceImages: [String: UIImage] = [:]
     /// Set by "Scan another photo" flows to reopen the photo picker from Home.
     @Published var requestPhotoPicker: Bool = false
+    @Published var requestFileImporter: Bool = false
     /// Multi-screenshot batch session; presented as its own sheet with per-event destinations.
     @Published var batchReviewSession: BatchReviewSession? = nil
     /// In-flight multi-screenshot scan, kept here so progress survives picker dismissal.

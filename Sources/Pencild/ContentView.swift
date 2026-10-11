@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var settingsState = SettingsState()
     @StateObject private var scanViewModel: ScanViewModel
     @StateObject private var homeViewModel: HomeViewModel
+    @State private var showSplash = true
 
     init(services: ServiceContainer) {
         _scanViewModel = StateObject(wrappedValue: ScanViewModel(services: services))
@@ -62,6 +63,18 @@ struct ContentView: View {
                 customTabBar
             }
             .padding(.bottom, 6)
+        }
+        .overlay {
+            if showSplash {
+                PencilSplashView(
+                    onFinish: { withAnimation(.easeInOut(duration: 0.4)) { showSplash = false } },
+                    onScan: { appState.requestPhotoPicker = true },
+                    onImport: { appState.requestFileImporter = true },
+                    onReview: { appState.selectedTab = .review }
+                )
+                .transition(.opacity)
+                .zIndex(1)
+            }
         }
         .environmentObject(appState)
         .environmentObject(settingsState)
