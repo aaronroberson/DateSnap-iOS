@@ -430,48 +430,6 @@ struct HomeEmptyStateView: View {
                     }
                     .padding(.horizontal)
                     
-                    #if DEBUG
-                    // Simulation & Quick Access Center
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "slider.horizontal.2.square")
-                                .foregroundStyle(Color.dsInfo)
-                            Text("Screen State & Simulation Hub")
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
-                        }
-                        
-                        Text("Quick access to test all 10 project screens and permission flows:")
-                            .font(DSTypography.caption())
-                            .foregroundStyle(Color.dsMutedForeground)
-                        
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                            simButton(title: "No Dates Found", icon: "magnifyingglass.circle") {
-                                appState.activeModal = .noDatesFound
-                            }
-                            
-                            simButton(title: "Calendar Denied", icon: "calendar.badge.exclamationmark") {
-                                appState.activeModal = .calendarPermissionDenied
-                            }
-                            
-                            simButton(title: "Notify Denied", icon: "bell.slash") {
-                                appState.activeModal = .notificationPermissionDenied
-                            }
-                            
-                            simButton(title: "Plus Paywall", icon: "bolt.fill") {
-                                appState.activeModal = .plusPaywall
-                            }
-                            
-                            simButton(title: "Premium Paywall", icon: "crown.fill") {
-                                appState.activeModal = .premiumPaywall
-                            }
-                        }
-                    }
-                    .padding(16)
-                    .dsGlassCard(cornerRadius: 20, elevated: true, borderColor: Color.dsInfo.opacity(0.25))
-                    .padding(.horizontal)
-                    #endif
-
                     Color.clear.frame(height: 90)
                 }
             }
@@ -661,28 +619,6 @@ struct HomeEmptyStateView: View {
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }
-        }
-    }
-    
-    @ViewBuilder
-    private func simButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 13))
-                Text(title)
-                    .font(DSTypography.caption())
-                    .lineLimit(1)
-            }
-            .foregroundStyle(Color.dsForeground)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .padding(.horizontal, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.dsCardElevated)
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.dsBorder, lineWidth: 1))
-            )
         }
     }
 }
