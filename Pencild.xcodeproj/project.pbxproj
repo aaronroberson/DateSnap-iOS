@@ -68,7 +68,6 @@
 		904558C0646C6C73A16CED0D /* IntelligenceCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688312181E3B1C33519C1AF /* IntelligenceCapabilities.swift */; };
 		90BAAC5752736DE7F9D54098 /* ContactIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A837EFE3DDE00E11C1A32413 /* ContactIntegration.swift */; };
 		919901B2AEECDC49E4930C0E /* PencildError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE942F563C85F010026D90B /* PencildError.swift */; };
-		9394F671D4D1977F5A509721 /* MeshGradients.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69302E93649B9E86BCAD1835 /* MeshGradients.swift */; };
 		9442BD5ED7B900E2EC50F040 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB772D38986769D65928C6E5 /* Typography.swift */; };
 		96E8AEA2E172B0CC8C2025B4 /* IntelligenceUsagePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8DCE7B3178535421F97496 /* IntelligenceUsagePolicy.swift */; };
 		9B0B4FF08EAC354DF56931C3 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2384633515D0D150329210B9 /* CalendarService.swift */; };
@@ -78,7 +77,6 @@
 		A53F40E28D1E5C8D267630CB /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392BA2957CCCC864BED946E0 /* ReminderSettingsView.swift */; };
 		A5D025F684F8A06639BEBA68 /* CalendarRecommendationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCE83A9F8E2D4401A797489 /* CalendarRecommendationService.swift */; };
 		A69CE5E8EE43CB5DBF385675 /* HistoryArchiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48365520410FC51802F38DA7 /* HistoryArchiveView.swift */; };
-		AFE78562E99981D8C65E93BC /* EnhancedScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A07F921B7347AA16A60AB2 /* EnhancedScrollView.swift */; };
 		B02AE821419D141291432782 /* EventReviewViewModel+Interpretation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2F30E688F1BBBCAF519D1 /* EventReviewViewModel+Interpretation.swift */; };
 		B083B81915960A402101B033 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BE81DE5C5CF15E8B4C6589 /* SettingsComponents.swift */; };
 		B1730A8832720155B185347E /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D780F270C6B636836B348 /* ScanViewModel.swift */; };
@@ -165,7 +163,6 @@
 		4E645A1CC102A440CD8855D0 /* EventUnderstandingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingPipeline.swift; sourceTree = "<group>"; };
 		4E956C24E73677F2D3B0982E /* IntelligencePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligencePolicy.swift; sourceTree = "<group>"; };
 		4F94FD76F56A28C61CF9EB7A /* UserProfileFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileFlowView.swift; sourceTree = "<group>"; };
-		50A07F921B7347AA16A60AB2 /* EnhancedScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedScrollView.swift; sourceTree = "<group>"; };
 		52AFEF6E81F03190ACBA429C /* CalendarServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarServiceTests.swift; sourceTree = "<group>"; };
 		53F69AE7E4C445E2E0F26007 /* BatchScanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchScanTests.swift; sourceTree = "<group>"; };
 		54A2A61F8ACF29BB8267C15A /* SettingsHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHubView.swift; sourceTree = "<group>"; };
@@ -179,7 +176,6 @@
 		62A8AF9C60AE3E1BDEF1E9D9 /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
 		63A875E83E7597E9C1BCAB6C /* EventUnderstandingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingModels.swift; sourceTree = "<group>"; };
 		6413BFF2135A5FEDD9D128D0 /* GlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassModifiers.swift; sourceTree = "<group>"; };
-		69302E93649B9E86BCAD1835 /* MeshGradients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshGradients.swift; sourceTree = "<group>"; };
 		6AAE454E9940EBB014B3E0CA /* AppleFoundationModelInterpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationModelInterpreter.swift; sourceTree = "<group>"; };
 		6AE77CBE74FBB39E2FB173A2 /* Pencild.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Pencild.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B8B2795BB8562F51FA10D5F /* ReminderScheduleEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduleEditorView.swift; sourceTree = "<group>"; };
@@ -370,7 +366,6 @@
 				4190AD3348BA862C0F26A2F1 /* CalendarPermissionDeniedView.swift */,
 				993ED170C773CF5943AB1511 /* DefaultCalendarSection.swift */,
 				C72F74BA7EB1FCEB8DB82CCF /* DefaultCalendarView.swift */,
-				50A07F921B7347AA16A60AB2 /* EnhancedScrollView.swift */,
 				908DB62770880AB3860857D9 /* EventFilterBar.swift */,
 				125C831D5863E17E9EDBEC03 /* EventReviewEditView.swift */,
 				B94DFE55456408A8679E0CC6 /* HelpFeedbackView.swift */,
@@ -459,7 +454,6 @@
 			children = (
 				40680FBF180BDF384650F829 /* Colors.swift */,
 				6413BFF2135A5FEDD9D128D0 /* GlassModifiers.swift */,
-				69302E93649B9E86BCAD1835 /* MeshGradients.swift */,
 				8B2CC086575ACC77D26FB975 /* PencilTokens.swift */,
 				DB772D38986769D65928C6E5 /* Typography.swift */,
 			);
@@ -613,7 +607,6 @@
 				2B975B2A1527C9018AB6F38B /* DefaultCalendarSection.swift in Sources */,
 				5D23A4C6EC7ED32C7D7E081E /* DefaultCalendarStore.swift in Sources */,
 				171279CFDECB3204CDCF9045 /* DefaultCalendarView.swift in Sources */,
-				AFE78562E99981D8C65E93BC /* EnhancedScrollView.swift in Sources */,
 				DDD447B050556E45FE7D108F /* EventDurationPolicy.swift in Sources */,
 				6EF12BDFE17D52B2FB71AC17 /* EventExtractionService.swift in Sources */,
 				EF2131EE9AFF822E4228C305 /* EventFilterBar.swift in Sources */,
@@ -640,7 +633,6 @@
 				DE0E11783BABF4EEC69A77DB /* InterpretationReviewViews.swift in Sources */,
 				2F737BCDBDB8333AD6A6B273 /* ManagePlanView.swift in Sources */,
 				46F0A0E7CD40ADA613A66952 /* MarketingKitView.swift in Sources */,
-				9394F671D4D1977F5A509721 /* MeshGradients.swift in Sources */,
 				33C570FAE33CCC8327774D03 /* MutationResult.swift in Sources */,
 				C39F0F3BB1B328E77F614027 /* NoDatesFoundView.swift in Sources */,
 				ED223E82496C64230C298E31 /* NotificationPermissionDeniedView.swift in Sources */,

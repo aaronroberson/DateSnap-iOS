@@ -1,26 +1,92 @@
 import SwiftUI
 
-/// Pencil'd "Luminous Precision" tokens taken from the Stitch design system
-/// (`.stitch/tokens/design-systems.json`). They are scoped to the splash
-/// carousel and the Capture home screen; reconciling them with the app-wide
-/// `ds*` tokens is tracked in docs/plans/2026-10-10-pencild-redesign-plan.md.
+/// Pencil'd "Luminous Precision" design tokens, taken from the Stitch design
+/// system (`.stitch/Brand-Onboarding/Home-Screen/DESIGN.md`). This file is the
+/// single source of truth; the legacy `ds*` names in `Colors.swift` alias these.
 extension Color {
+    // Surfaces
     static let pdSurface = Color(hex: "101127")
     static let pdSurfaceLowest = Color(hex: "0B0C22")
     static let pdSurfaceLow = Color(hex: "181930")
     static let pdSurfaceContainer = Color(hex: "1D1E34")
     static let pdSurfaceContainerHigh = Color(hex: "27283F")
+    static let pdSurfaceHighest = Color(hex: "32334A")
+    static let pdSurfaceBright = Color(hex: "36374F")
+
+    // Content
     static let pdOnSurface = Color(hex: "E1E0FF")
     static let pdOnSurfaceVariant = Color(hex: "E0C0AF")
+    static let pdOutline = Color(hex: "A78B7C")
     static let pdOutlineVariant = Color(hex: "584235")
+
+    // Accent roles
     static let pdPrimary = Color(hex: "FFB68B")
+    static let pdOnPrimary = Color(hex: "522300")
+    static let pdPrimaryContainer = Color(hex: "FF7A00")
+    static let pdSecondary = Color(hex: "DEB7FF")
+    static let pdSecondaryContainer = Color(hex: "670FAC")
+    static let pdTertiary = Color(hex: "FFB2BA")
+    static let pdTertiaryContainer = Color(hex: "FF7288")
+    static let pdError = Color(hex: "FFB4AB")
+
+    // Gradient stops
     static let pdOrange = Color(hex: "FF7A00")
     static let pdCoral = Color(hex: "FF5277")
     static let pdLavender = Color(hex: "DEB7FF")
-    static let pdSurfaceHighest = Color(hex: "32334A")
-    static let pdTertiaryContainer = Color(hex: "FF7288")
     /// Dark text for use on the orange/coral gradient (on-primary-fixed); white fails contrast there.
     static let pdOnPrimaryFixed = Color(hex: "321200")
+
+    // Status (always paired with an icon and label)
+    static let pdSuccess = Color(hex: "34D399")
+    static let pdWarning = Color(hex: "FFB800")
+    static let pdInfo = Color(hex: "7FB2FF")
+}
+
+/// Spacing scale from the Stitch spec (4/6/8/16/24/32/48, 16pt margins).
+enum PDSpacing {
+    static let xxs: CGFloat = 4
+    static let xs: CGFloat = 6
+    static let sm: CGFloat = 8
+    static let md: CGFloat = 16
+    static let lg: CGFloat = 24
+    static let xl: CGFloat = 32
+    static let xxl: CGFloat = 48
+    static let margin: CGFloat = 16
+}
+
+/// Corner radii from the Stitch spec.
+enum PDRadius {
+    static let tile: CGFloat = 8
+    static let card: CGFloat = 12
+    static let plan: CGFloat = 16
+}
+
+/// Plus Jakarta Sans scaled with Dynamic Type.
+enum PDFont {
+    static func jakarta(_ size: CGFloat, _ weight: Font.Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {
+        let face: String
+        switch weight {
+        case .black, .heavy: face = "ExtraBold"
+        case .bold: face = "Bold"
+        case .semibold: face = "SemiBold"
+        case .medium: face = "Medium"
+        default: face = "Regular"
+        }
+        return .custom("PlusJakartaSans-\(face)", size: size, relativeTo: style)
+    }
+
+    static let display = jakarta(38, .heavy, relativeTo: .largeTitle)
+    static let headlineXL = jakarta(30, .bold, relativeTo: .largeTitle)
+    static let headlineLG = jakarta(28, .bold, relativeTo: .title)
+    static let headlineMD = jakarta(22, .semibold, relativeTo: .title2)
+    static let headlineSM = jakarta(18, .semibold, relativeTo: .title3)
+    static let bodyLG = jakarta(16, .regular, relativeTo: .body)
+    static let bodyMD = jakarta(14, .regular, relativeTo: .subheadline)
+    static let bodySM = jakarta(12, .regular, relativeTo: .footnote)
+    static let labelLG = jakarta(14, .semibold, relativeTo: .subheadline)
+    static let labelMD = jakarta(12, .semibold, relativeTo: .caption)
+    /// Use with `.textCase(.uppercase)` and `.tracking(0.6)`.
+    static let labelSM = jakarta(10, .bold, relativeTo: .caption2)
 }
 
 extension LinearGradient {
@@ -59,7 +125,7 @@ extension LinearGradient {
 struct PDGradientButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .bold))
+            .font(PDFont.jakarta(16, .bold))
             .foregroundStyle(Color.pdOnPrimaryFixed)
             .frame(maxWidth: .infinity, minHeight: 52)
             .background(Capsule().fill(LinearGradient.pdAction))
@@ -92,16 +158,16 @@ struct PDDateBadge: View {
     var body: some View {
         VStack(spacing: 1) {
             Text(month.uppercased())
-                .font(.system(size: 10, weight: .bold))
+                .font(PDFont.labelSM)
                 .tracking(0.8)
                 .foregroundStyle(highlighted ? Color.pdOnPrimaryFixed : Color.pdPrimary)
             Text(day)
-                .font(.system(size: 20, weight: .heavy))
+                .font(PDFont.jakarta(20, .heavy, relativeTo: .title3))
                 .foregroundStyle(highlighted ? Color.pdOnPrimaryFixed : Color.pdOnSurface)
         }
         .frame(width: 48, height: 54)
         .background(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: PDRadius.card)
                 .fill(highlighted ? AnyShapeStyle(LinearGradient.pdAction) : AnyShapeStyle(Color.pdSurfaceHighest))
         )
         .accessibilityElement(children: .combine)

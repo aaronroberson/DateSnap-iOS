@@ -26,64 +26,46 @@ extension Color {
         )
     }
     
-    // MARK: - Semantic Tokens
-    static let dsBackground = Color(hex: "050816")
-    static let dsForeground = Color(hex: "F7F8FF")
-    static let dsCard = Color(hex: "121834").opacity(0.72)
-    static let dsCardElevated = Color(hex: "192144").opacity(0.85)
-    static let dsCardForeground = Color(hex: "F7F8FF")
-    
-    static let dsPrimary = Color(hex: "7CFFEA") // Luminous Cyan
-    static let dsPrimaryForeground = Color(hex: "07111F")
-    
-    static let dsSecondary = Color(hex: "5B7CFF") // Electric Blue / Indigo
-    static let dsSecondaryForeground = Color(hex: "F7F8FF")
-    
-    static let dsMuted = Color.white.opacity(0.08)
-    static let dsMutedForeground = Color(hex: "A8B0D4")
-    
-    static let dsBorder = Color(hex: "ADC3FF").opacity(0.18)
-    static let dsBorderBright = Color(hex: "ADC3FF").opacity(0.35)
-    
-    static let dsAccent = Color(hex: "FF4FB3") // Luminous Magenta
-    static let dsAccent2 = Color(hex: "FF8A3D") // Motion Orange
-    
-    static let dsSuccess = Color(hex: "46E39A")
-    static let dsWarning = Color(hex: "FFBE55")
-    static let dsError = Color(hex: "FF6B7A")
-    static let dsInfo = Color(hex: "63B8FF")
-    
-    static let dsOverlay = Color(hex: "040816").opacity(0.78)
-    static let dsGlassHighlight = Color.white.opacity(0.22)
-    
+    // MARK: - Legacy semantic aliases
+    // Older views use these names; they resolve to the Pencil'd roles in
+    // PencilTokens.swift so every screen shares one palette.
+    static let dsBackground = pdSurface
+    static let dsForeground = pdOnSurface
+    static let dsCard = pdSurfaceContainer.opacity(0.85)
+    static let dsCardElevated = pdSurfaceContainerHigh.opacity(0.92)
+    static let dsSurfaceElevated = pdSurfaceContainerHigh
+    static let dsCardForeground = pdOnSurface
+
+    static let dsPrimary = pdPrimary
+    static let dsPrimaryForeground = pdOnPrimaryFixed
+
+    static let dsSecondary = pdSecondary
+    static let dsSecondaryForeground = pdOnSurface
+
+    static let dsMuted = pdSurfaceHighest.opacity(0.6)
+    static let dsMutedForeground = pdOnSurfaceVariant
+
+    static let dsBorder = pdSurfaceHighest.opacity(0.6)
+    static let dsBorderBright = pdOutlineVariant
+
+    static let dsAccent = pdTertiaryContainer
+    static let dsAccent2 = pdPrimaryContainer
+
+    static let dsSuccess = pdSuccess
+    static let dsWarning = pdWarning
+    static let dsError = pdError
+    static let dsInfo = pdInfo
+
+    static let dsOverlay = pdSurfaceLowest.opacity(0.85)
+    static let dsGlassHighlight = Color.white.opacity(0.12)
+
     // MARK: - Gradients
-    static let dsScanGradient = LinearGradient(
-        colors: [Color(hex: "FF8A3D"), Color(hex: "FF4FB3"), Color(hex: "7B61FF")],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
-    
-    static let dsBrandGradient = LinearGradient(
-        colors: [
-            Color(hex: "32C5FF"),
-            Color(hex: "5B7CFF"),
-            Color(hex: "9D4DFF"),
-            Color(hex: "FF4FB3"),
-            Color(hex: "FF8A3D")
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-    
-    static let dsPrimaryActionGradient = LinearGradient(
-        colors: [Color(hex: "7CFFEA"), Color(hex: "32C5FF")],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static let dsScanGradient = LinearGradient.pdSignature
+    static let dsBrandGradient = LinearGradient.pdSignature
+    static let dsPrimaryActionGradient = LinearGradient.pdAction
     static let dsPrimaryAction = dsPrimaryActionGradient
-    
     static let dsGoldGradient = LinearGradient(
-        colors: [Color(hex: "FFBE55"), Color(hex: "FF8A3D")],
+        colors: [.pdWarning, .pdPrimaryContainer],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )

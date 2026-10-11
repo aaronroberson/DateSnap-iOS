@@ -1,42 +1,37 @@
 import SwiftUI
 
-// MARK: - Glass Card Modifier
+// MARK: - Card Modifier
+/// Stitch card: tonal surface-container fill, 12pt radius, soft shadow and no
+/// border. An explicit `borderColor` is kept as an accent outline for
+/// highlighted or warning cards. Legacy radii above 16pt collapse to the
+/// Stitch card radius so older call sites converge on one shape.
 struct DSGlassCardModifier: ViewModifier {
-    var cornerRadius: CGFloat = 20
+    var cornerRadius: CGFloat = PDRadius.card
     var elevated: Bool = false
-    var borderColor: Color = Color.dsBorder
+    var borderColor: Color = .clear
     var borderWidth: CGFloat = 1
-    
+
+    private var radius: CGFloat { cornerRadius > PDRadius.plan ? PDRadius.card : cornerRadius }
+
     func body(content: Content) -> some View {
         content
             .background(
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(elevated ? Color.dsCardElevated : Color.dsCard)
+                RoundedRectangle(cornerRadius: radius)
+                    .fill(elevated ? Color.pdSurfaceContainerHigh.opacity(0.9) : Color.pdSurfaceContainer.opacity(0.85))
                     .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius)
+                        RoundedRectangle(cornerRadius: radius)
                             .stroke(borderColor, lineWidth: borderWidth)
                     )
-                    .overlay(
-                        // Subtle top-edge glass highlight
-                        VStack {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .stroke(Color.dsGlassHighlight, lineWidth: 1)
-                                .frame(height: 2)
-                                .padding(.horizontal, 2)
-                            Spacer()
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-                    )
+                    .shadow(color: Color.black.opacity(0.25), radius: 12, y: 4)
             )
     }
 }
 
-// MARK: - View Extension for Styling
 extension View {
     func dsGlassCard(
-        cornerRadius: CGFloat = 20,
+        cornerRadius: CGFloat = PDRadius.card,
         elevated: Bool = false,
-        borderColor: Color = Color.dsBorder,
+        borderColor: Color = .clear,
         borderWidth: CGFloat = 1
     ) -> some View {
         modifier(DSGlassCardModifier(
@@ -46,146 +41,108 @@ extension View {
             borderWidth: borderWidth
         ))
     }
-    
+
+    /// Stitch canvas: deep surface with faint orange and violet ambient light.
     func dsScreenBackground() -> some View {
         self
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 ZStack {
-                    Color.dsBackground.ignoresSafeArea()
-                    
-                    // Subtle ambient gradient orbs
+                    Color.pdSurface
                     Circle()
-                        .fill(Color.dsSecondary.opacity(0.12))
-                        .blur(radius: 90)
+                        .fill(Color.pdPrimaryContainer.opacity(0.10))
+                        .blur(radius: 100)
                         .frame(width: 320, height: 320)
-                        .offset(x: -120, y: -220)
-                    
+                        .offset(x: -130, y: -240)
                     Circle()
-                        .fill(Color.dsAccent.opacity(0.08))
+                        .fill(Color.pdSecondaryContainer.opacity(0.16))
                         .blur(radius: 110)
                         .frame(width: 300, height: 300)
-                        .offset(x: 140, y: 180)
+                        .offset(x: 150, y: 220)
                 }
                 .ignoresSafeArea()
             )
     }
 }
 
-// MARK: - Confidence Pill Component
+// MARK: - Confidence Pill
+/// Confidence state always combines icon, label and color.
 struct DSConfidencePill: View {
     let score: Int
     let label: String
-    
-    var color: Color {
-        if score >= 90 {
-            return Color.dsSuccess
-        } else if score >= 70 {
-            return Color.dsWarning
-        } else {
-            return Color.dsError
-        }
+
+    private var color: Color {
+        if score >= 90 { return .pdSuccess }
+        if score >= 70 { return .pdWarning }
+        return .pdError
     }
-    
-    var iconName: String {
-        if score >= 90 {
-            return "checkmark.shield.fill"
-        } else if score >= 70 {
-            return "exclamationmark.triangle.fill"
-        } else {
-            return "xmark.octagon.fill"
-        }
+
+    private var iconName: String {
+        if score >= 90 { return "checkmark.seal.fill" }
+        if score >= 70 { return "exclamationmark.triangle.fill" }
+        return "xmark.octagon.fill"
     }
-    
+
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 4) {
             Image(systemName: iconName)
-                .font(.system(size: 11, weight: .bold))
+                .font(PDFont.jakarta(11, .bold, relativeTo: .caption2))
             Text("\(score)% \(label)")
-                .font(DSTypography.overlineConfidence())
+                .font(PDFont.labelMD)
         }
         .foregroundStyle(color)
-        .padding(.horizontal, 9)
+        .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background(
-            Capsule()
-                .fill(color.opacity(0.14))
-                .overlay(
-                    Capsule()
-                        .stroke(color.opacity(0.32), lineWidth: 1)
-                )
-        )
+        .background(Capsule().fill(color.opacity(0.15)))
+        .accessibilityElement(children: .combine)
     }
 }
 
-// MARK: - Standard Date Badge
+// MARK: - Date Badge
 struct DSDateBadge: View {
     let month: String
     let day: String
     var isSelected: Bool = false
-    
+
     var body: some View {
-        VStack(spacing: 1) {
-            Text(month.uppercased())
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
-                .padding(.top, 4)
-            
-            Text(day)
-                .font(.system(size: 20, weight: .heavy, design: .rounded))
-                .foregroundStyle(Color.dsForeground)
-                .padding(.bottom, 4)
-        }
-        .frame(width: 54, height: 60)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(isSelected ? Color.dsSecondary.opacity(0.24) : Color.dsCardElevated)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(isSelected ? Color.dsPrimary.opacity(0.6) : Color.dsBorder, lineWidth: 1)
-                )
-        )
+        PDDateBadge(month: month, day: day, highlighted: isSelected)
     }
 }
 
-// MARK: - Primary Luminous CTA Button Style
+// MARK: - Primary CTA
+/// Full-width gradient pill, the Stitch primary action.
 struct DSPrimaryButtonStyle: ButtonStyle {
     var minHeight: CGFloat = 52
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(DSTypography.bodyStrong())
-            .foregroundStyle(Color.dsPrimaryForeground)
+            .font(PDFont.jakarta(16, .bold))
+            .foregroundStyle(Color.pdOnPrimaryFixed)
             .frame(maxWidth: .infinity)
-            .frame(height: minHeight)
+            .frame(minHeight: minHeight)
             .background(
-                RoundedRectangle(cornerRadius: 26)
-                    .fill(Color.dsPrimaryActionGradient)
-                    .shadow(color: Color.dsPrimary.opacity(configuration.isPressed ? 0.2 : 0.35), radius: 12, y: 4)
+                Capsule()
+                    .fill(LinearGradient.pdAction)
+                    .shadow(color: Color.pdPrimaryContainer.opacity(configuration.isPressed ? 0.15 : 0.3), radius: 14, y: 6)
             )
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
     }
 }
 
-// MARK: - Secondary Glass Button Style
+// MARK: - Secondary CTA
+/// Tonal pill on surface-container-high, the Stitch secondary action.
 struct DSSecondaryButtonStyle: ButtonStyle {
     var minHeight: CGFloat = 50
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(DSTypography.bodyStrong())
-            .foregroundStyle(Color.dsForeground)
+            .font(PDFont.jakarta(16, .semibold))
+            .foregroundStyle(Color.pdOnSurface)
             .frame(maxWidth: .infinity)
-            .frame(height: minHeight)
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.dsCardElevated)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 25)
-                            .stroke(Color.dsBorderBright, lineWidth: 1)
-                    )
-            )
+            .frame(minHeight: minHeight)
+            .background(Capsule().fill(Color.pdSurfaceContainerHigh))
+            .opacity(configuration.isPressed ? 0.8 : 1)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
     }
