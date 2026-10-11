@@ -2,6 +2,8 @@ import SwiftUI
 
 // Routes inside the Settings cluster's navigation stack.
 enum SettingsRoute: String, CaseIterable {
+    case userProfile
+    case defaultCalendar
     case managePlan
     #if DEBUG
     case marketingKit
@@ -24,6 +26,8 @@ struct SettingsClusterView: View {
             SettingsHubView()
                 .navigationDestination(for: SettingsRoute.self) { route in
                     switch route {
+                    case .userProfile: UserProfileFlowView()
+                    case .defaultCalendar: DefaultCalendarView()
                     case .managePlan: ManagePlanView()
                     #if DEBUG
                     case .marketingKit: MarketingKitView()
