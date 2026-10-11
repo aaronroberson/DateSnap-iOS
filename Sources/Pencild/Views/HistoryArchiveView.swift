@@ -10,49 +10,8 @@ struct HistoryArchiveView: View {
     @State private var selectedFilter: SavedEventStatus = .saved
     @State private var searchText: String = ""
     @State private var pendingDelete: SavedEvent? = nil
-    @State private var smartFilter: SmartFilter? = nil
+    @State private var smartFilter: EventSmartFilter? = nil
 
-    /// Archive triage filters layered on the status chips.
-    enum SmartFilter: String, CaseIterable, Identifiable {
-        case upcoming = "Upcoming"
-        case rsvpDue = "RSVP Due"
-        case repeating = "Repeats"
-        case duplicates = "Possible Duplicates"
-
-        var id: String { rawValue }
-        var icon: String {
-            switch self {
-            case .upcoming: return "calendar"
-            case .rsvpDue: return "envelope.badge"
-            case .repeating: return "repeat"
-            case .duplicates: return "square.on.square"
-            }
-        }
-    }
-
-    /// IDs of saved records that belong to a likely-duplicate cluster (Premium).
-    private var duplicateIDs: Set<String> {
-        let entries = savedEvents.compactMap { saved -> EventSimilarityService.Entry? in
-            guard let candidate = saved.candidate else { return nil }
-            return EventSimilarityService.Entry(id: saved.id, similarityKey: candidate.similarityKey, title: candidate.title,
-                                                start: candidate.startDate, isSaved: saved.status == .saved)
-        }
-        return Set(EventSimilarityService.premiumClusters(
-            entries,
-            snapshot: services.subscription.entitlementSnapshot
-        ).flatMap { $0.map(\.id) })
-    }
-
-    private func matches(_ filter: SmartFilter, _ saved: SavedEvent, candidate: EventCandidate, duplicates: Set<String>) -> Bool {
-        let now = Date()
-        switch filter {
-        case .upcoming: return candidate.startDate >= now
-        case .rsvpDue: return (candidate.rsvpDeadline.map { $0 >= Calendar.current.startOfDay(for: now) }) ?? false
-        case .repeating: return candidate.recurrenceRaw != nil || candidate.interpretation?.stored?.understanding.recurrence != nil
-        case .duplicates: return duplicates.contains(saved.id)
-        }
-    }
-    
     private var actions: SavedEventActions {
         SavedEventActions(services: services, modelContext: modelContext)
     }
@@ -63,9 +22,12 @@ struct HistoryArchiveView: View {
 
     /// Records in the selected status, matching the search across title, venue, address, notes and date.
     private var filteredEvents: [SavedEvent] {
-        savedEvents.filter { saved in
+        let duplicates = smartFilter == .duplicates
+            ? EventSmartFilter.duplicateIDs(in: savedEvents, services: services)
+            : []
+        return savedEvents.filter { saved in
             guard saved.status == selectedFilter, let candidate = saved.candidate else { return false }
-            if let smartFilter, !matches(smartFilter, saved, candidate: candidate, duplicates: smartFilter == .duplicates ? duplicateIDs : []) {
+            if let smartFilter, !smartFilter.matches(saved, candidate: candidate, duplicates: duplicates) {
                 return false
             }
             guard !searchText.isEmpty else { return true }
@@ -120,51 +82,13 @@ struct HistoryArchiveView: View {
                         .font(DSTypography.caption())
                         .foregroundStyle(Color.dsMutedForeground)
                     
-                    // Search Bar
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundStyle(Color.dsMutedForeground)
-                        
-                        TextField("Search events, venues, dates...", text: $searchText)
-                            .font(DSTypography.bodyCompact())
-                            .foregroundStyle(Color.dsForeground)
-                        
-                        if !searchText.isEmpty {
-                            Button {
-                                searchText = ""
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(Color.dsMutedForeground)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.dsCard)
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.dsBorder, lineWidth: 1))
+                    EventSearchFilterBar(
+                        searchText: $searchText,
+                        status: $selectedFilter,
+                        smartFilter: $smartFilter,
+                        counts: Dictionary(uniqueKeysWithValues: SavedEventStatus.allCases.map { ($0, count($0)) }),
+                        idPrefix: "history"
                     )
-                    .padding(.top, 6)
-                    
-                    // Filter Chips Row
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            filterChip(status: .saved, count: count(.saved))
-                            filterChip(status: .draft, count: count(.draft))
-                            filterChip(status: .archived, count: count(.archived))
-                        }
-                        .padding(.vertical, 8)
-                    }
-
-                    // Smart triage filters
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(SmartFilter.allCases) { filter in
-                                smartFilterChip(filter)
-                            }
-                        }
-                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
@@ -233,66 +157,6 @@ struct HistoryArchiveView: View {
             } message: { _ in
                 Text("Pending Pencil'd alerts for this event will be cancelled.")
             }
-        }
-    }
-    
-    @ViewBuilder
-    private func smartFilterChip(_ filter: SmartFilter) -> some View {
-        let isSelected = smartFilter == filter
-        let locked = filter == .duplicates && !appState.isEntitled(to: .duplicateClusters)
-        Button {
-            if locked {
-                appState.activeModal = .premiumPaywall
-            } else {
-                smartFilter = isSelected ? nil : filter
-            }
-        } label: {
-            HStack(spacing: 5) {
-                Image(systemName: locked ? "lock.fill" : filter.icon)
-                    .font(.system(size: 11, weight: .semibold))
-                Text(filter.rawValue)
-                    .font(DSTypography.caption())
-            }
-            .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
-            .padding(.horizontal, 12)
-            .frame(minHeight: 44)
-            .background(
-                Capsule()
-                    .fill(isSelected ? Color.dsPrimary.opacity(0.14) : Color.clear)
-                    .overlay(Capsule().stroke(isSelected ? Color.dsPrimary : Color.dsBorder, lineWidth: 1))
-            )
-        }
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .accessibilityHint(locked ? PremiumFeature.duplicateClusters.upgradeReason : "Filters the history list")
-    }
-
-    @ViewBuilder
-    private func filterChip(status: SavedEventStatus, count: Int) -> some View {
-        let isSelected = selectedFilter == status
-        Button {
-            selectedFilter = status
-        } label: {
-            HStack(spacing: 6) {
-                Text(status.eventStatus.rawValue)
-                    .font(DSTypography.labelChip())
-                Text("\(count)")
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(
-                        Capsule().fill(isSelected ? Color.dsPrimary.opacity(0.3) : Color.white.opacity(0.1))
-                    )
-            }
-            .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(
-                Capsule()
-                    .fill(isSelected ? Color.dsSecondary.opacity(0.2) : Color.dsCard)
-                    .overlay(
-                        Capsule().stroke(isSelected ? Color.dsPrimary : Color.dsBorder, lineWidth: 1)
-                    )
-            )
         }
     }
     

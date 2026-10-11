@@ -9,15 +9,31 @@ struct AgendaView: View {
 
     @State private var searchText = ""
     @State private var selectedFilter: AgendaDateFilter = .upcoming
+    @State private var selectedStatus: SavedEventStatus = .saved
+    @State private var smartFilter: EventSmartFilter? = nil
 
     private var agendaEvents: [SavedEvent] {
-        savedEvents
-            .filter { $0.status == .saved && $0.candidate != nil }
+        let duplicates = smartFilter == .duplicates
+            ? EventSmartFilter.duplicateIDs(in: savedEvents, services: services)
+            : []
+        return savedEvents
+            .filter { $0.status == selectedStatus && $0.candidate != nil }
             .filter { saved in
                 guard let candidate = saved.candidate else { return false }
+                if let smartFilter, !smartFilter.matches(saved, candidate: candidate, duplicates: duplicates) { return false }
                 return selectedFilter.includes(candidate.startDate, relativeTo: Date()) && matchesSearch(saved, candidate: candidate)
             }
             .sorted { ($0.candidate?.startDate ?? .distantFuture) < ($1.candidate?.startDate ?? .distantFuture) }
+    }
+
+    private var statusCounts: [SavedEventStatus: Int] {
+        Dictionary(uniqueKeysWithValues: SavedEventStatus.allCases.map { status in
+            (status, savedEvents.filter { $0.status == status && $0.candidate != nil }.count)
+        })
+    }
+
+    private var hasActiveFilters: Bool {
+        !searchText.isEmpty || smartFilter != nil
     }
 
     private var todayEvents: [SavedEvent] {
@@ -45,7 +61,14 @@ struct AgendaView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
                 header
-                searchField
+                EventSearchFilterBar(
+                    searchText: $searchText,
+                    status: $selectedStatus,
+                    smartFilter: $smartFilter,
+                    counts: statusCounts,
+                    excludedSmartFilters: [.upcoming],
+                    idPrefix: "agenda"
+                )
                 dateFilters
 
                 if agendaEvents.isEmpty {
@@ -95,34 +118,6 @@ struct AgendaView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var searchField: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(Color.dsMutedForeground)
-            TextField("Search events, venues, dates…", text: $searchText)
-                .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsForeground)
-                .accessibilityIdentifier("agenda.search")
-            if !searchText.isEmpty {
-                Button {
-                    searchText = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(Color.dsMutedForeground)
-                        .frame(minWidth: 44, minHeight: 44)
-                }
-                .accessibilityLabel("Clear agenda search")
-            }
-        }
-        .padding(.leading, 14)
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.dsCard)
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.dsBorder, lineWidth: 1))
-        )
-    }
-
     private var dateFilters: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
@@ -152,17 +147,17 @@ struct AgendaView: View {
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            Image(systemName: searchText.isEmpty ? "calendar.badge.plus" : "magnifyingglass")
+            Image(systemName: hasActiveFilters ? "magnifyingglass" : "calendar.badge.plus")
                 .font(.system(size: 34))
                 .foregroundStyle(Color.dsSecondary)
-            Text(searchText.isEmpty ? emptyTitle : "No matching events")
+            Text(hasActiveFilters ? "No matching events" : emptyTitle)
                 .font(DSTypography.headlineCard())
                 .foregroundStyle(Color.dsForeground)
-            Text(searchText.isEmpty ? emptyMessage : "Try another event, venue, or date.")
+            Text(hasActiveFilters ? "Try another event, venue, date, or filter." : emptyMessage)
                 .font(DSTypography.caption())
                 .foregroundStyle(Color.dsMutedForeground)
                 .multilineTextAlignment(.center)
-            if searchText.isEmpty {
+            if !hasActiveFilters && selectedStatus == .saved {
                 Button {
                     appState.selectedTab = .home
                 } label: {
@@ -179,13 +174,22 @@ struct AgendaView: View {
     }
 
     private var emptyTitle: String {
-        selectedFilter == .past ? "No past events" : "Your agenda is clear"
+        switch selectedStatus {
+        case .draft: return "No draft events"
+        case .archived: return "No archived events"
+        case .saved: return selectedFilter == .past ? "No past events" : "Your agenda is clear"
+        }
     }
 
     private var emptyMessage: String {
-        selectedFilter == .past
-            ? "Past events will appear here when you choose the Past filter."
-            : "Events you review and save will appear here."
+        switch selectedStatus {
+        case .draft: return "Scans waiting for your review will appear here."
+        case .archived: return "Events you archive will appear here."
+        case .saved:
+            return selectedFilter == .past
+                ? "Past events will appear here when you choose the Past filter."
+                : "Events you review and save will appear here."
+        }
     }
 
     private func eventSection(_ title: String, events: [SavedEvent]) -> some View {
@@ -210,7 +214,7 @@ struct AgendaView: View {
         return HStack(spacing: 10) {
             Button {
                 guard let event = candidate?.toPencildEvent() else { return }
-                appState.activeModal = .savedEventDetail(event)
+                appState.activeModal = saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)
             } label: {
                 HStack(spacing: 12) {
                     DSDateBadge(
@@ -239,24 +243,27 @@ struct AgendaView: View {
             .accessibilityIdentifier("agenda.event.\(saved.id)")
 
             Button {
+                let isArchived = saved.status == .archived
+                let target: SavedEventStatus = isArchived ? (saved.externalCalendarEventId != nil ? .saved : .draft) : .archived
                 let result = SavedEventActions(services: services, modelContext: modelContext)
-                    .setStatus(.archived, for: saved)
+                    .setStatus(target, for: saved)
+                let done = isArchived ? "Event restored" : "Event archived"
                 switch result {
                 case .success:
-                    appState.showToast("Event archived")
+                    appState.showToast(done)
                 case .partial(let issues):
-                    appState.showToast("Archived with issues: \(issues.joined(separator: "; "))")
+                    appState.showToast("Completed with issues: \(issues.joined(separator: "; "))")
                 case .failure(let error):
                     appState.showToast(error.localizedDescription)
                 }
             } label: {
-                Image(systemName: "archivebox")
+                Image(systemName: saved.status == .archived ? "arrow.uturn.backward" : "archivebox")
                     .foregroundStyle(Color.dsMutedForeground)
                     .frame(width: 44, height: 44)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Archive \(candidate?.title ?? "event")")
+            .accessibilityLabel("\(saved.status == .archived ? "Restore" : "Archive") \(candidate?.title ?? "event")")
         }
         .padding(12)
         .dsGlassCard(cornerRadius: 16)
