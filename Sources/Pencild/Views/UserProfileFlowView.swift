@@ -1,14 +1,34 @@
 import SwiftUI
 import SwiftData
+import AuthenticationServices
 
 // MARK: - Profile
-/// Pencil'd has no account system: everything lives on this device and the plan comes from the
-/// App Store. This screen therefore shows only real, locally derived values — the current plan,
-/// activity counted from saved events, and on-device privacy facts. With no data it shows zeros.
+/// Account-light profile. Pencil'd has no server, so identity is exactly what Sign in with Apple
+/// returns (Apple verifies the Apple ID and its email), stored on this device. There are no
+/// email/phone verification steps. Plan comes from StoreKit; activity is counted from saved events.
 struct UserProfileFlowView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var settings: SettingsState
     @Query(sort: \SavedEvent.createdAt, order: .reverse) private var savedEvents: [SavedEvent]
+
+    @AppStorage("account.appleUserID") private var appleUserID = ""
+    @AppStorage("account.displayName") private var displayName = ""
+    @AppStorage("account.email") private var email = ""
+    @AppStorage("account.linkedAt") private var linkedAt: Double = 0
+    @AppStorage("settings.automaticCaptureEnabled") private var autoCaptureEnabled = true
+
+    private enum EditField: String, Identifiable {
+        case name
+        var id: String { rawValue }
+        var title: String { "Name" }
+        var keyboard: UIKeyboardType { .default }
+    }
+    @State private var editField: EditField?
+    @State private var draft = ""
+    private let calendarStore = DefaultCalendarStore()
+
+    private var isSignedInWithApple: Bool { !appleUserID.isEmpty }
 
     private var tier: SubscriptionTier { appState.subscriptionTier }
 
@@ -35,9 +55,11 @@ struct UserProfileFlowView: View {
             VStack(spacing: 20) {
                 header
                 intro
+                identityCard
                 planCard
                 activityGrid
-                detailsCard
+                credentialsCard
+                preferencesCard
                 privacyCard
             }
             .padding(.horizontal, 16)
@@ -45,6 +67,75 @@ struct UserProfileFlowView: View {
             .padding(.bottom, 32)
         }
         .dsScreenBackground()
+        .task { await validateAppleCredential() }
+        .alert(
+            editField?.title ?? "",
+            isPresented: Binding(get: { editField != nil }, set: { if !$0 { editField = nil } })
+        ) {
+            TextField(editField?.title ?? "", text: $draft)
+                .keyboardType(editField?.keyboard ?? .default)
+            Button("Save") { commitEdit() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Saved on this device only.")
+        }
+    }
+
+    // MARK: Account actions
+    private func beginEdit(_ field: EditField) {
+        switch field {
+        case .name: draft = displayName
+        }
+        editField = field
+    }
+
+    private func commitEdit() {
+        let value = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        switch editField {
+        case .name: displayName = value
+        case nil: break
+        }
+        editField = nil
+    }
+
+    private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) {
+        switch result {
+        case .success(let authorization):
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
+            appleUserID = credential.user
+            linkedAt = Date().timeIntervalSince1970
+            if let components = credential.fullName {
+                let formatted = PersonNameComponentsFormatter().string(from: components)
+                if !formatted.isEmpty { displayName = formatted }
+            }
+            // Apple only returns name/email on the first authorization.
+            if let appleEmail = credential.email, !appleEmail.isEmpty {
+                email = appleEmail
+            }
+        case .failure(let error):
+            if (error as? ASAuthorizationError)?.code != .canceled {
+                appState.showToast("Sign in with Apple didn’t complete")
+            }
+        }
+    }
+
+    private func signOut() {
+        appleUserID = ""
+        displayName = ""
+        email = ""
+        linkedAt = 0
+    }
+
+    /// If the person revoked Pencil’d in Apple ID settings, drop the stale link.
+    private func validateAppleCredential() async {
+        guard !appleUserID.isEmpty else { return }
+        let state = try? await ASAuthorizationAppleIDProvider().credentialState(forUserID: appleUserID)
+        if state == .revoked || state == .notFound { signOut() }
+    }
+
+    private var initials: String {
+        let parts = displayName.split(separator: " ").prefix(2).compactMap { $0.first }
+        return parts.isEmpty ? "" : String(parts).uppercased()
     }
 
     // MARK: Sections
@@ -134,17 +225,129 @@ struct UserProfileFlowView: View {
         }
     }
 
-    private var detailsCard: some View {
-        VStack(spacing: 0) {
-            detailRow(icon: "lock.shield", title: "Data storage", value: "On this device")
-            Divider().overlay(Color.dsBorder)
-            detailRow(
-                icon: "calendar",
-                title: "First event saved",
-                value: firstSavedDate.map { $0.formatted(date: .abbreviated, time: .omitted) } ?? "None yet"
-            )
+    private var identityCard: some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle().stroke(Color.dsBrandGradient, lineWidth: 2).frame(width: 68, height: 68)
+                    Circle().fill(Color.dsBackground).frame(width: 64, height: 64)
+                    if initials.isEmpty {
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(Color.dsMutedForeground)
+                    } else {
+                        Text(initials)
+                            .font(.system(size: 22, weight: .heavy, design: .rounded))
+                            .foregroundStyle(Color.dsBrandGradient)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(displayName.isEmpty ? (isSignedInWithApple ? "Apple ID linked" : "Not signed in") : displayName)
+                        .font(DSTypography.headlineCard())
+                        .foregroundStyle(displayName.isEmpty ? Color.dsMutedForeground : Color.dsForeground)
+                    if isSignedInWithApple {
+                        Text(email.isEmpty ? "Email hidden by Apple" : email)
+                            .font(DSTypography.caption())
+                            .foregroundStyle(Color.dsMutedForeground)
+                    }
+                    HStack(spacing: 4) {
+                        Image(systemName: isSignedInWithApple ? "checkmark.seal.fill" : "person.crop.circle.badge.questionmark")
+                            .font(.system(size: 11))
+                            .foregroundStyle(isSignedInWithApple ? Color.dsPrimary : Color.dsMutedForeground)
+                        Text(isSignedInWithApple ? "Verified by Apple" : "Sign in to link your Apple ID")
+                            .font(DSTypography.caption())
+                            .foregroundStyle(Color.dsMutedForeground)
+                    }
+                }
+                Spacer()
+            }
+
+            if isSignedInWithApple {
+                Button(action: signOut) {
+                    Text("Sign out")
+                        .font(DSTypography.bodyStrong())
+                        .foregroundStyle(Color.dsAccent)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.dsSurfaceElevated))
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Text("Signing out clears these details from this device. Your saved events stay on this device.")
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+            } else {
+                SignInWithAppleButton(.continue) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
+                    handleAppleSignIn(result)
+                }
+                .signInWithAppleButtonStyle(.white)
+                .frame(height: 50)
+                Text("Optional. Pencil’d works without an account; signing in shows your Apple ID name and email here.")
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+            }
         }
+        .padding(16)
         .dsGlassCard()
+    }
+
+    private var credentialsCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("ACCOUNT DETAILS")
+                .font(DSTypography.overlineConfidence())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+            VStack(spacing: 0) {
+                editableRow(icon: "person.text.rectangle", title: "Name", value: displayName, placeholder: isSignedInWithApple ? "Add" : "—", badge: nil) {
+                    if isSignedInWithApple { beginEdit(.name) }
+                }
+                Divider().overlay(Color.dsBorder)
+                detailRow(
+                    icon: "envelope", title: "Email",
+                    value: isSignedInWithApple ? (email.isEmpty ? "Hidden by Apple" : email) : "—"
+                )
+                Divider().overlay(Color.dsBorder)
+                detailRow(icon: "apple.logo", title: "Apple ID", value: isSignedInWithApple ? "Linked · verified" : "Not linked")
+                Divider().overlay(Color.dsBorder)
+                detailRow(
+                    icon: "clock", title: "Signed in",
+                    value: linkedAt > 0 ? Date(timeIntervalSince1970: linkedAt).formatted(date: .abbreviated, time: .omitted) : "—"
+                )
+                Divider().overlay(Color.dsBorder)
+                detailRow(icon: "lock.shield", title: "Data storage", value: "On this device")
+                Divider().overlay(Color.dsBorder)
+                detailRow(
+                    icon: "calendar",
+                    title: "First event saved",
+                    value: firstSavedDate.map { $0.formatted(date: .abbreviated, time: .omitted) } ?? "None yet"
+                )
+            }
+            .dsGlassCard()
+            Text("Name and email come from your Apple ID. Apple shares them only the first time you sign in, and they stay on this device.")
+                .font(DSTypography.caption())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+        }
+    }
+
+    private var preferencesCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("PIPELINE & PREFERENCES")
+                .font(DSTypography.overlineConfidence())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+            VStack(spacing: 0) {
+                navRow(icon: "alarm.fill", title: "Reminder defaults", value: "Smart, by event type", route: .reminderSettings)
+                Divider().overlay(Color.dsBorder)
+                navRow(icon: "calendar.badge.checkmark", title: "Target calendar", value: calendarStore.defaultCalendarTitle() ?? "iOS default", route: .defaultCalendar)
+                Divider().overlay(Color.dsBorder)
+                navRow(icon: "camera.viewfinder", title: "Automatic capture", value: autoCaptureEnabled ? "On" : "Off", route: .automationSettings)
+                Divider().overlay(Color.dsBorder)
+                detailRow(icon: "checkmark.rectangle", title: "Capture pipeline", value: "Review before saving")
+            }
+            .dsGlassCard()
+        }
     }
 
     private var privacyCard: some View {
@@ -203,5 +406,60 @@ struct UserProfileFlowView: View {
                 .foregroundStyle(Color.dsMutedForeground)
         }
         .padding(14)
+    }
+
+    private func editableRow(icon: String, title: String, value: String, placeholder: String, badge: String?, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.dsSurfaceElevated)
+                    .frame(width: 32, height: 32)
+                    .overlay(Image(systemName: icon).font(.system(size: 14)).foregroundStyle(Color.dsPrimary))
+                Text(title)
+                    .font(DSTypography.bodyCompact())
+                    .foregroundStyle(Color.dsForeground)
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(value.isEmpty ? placeholder : value)
+                        .font(DSTypography.caption())
+                        .foregroundStyle(value.isEmpty ? Color.dsPrimary : Color.dsMutedForeground)
+                        .lineLimit(1)
+                    if let badge {
+                        Text(badge)
+                            .font(DSTypography.labelChip())
+                            .foregroundStyle(Color.dsMutedForeground)
+                    }
+                }
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.dsMutedForeground)
+            }
+            .padding(14)
+        }
+        .buttonStyle(SettingsRowButtonStyle())
+    }
+
+    private func navRow(icon: String, title: String, value: String, route: SettingsRoute) -> some View {
+        Button { settings.pendingRoute = route.rawValue } label: {
+            HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.dsSurfaceElevated)
+                    .frame(width: 32, height: 32)
+                    .overlay(Image(systemName: icon).font(.system(size: 14)).foregroundStyle(Color.dsPrimary))
+                Text(title)
+                    .font(DSTypography.bodyCompact())
+                    .foregroundStyle(Color.dsForeground)
+                Spacer()
+                Text(value)
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+                    .lineLimit(1)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.dsMutedForeground)
+            }
+            .padding(14)
+        }
+        .buttonStyle(SettingsRowButtonStyle())
     }
 }
