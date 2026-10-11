@@ -22,28 +22,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check Pencil'd brand identity
+        run: |
+          python3 scripts/verify-brand-identity.py --worktree
+          python3 scripts/tests/test_brand_identity_gate.py
+
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      # The core guard: DateSnap.xcodeproj is GENERATED from project.yml.
+      # The core guard: Pencild.xcodeproj is GENERATED from project.yml.
       # Regenerating before every build means a file added to
-      # Sources/DateSnap or Tests/DateSnapTests is always compiled and
+      # Sources/Pencild or Tests/PencildTests is always compiled and
       # tested, even if the committed pbxproj was hand-edited and left
-      # stale (the failure mode that hid 10 files from the suite for
-      # multiple merged PRs).
-      - name: Regenerate DateSnap.xcodeproj from project.yml
+      # stale.
+      - name: Regenerate Pencild.xcodeproj from project.yml
         run: xcodegen generate
 
       # Soft check (does not block): warns when the committed pbxproj
-      # differs from fresh generator output, e.g. xcodegen version drift
-      # or a contributor forgot to run `xcodegen generate` before
-      # committing. The build always proceeds on the regenerated
-      # project, so the test gate itself is unaffected.
+      # differs from fresh generator output.
       - name: Check committed pbxproj matches xcodegen output
         continue-on-error: true
         run: |
-          if ! git diff --exit-code DateSnap.xcodeproj; then
-            echo "::warning file=DateSnap.xcodeproj/project.pbxproj::Committed DateSnap.xcodeproj differs from 'xcodegen generate' output. Run xcodegen locally and commit the result."
+          if ! git diff --exit-code Pencild.xcodeproj; then
+            echo "::warning file=Pencild.xcodeproj/project.pbxproj::Committed Pencild.xcodeproj differs from 'xcodegen generate' output. Run xcodegen locally and commit the result."
             exit 1
           fi
 
@@ -61,5 +62,5 @@ jobs:
       - name: Run full test suite
         run: |
           xcodebuild test \
-            -scheme DateSnap \
+            -scheme Pencild \
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}"
