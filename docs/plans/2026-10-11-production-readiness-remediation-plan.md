@@ -152,3 +152,14 @@ asset thumbnail to canonical `pd*` roles and `PDRadius`. The shared
 `.dsScreenBackground()` compatibility modifier and unrelated Settings/Profile
 callers remain unchanged. Debug builds passed for iPhone 17 and iPad Pro
 11-inch after this batch; the brand gate and `git diff --check` passed.
+
+2026-10-11: Phase 2 View Decomposition completed.
+Extracted large views and monolithic cards into focused subviews:
+- `ScanProgressOverlay` and `PDScanStepRow` to `Sources/Pencild/Views/ScanProgressOverlay.swift` (reduced `ScanFlowViews` from 676 to 576 lines).
+- `EventReviewSourceInspector` to `Sources/Pencild/Views/EventReviewSourceInspector.swift` for iPad dual-pane viewport zoom/pan inspection.
+- `EventReviewFieldsCard` to `Sources/Pencild/Views/EventReviewFieldsCard.swift`.
+- `EventReviewDestinationCard` to `Sources/Pencild/Views/EventReviewDestinationCard.swift`.
+- `EventReviewSourceBanner` to `Sources/Pencild/Views/EventReviewSourceBanner.swift` (reduced `EventReviewEditView` from 1,031 to 568 lines).
+- `EventInterpretationDetailCard` to `Sources/Pencild/Views/EventInterpretationDetailCard.swift` (reduced `SavedEventDetailView` from 375 to 315 lines).
+- `BatchDestinationsEditor` and `BatchTitledField` to `Sources/Pencild/Views/BatchDestinationsEditor.swift` (reduced `BatchReviewView` from 685 to 560 lines).
+All 119 unit tests across 29 test suites passed on iPad Pro 11-inch (M5) simulator, brand gate passed, zero compiler errors or warnings. Ready for Phase 3.
