@@ -1,11 +1,11 @@
 #!/bin/bash
-# round6-integrate.sh - DateSnap recovery round 6
+# round6-integrate.sh - Pencild recovery round 6
 # 0) Identify live agents editing the repo  1) Freeze in-flight changes
 # 2) Merge recreated work (wip snapshot)    3) Merge rescue commit
 # Never touches main. Never leaves the repo dirty. pbcopy at the end.
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
-OUT=$(ls -d "$HOME"/datesnap-recovery-* 2>/dev/null | tail -1)
+REPO="$HOME/apps/Pencild-iOS"
+OUT=$(ls -d "$HOME"/pencild-recovery-* 2>/dev/null | tail -1)
 LOG="$OUT/round6-report.txt"
 exec > >(tee "$LOG") 2>&1
 cd "$REPO" || exit 1

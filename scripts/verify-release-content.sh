@@ -4,7 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-source_root="$repo_root/Sources/DateSnap"
+source_root="$repo_root/Sources/Pencild"
 
 source_forbidden='ServiceContainer[.]mock[(]|\bMock[A-Za-z0-9_]*Service\b|mock-(calendar-event|reminder|notification|deadline)-'
 release_forbidden='InterpretationDiagnosticsView|ServiceContainer[.]mock|Mock[A-Za-z0-9_]*Service|Mock Rooftop Sunset Party|mock-(calendar-event|reminder|notification|deadline)-|All 17 Stitch Screens|Stitch ID:|Screen State & Simulation Hub|Launch Marketing Kit|0[.]12s on-device OCR|auto-purged screenshot storage|6c145dff8ec540b9a51f806629e55c70|sampleNeonSunset|Neon Sunset Rooftop Session|sampleDentalCheckup|Dr. Aris Dental Checkup|sampleSummerMixer|Summer Rooftop Mixer'
@@ -19,10 +19,10 @@ release_forbidden='InterpretationDiagnosticsView|ServiceContainer[.]mock|Mock[A-
 release_forbidden_symbols='ScreenGalleryView|InterpretationDiagnosticsView|rawOcrFragments|stitchId|sampleNeonSunset|sampleDentalCheckup|sampleSummerMixer'
 
 # Usage: verify-release-content.sh [--require-app] [/path/to/Built.app]
-#   --require-app  (or DATESNAP_REQUIRE_APP=1) makes the Release executable scan
+#   --require-app  (or PENCILD_REQUIRE_APP=1) makes the Release executable scan
 #                  MANDATORY. Use this in the release/archive path: without it a
 #                  source-only run exits 0, which is not a release gate.
-require_app="${DATESNAP_REQUIRE_APP:-0}"
+require_app="${PENCILD_REQUIRE_APP:-0}"
 app_path=""
 for arg in "$@"; do
   case "$arg" in
@@ -58,7 +58,7 @@ rg_scan() {
 
 echo "Checking production sources for forbidden mock service code..."
 if rg_scan --line-number --glob '*.swift' --regexp "$source_forbidden" "$source_root"; then
-    echo "error: production mock service code was found under Sources/DateSnap" >&2
+    echo "error: production mock service code was found under Sources/Pencild" >&2
     failure=1
 else
     echo "Source scan passed."

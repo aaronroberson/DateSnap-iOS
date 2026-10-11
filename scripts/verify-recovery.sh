@@ -1,9 +1,9 @@
 #!/bin/bash
 # verify-recovery.sh - Cross-checks what agent harnesses CLAIM they wrote
 # against what is ACTUALLY on disk and in git. READ-ONLY.
-# Usage: bash verify-recovery.sh [repo-path] [hours-back]   (default: ~/apps/DateSnap-iOS, 24h)
+# Usage: bash verify-recovery.sh [repo-path] [hours-back]   (default: ~/apps/Pencild-iOS, 24h)
 set -u
-REPO="${1:-$HOME/apps/DateSnap-iOS}"
+REPO="${1:-$HOME/apps/Pencild-iOS}"
 HOURS="${2:-24}"
 OUT="$HOME/recovery-verify-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$OUT"; cd "$REPO" || exit 1

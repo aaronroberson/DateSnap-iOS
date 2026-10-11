@@ -1,11 +1,11 @@
 #!/bin/bash
-# round4-verdict.sh - DateSnap recovery round 4
+# round4-verdict.sh - Pencild recovery round 4
 # 1) Extract write-tool contents from session dumps (fixed parsing)
 # 2) Three-way verdict for every file: rescue commit vs main vs working tree
 # Prints to terminal AND copies the full report to your clipboard.
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
-OUT=$(ls -d "$HOME"/datesnap-recovery-* 2>/dev/null | tail -1)
+REPO="$HOME/apps/Pencild-iOS"
+OUT=$(ls -d "$HOME"/pencild-recovery-* 2>/dev/null | tail -1)
 LOG="$OUT/round4-report.txt"
 exec > >(tee "$LOG") 2>&1
 cd "$REPO" || exit 1

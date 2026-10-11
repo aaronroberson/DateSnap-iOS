@@ -1,13 +1,13 @@
 #!/bin/bash
-# one-shot-recovery.sh - DateSnap-iOS lost-work triage, all-in-one.
+# one-shot-recovery.sh - Pencild-iOS lost-work triage, all-in-one.
 # 1) Kills any opencode TUI sitting in the repo   2) Backs up + snapshot-commits the tree
 # 3) Attributes the diff (Codex plan doc vs unattributed)
 # 4) Dumps opencode session records + best-effort Write/Edit extraction
 # Usage: bash one-shot-recovery.sh [--test]    (--test also runs swift test at the end)
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
+REPO="$HOME/apps/Pencild-iOS"
 DB="$HOME/.local/share/opencode/opencode.db"
-OUT="$HOME/datesnap-recovery-$(date +%Y%m%d-%H%M%S)"
+OUT="$HOME/pencild-recovery-$(date +%Y%m%d-%H%M%S)"
 PLAN="docs/plans/2026-10-02-mock-data-phases-3-5-plan.md"
 RUN_TESTS=0; [ "${1:-}" = "--test" ] && RUN_TESTS=1
 mkdir -p "$OUT"; REPORT="$OUT/REPORT.md"

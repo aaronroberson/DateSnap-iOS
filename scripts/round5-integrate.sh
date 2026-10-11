@@ -1,13 +1,13 @@
 #!/bin/bash
-# round5-integrate.sh - DateSnap recovery round 5 (final integration)
+# round5-integrate.sh - Pencild recovery round 5 (final integration)
 # Works on a NEW branch (recovery/integrate-20261002). main is never touched.
 # - ff-merges the post-reset recreation (wip snapshot)
 # - merges the rescue commit (12:23 full state); if conflicts, saves both
 #   sides per file and aborts to a clean state - never leaves a dirty repo
 # Prints to terminal AND copies the full report to your clipboard.
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
-OUT=$(ls -d "$HOME"/datesnap-recovery-* 2>/dev/null | tail -1)
+REPO="$HOME/apps/Pencild-iOS"
+OUT=$(ls -d "$HOME"/pencild-recovery-* 2>/dev/null | tail -1)
 LOG="$OUT/round5-report.txt"
 exec > >(tee "$LOG") 2>&1
 cd "$REPO" || exit 1

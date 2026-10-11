@@ -1,10 +1,10 @@
 #!/bin/bash
-# round2-triage.sh - DateSnap recovery round 2
+# round2-triage.sh - Pencild recovery round 2
 # Branch check, real-schema opencode mining, snapshot probe.
 # Prints to terminal AND copies the full report to your clipboard at the end.
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
-OUT=$(ls -d "$HOME"/datesnap-recovery-* 2>/dev/null | tail -1)
+REPO="$HOME/apps/Pencild-iOS"
+OUT=$(ls -d "$HOME"/pencild-recovery-* 2>/dev/null | tail -1)
 LOG="$OUT/round2-report.txt"
 exec > >(tee "$LOG") 2>&1
 

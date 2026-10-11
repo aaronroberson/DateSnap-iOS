@@ -1,5 +1,5 @@
 #!/bin/bash
-# round7-finish.sh - DateSnap recovery round 7 (finish line)
+# round7-finish.sh - Pencild recovery round 7 (finish line)
 # 0) Retire the live Codex TUI in the repo + freeze any newer edits
 # 1) Merge wip snapshot, taking the NEWER in-flight side for the 5 known conflicts
 # 2) Merge rescue commit, taking the newer side for any conflict (older side saved)
@@ -7,8 +7,8 @@
 # main is never touched. Repo always left clean. pbcopy at the end.
 # Optional: --test runs swift test at the end.
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
-OUT=$(ls -d "$HOME"/datesnap-recovery-* 2>/dev/null | tail -1)
+REPO="$HOME/apps/Pencild-iOS"
+OUT=$(ls -d "$HOME"/pencild-recovery-* 2>/dev/null | tail -1)
 LOG="$OUT/round7-report.txt"
 RUN_TESTS=0; [ "${1:-}" = "--test" ] && RUN_TESTS=1
 exec > >(tee "$LOG") 2>&1
@@ -42,11 +42,11 @@ fi
 
 echo
 echo "== 1. Merge wip snapshot (Gen B), newer side wins on the 5 known files =="
-EXPECTED="Sources/DateSnap/ViewModels/PurchaseViewModel.swift
-Sources/DateSnap/Views/ManagePlanView.swift
-Sources/DateSnap/Views/PlusPaywallView.swift
-Sources/DateSnap/Views/PremiumPaywallView.swift
-Tests/DateSnapTests/PurchaseViewModelTests.swift"
+EXPECTED="Sources/Pencild/ViewModels/PurchaseViewModel.swift
+Sources/Pencild/Views/ManagePlanView.swift
+Sources/Pencild/Views/PlusPaywallView.swift
+Sources/Pencild/Views/PremiumPaywallView.swift
+Tests/PencildTests/PurchaseViewModelTests.swift"
 STEP2_OK=1
 if git merge --no-commit wip/tree-snapshot-20261002-1424 2>/dev/null; then
   git commit --no-edit

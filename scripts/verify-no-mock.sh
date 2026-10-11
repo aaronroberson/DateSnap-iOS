@@ -25,7 +25,7 @@ rg_args=(
   --glob "!design-assets/**"
   --glob "!.opencode/**"
   --glob "!HANDOFF.md"
-  --glob "!DateSnap.xcodeproj/**"
+  --glob "!Pencild.xcodeproj/**"
   --glob "!scripts/verify-release-content.sh"
   --glob "!.stitch/**"
   --glob '!scripts/verify-no-mock.sh'

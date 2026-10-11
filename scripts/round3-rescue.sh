@@ -1,13 +1,13 @@
 #!/bin/bash
-# round3-rescue.sh - DateSnap recovery round 3
+# round3-rescue.sh - Pencild recovery round 3
 # 1) Pins a rescue branch to the orphaned 12:23 commit
 # 2) Diffs it against the current tree (what the 12:46 reset discarded)
 # 3) Extracts both lost plan docs from the session dumps
 # 4) Inventories the snapshot-store git repos with timestamps
 # Prints to terminal AND copies the full report to your clipboard.
 set -u
-REPO="$HOME/apps/DateSnap-iOS"
-OUT=$(ls -d "$HOME"/datesnap-recovery-* 2>/dev/null | tail -1)
+REPO="$HOME/apps/Pencild-iOS"
+OUT=$(ls -d "$HOME"/pencild-recovery-* 2>/dev/null | tail -1)
 LOG="$OUT/round3-report.txt"
 exec > >(tee "$LOG") 2>&1
 cd "$REPO" || exit 1
