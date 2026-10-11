@@ -1,19 +1,19 @@
 # Stitch Download Manifest
 
 **Project:** `9850514973960087780`
-**Live screens listed:** 79
+**Live screens listed:** 80
 **Catalogue IDs:** 58
 **Catalogue IDs confirmed present:** 58
 **Catalogue IDs absent from Stitch:** 0
-**Live IDs absent from catalogue:** 21
+**Live IDs absent from catalogue:** 22
 
 All project screen metadata, HTML/code and screenshot resources were requested. Status is recorded per artifact below. `fetched` means a file was written and validated; `fetched-description` means Stitch returned Markdown source copy rather than renderable HTML; `not-available` means this screen kind has no usable downloadable artifact endpoint/resource. Google sign-in HTML responses are rejected and are not saved as design assets.
 
 ## Shared design tokens
 
 - `.stitch/tokens/design-systems.json`: 1 unique embedded design systems (style guidelines, semantic colors, geometry/elevation guidance).
-- `.stitch/tokens/screen-themes.json`: 79 per-screen theme records (colors, typography, spacing scale and font metadata).
-- `.stitch/tokens/icon-inventory.json`: symbol references extracted from 53 HTML screens. Other inline SVG/image icons remain in each screen's HTML.
+- `.stitch/tokens/screen-themes.json`: 80 per-screen theme records (colors, typography, spacing scale and font metadata).
+- `.stitch/tokens/icon-inventory.json`: symbol references extracted from 54 HTML screens. Other inline SVG/image icons remain in each screen's HTML.
 - Stitch returns design systems and themes embedded in screen metadata; no separate design-token endpoint/artifact was exposed by this project's response schema.
 - Screens can be documentation/asset records rather than visual UI: these may have Markdown descriptions, image-only screenshots, or no renderable screenshot. Status distinguishes these from missing screen metadata.
 
@@ -29,7 +29,7 @@ All project screen metadata, HTML/code and screenshot resources were requested. 
 | `b01ff3968f5a41e091549e94981e6563` | Enter Phone SMS Code | Account-Security-Verification | `.stitch/Account-Security-Verification/Settings/User-Profile/Verify-Phone-Number/Enter-Phone-SMS-Code` | fetched | fetched | fetched | catalogue |
 | `e94d669cef5a4ad5bcf0a7ed72e7e938` | Home Empty State | Brand-Onboarding | `.stitch/Brand-Onboarding/Home-Empty-State` | fetched | fetched | fetched | catalogue |
 | `e166be75965c43b5b525bbf2a9213a7f` | Pencil'd Splash Screen | Brand-Onboarding | `.stitch/Brand-Onboarding/Pencild-Splash-Screen` | fetched | fetched | fetched | catalogue |
-| `c9534010e1114ba7bd297edc22f1c9ff` | Agenda | Calendar-Event-Details | `.stitch/Calendar-Event-Details/Agenda` | fetched | not-available | not-available | catalogue |
+| `c9534010e1114ba7bd297edc22f1c9ff` | Agenda | Calendar-Event-Details | `.stitch/Calendar-Event-Details/Agenda` | fetched | not-available | fetched | catalogue |
 | `5b23fc34d25d47949a1229ac42cebfad` | Event Details | Calendar-Event-Details | `.stitch/Calendar-Event-Details/Agenda/Event-Details` | fetched | fetched | fetched | catalogue |
 | `71a8a0266972488d886fc1ccb2aea981` | Edit Event | Calendar-Event-Details | `.stitch/Calendar-Event-Details/Agenda/Event-Details/Edit-Event` | fetched | fetched | fetched | catalogue |
 | `117742cd4c37404ca2238afe1be6a047` | Reminder Schedule Editor | Calendar-Event-Details | `.stitch/Calendar-Event-Details/Agenda/Event-Details/Reminder-Schedule-Editor` | fetched | fetched | fetched | catalogue |
@@ -63,6 +63,7 @@ All project screen metadata, HTML/code and screenshot resources were requested. 
 | `ed901b9c881e4cda8298bdef00afd3c5` | PDF & File Review | Ingestion-Capture-Flow | `.stitch/Ingestion-Capture-Flow/Source-Chooser/PDF-And-File-Review-V2` | fetched | fetched | fetched | stitch-only |
 | `a307a3147a1f47d7ab545178a0eabd81` | Scan Processing Progress | Ingestion-Capture-Flow | `.stitch/Ingestion-Capture-Flow/Source-Chooser/Scan-Processing-Progress` | fetched | fetched | fetched | catalogue |
 | `17727eb4637541f59878f689071d821d` | iOS Share Sheet Extension | Ingestion-Capture-Flow | `.stitch/Ingestion-Capture-Flow/Source-Chooser/Share-Sheet-Extension` | fetched | fetched | fetched | stitch-only |
+| `fc3ed3b4588f4840a6d8aa2abb1c5e34` | iPad: Multi-Page PDF & Syllabus Ingestion Canvas | Ingestion-Capture-Flow | `.stitch/Ingestion-Capture-Flow/Source-Chooser/iPad-Multi-Page-PDF-Syllabus-Ingestion-Canvas` | fetched | fetched | fetched | stitch-only |
 | `5d72d1bfbe5445ddbd33416047296fce` | App Store screenshot promotional showcase for iPadOS app 'Pencil\'d' on 13-inch iPad Pro. Portrait 3:4 aspect ratio. Midnight indigo background (#101127) with radiant neon orange and gold light rings. Top headline: 'Smart Reminders & SMS Alerts' with subtitle 'Granular Notifications with 100% On-Device Neural Privacy'. iPad Pro mockup displaying granular notification timing controls, SMS alert dispatch preview, and glowing 'On-Device Privacy Vault' security badge. Flawless App Store screenshot design. | Marketing-Assets | `.stitch/Marketing-Assets/App-Store-Slide-iPad-01` | fetched | not-available | fetched | catalogue |
 | `f34bff7100624055a748acfa6120bf00` | App Store screenshot promotional showcase for iPadOS app 'Pencil\'d' on 13-inch iPad Pro. Portrait 3:4 aspect ratio. Dark midnight navy background (#101127) with luminous neon orange (#ff7a00) and violet orbital constellations. Prominent top headline: 'Scan Any Schedule' with subtitle 'Transform Flyers, Syllabi & Notes on iPad'. High-resolution iPad Pro mockup tilted elegantly with Pencil support, displaying the wide multi-column capture hub and flyer preview with glowing 99.8% Neural OCR badge. Apple-grade marketing aesthetic. | Marketing-Assets | `.stitch/Marketing-Assets/App-Store-Slide-iPad-02` | fetched | not-available | fetched | catalogue |
 | `a105af88940f4be898ef475ce2735202` | App Store screenshot promotional showcase for iPadOS app 'Pencil\'d' on 13-inch iPad Pro. Portrait 3:4 aspect ratio. Deep midnight canvas (#101127) with neon orange (#ff7a00) and soft lilac rays. Header typography: 'Multi-Page Syllabi & PDFs' with subtitle 'Batch Process Entire Academic Semesters'. iPad Pro mockup showcasing the multi-page grid carousel, batch triage selection cards, and 'Batch Neural Processing' badge. Professional Apple App Store gallery asset. | Marketing-Assets | `.stitch/Marketing-Assets/App-Store-Slide-iPad-03` | fetched | not-available | fetched | catalogue |
@@ -78,10 +79,10 @@ All project screen metadata, HTML/code and screenshot resources were requested. 
 | `ad56d8ee0ed64b04ae789dc6e799b4fe` | Pencil'd — Accurate Live Canvas ID & Architecture Map | Marketing-Assets | `.stitch/Marketing-Assets/Live-Canvas-Architecture-Map` | fetched | fetched-description | not-available | stitch-only |
 | `a71e5d0aabda40b2ac31b4b9d953dc1e` | Pencil'd - Marketing Copy & Email Template | Marketing-Assets | `.stitch/Marketing-Assets/Marketing-Copy-Email-Template` | fetched | fetched | fetched | catalogue |
 | `2828115625404236044` | Marketing Kit.md | Marketing-Assets | `.stitch/Marketing-Assets/Marketing-Kit` | fetched | fetched-description | not-available | catalogue |
-| `8019306492019719328` | Pencil_tip_app_icon_design_2K_20261007190041.jpg | Marketing-Assets | `.stitch/Marketing-Assets/Pencil-Tip-App-Icon-Design` | fetched | not-available | not-available | catalogue |
-| `8019306492019717442` | pencil'd-full-logo-wordmark.png | Marketing-Assets | `.stitch/Marketing-Assets/Pencild-Full-Logo-Wordmark` | fetched | not-available | not-available | catalogue |
+| `8019306492019719328` | Pencil_tip_app_icon_design_2K_20261007190041.jpg | Marketing-Assets | `.stitch/Marketing-Assets/Pencil-Tip-App-Icon-Design` | fetched | not-available | fetched | catalogue |
+| `8019306492019717442` | pencil'd-full-logo-wordmark.png | Marketing-Assets | `.stitch/Marketing-Assets/Pencild-Full-Logo-Wordmark` | fetched | not-available | fetched | catalogue |
 | `11975388127119735582` | pencild-logo-grey.png | Marketing-Assets | `.stitch/Marketing-Assets/Pencild-Logo-Grey` | fetched | not-available | fetched | catalogue |
-| `3702545456768888067` | pencild-splash-bg.png | Marketing-Assets | `.stitch/Marketing-Assets/Pencild-Splash-Background` | fetched | not-available | not-available | catalogue |
+| `3702545456768888067` | pencild-splash-bg.png | Marketing-Assets | `.stitch/Marketing-Assets/Pencild-Splash-Background` | fetched | not-available | fetched | catalogue |
 | `06c2df8676394c1eb9c6377c56a6e302` | Pencil'd — Screen Catalog & Architecture Map | Marketing-Assets | `.stitch/Marketing-Assets/Screen-Catalog-Map-01` | fetched | fetched-description | not-available | catalogue |
 | `b1c4833006a843dcbb7020fdfa831ab9` | Pencil'd — Screen Catalog & Architecture Map | Marketing-Assets | `.stitch/Marketing-Assets/Screen-Catalog-Map-02` | fetched | fetched-description | not-available | catalogue |
 | `ae913430d5004e68b7d820946a2423db` | Pencil'd — Complete Tri-Layer Screen & Canvas ID Reconciliation | Marketing-Assets | `.stitch/Marketing-Assets/Screen-Catalog-Tri-Layer-Reconciliation` | fetched | fetched-description | not-available | stitch-only |
@@ -127,4 +128,5 @@ All project screen metadata, HTML/code and screenshot resources were requested. 
 - `b881af5986a1461f9571e68991ce5018` — iPad: Manual Crop & Keystone Studio (`Ingestion-Capture-Flow`, `.stitch/Ingestion-Capture-Flow/Source-Chooser/Camera-Scanner-Viewfinder/IPad-Manual-Crop-Keystone`)
 - `ed901b9c881e4cda8298bdef00afd3c5` — PDF & File Review (`Ingestion-Capture-Flow`, `.stitch/Ingestion-Capture-Flow/Source-Chooser/PDF-And-File-Review-V2`)
 - `f55af4ea2d424f81bba041682f60ad6c` — Interactive Conflict Resolver (`Extraction-Review-Pipeline`, `.stitch/Extraction-Review-Pipeline/Source-Chooser/Batch-Scan-Queue/Review-Multiple-Events/Interactive-Conflict-Resolver`)
+- `fc3ed3b4588f4840a6d8aa2abb1c5e34` — iPad: Multi-Page PDF & Syllabus Ingestion Canvas (`Ingestion-Capture-Flow`, `.stitch/Ingestion-Capture-Flow/Source-Chooser/iPad-Multi-Page-PDF-Syllabus-Ingestion-Canvas`)
 - `fe03ab9294354063a9234feaaa9c88e7` — App Store screenshot promotional showcase for iPadOS app 'Pencil\'d' on 13-inch iPad Pro. Portrait 3:4 format. Luxurious dark navy and deep indigo background (#101127) with radiant coral and orange ambient glow. Top bold typography: 'AI Event Verification' with subtitle 'Side-by-Side Flyer Inspection & Instant Conflict Radar'. Center iPad Pro mockup displaying two-column verification: original source document on the left, structured calendar events with confidence tags on the right. Floating pill badge: 'Zero Manual Entry'. Sleek App Store presentation. (`Marketing-Assets`, `.stitch/Marketing-Assets/App-Store-Slide-iPad-05`)

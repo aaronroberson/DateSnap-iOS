@@ -36,7 +36,7 @@
 <!-- Recessed Custom Input Bar -->
 <div class="relative flex items-center bg-surface-container-lowest rounded-xl px-space-md py-space-xs shadow-inner mt-space-2xs">
 <span class="material-symbols-outlined text-primary text-[20px] mr-space-xs select-none">mail</span>
-<input class="w-full bg-transparent text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none min-w-0" id="email-field" placeholder="name@domain.com" type="email" value="alex.morgan@example.com"/>
+<input class="w-full bg-transparent text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none min-w-0" id="email-field" placeholder="name@domain.com" type="email" value="alex.morgan@icloud.com"/>
 <div class="flex items-center gap-1.5 pl-space-xs py-1 px-2.5 bg-surface-container-high rounded-full ml-space-xs shrink-0 select-none">
 <span class="material-symbols-outlined text-primary text-[15px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 <span class="font-label-sm text-label-sm text-primary font-bold tracking-tight">Active</span>
@@ -155,7 +155,7 @@
     const isChecked = btn.getAttribute('aria-checked') === 'true';
     const nextState = !isChecked;
     btn.setAttribute('aria-checked', nextState ? 'true' : 'false');
-
+    
     const knob = btn.querySelector('span');
     if (nextState) {
       btn.className = "relative w-12 h-7 rounded-full bg-primary-container transition-colors shrink-0 shadow-md";

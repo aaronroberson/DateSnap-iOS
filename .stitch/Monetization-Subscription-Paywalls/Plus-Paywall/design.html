@@ -171,26 +171,26 @@
       monthlyCard.classList.replace('bg-surface-container', 'bg-surface-container-low');
       annualInd.classList.remove('hidden');
       monthlyInd.classList.add('hidden');
-
+      
       annualRadio.className = 'w-5 h-5 rounded-full bg-primary flex items-center justify-center';
       annualRadio.innerHTML = '<div class="w-2 h-2 rounded-full bg-surface-container-lowest"></div>';
-
+      
       monthlyRadio.className = 'w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center';
       monthlyRadio.innerHTML = '<div class="w-2 h-2 rounded-full bg-transparent"></div>';
-
+      
       ctaText.innerText = 'Start 7-Day Free Trial';
     } else {
       monthlyCard.classList.replace('bg-surface-container-low', 'bg-surface-container');
       annualCard.classList.replace('bg-surface-container', 'bg-surface-container-low');
       monthlyInd.classList.remove('hidden');
       annualInd.classList.add('hidden');
-
+      
       monthlyRadio.className = 'w-5 h-5 rounded-full bg-primary flex items-center justify-center';
       monthlyRadio.innerHTML = '<div class="w-2 h-2 rounded-full bg-surface-container-lowest"></div>';
-
+      
       annualRadio.className = 'w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center';
       annualRadio.innerHTML = '<div class="w-2 h-2 rounded-full bg-transparent"></div>';
-
+      
       ctaText.innerText = 'Subscribe for $2.49 / Month';
     }
   }

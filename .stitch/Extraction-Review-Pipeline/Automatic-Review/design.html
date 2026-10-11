@@ -254,12 +254,12 @@
   function handleDismiss(button) {
     const card = button.closest('.event-card');
     if (!card) return;
-
+    
     // Tactile fade out animation
     card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
     card.style.opacity = '0';
     card.style.transform = 'scale(0.92)';
-
+    
     setTimeout(() => {
       card.remove();
       updateRemainingCount();
@@ -269,9 +269,9 @@
   function handleAction(btn, type) {
     const card = btn.closest('.event-card');
     if (!card) return;
-
+    
     const title = card.querySelector('h2')?.innerText || 'Event';
-
+    
     if (type === 'review') {
       btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span><span>Opening...</span>`;
       setTimeout(() => {

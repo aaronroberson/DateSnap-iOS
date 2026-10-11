@@ -231,12 +231,12 @@
       const card = document.getElementById(`plan-card-${p}`);
       const accent = document.getElementById(`${p}-accent-bar`);
       const radio = document.getElementById(`${p}-radio`);
-
+      
       if (p === plan) {
         card.classList.remove('bg-surface-container/60');
         card.classList.add('bg-gradient-to-br', 'from-surface-container-high', 'to-surface-container', 'shadow-xl');
         accent.classList.remove('hidden');
-
+        
         radio.classList.remove('bg-surface-container-highest', 'text-transparent');
         radio.classList.add('bg-gradient-to-r', 'from-primary-container', 'to-secondary-container', 'text-white', 'shadow-md');
       } else {
