@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import UIKit
 
 // Help & Feedback — care hub with searchable FAQs, topic guides,
 // support channels and a diagnostic summary. Pushed from Settings Hub.
@@ -61,10 +60,24 @@ struct HelpFeedbackView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 18) {
-                SettingsScreenHeader(title: "Help & Feedback", showBack: true)
-                careHeader
+            VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                PDTopBar(title: "Help & Feedback", showsBack: true) {
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.pdOnPrimary)
+                        .frame(width: 32, height: 32)
+                        .background(Circle().fill(Color.pdPrimary))
+                        .accessibilityHidden(true)
+                }
+
+                PDScreenIntro(
+                    eyebrow: "Pencil'd Help Center",
+                    title: "How can we help?",
+                    subtitle: "Search guides, troubleshooting advice, or get in touch with our team."
+                )
+
                 searchBar
+
                 if filteredTopics.isEmpty && filteredFAQs.isEmpty {
                     emptyResults
                 } else {
@@ -72,15 +85,21 @@ struct HelpFeedbackView: View {
                     privacyGuarantee
                     if !filteredFAQs.isEmpty { faqSection }
                 }
+
                 humanSupport
                 appEnvironment
-                SettingsFooterNote(lines: ["Review extracted event details before saving."])
+
+                Text("Review extracted event details before saving.")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, PDSpacing.xs)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+            .padding(.horizontal, PDSpacing.margin)
+            .padding(.top, PDSpacing.sm)
+            .padding(.bottom, PDSpacing.xl)
         }
-        .dsScreenBackground()
+        .background(Color.pdSurface.ignoresSafeArea())
         .sheet(item: $topicGuide) { topic in
             TopicGuideSheet(topic: topic)
                 .environmentObject(appState)
@@ -89,31 +108,16 @@ struct HelpFeedbackView: View {
         }
     }
 
-    // MARK: - Header & Search
-
-    private var careHeader: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("PENCIL'D HELP CENTER")
-                .font(DSTypography.overlineConfidence())
-                .foregroundStyle(Color.dsPrimary)
-            HStack(alignment: .firstTextBaseline) {
-                Text("How can we help?")
-                    .font(DSTypography.displayTitle())
-                    .foregroundStyle(Color.dsForeground)
-                Spacer()
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
+    // MARK: - Search
 
     private var searchBar: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.dsMutedForeground)
+                .foregroundStyle(Color.pdOutline)
             TextField("Search FAQs, docs, or guides...", text: $query)
-                .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.bodyMD)
+                .foregroundStyle(Color.pdOnSurface)
                 .autocorrectionDisabled()
             if !query.isEmpty {
                 Button {
@@ -121,38 +125,44 @@ struct HelpFeedbackView: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 14))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOutline)
                 }
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
-        .dsGlassCard(cornerRadius: 16)
+        .background(
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .fill(Color.pdSurfaceLow.opacity(0.9))
+        )
     }
 
     private var emptyResults: some View {
         VStack(spacing: 8) {
             Image(systemName: "questionmark.magnifyingglass")
                 .font(.system(size: 26))
-                .foregroundStyle(Color.dsMutedForeground)
+                .foregroundStyle(Color.pdOutline)
             Text("No matches for \"\(query)\"")
-                .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.bodyMD)
+                .foregroundStyle(Color.pdOnSurface)
             Text("Try \"OCR\", \"privacy\", or \"billing\".")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
         .frame(maxWidth: .infinity)
         .padding(28)
-        .dsGlassCard()
+        .background(
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .fill(Color.pdSurfaceLow.opacity(0.9))
+        )
     }
 
     // MARK: - Quick Actions
 
     private var quickActions: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "wrench.and.screwdriver.fill", title: "Quick Troubleshooting",
-                                  tint: .dsSecondary, trailing: "Tap to view")
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Quick Troubleshooting", trailing: "Tap to view")
+
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 ForEach(filteredTopics) { topic in
                     Button {
@@ -162,25 +172,20 @@ struct HelpFeedbackView: View {
                             topicGuide = topic
                         }
                     } label: {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Image(systemName: topic.icon)
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(Color.dsPrimary)
-                                .frame(width: 34, height: 34)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(Color.dsPrimary.opacity(0.12)))
-                            Text(topic.title)
-                                .font(DSTypography.bodyCompact().weight(.semibold))
-                                .foregroundStyle(Color.dsForeground)
-                                .lineLimit(1)
-                            Text(topic.subtitle)
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(2)
+                        PDCard {
+                            VStack(alignment: .leading, spacing: 8) {
+                                PDIconTile(systemName: topic.icon, tint: .pdPrimary)
+                                Text(topic.title)
+                                    .font(PDFont.labelLG)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                    .lineLimit(1)
+                                Text(topic.subtitle)
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(2)
+                            }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(12)
-                        .dsGlassCard(cornerRadius: 16)
                     }
                     .buttonStyle(.plain)
                 }
@@ -193,25 +198,20 @@ struct HelpFeedbackView: View {
         Button {
             settings.pendingRoute = SettingsRoute.managePlan.rawValue
         } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                Image(systemName: "creditcard.fill")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.dsAccent)
-                    .frame(width: 34, height: 34)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.dsAccent.opacity(0.12)))
-                Text("Manage Billing")
-                    .font(DSTypography.bodyCompact().weight(.semibold))
-                    .foregroundStyle(Color.dsForeground)
-                    .lineLimit(1)
-                Text("Restore purchase or manage Pro")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2)
+            PDCard {
+                VStack(alignment: .leading, spacing: 8) {
+                    PDIconTile(systemName: "creditcard.fill", tint: .pdTertiaryContainer)
+                    Text("Manage Billing")
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdOnSurface)
+                        .lineLimit(1)
+                    Text("Restore purchase or manage Pro")
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .dsGlassCard(cornerRadius: 16)
         }
         .buttonStyle(.plain)
     }
@@ -219,35 +219,33 @@ struct HelpFeedbackView: View {
     // MARK: - Privacy Guarantee
 
     private var privacyGuarantee: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Image Processing")
-                .font(DSTypography.headlineCard())
-                .foregroundStyle(Color.dsForeground)
-            Text("Text recognition uses Apple Vision on this device. Event suggestions come from rules-based extraction, with optional on-device Apple Intelligence interpretation when available.")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+        PDCard {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Image Processing")
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
+                Text("Text recognition uses Apple Vision on this device. Event suggestions come from rules-based extraction, with optional on-device Apple Intelligence interpretation when available.")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .lineSpacing(2)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .dsGlassCard()
     }
 
     // MARK: - FAQ
 
     private var faqSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "questionmark.bubble.fill", title: "Frequently Asked",
-                                  tint: .dsPrimary, trailing: "\(filteredFAQs.count) key topics")
-            VStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Frequently Asked", trailing: "\(filteredFAQs.count) key topics")
+
+            PDGroupedList {
                 ForEach(filteredFAQs) { faq in
-                    faqRow(faq)
-                    if faq.id != filteredFAQs.last?.id {
-                        Divider().overlay(Color.dsBorder)
+                    if faq.id != filteredFAQs.first?.id {
+                        PDRowDivider()
                     }
+                    faqRow(faq)
                 }
             }
-            .padding(.horizontal, 16)
-            .dsGlassCard()
         }
     }
 
@@ -259,136 +257,142 @@ struct HelpFeedbackView: View {
             }
         } label: {
             VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 10) {
-                    Image(systemName: faq.icon)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.dsSecondary)
-                        .frame(width: 26, height: 26)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(Color.dsSecondary.opacity(0.14)))
+                HStack(spacing: 12) {
+                    PDIconTile(systemName: faq.icon, tint: .pdSecondary)
                     Text(faq.question)
-                        .font(DSTypography.bodyCompact().weight(.semibold))
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdOnSurface)
                         .multilineTextAlignment(.leading)
                     Spacer()
                     Image(systemName: "chevron.down")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOutline)
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
                 }
                 if isExpanded {
                     Text(faq.answer)
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                         .multilineTextAlignment(.leading)
+                        .lineSpacing(2)
+                        .padding(.leading, 32 + 12)
                 }
             }
-            .padding(.vertical, 12)
+            .padding(PDSpacing.md)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PDRowButtonStyle())
     }
 
     // MARK: - Human Support
 
     private var humanSupport: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "headphones", title: "Get Support",
-                                  tint: .dsInfo)
-            VStack(spacing: 14) {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Get Support")
+
+            PDGroupedList {
                 Button {
                     if let url = URL(string: "mailto:support@pencild.app?subject=Pencil'd%20Support%20Request") {
                         UIApplication.shared.open(url)
                     }
                 } label: {
-                    SettingRow(icon: "envelope.fill", iconTint: .dsPrimary,
-                               title: "Send Message to Support",
-                               subtitle: "Email support@pencild.app") {
-                        SettingsChevron()
+                    PDListRow(
+                        icon: "envelope.fill",
+                        tint: .pdPrimary,
+                        title: "Send Message to Support",
+                        subtitle: "Email support@pencild.app"
+                    ) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.pdOutline)
                     }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PDRowButtonStyle())
 
-                Divider().overlay(Color.dsBorder)
+                PDRowDivider()
 
                 Button {
                     topicGuide = SupportTopic(id: "bugReport", icon: "ant.fill", title: "Submit a Bug Report",
                                               subtitle: "Attach sanitized diagnostic capture logs",
                                               body: "Email support@pencild.app with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
                 } label: {
-                    SettingRow(icon: "ant.fill", iconTint: .dsError,
-                               title: "Submit a Bug Report",
-                               subtitle: "Attach sanitized diagnostic capture logs") {
-                        SettingsChevron()
+                    PDListRow(
+                        icon: "ant.fill",
+                        tint: .pdError,
+                        title: "Submit a Bug Report",
+                        subtitle: "Attach sanitized diagnostic capture logs"
+                    ) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.pdOutline)
                     }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PDRowButtonStyle())
 
-                Divider().overlay(Color.dsBorder)
+                PDRowDivider()
 
                 Button {
                     topicGuide = SupportTopic(id: "featureRequest", icon: "lightbulb.fill", title: "Request a Feature",
                                               subtitle: "Help shape our next scheduled release",
                                               body: "Feature requests go straight to the engineering backlog. Send your idea to support@pencild.app with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
                 } label: {
-                    SettingRow(icon: "lightbulb.fill", iconTint: .dsWarning,
-                               title: "Request a Feature",
-                               subtitle: "Help shape our next scheduled release") {
-                        SettingsChevron()
+                    PDListRow(
+                        icon: "lightbulb.fill",
+                        tint: .pdWarning,
+                        title: "Request a Feature",
+                        subtitle: "Help shape our next scheduled release"
+                    ) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.pdOutline)
                     }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PDRowButtonStyle())
             }
-            .padding(16)
-            .dsGlassCard()
         }
     }
 
     // MARK: - App Environment
 
     private var appEnvironment: some View {
-        VStack(alignment: .leading, spacing: 10) {
-                SettingsSectionHeader(icon: "terminal", title: "App Environment",
-                                  tint: .dsInfo)
-            VStack(spacing: 12) {
-                envRow("Pencil'd Version", appVersion)
-                envRow("iOS Version", UIDevice.current.systemVersion)
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "App Environment")
 
-                Divider().overlay(Color.dsBorder)
+            PDCard {
+                VStack(spacing: 12) {
+                    envRow("Pencil'd Version", appVersion)
+                    envRow("iOS Version", UIDevice.current.systemVersion)
 
-                Button {
-                    UIPasteboard.general.string = diagnosticSummary
-                    appState.showToast("Diagnostic data copied")
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "doc.on.doc.fill")
-                        Text("Copy Diagnostic Summary")
+                    Button {
+                        UIPasteboard.general.string = diagnosticSummary
+                        appState.showToast("Diagnostic data copied")
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "doc.on.doc.fill")
+                            Text("Copy Diagnostic Summary")
+                        }
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Capsule().fill(Color.pdPrimary.opacity(0.12)))
+                        .overlay(Capsule().stroke(Color.pdPrimary.opacity(0.35), lineWidth: 1))
                     }
-                    .font(DSTypography.labelChip())
-                    .foregroundStyle(Color.dsPrimary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
-                    .background(Capsule().fill(Color.dsPrimary.opacity(0.1)))
-                    .overlay(Capsule().stroke(Color.dsPrimary.opacity(0.35), lineWidth: 1))
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
-            .padding(16)
-            .dsGlassCard()
         }
     }
 
     private func envRow(_ label: String, _ value: String) -> some View {
         HStack {
             Text(label)
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
             Spacer()
             Text(value)
-                .font(DSTypography.labelChip())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.labelMD)
+                .foregroundStyle(Color.pdOnSurface)
         }
     }
 
@@ -419,36 +423,33 @@ private struct TopicGuideSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text("Topic Guide")
-                    .font(DSTypography.headlineSection())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
                 Spacer()
                 Button {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 20))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOutline)
                 }
             }
-            HStack(spacing: 10) {
-                Image(systemName: topic.icon)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.dsPrimary)
-                    .frame(width: 38, height: 38)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.dsPrimary.opacity(0.12)))
+            HStack(spacing: 12) {
+                PDIconTile(systemName: topic.icon, tint: .pdPrimary, size: .large)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(topic.title)
-                        .font(DSTypography.bodyStrong())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdOnSurface)
                     Text(topic.subtitle)
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
             }
             Text(topic.body)
-                .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodyMD)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .lineSpacing(3)
             Spacer()
             Button {
                 dismiss()
@@ -456,9 +457,9 @@ private struct TopicGuideSheet: View {
             } label: {
                 Text("Got it")
             }
-            .buttonStyle(DSPrimaryButtonStyle(minHeight: 48))
+            .buttonStyle(PDGradientButtonStyle())
         }
         .padding(20)
-        .dsScreenBackground()
+        .background(Color.pdSurface.ignoresSafeArea())
     }
 }
