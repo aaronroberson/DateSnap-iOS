@@ -309,9 +309,9 @@ Long-tail: `scan schedule iOS, event flyer calendar, PDF event scanner, photo ca
 
 ## Tier Structure Assessment
 
-Based on comparable apps and Adapty benchmarks for productivity utilities, the current pricing concept ($8.99/month, $49.99/year) is **at the high end** of the direct competitive set. Calendarco charges $1.99/month, EventScan $4.99/month, Lumical $29.99/year. Pencild's PDF depth justifies a premium, but $8.99/month will face price objection before users understand the value.
+Based on comparable apps and Adapty benchmarks for productivity utilities, the original $8.99/month, $49.99/year concept was **at the high end** of the direct competitive set. Calendarco charges $1.99/month, EventScan $4.99/month, Lumical $29.99/year. A newer October 2026 monetization strategy supersedes that draft with lower launch prices and should be used as the current pricing reference.
 
-**Recommended pricing:**
+**Superseded October 7 pricing proposal (historical; do not configure from this table):**
 
 | Tier | Monthly | Annual (shown as /mo) | Trial | Gate Logic |
 |---|---|---|---|---|
@@ -319,11 +319,12 @@ Based on comparable apps and Adapty benchmarks for productivity utilities, the c
 | **Plus** | $4.99/mo | $29.99/yr (~$2.49/mo) | 7 days | Unlimited photo/screenshot scans; multi-stage reminders; Apple Calendar sync; 90-day history |
 | **Premium** | $7.99/mo | $49.99/yr (~$4.16/mo) | 7 days | All Plus; Files/PDF import; multi-page PDF; batch scanning; unlimited history |
 
+**Current pricing decision (2026-10-10):** Use the more recent [October 2026 Launch Monetization & Packaging Strategy](Pencild-Monetization-Strategy.md) as the single current internal source: Pencil'd Plus $3.99/month or $24.99/year; Pencil'd Premium $6.99/month or $39.99/year; seven-day free trials. The October 7 values above are retained only to preserve the research history. This is a local product decision, not confirmation that App Store Connect is configured to match.
+
 **Rationale:**
-- Annual Plus at $29.99 is the category market rate and under-indexes against Fantastical at $57/year — room exists to move up later once brand equity is established
-- The annual plan is the marketing headline: "Less than $2.50/month"
-- Monthly exists as a fallback for commitment-averse users, not as the promoted option
-- Premium is positioned by use case, not by feature list: "For anyone managing schedules, documents, and deadlines at volume"
+- Historical October 7 reasoning only: its Plus annual price was $29.99 with an effective monthly display of $2.49.
+- For current pricing, use the newer October monetization strategy's $24.99 Plus annual/$2.08 monthly equivalent and $39.99 Premium annual/$3.33 monthly equivalent.
+- Annual remains the recommended paywall default in the current strategy; actual App Store product prices and offers must still match before release.
 
 ## How to Talk About Tiers in Marketing
 
@@ -393,7 +394,7 @@ This framing sets accurate expectations, differentiates from auto-save competito
 | **App Store privacy label accuracy** | High | Audit all third-party SDKs and network calls before setting "Data Not Collected" |
 | **Crowded category with near-zero ratings** | High | First to 50+ ratings with ≥4.5★ wins category authority; prioritize review prompts |
 | **Current subtitle "Screenshot to Event" is generic** | High | Update immediately; no code change required, only metadata |
-| **Pricing too high vs. direct competitors** | Medium | Test $4.99/month Plus before $8.99; reduce barrier to first conversion |
+| **Pricing too high vs. direct competitors** | Medium | The October 7 $4.99/$7.99 proposal is superseded by the October 2026 launch strategy's $3.99/$6.99 monthly prices; validate conversion after launch rather than configuring from this older recommendation. |
 | **OCR accuracy at launch** | Medium | Validate review workflow handles errors gracefully; ensure edit step is frictionless |
 | **Free tier too restrictive (5 scans/month)** | Medium | Monitor conversion-to-paid data; if >40% users hit limit in week 1, free tier may feel punishing before value is established |
 | **"No account required" claim** | Medium | Verify with actual subscription entitlement implementation |

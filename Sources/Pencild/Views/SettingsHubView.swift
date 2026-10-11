@@ -47,11 +47,7 @@ struct SettingsHubView: View {
     }
 
     private var tierChipText: String {
-        switch appState.subscriptionTier {
-        case .starter: return "Free"
-        case .plus: return "Plus"
-        case .premium: return "Premium"
-        }
+        appState.subscriptionTier.displayName
     }
 
     // MARK: - Navigation helpers
