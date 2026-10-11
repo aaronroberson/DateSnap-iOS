@@ -182,4 +182,19 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - Verified touch targets across all interactive buttons, chips, and top bars satisfy the >= 44pt accessibility rule.
 - Added and executed `TabletWorkspaceTests.swift` testing zoom limits, reset behavior, single-column vs regular-column model requirements, and touch target accessibility metadata.
 - All 122 tests across 30 test suites passed on iPad Pro 11-inch simulator with 0 failures and 0 warnings.
+- Authoritative result bundle: `/private/tmp/pencild-current-ipad-tests.xcresult` (122 total, 120 passed, 2 skipped, 0 failed).
+- Matching iPhone 17 run passed at the same HEAD: `/private/tmp/pencild-current-iphone-tests.xcresult` (122 total, 120 passed, 2 skipped, 0 failed).
 - Brand identity gate passed. Ready for Phase 4.
+
+2026-10-11: Phase 4 StoreKit and Recovery Edges completed.
+- Verified truthful pricing: production prices and free-trial periods are sourced dynamically from StoreKit `Product` objects, with `nil` prices rendering honest "Price unavailable" copy rather than hardcoded mock prices.
+- Verified recovery edge cases in `PurchaseViewModel` and paywall flows:
+  - Unavailable products display actionable recovery copy: "This plan isn't available yet. Please try again in a moment."
+  - Purchase cancellations exit quietly without altering subscription status or reporting errors.
+  - Pending purchases report clear status: "Your purchase is pending approval. It will unlock automatically once approved."
+  - Failed restores report actionable guidance: "Couldn't restore purchases. Check your connection and sign in with the Apple Account used to subscribe, then try again."
+  - Empty restores return starter tier so UI presents "No active subscription found to restore."
+  - Cryptographic JWS verification failure throws `PencildError.subscription(.verificationFailed)` and fails the entitlement snapshot closed.
+- Expanded `PurchaseViewModelTests.swift` with automated coverage for unavailable product purchase, empty restore, and successful upgrade paths.
+- All 125 tests across 30 test suites passed on iPad Pro 11-inch simulator with 0 failures and 0 warnings.
+- Brand identity gate passed. Ready for Phase 5 (Release Gates & Audit Closeout).
