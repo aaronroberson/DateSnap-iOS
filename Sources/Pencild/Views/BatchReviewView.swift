@@ -525,7 +525,7 @@ private struct BatchEventCard: View {
                         .foregroundStyle(Color.pdError)
                 }
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.pdError.opacity(0.12)))
+                .background(RoundedRectangle(cornerRadius: PDRadius.card).fill(Color.pdError.opacity(0.12)))
             }
             .disabled(!event.isActionable)
 
