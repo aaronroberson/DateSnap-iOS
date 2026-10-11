@@ -122,7 +122,7 @@ def parse_args(args=None):
     parser.add_argument("--project-id", default=None, help="Stitch project ID (defaults to Pencil'd project).")
     parser.add_argument("--quota-project", default=None, help="Google Cloud quota project for Stitch API calls; defaults to STITCH_QUOTA_PROJECT or gcloud config.")
     parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR, help="Root output directory (default: .stitch).")
-    parser.add_argument("--catalogue", default="docs/plans/pencild-stitch-catalogue.md", help="Canonical catalogue for reconciliation.")
+    parser.add_argument("--catalogue", default="docs/plans/2026-10-09-pencild-stitch-catalogue.md", help="Canonical catalogue for reconciliation.")
     parser.add_argument("--workers", type=int, default=5, help="Concurrent screen downloads (default: 5).")
     parser.add_argument("--timeout", type=int, default=60, help="HTTP timeout in seconds.")
     return parser.parse_args(args)
