@@ -1,4 +1,4 @@
-# DateSnap Mock Data Phases 3-5 Plan
+# Pencild Mock Data Phases 3-5 Plan
 
 ## Phase 3 — Eliminate production fallbacks that misrepresent state
 
@@ -34,7 +34,7 @@
 - **Tests:** Verify each removed claim is absent from Release binary; retained live values are derived from actual service state.
 
 ### Task 3.4: Resolve signing placeholders (F-11)
-- **Files:** `Config/DateSnap-Release.xcconfig`, `Config/DateSnap-Debug.xcconfig`, `ExportOptions-AppStore.plist`
+- **Files:** `Config/Pencild-Release.xcconfig`, `Config/Pencild-Debug.xcconfig`, `ExportOptions-AppStore.plist`
 - **Changes:**
   - Remove `DEVELOPMENT_TEAM =` placeholder lines entirely — let Xcode resolve the team from the selected Apple ID.
   - `ExportOptions-AppStore.plist`: Remove any placeholder team ID; keep `signingStyle = automatic`.
@@ -55,7 +55,7 @@
 - **Tests:** Tests confirm rules-only paths produce valid output without on-device model dependency.
 
 ### Task 4.3: Add tests distinguishing intentional demo/fallback paths
-- **Files:** `Tests/DateSnapTests/`
+- **Files:** `Tests/PencildTests/`
 - **Changes:** Add test cases that specifically verify:
   - `scanSampleFlyer` uses the real pipeline (OCR + extraction + understanding) but does not grant Photos permission.
   - Paywall CTA is disabled when products are unavailable (not mocked).
@@ -63,7 +63,7 @@
 - **Tests:** New test suite `MockDataCleanupTests`.
 
 ### Task 4.4: Keep Debug fixtures compiled only under `#if DEBUG`
-- **Files:** `ContentView.swift` (screenGallery), `ScreenGalleryView.swift`, `DateSnapEvent` sample fixtures
+- **Files:** `ContentView.swift` (screenGallery), `ScreenGalleryView.swift`, `PencildEvent` sample fixtures
 - **Changes:** Verify `#if DEBUG`/`#else` guards are present and effective. Consider moving gallery and fixtures to a Debug-only source set/target.
 - **Exit criteria:** Release binary scan finds no sample event titles, Stitch IDs, gallery copy, or debug simulation labels.
 
@@ -94,8 +94,8 @@
 - **Tests:** Script runs clean on the repository.
 
 ### Task 5.2: Build Release archive, inspect binary strings/symbols
-- **Commands:** `xcodebuild -archivePath DateSnap.xcarchive archive -scheme DateSnap -configuration Release`
-- **Inspection:** `strings <App.app> | grep -i "NEON SUNSET\|ROOFTOP SESSION\|SUMMIT_2025\|Simulation Hub\|datesnap-sample"` — must find nothing.
+- **Commands:** `xcodebuild -archivePath Pencild.xcarchive archive -scheme Pencild -configuration Release`
+- **Inspection:** `strings <App.app> | grep -i "NEON SUNSET\|ROOFTOP SESSION\|SUMMIT_2025\|Simulation Hub\|pencild-sample"` — must find nothing.
 - **Save output:** Archive inspection results.
 
 ### Task 5.3: Write setting-to-consumer ledger
@@ -106,7 +106,7 @@
 - **Coverage:** All SettingsState properties and visible controls.
 
 ### Task 5.4: Add failure-injection tests
-- **Files:** `Tests/DateSnapTests/`
+- **Files:** `Tests/PencildTests/`
 - **Tests added:**
   - StoreKit: products unavailable → CTA disabled, no hard-coded price displayed
   - SwiftData: save failure → typed `.failure` result, no success toast

@@ -1,8 +1,8 @@
-# iOS 18+ API Audit for DateSnap
+# iOS 18+ API Audit for Pencild
 Date: 2026-10-03
 
 ## Executive Summary
-DateSnap currently targets iOS 17 as minimum deployment. This audit identifies iOS 18+ APIs that would enhance functionality, improve performance, or provide better user experience. Each recommendation includes implementation strategy and availability checks.
+Pencild currently targets iOS 17 as minimum deployment. This audit identifies iOS 18+ APIs that would enhance functionality, improve performance, or provide better user experience. Each recommendation includes implementation strategy and availability checks.
 
 ## Current iOS Version Support
 - **Deployment Target**: iOS 17.0 (updated from iOS 18.0)
@@ -15,7 +15,7 @@ DateSnap currently targets iOS 17 as minimum deployment. This audit identifies i
 **Current Implementation**: Uses `VNImageRequestHandler.perform()` with completion handlers
 **iOS 18 Improvement**: New `VNRequest.perform()` async/await API for cleaner code and better error handling
 
-**Benefits for DateSnap**:
+**Benefits for Pencild**:
 - Cleaner OCR pipeline with structured concurrency
 - Better error propagation
 - Potential performance improvements
@@ -25,7 +25,7 @@ DateSnap currently targets iOS 17 as minimum deployment. This audit identifies i
 @available(iOS 18.0, *)
 private func recognizeTextAsync(in image: UIImage) async throws -> OCRResult {
     guard let cgImage = image.cgImage else {
-        throw DateSnapError.ocr(.imageProcessingFailed)
+        throw PencildError.ocr(.imageProcessingFailed)
     }
     
     let request = VNRecognizeTextRequest()
@@ -38,29 +38,29 @@ private func recognizeTextAsync(in image: UIImage) async throws -> OCRResult {
         let observations = try await request.perform(on: handler)
         // Process observations...
     } catch {
-        throw DateSnapError.ocr(.visionRequestFailed(error.localizedDescription))
+        throw PencildError.ocr(.visionRequestFailed(error.localizedDescription))
     }
 }
 ```
 
 ### 2. SwiftUI Performance & Layout APIs (Priority: MEDIUM)
 **iOS 18 Improvements**:
-- `@MainActor` changes to `View` protocol (already benefits DateSnap)
+- `@MainActor` changes to `View` protocol (already benefits Pencild)
 - Better scroll view performance and measurement APIs
 - Improved text rendering and animation capabilities
 
-**Benefits for DateSnap**:
+**Benefits for Pencild**:
 - Smoother scrolling in event history/archive views
 - Better text rendering for OCR results display
 - Improved animation performance
 
 ### 3. ContactAccessButton API (Priority: LOW)
 **iOS 18 Feature**: `ContactAccessButton` for requesting contact access
-**Relevance to DateSnap**: Could be used if adding event sharing or contact integration features
+**Relevance to Pencild**: Could be used if adding event sharing or contact integration features
 
 ### 4. Mesh Gradients & Advanced Color Blending (Priority: LOW)
 **iOS 18 Feature**: Enhanced visual effects
-**Relevance to DateSnap**: Could enhance the premium/glassmorphism design system
+**Relevance to Pencild**: Could enhance the premium/glassmorphism design system
 
 ## Implementation Strategy
 

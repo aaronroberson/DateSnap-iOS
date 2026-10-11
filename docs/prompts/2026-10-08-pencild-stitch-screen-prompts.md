@@ -31,7 +31,7 @@ Base the aesthetic on the attached Pencil’d logos and icon concepts:
 
 The screens should feel:
 - less busy than the logo art
-- more spacious than the current DateSnap screens
+- more spacious than the current Pencild screens
 - polished, premium, calm, and Apple-native
 - visually consistent across all screens
 - legible and trust-building rather than flashy
@@ -56,7 +56,7 @@ Use:
 
 ## Content and UX rules
 
-- Use **Pencil’d** everywhere, never DateSnap
+- Use **Pencil’d** everywhere, never Pencild
 - Keep copy concise and realistic
 - No more than one instance of the same link/action label on a single screen
 - Do not repeat Restore, Try Again, Not Now, Privacy, or Terms multiple times in one screen
@@ -350,7 +350,7 @@ Include:
 
 Style notes:
 - approachable but premium
-- cleaner and more spacious than the old DateSnap Plus screen
+- cleaner and more spacious than the old Pencild Plus screen
 
 ### 16. Premium Paywall
 Design the Pencil’d Premium Paywall screen.
@@ -411,7 +411,7 @@ Style notes:
 ## Final output goals
 
 - Keep every screen visually unified
-- Keep layouts more spacious and premium than the original DateSnap Stitch screens
+- Keep layouts more spacious and premium than the original Pencild Stitch screens
 - Preserve strong product truth and realistic workflows
 - Represent existing visible screens plus additional missing surfaces implied by the current code/planning
 - Avoid duplicated links and duplicate CTA labels on individual views

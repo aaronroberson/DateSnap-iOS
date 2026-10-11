@@ -1,4 +1,4 @@
-# DateSnap iOS — Launch Monetization & Packaging Strategy
+# Pencild iOS — Launch Monetization & Packaging Strategy
 
 *Prepared October 2026 · Based on current App Store competitor pricing, RevenueCat 2026 benchmarks, and Adapty trial conversion data*
 
@@ -6,7 +6,7 @@
 
 ## Executive Recommendation
 
-- **Three-tier model: Free / DateSnap Plus / DateSnap Premium.** Free limits by scan volume and file type; Plus serves everyday screenshot/flyer users; Premium serves PDF and document-heavy workflows.
+- **Three-tier model: Free / Pencild Plus / Pencild Premium.** Free limits by scan volume and file type; Plus serves everyday screenshot/flyer users; Premium serves PDF and document-heavy workflows.
 - **Plus pricing: $3.99/month or $24.99/year** (~$2.08/mo annualized, 48% savings). Competitive with and above direct image-to-calendar competitors while being clearly affordable for individual users.
 - **Premium pricing: $6.99/month or $39.99/year** (~$3.33/mo annualized, 52% savings). Positioned between direct competitors and OCR/document scanning apps (Genius Scan $39.99/yr, PDF Expert ~$49.99/yr). The existing $8.99/month concept is above launch evidence — reduce it.
 - **Free tier: 7 scans/month, images/screenshots only, single reminder, 30-day history.** This is enough to demonstrate the core "scan → review → save" loop without making the app feel broken.
@@ -52,7 +52,7 @@
 
 ## Recommended Plans
 
-| Feature | 🆓 Free | ⭐ DateSnap Plus | 💎 DateSnap Premium |
+| Feature | 🆓 Free | ⭐ Pencild Plus | 💎 Pencild Premium |
 |---|---|---|---|
 | **Monthly price** | $0 | $3.99 | $6.99 |
 | **Annual price** | $0 | $24.99/yr (~$2.08/mo) | $39.99/yr (~$3.33/mo) |
@@ -82,7 +82,7 @@
 ## Pricing Architecture
 
 ### Monthly Prices
-- **Plus $3.99/mo** — above the cheapest direct competitor (Calendarco $1.99/mo) and below EventScan ($4.99/mo). Positions DateSnap as more polished without being expensive.
+- **Plus $3.99/mo** — above the cheapest direct competitor (Calendarco $1.99/mo) and below EventScan ($4.99/mo). Positions Pencild as more polished without being expensive.
 - **Premium $6.99/mo** — meaningfully above Plus, well below Adobe Scan Pro ($9.99/mo), and roughly aligned with productivity subscription psychology for a specialized workflow tool.
 
 ### Annual Prices
@@ -115,18 +115,18 @@
 
 ## Market Evidence
 
-| App | Category | Relevant Features | Pricing Model & Current Price | What DateSnap Should Learn | Source |
+| App | Category | Relevant Features | Pricing Model & Current Price | What Pencild Should Learn | Source |
 |---|---|---|---|---|---|
-| **EventScan** | Direct: image → calendar | Unlimited scans (paid); 5 scans free/month; .ics export; Event History | Freemium. Pro: **$4.99/mo, $29.99/yr**. No trial. | Free scan limit benchmark (5/mo); DateSnap's Plus at $3.99/mo undercuts on price while offering more | [App Store](https://apps.apple.com/us/app/eventscan-picture-to-calendar/id6737088852) |
-| **Calendarco** | Direct: event scanner | AI calendar event extraction; basic event history | Freemium. **$1.99/mo, $19.99/yr**. No trial. | Lowest-price direct competitor sets the floor. DateSnap is meaningfully better and should price above this. | [App Store](https://apps.apple.com/us/app/calendarco-event-scanner/id6504715509) |
+| **EventScan** | Direct: image → calendar | Unlimited scans (paid); 5 scans free/month; .ics export; Event History | Freemium. Pro: **$4.99/mo, $29.99/yr**. No trial. | Free scan limit benchmark (5/mo); Pencild's Plus at $3.99/mo undercuts on price while offering more | [App Store](https://apps.apple.com/us/app/eventscan-picture-to-calendar/id6737088852) |
+| **Calendarco** | Direct: event scanner | AI calendar event extraction; basic event history | Freemium. **$1.99/mo, $19.99/yr**. No trial. | Lowest-price direct competitor sets the floor. Pencild is meaningfully better and should price above this. | [App Store](https://apps.apple.com/us/app/calendarco-event-scanner/id6504715509) |
 | **Flits** | Direct: screenshots → calendar | Screenshot import; Quick Save; Smart Scan (iOS, Pro) | Freemium, unknown Pro price. "Free to start, no credit card." | Confirms freemium is the market norm for this category; establishes that $0 entry is expected | [getflits.app](https://getflits.app/) |
-| **Genius Scan** | Adjacent: document scanner | OCR; cloud sync; PDF multi-page; batch mode | Freemium. Ultra: **$39.99/yr** (annual only; no monthly listed). | $39.99/yr is the reference for a capable document scan utility. DateSnap Premium at $39.99/yr aligns precisely. | [thegrizzlylabs.com](https://thegrizzlylabs.com/genius-scan/pricing/) |
-| **Adobe Scan** | Adjacent: OCR scanner | OCR; PDF creation; compression; merge/edit | Freemium. Pro: **$9.99/mo** (annual approx. $119.88/yr). | Adobe's monthly price is a high anchor. DateSnap Premium at $6.99/mo is clearly more accessible. | [App Store / essexsoftware](https://essexsoftware.com/scaniva/best-scanner-app-iphone/) |
+| **Genius Scan** | Adjacent: document scanner | OCR; cloud sync; PDF multi-page; batch mode | Freemium. Ultra: **$39.99/yr** (annual only; no monthly listed). | $39.99/yr is the reference for a capable document scan utility. Pencild Premium at $39.99/yr aligns precisely. | [thegrizzlylabs.com](https://thegrizzlylabs.com/genius-scan/pricing/) |
+| **Adobe Scan** | Adjacent: OCR scanner | OCR; PDF creation; compression; merge/edit | Freemium. Pro: **$9.99/mo** (annual approx. $119.88/yr). | Adobe's monthly price is a high anchor. Pencild Premium at $6.99/mo is clearly more accessible. | [App Store / essexsoftware](https://essexsoftware.com/scaniva/best-scanner-app-iphone/) |
 | **Fantastical** | Adjacent: calendar app | Scheduling; unlimited calendar sets; Openings; weather | Freemium. Individual: **$6.99/mo or ~$57/yr** ($4.75/mo). 14-day trial. | Confirms $6.99/mo is a credible price point for a focused iOS productivity subscription. Premium can match this. | [morgen.so](https://morgen.so/blog-posts/fantastical-pricing) |
-| **PDF Expert** | Adjacent: PDF tool | PDF editing, annotation, conversion, signing | Subscription. ~**$49.99/yr** (annual). No free functional tier. | Power-user PDF pricing benchmark. DateSnap Premium at $39.99/yr is slightly under, appropriate for a more focused use case. | [App Store](https://apps.apple.com/us/app/pdf-expert-editor-reader/id743974925) |
-| **Scaniva** | Adjacent: scanner | OCR in 14 languages; unlimited scans; receipt/business card modes | **One-time $12.99** (no subscription). 10 free scans. | One-time purchase shows strong user preference for simplicity, but limits LTV and reinvestment. Not recommended for DateSnap given ongoing OCR/AI cost. | [essexsoftware.com](https://essexsoftware.com/scaniva/best-scanner-app-iphone/) |
+| **PDF Expert** | Adjacent: PDF tool | PDF editing, annotation, conversion, signing | Subscription. ~**$49.99/yr** (annual). No free functional tier. | Power-user PDF pricing benchmark. Pencild Premium at $39.99/yr is slightly under, appropriate for a more focused use case. | [App Store](https://apps.apple.com/us/app/pdf-expert-editor-reader/id743974925) |
+| **Scaniva** | Adjacent: scanner | OCR in 14 languages; unlimited scans; receipt/business card modes | **One-time $12.99** (no subscription). 10 free scans. | One-time purchase shows strong user preference for simplicity, but limits LTV and reinvestment. Not recommended for Pencild given ongoing OCR/AI cost. | [essexsoftware.com](https://essexsoftware.com/scaniva/best-scanner-app-iphone/) |
 
-**Key competitive insight:** The direct image-to-calendar category (EventScan, Calendarco, Flits) is priced at $1.99–$4.99/month, with minimal differentiation and no free trial. DateSnap's Plus tier at $3.99/mo with a 7-day trial and stronger reminders/calendar integration is immediately more credible. The Premium tier at $6.99/mo / $39.99/yr has no direct competitor — it occupies the gap between cheap image-scanning apps and expensive full document tools.
+**Key competitive insight:** The direct image-to-calendar category (EventScan, Calendarco, Flits) is priced at $1.99–$4.99/month, with minimal differentiation and no free trial. Pencild's Plus tier at $3.99/mo with a 7-day trial and stronger reminders/calendar integration is immediately more credible. The Premium tier at $6.99/mo / $39.99/yr has no direct competitor — it occupies the gap between cheap image-scanning apps and expensive full document tools.
 
 ---
 
@@ -146,12 +146,12 @@ Layout recommendation: plan cards in order Free | Plus | Premium, with Plus high
 | Trigger | Upgrade Path | Moment | Recommended Copy |
 |---|---|---|---|
 | 7th scan in a month | Free → Plus | Hard gate at limit | "You've used all 7 free scans this month. Upgrade to Plus for unlimited scans — try free for 7 days." |
-| User taps "Import from Files" | Free/Plus → Premium | Soft gate with explanation | "PDF and document import is a DateSnap Premium feature. Upgrade to scan schedules, itineraries, and multi-page agendas." |
+| User taps "Import from Files" | Free/Plus → Premium | Soft gate with explanation | "PDF and document import is a Pencild Premium feature. Upgrade to scan schedules, itineraries, and multi-page agendas." |
 | User taps "Scan another document" in batch flow | Free/Plus → Premium | Soft gate | "Batch scanning is included with Premium. Process up to 10 documents at once — try Premium free for 7 days." |
 | User tries to set a 2nd reminder | Free → Plus | Contextual nudge | "Multi-stage reminders are a Plus feature. Get reminder schedules at 1 week, 3 days, and morning of the event." |
 | User views scan history beyond 30 days | Free → Plus | Soft gate on older entries | "Scans older than 30 days are archived with Plus. Upgrade to access your full scan history." |
 | After first successful scan + save | Free → Plus | Post-success upsell | "Event saved to your calendar. Want unlimited scans and multi-stage reminders? Start your 7-day free trial." |
-| App launch Day 3 (if not subscribed) | Free → Plus | In-app prompt (one time only) | "You've saved [N] events with DateSnap. Upgrade to Plus for unlimited scans and smarter reminders." |
+| App launch Day 3 (if not subscribed) | Free → Plus | In-app prompt (one time only) | "You've saved [N] events with Pencild. Upgrade to Plus for unlimited scans and smarter reminders." |
 
 ### Soft vs. Hard Gates
 - **Hard gate:** Scan limit reached. The user cannot scan another image until the month resets or they upgrade. This is the primary conversion mechanism.
@@ -184,7 +184,7 @@ Layout recommendation: plan cards in order Free | Plus | Premium, with Plus high
 | Smart event discovery from Photos | Premium | Surfaces events the user forgot to scan; high perceived AI value | High — requires Photo Library background access, indexing, App Review risk around privacy | **Post-launch** (v1.2+) |
 | Event triage/ranking | Premium | Reduces noise for power users with many screenshots | Medium — depends on smart discovery above | **Post-launch** |
 | Custom reminder templates | Plus | Saves repeat setup for common event types (game days, concerts, school pickup) | Low | Post-launch (v1.1) |
-| Export/share formats (.ics) | Plus | Makes DateSnap interoperable with other calendar tools; competitive with EventScan | Low | Post-launch (v1.1) |
+| Export/share formats (.ics) | Plus | Makes Pencild interoperable with other calendar tools; competitive with EventScan | Low | Post-launch (v1.1) |
 | Recurring scan routines | Premium | Automates periodic imports (weekly PDF schedules) | High — requires App Intents + Background Tasks | **Post-launch** |
 | Widgets | Plus | High-visibility feature that drives organic discovery and retention | Medium — WidgetKit; straightforward but needs design work | Post-launch (v1.1) |
 | Shortcuts / App Intents | Plus | Power user delight; shows up in App Store "Works with Shortcuts" | Medium — App Intents framework; manageable | Post-launch |
@@ -229,7 +229,7 @@ Layout recommendation: plan cards in order Free | Plus | Premium, with Plus high
 - **Revenue per install at Day 30/60/90**
 
 ### App Store Review, Privacy, and User-Trust Considerations
-- **Calendar write access:** Prompted on first calendar save. Frame clearly: "DateSnap needs access to add events to your calendar." No access = no core value. Minimize scope.
+- **Calendar write access:** Prompted on first calendar save. Frame clearly: "Pencild needs access to add events to your calendar." No access = no core value. Minimize scope.
 - **Photo Library access:** Prompt for "Limited" photo access at first scan (iOS 14+). Allow users to grant access to selected photos only. Full library access is not required for core functionality.
 - **Files/PDF access:** Files app integration uses standard document picker (UIDocumentPickerViewController). No special entitlement needed; no user permission dialog beyond the standard picker. Low risk.
 - **Location (if added later):** Always-On Location or Significant Location Change requires explicit user justification in App Store review and a clear privacy disclosure. Do not add to launch scope.
@@ -269,7 +269,7 @@ Layout recommendation: plan cards in order Free | Plus | Premium, with Plus high
 - Review and edit before saving (always on)
 - On-device OCR and intelligence
 
-### DateSnap Plus
+### Pencild Plus
 - **Monthly:** $3.99
 - **Annual:** $24.99/yr (~$2.08/mo, 48% savings)
 - **Lifetime (launch promo, 90 days only):** $59.99
@@ -280,7 +280,7 @@ Layout recommendation: plan cards in order Free | Plus | Premium, with Plus high
 - 90-day scan history
 - Standard email support
 
-### DateSnap Premium
+### Pencild Premium
 - **Monthly:** $6.99
 - **Annual:** $39.99/yr (~$3.33/mo, 52% savings)
 - **Lifetime (launch promo, 90 days only):** $99.99

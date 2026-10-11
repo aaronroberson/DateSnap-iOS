@@ -31,7 +31,7 @@ The release manager must complete all of the following from a clean candidate co
 
 1. Run the full Xcode test plan with zero failures.
 2. Produce a signed Release archive using the authorized Apple Developer team.
-3. Run `scripts/verify-release-content.sh --require-app <archive-path>/Products/Applications/DateSnap.app` and retain the output.
+3. Run `scripts/verify-release-content.sh --require-app <archive-path>/Products/Applications/Pencild.app` and retain the output.
 4. Complete physical-device QA for Photos denial, Calendar/Reminders denial, local-notification denial, offline StoreKit, sample flyer, cache clearing, and full local-data erasure.
 5. Confirm every entry in `scripts/mock-allowlist.txt` retains an owner and reason; reject newly added broad allowlist entries.
 

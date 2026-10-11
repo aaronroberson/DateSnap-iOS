@@ -42,7 +42,7 @@ Use a written plan because the remaining work crosses authorization policy, Stor
 6. `test(entitlements): cover transitions and denied permissions`
 7. `docs(entitlements): report audit remediation`
 
-Every commit will stage explicit audit-related paths only. `docs/prompts/datesnap-round34j-handoff.md` is unrelated and will remain untouched.
+Every commit will stage explicit audit-related paths only. `docs/prompts/2026-10-04-pencild-round34j-handoff.md` is unrelated and will remain untouched.
 
 ## Test strategy
 
@@ -50,7 +50,7 @@ Every commit will stage explicit audit-related paths only. `docs/prompts/datesna
 - Direct view-model/service invocation tests that bypass UI preflight.
 - Recording doubles for file scanning, reminders, calendar, notification, and entitlement changes.
 - Resolver tests for active, expired, revoked, unknown, and unverified transactions.
-- Purchase/restore and lifecycle-provenance tests using controllable providers and the exact `DateSnap.storekit` identifiers.
+- Purchase/restore and lifecycle-provenance tests using controllable providers and the exact `Pencild.storekit` identifiers.
 - Targeted tests after each behavior change, then all tests plus Debug and Release builds.
 
 ## Risks

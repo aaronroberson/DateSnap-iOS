@@ -1,7 +1,7 @@
-# DateSnap Handoff Items Closure
+# Pencild Handoff Items Closure
 
 Date: 2026-10-04  
-Reviewed handoffs: `docs/HANDOFF.md` and `docs/prompts/datesnap-round34j-handoff.md`
+Reviewed handoffs: `docs/HANDOFF.md` and `docs/prompts/2026-10-04-pencild-round34j-handoff.md`
 
 ## Outcome
 
@@ -12,7 +12,7 @@ All repository-actionable handoff items were reconciled. No recovery content was
 | Item | Disposition | Evidence |
 |---|---|---|
 | Rescue test inventory | Closed | Compared function inventories for all nine named suites at rescue commit `816101d` against the current tree. Eight suites had no missing test functions. `PurchaseViewModelTests.missingProductsDisablePurchaseAndShowNoPrice` was replaced by stronger missing-product and lookup-failure tests; Premium purchase denial coverage was restored explicitly. |
-| User-facing notification denial | Closed | `EventReviewViewModel` returns “Notifications are denied. Enable them in iOS Settings > Notifications > DateSnap.” The behavior is asserted by `MockDataCleanupTests.notificationDenialIsHumanReadable()` and the partial-save denial test. |
+| User-facing notification denial | Closed | `EventReviewViewModel` returns “Notifications are denied. Enable them in iOS Settings > Notifications > Pencild.” The behavior is asserted by `MockDataCleanupTests.notificationDenialIsHumanReadable()` and the partial-save denial test. |
 | `graphify-out/` provenance | Closed without deletion | The directory contains 121 generated Graphify `v0.9.74-s4` AST/analysis cache files totaling approximately 6.6 MB. It has zero tracked files and is excluded by `.gitignore`. It remains local and must not be committed. |
 | Review accepted commits `dc4f7a7` / `c3b7d3d` | Closed | Line-by-line review found changes limited to entitlement denial-reason preservation and EventKit test-fixture compatibility. The temporary wrong-tier denial introduced in `dc4f7a7` was corrected by the documented follow-up `313d175`. No risky marker was introduced in the reviewed range. |
 | `FeatureAccessPolicy` MainActor isolation | Deferred by design | Current callers are main-actor view models and tests, so isolation is correct today. Revisit only when a real background caller is introduced. The active RBAC/entitlement workstream owns this file; no overlapping change was made here. |

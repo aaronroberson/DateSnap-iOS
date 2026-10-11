@@ -1,4 +1,4 @@
-# DateSnap-iOS Recovery Handoff - 2026-10-02
+# Pencild-iOS Recovery Handoff - 2026-10-02
 
 > Historical handoff: the promotion and recovery steps below have been completed. The five open loops were reconciled on 2026-10-04; see `docs/audits/2026-10-04-handoff-items-closure.md`. Do not rerun the obsolete promotion command.
 
@@ -17,11 +17,11 @@
 ## IMMEDIATE NEXT STEP (one command)
 Promotion to main has NOT run yet. Run:
     bash ~/Downloads/round23-finish.sh --promote
-It merges to main, smoke-tests main, tags `recovery-integrated-20261002`, and auto-rolls back main if the smoke run fails. (Script also archived at ~/datesnap-recovery-20261002-142441/round23-finish/.)
+It merges to main, smoke-tests main, tags `recovery-integrated-20261002`, and auto-rolls back main if the smoke run fails. (Script also archived at ~/pencild-recovery-20261002-142441/round23-finish/.)
 After that, delete the local round scripts or commit them under scripts/ - your choice.
 
 ## Open loops / never fully finished
-1. **Cross-check rescue test inventory.** Rescue 816101d had suites whose current-tree status was not exhaustively diffed (AdvisorTests, AppleIntelligenceLiveTests, EventUnderstandingPipelineTests, EvidenceValidationTests, ExtractionEvaluationTests, InterpretationRecordTests, EventUnderstandingTests, DateSnapInferenceTests, PurchaseViewModelTests). The two KNOWN missing tests are ported; verify no OTHER @Test silently vanished by diffing `git show 816101d:Tests/...` test names against current files. The full inventory is in round21's report (~/datesnap-recovery-20261002-142441/round21/report.txt).
+1. **Cross-check rescue test inventory.** Rescue 816101d had suites whose current-tree status was not exhaustively diffed (AdvisorTests, AppleIntelligenceLiveTests, EventUnderstandingPipelineTests, EvidenceValidationTests, ExtractionEvaluationTests, InterpretationRecordTests, EventUnderstandingTests, PencildInferenceTests, PurchaseViewModelTests). The two KNOWN missing tests are ported; verify no OTHER @Test silently vanished by diffing `git show 816101d:Tests/...` test names against current files. The full inventory is in round21's report (~/pencild-recovery-20261002-142441/round21/report.txt).
 2. **User-facing denial phrasing.** Gen A originally expected "Notifications are denied"; current fixtures inject "Injected notification failure". Behavior is covered, but consider restoring a human-readable denial message in EventReviewViewModel before App Store polish.
 3. **graphify-out/ untracked directory** - origin unconfirmed (possibly a codex artifact). Inspect before deleting; do not commit blindly.
 4. **codex commits dc4f7a7/c3b7d3d were accepted on trust + green tests** - a deeper line-by-line review of the 26-file codex sweep was never done. Low urgency (suite is green) but worth a skim.
@@ -32,4 +32,4 @@ After that, delete the local round scripts or commit them under scripts/ - your 
 - Capture unknown agent work as named wip generations, never reset.
 - Fix direction: richer error messages live in the implementation; align test fixtures to them (codex precedent c3b7d3d).
 - Deny reasons must state the required tier, never echo the user's tier.
-- Every round: backup to ~/datesnap-recovery-20261002-142441/, commit only on green, xcodebuild needs DEVELOPER_DIR exported.
+- Every round: backup to ~/pencild-recovery-20261002-142441/, commit only on green, xcodebuild needs DEVELOPER_DIR exported.

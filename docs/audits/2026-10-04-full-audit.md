@@ -1,9 +1,9 @@
 Directory structure:
-└── aaronroberson-datesnap-ios/
+└── aaronroberson-pencild-ios/
     ├── AGENTS.md
-    ├── datesnap-design-system-updated.md
-    ├── DateSnap.entitlements
-    ├── DateSnap.storekit
+    ├── pencild-design-system-updated.md
+    ├── Pencild.entitlements
+    ├── Pencild.storekit
     ├── ExportOptions-AppStore.plist
     ├── HANDOFF.md
     ├── Info.plist
@@ -17,9 +17,9 @@ Directory structure:
     │   └── AppIcon.appiconset/
     │       └── Contents.json
     ├── Config/
-    │   ├── DateSnap-Base.xcconfig
-    │   ├── DateSnap-Debug.xcconfig
-    │   └── DateSnap-Release.xcconfig
+    │   ├── Pencild-Base.xcconfig
+    │   ├── Pencild-Debug.xcconfig
+    │   └── Pencild-Release.xcconfig
     ├── design-assets/
     │   └── stitch-screens/
     │       ├── 01_premium_paywall.html
@@ -64,9 +64,9 @@ Directory structure:
     │   ├── download_screens.py
     │   └── verify-release-content.sh
     ├── Sources/
-    │   └── DateSnap/
+    │   └── Pencild/
     │       ├── ContentView.swift
-    │       ├── DateSnap.swift
+    │       ├── Pencild.swift
     │       ├── Models/
     │       │   ├── AppState.swift
     │       │   ├── EventModels.swift
@@ -75,7 +75,7 @@ Directory structure:
     │       │   └── SwiftDataEntities.swift
     │       ├── Services/
     │       │   ├── CalendarService.swift
-    │       │   ├── DateSnapError.swift
+    │       │   ├── PencildError.swift
     │       │   ├── NotificationService.swift
     │       │   ├── OCRService.swift
     │       │   ├── PhotoCandidateRanker.swift
@@ -138,11 +138,11 @@ Directory structure:
     │           ├── SettingsComponents.swift
     │           └── SettingsHubView.swift
     ├── Tests/
-    │   └── DateSnapTests/
+    │   └── PencildTests/
     │       ├── AdvisorTests.swift
     │       ├── AppleIntelligenceLiveTests.swift
-    │       ├── DateSnapInferenceTests.swift
-    │       ├── DateSnapTests.swift
+    │       ├── PencildInferenceTests.swift
+    │       ├── PencildTests.swift
     │       ├── EventUnderstandingPipelineTests.swift
     │       ├── EventUnderstandingTests.swift
     │       ├── EvidenceValidationTests.swift
@@ -201,12 +201,12 @@ FILE: AGENTS.md
 
 ## What this is
 
-DateSnap — an early-stage SwiftUI iOS app (currently a prototype skeleton: an `@main` App and one placeholder `ContentView`). It is a pure Swift Package with **no `.xcodeproj`**; Xcode works by opening `Package.swift` directly.
+Pencild — an early-stage SwiftUI iOS app (currently a prototype skeleton: an `@main` App and one placeholder `ContentView`). It is a pure Swift Package with **no `.xcodeproj`**; Xcode works by opening `Package.swift` directly.
 
 ## Layout
 
-- `Sources/DateSnap/` — the single executable target (`DateSnap.swift` is `@main`).
-- `datesnap-design-system-updated.md` — the design spec. **Read this before writing or changing any UI.**
+- `Sources/Pencild/` — the single executable target (`Pencild.swift` is `@main`).
+- `pencild-design-system-updated.md` — the design spec. **Read this before writing or changing any UI.**
 - `lancedb/` — local LanceDB vector-store data at the repo root. Runtime data, not source: don't commit it or delete it (it is not currently gitignored).
 - Repo has no initial commit yet; everything is untracked.
 
@@ -214,7 +214,7 @@ DateSnap — an early-stage SwiftUI iOS app (currently a prototype skeleton: an 
 
 ```sh
 swift build          # works today (SwiftUI-only code compiles against macOS)
-xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16' build
+xcodebuild -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 16' build
 ```
 
 - Once iOS-only APIs (UIKit, VisionKit, etc.) are introduced, `swift build` on macOS will stop working — use `xcodebuild` with an iOS Simulator destination, or open `Package.swift` in Xcode and run on a simulator.
@@ -226,7 +226,7 @@ xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16'
 - SwiftUI-first; no external dependencies declared yet.
 - The design doc is written with CSS-variable token names — map them to SwiftUI equivalents (color/gradient/material modifiers), don't paste CSS.
 
-## Design rules (from datesnap-design-system-updated.md)
+## Design rules (from pencild-design-system-updated.md)
 
 - Dark navy glassmorphism: background `#050816` (never pure black), translucent "glass" cards, luminous accent gradients. Semantic tokens (primary `#7CFFEA`, accent `#FF4FB3`, etc.) are defined in the doc.
 - Display-P3 colors with sRGB fallback; fonts: Sora for display, Inter for UI.
@@ -236,13 +236,13 @@ xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16'
 
 
 ================================================
-FILE: datesnap-design-system-updated.md
+FILE: pencild-design-system-updated.md
 ================================================
-# DateSnap Design System
+# Pencild Design System
 
 ## Art Direction
 
-DateSnap should feel like a premium consumer utility: fast, trustworthy, cinematic, and easy to act on. The attached logo suggests a glossy glassmorphism aesthetic with forward motion, neon scan energy, and a layered calendar-plus-capture metaphor, so the UI should translate that into restrained contrast, luminous accent color, translucent surfaces, and confident simplicity rather than skeuomorphic decoration. [file:23]
+Pencild should feel like a premium consumer utility: fast, trustworthy, cinematic, and easy to act on. The attached logo suggests a glossy glassmorphism aesthetic with forward motion, neon scan energy, and a layered calendar-plus-capture metaphor, so the UI should translate that into restrained contrast, luminous accent color, translucent surfaces, and confident simplicity rather than skeuomorphic decoration. [file:23]
 
 Core design keywords:
 - Fast capture.
@@ -361,7 +361,7 @@ Keep the 24x24 SVG icon approach, but update the style language:
 | `spark` | High confidence |
 | `photo` | Photo library import |
 | `scan-frame` | Camera / screenshot scan action |
-| `share` | Share to DateSnap |
+| `share` | Share to Pencild |
 | `chevron-right` | Navigation |
 | `calendar-grid` | Event/date object |
 | `pin` | Location |
@@ -532,20 +532,20 @@ The old system leaned monochrome/editorial; the updated system should feel like 
 
 
 ================================================
-FILE: DateSnap.entitlements
+FILE: Pencild.entitlements
 ================================================
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- DateSnap uses on-device local execution. No push notifications or iCloud entitlements required. -->
+	<!-- Pencild uses on-device local execution. No push notifications or iCloud entitlements required. -->
 </dict>
 </plist>
 
 
 
 ================================================
-FILE: DateSnap.storekit
+FILE: Pencild.storekit
 ================================================
 {
   "identifier" : "E2B771F8",
@@ -613,11 +613,11 @@ FILE: DateSnap.storekit
       "localizations" : [
         {
           "description" : "Unlock automated screenshot scanning and calendar scheduling.",
-          "displayName" : "DateSnap Memberships",
+          "displayName" : "Pencild Memberships",
           "locale" : "en_US"
         }
       ],
-      "name" : "DateSnap Memberships",
+      "name" : "Pencild Memberships",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -639,11 +639,11 @@ FILE: DateSnap.storekit
           "localizations" : [
             {
               "description" : "Monthly auto-detection from camera roll and screenshots.",
-              "displayName" : "DateSnap Plus Monthly",
+              "displayName" : "Pencild Plus Monthly",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.datesnap.plus.monthly",
+          "productID" : "com.pencild.plus.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Plus Monthly",
           "subscriptionGroupID" : "21589001",
@@ -669,11 +669,11 @@ FILE: DateSnap.storekit
           "localizations" : [
             {
               "description" : "Annual auto-detection from camera roll and screenshots.",
-              "displayName" : "DateSnap Plus Annual",
+              "displayName" : "Pencild Plus Annual",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.datesnap.plus.annual",
+          "productID" : "com.pencild.plus.annual",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Plus Annual",
           "subscriptionGroupID" : "21589001",
@@ -694,11 +694,11 @@ FILE: DateSnap.storekit
           "localizations" : [
             {
               "description" : "Full automation, file/PDF import, and unlimited event history.",
-              "displayName" : "DateSnap Premium Monthly",
+              "displayName" : "Pencild Premium Monthly",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.datesnap.premium.monthly",
+          "productID" : "com.pencild.premium.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Premium Monthly",
           "subscriptionGroupID" : "21589001",
@@ -719,11 +719,11 @@ FILE: DateSnap.storekit
           "localizations" : [
             {
               "description" : "Full automation, file/PDF import, and unlimited event history.",
-              "displayName" : "DateSnap Premium Annual",
+              "displayName" : "Pencild Premium Annual",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.datesnap.premium.annual",
+          "productID" : "com.pencild.premium.annual",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Premium Annual",
           "subscriptionGroupID" : "21589001",
@@ -767,23 +767,23 @@ FILE: ExportOptions-AppStore.plist
 ================================================
 FILE: HANDOFF.md
 ================================================
-# DateSnap Wave 2 Handoff
+# Pencild Wave 2 Handoff
 
 Updated: 2026-09-29
 
 ## Implemented in the repository
 
-- Created `DateSnap.xcodeproj` with:
-  - `DateSnap` iOS application target (`com.apple.product-type.application`).
-  - `DateSnapTests` unit-test target.
+- Created `Pencild.xcodeproj` with:
+  - `Pencild` iOS application target (`com.apple.product-type.application`).
+  - `PencildTests` unit-test target.
   - iOS 18.0 deployment target and Swift 6 settings.
-  - Debug and Release configurations backed by `Config/DateSnap-Debug.xcconfig` and `Config/DateSnap-Release.xcconfig`.
-  - Shared `DateSnap` scheme with `DateSnap.storekit` attached to the Run action.
-  - `Info.plist`, `DateSnap.entitlements`, `PrivacyInfo.xcprivacy`, and the asset catalog bound to the app target.
+  - Debug and Release configurations backed by `Config/Pencild-Debug.xcconfig` and `Config/Pencild-Release.xcconfig`.
+  - Shared `Pencild` scheme with `Pencild.storekit` attached to the Run action.
+  - `Info.plist`, `Pencild.entitlements`, `PrivacyInfo.xcprivacy`, and the asset catalog bound to the app target.
 - Added `project.yml` as the reproducible XcodeGen source for the project. Regenerate with `xcodegen generate --spec project.yml` after changing target membership or build configuration.
 - Added `Assets.xcassets` with:
   - A 1024×1024 `AppIcon` master PNG.
-  - A Display-P3 `AccentColor` matching DateSnap primary cyan (`#7CFFEA`).
+  - A Display-P3 `AccentColor` matching Pencild primary cyan (`#7CFFEA`).
 - Verified the existing Wave 2 application wiring already includes:
   - `PhotosPicker` import in `HomeEmptyStateView` and scan routing through `ScanViewModel`.
   - `EventReviewEditView` backed by `EventReviewViewModel` for Calendar, Reminders, local-notification, and SwiftData writes.
@@ -792,42 +792,42 @@ Updated: 2026-09-29
 
 ## Validation completed
 
-- `xcodebuild -project DateSnap.xcodeproj -list` identifies:
-  - Targets: `DateSnap`, `DateSnapTests`.
+- `xcodebuild -project Pencild.xcodeproj -list` identifies:
+  - Targets: `Pencild`, `PencildTests`.
   - Configurations: `Debug`, `Release`.
-  - Shared scheme: `DateSnap`.
+  - Shared scheme: `Pencild`.
 - All release plists pass `plutil -lint`:
   - `Info.plist`
-  - `DateSnap.entitlements`
+  - `Pencild.entitlements`
   - `PrivacyInfo.xcprivacy`
   - `ExportOptions-AppStore.plist`
 - App icon dimensions verified as exactly 1024×1024.
-- A no-signing device build created `DateSnap.app`, processed `Info.plist`, and began compiling the complete iOS source set. Full compilation could not finish in the coding-assistant sandbox because Apple SwiftUI/SwiftData macro plugins were denied by `sandbox-exec` (`swift-plugin-server produced malformed response`). This is an environment restriction; rerun the build normally in Xcode as the first manual check below.
+- A no-signing device build created `Pencild.app`, processed `Info.plist`, and began compiling the complete iOS source set. Full compilation could not finish in the coding-assistant sandbox because Apple SwiftUI/SwiftData macro plugins were denied by `sandbox-exec` (`swift-plugin-server produced malformed response`). This is an environment restriction; rerun the build normally in Xcode as the first manual check below.
 
 ## Outstanding tasks requiring owner access or manual execution
 
 ### Before Internal TestFlight
 
-- [ ] Open `DateSnap.xcodeproj` (not `Package.swift`) in Xcode and select the shared `DateSnap` scheme.
-- [ ] Replace `YOUR_TEAM_ID` in both `Config/DateSnap-Debug.xcconfig` and `Config/DateSnap-Release.xcconfig` with the Apple Developer Team ID.
-- [ ] Register the explicit App ID `com.datesnap.app` in Apple Developer Certificates, Identifiers & Profiles and enable In-App Purchase.
+- [ ] Open `Pencild.xcodeproj` (not `Package.swift`) in Xcode and select the shared `Pencild` scheme.
+- [ ] Replace `YOUR_TEAM_ID` in both `Config/Pencild-Debug.xcconfig` and `Config/Pencild-Release.xcconfig` with the Apple Developer Team ID.
+- [ ] Register the explicit App ID `com.pencild.app` in Apple Developer Certificates, Identifiers & Profiles and enable In-App Purchase.
 - [ ] Confirm an Apple Distribution certificate is available and let Xcode manage signing automatically.
 - [ ] Create the App Store Connect app record:
-  - Name: `DateSnap: Screenshot to Calendar`
-  - Bundle ID: `com.datesnap.app`
-  - SKU: `DATESNAP-IOS-01`
+  - Name: `Pencild: Screenshot to Calendar`
+  - Bundle ID: `com.pencild.app`
+  - SKU: `PENCILD-IOS-01`
   - Primary language: English (U.S.), unless a different launch locale is desired.
-- [ ] Build and run the app in an iOS 18+ simulator from Xcode. Then run the `DateSnapTests` test plan/scheme action.
-- [ ] Archive a signed Release build and verify the archive contains `Products/Applications/DateSnap.app`.
+- [ ] Build and run the app in an iOS 18+ simulator from Xcode. Then run the `PencildTests` test plan/scheme action.
+- [ ] Archive a signed Release build and verify the archive contains `Products/Applications/Pencild.app`.
 - [ ] Replace `YOUR_TEAM_ID` in `ExportOptions-AppStore.plist`, export the IPA, validate it, and upload Build 1 using Xcode Organizer or App Store Connect API credentials.
 
 ### Before External TestFlight
 
-- [ ] In App Store Connect, create subscription group `DateSnap Memberships` and these products exactly:
-  - `com.datesnap.plus.monthly` — $4.99/month, 7-day free trial.
-  - `com.datesnap.plus.annual` — $39.99/year, 7-day free trial.
-  - `com.datesnap.premium.monthly` — $8.99/month, no trial.
-  - `com.datesnap.premium.annual` — $69.99/year, no trial.
+- [ ] In App Store Connect, create subscription group `Pencild Memberships` and these products exactly:
+  - `com.pencild.plus.monthly` — $4.99/month, 7-day free trial.
+  - `com.pencild.plus.annual` — $39.99/year, 7-day free trial.
+  - `com.pencild.premium.monthly` — $8.99/month, no trial.
+  - `com.pencild.premium.annual` — $69.99/year, no trial.
 - [ ] Enable the 16-day Billing Grace Period.
 - [ ] Create a sandbox tester and verify product loading, purchase, cancellation/expiration downgrade, and restore on a physical iOS 18+ device.
 - [ ] Execute every case in `TESTFLIGHT-QA.md` on physical hardware, including denied/limited permissions, ambiguous dates, doors/show times, offline operation, and repetitive OCR memory behavior.
@@ -836,9 +836,9 @@ Updated: 2026-09-29
 ### Before App Store submission
 
 - [ ] Deploy public HTTPS pages returning HTTP 200:
-  - `https://datesnap.app/privacy`
-  - `https://datesnap.app/support`
-  - `https://datesnap.app`
+  - `https://pencild.app/privacy`
+  - `https://pencild.app/support`
+  - `https://pencild.app`
 - [ ] Verify the Terms and Privacy links shown by both paywalls open the final live URLs.
 - [ ] Capture and upload 4–6 polished screenshots for:
   - 6.9-inch iPhone: 1320×2868.
@@ -856,7 +856,7 @@ Updated: 2026-09-29
 
 ## App icon provenance
 
-The master icon was generated with the built-in image-generation tool using the DateSnap design-system palette and a calendar-plus-scan-frame concept. It contains no text, transparency, or external rounded-corner mask. Final asset: `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png`.
+The master icon was generated with the built-in image-generation tool using the Pencild design-system palette and a calendar-plus-scan-frame concept. It contains no text, transparency, or external rounded-corner mask. Final asset: `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png`.
 
 
 
@@ -870,7 +870,7 @@ FILE: Info.plist
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>DateSnap</string>
+	<string>Pencild</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -903,19 +903,19 @@ FILE: Info.plist
 
 	<!-- Privacy Usage Descriptions (Mandatory for App Store & Runtime) -->
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>DateSnap analyzes screenshots and event flyers directly on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
+	<string>Pencild analyzes screenshots and event flyers directly on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
 
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>DateSnap requires full calendar access to schedule extracted events with alarm offsets directly in your Apple Calendar.</string>
+	<string>Pencild requires full calendar access to schedule extracted events with alarm offsets directly in your Apple Calendar.</string>
 
 	<key>NSCalendarsUsageDescription</key>
-	<string>DateSnap requires calendar access to create and sync events extracted from your flyers and screenshots.</string>
+	<string>Pencild requires calendar access to create and sync events extracted from your flyers and screenshots.</string>
 
 	<key>NSRemindersFullAccessUsageDescription</key>
-	<string>DateSnap requires reminders access to schedule multi-tiered countdown alerts in Apple Reminders prior to your events.</string>
+	<string>Pencild requires reminders access to schedule multi-tiered countdown alerts in Apple Reminders prior to your events.</string>
 
 	<key>NSRemindersUsageDescription</key>
-	<string>DateSnap requires reminders access to create reminder lists and alerts for your upcoming events.</string>
+	<string>Pencild requires reminders access to create reminder lists and alerts for your upcoming events.</string>
 
 	<!-- Export Compliance (Bypasses manual TestFlight compliance questionnaire) -->
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -934,22 +934,22 @@ FILE: Package.swift
 import PackageDescription
 
 let package = Package(
-    name: "DateSnap",
+    name: "Pencild",
     platforms: [
         .iOS(.v18),
     ],
     targets: [
         .executableTarget(
-            name: "DateSnap",
-            path: "Sources/DateSnap",
+            name: "Pencild",
+            path: "Sources/Pencild",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ]
         ),
         .testTarget(
-            name: "DateSnapTests",
-            dependencies: ["DateSnap"],
-            path: "Tests/DateSnapTests",
+            name: "PencildTests",
+            dependencies: ["Pencild"],
+            path: "Tests/PencildTests",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ]
@@ -997,9 +997,9 @@ FILE: PrivacyInfo.xcprivacy
 ================================================
 FILE: project.yml
 ================================================
-name: DateSnap
+name: Pencild
 options:
-  bundleIdPrefix: com.datesnap
+  bundleIdPrefix: com.pencild
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
@@ -1013,41 +1013,41 @@ settings:
     SWIFT_APPROACHABLE_CONCURRENCY: YES
     SWIFT_STRICT_CONCURRENCY: complete
 targets:
-  DateSnap:
+  Pencild:
     type: application
     platform: iOS
     deploymentTarget: "18.0"
     sources:
-      - path: Sources/DateSnap
+      - path: Sources/Pencild
     resources:
       - path: Assets.xcassets
       - path: PrivacyInfo.xcprivacy
     configFiles:
-      Debug: Config/DateSnap-Debug.xcconfig
-      Release: Config/DateSnap-Release.xcconfig
+      Debug: Config/Pencild-Debug.xcconfig
+      Release: Config/Pencild-Release.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.datesnap.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.pencild.app
         INFOPLIST_FILE: Info.plist
-        CODE_SIGN_ENTITLEMENTS: DateSnap.entitlements
+        CODE_SIGN_ENTITLEMENTS: Pencild.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: NO
     scheme:
-      storeKitConfiguration: DateSnap.storekit
+      storeKitConfiguration: Pencild.storekit
       testTargets:
-        - DateSnapTests
-  DateSnapTests:
+        - PencildTests
+  PencildTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "18.0"
     sources:
-      - path: Tests/DateSnapTests
+      - path: Tests/PencildTests
     dependencies:
-      - target: DateSnap
+      - target: Pencild
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.datesnap.app.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.pencild.app.tests
         GENERATE_INFOPLIST_FILE: YES
 
 
@@ -1097,7 +1097,7 @@ FILE: Assets.xcassets/AppIcon.appiconset/Contents.json
 {
   "images" : [
     {
-      "filename" : "DateSnap-AppIcon-1024.png",
+      "filename" : "Pencild-AppIcon-1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -1113,13 +1113,13 @@ FILE: Assets.xcassets/AppIcon.appiconset/Contents.json
 
 
 ================================================
-FILE: Config/DateSnap-Base.xcconfig
+FILE: Config/Pencild-Base.xcconfig
 ================================================
-// DateSnap-Base.xcconfig
+// Pencild-Base.xcconfig
 // Base configuration shared across Debug and Release
 
-PRODUCT_NAME = DateSnap
-PRODUCT_BUNDLE_IDENTIFIER = com.datesnap.app
+PRODUCT_NAME = Pencild
+PRODUCT_BUNDLE_IDENTIFIER = com.pencild.app
 MARKETING_VERSION = 1.0.0
 CURRENT_PROJECT_VERSION = 1
 
@@ -1129,7 +1129,7 @@ ENABLE_USER_SCRIPT_SANDBOXING = YES
 SWIFT_APPROACHABLE_CONCURRENCY = YES
 
 INFOPLIST_FILE = Info.plist
-CODE_SIGN_ENTITLEMENTS = DateSnap.entitlements
+CODE_SIGN_ENTITLEMENTS = Pencild.entitlements
 GENERATE_INFOPLIST_FILE = NO
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
@@ -1140,10 +1140,10 @@ TARGETED_DEVICE_FAMILY = 1,2
 
 
 ================================================
-FILE: Config/DateSnap-Debug.xcconfig
+FILE: Config/Pencild-Debug.xcconfig
 ================================================
-// DateSnap-Debug.xcconfig
-#include "DateSnap-Base.xcconfig"
+// Pencild-Debug.xcconfig
+#include "Pencild-Base.xcconfig"
 
 DEBUG_INFORMATION_FORMAT = dwarf
 ENABLE_TESTABILITY = YES
@@ -1159,10 +1159,10 @@ PROVISIONING_PROFILE_SPECIFIER =
 
 
 ================================================
-FILE: Config/DateSnap-Release.xcconfig
+FILE: Config/Pencild-Release.xcconfig
 ================================================
-// DateSnap-Release.xcconfig
-#include "DateSnap-Base.xcconfig"
+// Pencild-Release.xcconfig
+#include "Pencild-Base.xcconfig"
 
 DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
 ENABLE_TESTABILITY = NO
@@ -1199,7 +1199,7 @@ FILE: design-assets/stitch-screens/01_premium_paywall.html
 <div class="inline-flex items-center gap-space-xs px-3.5 py-1.5 rounded-full bg-surface-container-high/80 backdrop-blur-xl shadow-lg relative">
 <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#74f8e3]"></span>
 <span class="font-overline-confidence text-overline-confidence uppercase tracking-wider text-primary-container font-semibold">
-        ✦ DATESNAP PREMIUM
+        ✦ PENCILD PREMIUM
       </span>
 <span class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-glass-specular-top to-transparent rounded-full pointer-events-none"></span>
 </div>
@@ -1261,7 +1261,7 @@ FILE: design-assets/stitch-screens/01_premium_paywall.html
 <span class="material-symbols-outlined text-[22px]">all_inclusive</span>
 </div>
 <div class="flex flex-col min-w-0 pr-space-xs">
-<h2 class="font-headline-card text-headline-card text-foreground-primary text-[15px] leading-tight">Everything in DateSnap Plus</h2>
+<h2 class="font-headline-card text-headline-card text-foreground-primary text-[15px] leading-tight">Everything in Pencild Plus</h2>
 <p class="font-caption text-caption text-muted-foreground mt-1 leading-relaxed">
           Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.
         </p>
@@ -1453,8 +1453,8 @@ FILE: design-assets/stitch-screens/01_premium_paywall.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2932",
-  "title": "DateSnap - Premium Paywall",
-  "prompt": "Design the DateSnap Premium Paywall screen (Screen 20).\nThis is the flagship power-tier paywall for DateSnap, designed with top-tier fidelity, cinematic glassmorphism, luminous edge highlights, and balanced whitespace matching Phase A.\nBackground: Deep midnight navy (#050816) with subtle ambient purple and warm orange atmospheric light flares.\nHeader:\n- Top bar with frosted circular dismiss button (close icon) on left, and 'Restore' text button on right.\nHero Section:\n- Category Pill: '\u2726 DATESNAP PREMIUM' with luminous gradient border and live pulse dot.\n- Headline: 'Turn flyers and files into plans.' in Sora 30px bold, pure white #F7F8FF.\n- Subheadline: 'Import event PDFs and images from Files, then save the important dates in seconds.' (15px Inter, muted lavender #A8B0D4).\n- Dynamic Hero Visual: Layered glass icon lockup showing a PDF document badge with an active neon scan beam line passing horizontally across it, and a gold sparkle badge.\n\nFeature Highlights (Cinematic glass cards, rounded-2xl, rgba(18, 24, 52, 0.75), border 1px solid rgba(173, 195, 255, 0.18), specular top highlight line):\n1. 'Everything in DateSnap Plus' (Icon: all_inclusive in purple container) \u2014 'Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.'\n2. 'Files & Cloud Drive Import' (Icon: folder_open in cyan container) \u2014 'Import PDFs, itineraries, and flyers directly from iOS Files, iCloud Drive, and Dropbox.'\n3. 'Multi-Page PDF Scanning' (Icon: picture_as_pdf in magenta container) \u2014 'Extract multi-day conference agendas, school schedules, and sports tourneys with one tap.'\n4. 'Batch Document Scanning' (Icon: layers in orange container) \u2014 'Queue up to 10 event flyers, passes, or tickets at once with lightning on-device OCR.'\n5. 'Advanced Calendar Rules' (Icon: tune in emerald green container) \u2014 'Custom calendar color tagging, recurring scan routines, and location geofence alerts.'\n\nInteractive Pricing Cards (Radio group):\n- Annual Plan (Selected by default):\n  - Border: Glowing neon cyan/indigo gradient border, inner specular highlight.\n  - Left side: 'Annual' heading, bright cyan 'Save 50%' badge pill, subtext '$49.99 billed annually \u00b7 Includes 7-Day Free Trial'.\n  - Right side: '$4.16' / mo in Sora bold cyan text, with active glowing checkmark circle.\n- Monthly Plan:\n  - Frosted glass container.\n  - Left side: 'Monthly' heading, subtext '$8.99 billed monthly, cancel anytime'.\n  - Right side: '$8.99' / mo, with subtle unselected radio circle.\n\nCTA & Trust Footer:\n- Primary CTA: Capsule 56px height button in luminous cyan (#7CFFEA) with dark text (#07111F), 'Try Premium Free for 7 Days \u2192'.\n- Trust note: Shield icon + 'Renews at $49.99/yr. Notification sent 2 days prior to billing. Cancel anytime in Apple ID.'\n- Legal footer: 'Restore Purchases \u00b7 Subscription Terms \u00b7 Privacy Policy'.",
+  "title": "Pencild - Premium Paywall",
+  "prompt": "Design the Pencild Premium Paywall screen (Screen 20).\nThis is the flagship power-tier paywall for Pencild, designed with top-tier fidelity, cinematic glassmorphism, luminous edge highlights, and balanced whitespace matching Phase A.\nBackground: Deep midnight navy (#050816) with subtle ambient purple and warm orange atmospheric light flares.\nHeader:\n- Top bar with frosted circular dismiss button (close icon) on left, and 'Restore' text button on right.\nHero Section:\n- Category Pill: '\u2726 PENCILD PREMIUM' with luminous gradient border and live pulse dot.\n- Headline: 'Turn flyers and files into plans.' in Sora 30px bold, pure white #F7F8FF.\n- Subheadline: 'Import event PDFs and images from Files, then save the important dates in seconds.' (15px Inter, muted lavender #A8B0D4).\n- Dynamic Hero Visual: Layered glass icon lockup showing a PDF document badge with an active neon scan beam line passing horizontally across it, and a gold sparkle badge.\n\nFeature Highlights (Cinematic glass cards, rounded-2xl, rgba(18, 24, 52, 0.75), border 1px solid rgba(173, 195, 255, 0.18), specular top highlight line):\n1. 'Everything in Pencild Plus' (Icon: all_inclusive in purple container) \u2014 'Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.'\n2. 'Files & Cloud Drive Import' (Icon: folder_open in cyan container) \u2014 'Import PDFs, itineraries, and flyers directly from iOS Files, iCloud Drive, and Dropbox.'\n3. 'Multi-Page PDF Scanning' (Icon: picture_as_pdf in magenta container) \u2014 'Extract multi-day conference agendas, school schedules, and sports tourneys with one tap.'\n4. 'Batch Document Scanning' (Icon: layers in orange container) \u2014 'Queue up to 10 event flyers, passes, or tickets at once with lightning on-device OCR.'\n5. 'Advanced Calendar Rules' (Icon: tune in emerald green container) \u2014 'Custom calendar color tagging, recurring scan routines, and location geofence alerts.'\n\nInteractive Pricing Cards (Radio group):\n- Annual Plan (Selected by default):\n  - Border: Glowing neon cyan/indigo gradient border, inner specular highlight.\n  - Left side: 'Annual' heading, bright cyan 'Save 50%' badge pill, subtext '$49.99 billed annually \u00b7 Includes 7-Day Free Trial'.\n  - Right side: '$4.16' / mo in Sora bold cyan text, with active glowing checkmark circle.\n- Monthly Plan:\n  - Frosted glass container.\n  - Left side: 'Monthly' heading, subtext '$8.99 billed monthly, cancel anytime'.\n  - Right side: '$8.99' / mo, with subtle unselected radio circle.\n\nCTA & Trust Footer:\n- Primary CTA: Capsule 56px height button in luminous cyan (#7CFFEA) with dark text (#07111F), 'Try Premium Free for 7 Days \u2192'.\n- Trust note: Shield icon + 'Renews at $49.99/yr. Notification sent 2 days prior to billing. Cancel anytime in Apple ID.'\n- Legal footer: 'Restore Purchases \u00b7 Subscription Terms \u00b7 Privacy Policy'.",
   "name": "projects/454854512779783540/screens/6c145dff8ec540b9a51f806629e55c70",
   "theme": {
     "colorMode": "DARK",
@@ -1855,7 +1855,7 @@ FILE: design-assets/stitch-screens/02_plus_paywall.html
 <!-- Branded Pill Badge -->
 <div class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container/90 shadow-sm backdrop-blur-xl mb-space-md">
 <span class="text-primary-container font-headline-card text-caption tracking-wider select-none">✦</span>
-<span class="font-overline-confidence text-overline-confidence tracking-[0.14em] uppercase text-foreground-primary">DATESNAP PLUS</span>
+<span class="font-overline-confidence text-overline-confidence tracking-[0.14em] uppercase text-foreground-primary">PENCILD PLUS</span>
 <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse ml-0.5"></span>
 </div>
 <!-- Main Headline -->
@@ -1945,7 +1945,7 @@ FILE: design-assets/stitch-screens/02_plus_paywall.html
           Calendar, Reminders &amp; Push
         </h3>
 <p class="font-body-base text-body-compact text-muted-foreground leading-relaxed">
-          Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push.
+          Triple-destination sync across Apple Calendar, Reminders, and Pencild local push.
         </p>
 </div>
 </div>
@@ -2101,8 +2101,8 @@ FILE: design-assets/stitch-screens/02_plus_paywall.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2782",
-  "title": "DateSnap - Plus Paywall",
-  "prompt": "Design the DateSnap Plus Paywall screen (Screen 19).\nThis must be extraordinarily high fidelity, matching the polished visual depth, rich glass cards, and precise typography of DateSnap Phase A (Saved Event Detail and Event Review).\nBackground: Deep midnight navy (#050816) with subtle atmospheric radial glows (electric blue and magenta blur in background).\nHeader:\n- Top bar with clean circular glass Close button on left or right, and subtle 'Restore' button.\nHero Section:\n- Glowing branded badge pill at top: '\u2726 DATESNAP PLUS' with cyan/magenta subtle gradient edge.\n- Main headline: 'Never miss a date you saved.' (30px Sora font, bold, crisp white #F7F8FF, tight tracking).\n- Subheadline: 'Automatically find events in screenshots and set the reminders that work for you.' (15px Inter, text-muted-foreground #A8B0D4, max-w-sm, centered).\n- Visual Interactive Anchor: A sleek layered preview card showing a scanned concert flyer thumbnail ('Neon Sunset Rooftop') with a '99% AI CONFIDENCE' badge and '3 custom reminders primed' status tag, illustrating the core value.\n\nFeature List (Individual elevated glass cards with rounded-2xl, background rgba(18, 24, 52, 0.72), 1px glass border rgba(173, 195, 255, 0.18), and specular top highlight):\n1. 'Unlimited Screenshot Scans' with a vibrant cyan scan icon container, subtitle: 'Scan and extract events from concert flyers, stories, and chat invites without limits.'\n2. 'Up to 3 Reminders Per Event' with a bell icon in soft orange container, subtitle: 'Fine-tune departure countdowns, ticket drop buzzers, and prep alerts with precision.'\n3. 'Calendar, Reminders & Push' with calendar/sync icon in purple container, subtitle: 'Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push.'\n4. 'Custom Defaults & Smart Drafts' with sliders/wand icon in green container, subtitle: 'Auto-apply your favorite timing offsets and triage ambiguous dates effortlessly.'\n\nInteractive Plan Selector (Radio group with 2 distinct glass cards):\n- Annual Plan (Selected by default):\n  - Highlighted with luminous cyan/blue glowing border (1.5px solid #7CFFEA or gradient), soft back glow.\n  - Left side: 'Annual' title in bold, 'Save 48%' high-contrast badge pill in bright cyan (#7CFFEA) with dark text, and subtext '$29.99 billed annually (Includes 7-Day Free Trial)'.\n  - Right side: '$2.49 / mo' in bold Sora, with a filled checkmark circle in #7CFFEA.\n- Monthly Plan:\n  - Clean frosted glass card with subtle border.\n  - Left side: 'Monthly' title, subtext '$4.99 billed monthly, cancel anytime'.\n  - Right side: '$4.99 / mo' in Sora, with an empty muted radio circle.\n\nCTA & Legal Reassurance:\n- Primary CTA Button: Full width 56px height capsule button in luminous cyan (#7CFFEA) with dark navy text (#07111F), bold 16px Sora: 'Start 7-Day Free Trial \u2192' with subtle outer glow.\n- Trust guarantee note: Lock icon with 'Renews at $29.99/year after trial. Cancel anytime in App Store settings with zero surprise charges.'\n- Footer links: 'Restore Purchases \u00b7 Terms of Service \u00b7 Privacy Policy' in muted caption font.\nEnsure all spacing is balanced, cards are distinctly separated, text has zero overlap, and icons are properly sized.",
+  "title": "Pencild - Plus Paywall",
+  "prompt": "Design the Pencild Plus Paywall screen (Screen 19).\nThis must be extraordinarily high fidelity, matching the polished visual depth, rich glass cards, and precise typography of Pencild Phase A (Saved Event Detail and Event Review).\nBackground: Deep midnight navy (#050816) with subtle atmospheric radial glows (electric blue and magenta blur in background).\nHeader:\n- Top bar with clean circular glass Close button on left or right, and subtle 'Restore' button.\nHero Section:\n- Glowing branded badge pill at top: '\u2726 PENCILD PLUS' with cyan/magenta subtle gradient edge.\n- Main headline: 'Never miss a date you saved.' (30px Sora font, bold, crisp white #F7F8FF, tight tracking).\n- Subheadline: 'Automatically find events in screenshots and set the reminders that work for you.' (15px Inter, text-muted-foreground #A8B0D4, max-w-sm, centered).\n- Visual Interactive Anchor: A sleek layered preview card showing a scanned concert flyer thumbnail ('Neon Sunset Rooftop') with a '99% AI CONFIDENCE' badge and '3 custom reminders primed' status tag, illustrating the core value.\n\nFeature List (Individual elevated glass cards with rounded-2xl, background rgba(18, 24, 52, 0.72), 1px glass border rgba(173, 195, 255, 0.18), and specular top highlight):\n1. 'Unlimited Screenshot Scans' with a vibrant cyan scan icon container, subtitle: 'Scan and extract events from concert flyers, stories, and chat invites without limits.'\n2. 'Up to 3 Reminders Per Event' with a bell icon in soft orange container, subtitle: 'Fine-tune departure countdowns, ticket drop buzzers, and prep alerts with precision.'\n3. 'Calendar, Reminders & Push' with calendar/sync icon in purple container, subtitle: 'Triple-destination sync across Apple Calendar, Reminders, and Pencild local push.'\n4. 'Custom Defaults & Smart Drafts' with sliders/wand icon in green container, subtitle: 'Auto-apply your favorite timing offsets and triage ambiguous dates effortlessly.'\n\nInteractive Plan Selector (Radio group with 2 distinct glass cards):\n- Annual Plan (Selected by default):\n  - Highlighted with luminous cyan/blue glowing border (1.5px solid #7CFFEA or gradient), soft back glow.\n  - Left side: 'Annual' title in bold, 'Save 48%' high-contrast badge pill in bright cyan (#7CFFEA) with dark text, and subtext '$29.99 billed annually (Includes 7-Day Free Trial)'.\n  - Right side: '$2.49 / mo' in bold Sora, with a filled checkmark circle in #7CFFEA.\n- Monthly Plan:\n  - Clean frosted glass card with subtle border.\n  - Left side: 'Monthly' title, subtext '$4.99 billed monthly, cancel anytime'.\n  - Right side: '$4.99 / mo' in Sora, with an empty muted radio circle.\n\nCTA & Legal Reassurance:\n- Primary CTA Button: Full width 56px height capsule button in luminous cyan (#7CFFEA) with dark navy text (#07111F), bold 16px Sora: 'Start 7-Day Free Trial \u2192' with subtle outer glow.\n- Trust guarantee note: Lock icon with 'Renews at $29.99/year after trial. Cancel anytime in App Store settings with zero surprise charges.'\n- Footer links: 'Restore Purchases \u00b7 Terms of Service \u00b7 Privacy Policy' in muted caption font.\nEnsure all spacing is balanced, cards are distinctly separated, text has zero overlap, and icons are properly sized.",
   "name": "projects/454854512779783540/screens/df7a78364bd54941ad1d7bb6ca34d449",
   "theme": {
     "colorMode": "DARK",
@@ -2492,7 +2492,7 @@ FILE: design-assets/stitch-screens/03_history_and_archive.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Datesnap History</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-lg pb-12">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Pencild History</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-lg pb-12">
 <!-- Subtle Ambient Glows in Background -->
 <div class="fixed top-16 left-1/2 -translate-x-1/2 w-80 h-32 bg-secondary-container/20 rounded-full blur-[80px] pointer-events-none -z-10"></div>
 <div class="fixed top-96 right-0 w-64 h-64 bg-accent-purple/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
@@ -2829,7 +2829,7 @@ FILE: design-assets/stitch-screens/03_history_and_archive.html
       }
     })();
   </script>
-</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="datesnap-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="pencild-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav>
 </body></html>
 
 
@@ -2850,8 +2850,8 @@ FILE: design-assets/stitch-screens/03_history_and_archive.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2734",
-  "title": "DateSnap - History & Archive",
-  "prompt": "Design the DateSnap History screen (Screen 16).\nGoal: Show previously saved events and scan activity in a lightweight, elegant, and useful way.\nDesign & Content:\n- Top Title: \"History & Archive\" with supportive subtitle \"All synced events, past scans, and triage records.\"\n- Search bar with glass pill design: \"Search events, venues, dates...\" with search icon.\n- Segmented filter tabs: \"Saved (18)\" [Active cyan pill], \"Drafts (3)\", \"Dismissed (5)\", \"All Scans\".\n- Grouped chronological sections:\n  * Section: \"THIS MONTH - JULY 2025\"\n    - Item 1: Card for \"Neon Sunset Rooftop Session\" | Date badge `JUL 18` | Synced to Apple Calendar & Reminders (green check pill `Synced`) | Venue: Skybar Lounge | Extracted from screenshot | Thumbnail of flyer with magnifying glass icon.\n    - Item 2: Card for \"Dr. Aris Dental Checkup\" | Date badge `JUL 02` | Synced to Apple Calendar | 10:30 AM | Direct calendar link icon.\n  * Section: \"JUNE 2025\"\n    - Item 3: Card for \"Summer Rooftop Mixer\" | Date badge `JUN 24` | Synced | Skybar Lounge | Thumbnail preview.\n    - Item 4: Card for \"SF Tech Founders Meetup\" | Date badge `JUN 12` | Synced to Apple Calendar.\n  * Section: \"MAY 2025\"\n    - Item 5: Card for \"Flight UA 882 to SFO\" | Date badge `MAY 28` | Airport terminal gate details.\n- Visual distinction: Crisp glowing badges for successfully synced vs amber/muted for past drafts.\n- Compact glass rows with subtle borders, chevron icons, and swipe action hints.\n- Bottom safe area padding above the tab bar.\nTone: Organized, archival, low-clutter, premium glass tech aesthetic using Midnight Prism design system.",
+  "title": "Pencild - History & Archive",
+  "prompt": "Design the Pencild History screen (Screen 16).\nGoal: Show previously saved events and scan activity in a lightweight, elegant, and useful way.\nDesign & Content:\n- Top Title: \"History & Archive\" with supportive subtitle \"All synced events, past scans, and triage records.\"\n- Search bar with glass pill design: \"Search events, venues, dates...\" with search icon.\n- Segmented filter tabs: \"Saved (18)\" [Active cyan pill], \"Drafts (3)\", \"Dismissed (5)\", \"All Scans\".\n- Grouped chronological sections:\n  * Section: \"THIS MONTH - JULY 2025\"\n    - Item 1: Card for \"Neon Sunset Rooftop Session\" | Date badge `JUL 18` | Synced to Apple Calendar & Reminders (green check pill `Synced`) | Venue: Skybar Lounge | Extracted from screenshot | Thumbnail of flyer with magnifying glass icon.\n    - Item 2: Card for \"Dr. Aris Dental Checkup\" | Date badge `JUL 02` | Synced to Apple Calendar | 10:30 AM | Direct calendar link icon.\n  * Section: \"JUNE 2025\"\n    - Item 3: Card for \"Summer Rooftop Mixer\" | Date badge `JUN 24` | Synced | Skybar Lounge | Thumbnail preview.\n    - Item 4: Card for \"SF Tech Founders Meetup\" | Date badge `JUN 12` | Synced to Apple Calendar.\n  * Section: \"MAY 2025\"\n    - Item 5: Card for \"Flight UA 882 to SFO\" | Date badge `MAY 28` | Airport terminal gate details.\n- Visual distinction: Crisp glowing badges for successfully synced vs amber/muted for past drafts.\n- Compact glass rows with subtle borders, chevron icons, and swipe action hints.\n- Bottom safe area padding above the tab bar.\nTone: Organized, archival, low-clutter, premium glass tech aesthetic using Midnight Prism design system.",
   "name": "projects/454854512779783540/screens/e5fc50914c2f4a788389e8aa94806f45",
   "theme": {
     "colorMode": "DARK",
@@ -3241,7 +3241,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Calendar Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Calendar Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
 <!-- Ambient Atmospheric Backdrops -->
 <div class="relative w-full flex flex-col items-center pt-space-md">
 <!-- Hero Glass Shield Visual -->
@@ -3279,7 +3279,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
 </div>
 <h1 class="font-headline-section text-headline-section text-foreground-primary tracking-tight">Calendar access is turned off</h1>
 <p class="font-body-compact text-body-compact text-muted-foreground mt-space-sm leading-relaxed max-w-sm mx-auto">
-        DateSnap needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.
+        Pencild needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.
       </p>
 </div>
 <!-- "What you can still do right now" Bento Glass Card -->
@@ -3310,7 +3310,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
 <span class="material-symbols-outlined text-status-success text-[18px]">check</span>
 </div>
 <div class="flex flex-col min-w-0">
-<span class="font-body-strong text-body-compact text-foreground-primary">DateSnap Local Push Alerts</span>
+<span class="font-body-strong text-body-compact text-foreground-primary">Pencild Local Push Alerts</span>
 <span class="font-caption text-caption text-muted-foreground mt-0.5 leading-snug">Receive intelligent on-device notifications &amp; pre-event sound cues for snapped screenshots.</span>
 </div>
 </div>
@@ -3345,7 +3345,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
 <li class="flex items-center gap-space-md text-on-surface">
 <span class="w-6 h-6 rounded-full bg-muted-surface flex items-center justify-center font-overline-confidence text-overline-confidence text-foreground-primary shrink-0">2</span>
 <span class="font-body-compact text-body-compact text-on-surface">
-            Scroll to find <span class="font-body-strong text-foreground-primary">DateSnap</span>
+            Scroll to find <span class="font-body-strong text-foreground-primary">Pencild</span>
 </span>
 </li>
 <li class="flex items-center gap-space-md text-on-surface">
@@ -3373,7 +3373,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
 <div class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md rounded-xl bg-surface-container-lowest/50 mb-space-lg text-center">
 <span class="material-symbols-outlined text-status-success text-[16px] shrink-0">verified_user</span>
 <p class="font-caption text-caption text-muted-foreground">
-        DateSnap is 100% On-Device · Zero Cloud Sync · Private by Design
+        Pencild is 100% On-Device · Zero Cloud Sync · Private by Design
       </p>
 </div>
 </div>
@@ -3389,7 +3389,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
         setTimeout(() => {
           settingsBtn.classList.remove('scale-[0.97]');
           // Deep link trigger emulation for native app layer
-          console.log('[DateSnap] Opening iOS System Settings...');
+          console.log('[Pencild] Opening iOS System Settings...');
         }, 150);
       });
     }
@@ -3399,7 +3399,7 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.html
         remindersBtn.classList.add('opacity-70');
         setTimeout(() => {
           remindersBtn.classList.remove('opacity-70');
-          console.log('[DateSnap] Fallback to Reminders mode engaged.');
+          console.log('[Pencild] Fallback to Reminders mode engaged.');
         }, 150);
       });
     }
@@ -3424,8 +3424,8 @@ FILE: design-assets/stitch-screens/04_calendar_permission_denied.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2534",
-  "title": "DateSnap - Calendar Permission Denied",
-  "prompt": "Design the DateSnap Calendar Permission Denied Fallback Screen (Screen 17).\nGoal: Gracefully explain what the user can still do if Calendar access is denied, with zero scolding.\nDesign & Content:\n- Hero visual icon/illustration: A sleek glass shield card with an Apple Calendar icon and a gentle amber/orange lock/warning accent ring, surrounded by a soft cyan-magenta aura.\n- Headline: \"Calendar access is turned off\"\n- Subtitle: \"DateSnap needs access to write detected dates into your calendar. Don't worry \u2014 your existing events remain completely private and are never read or stored.\"\n- Prominent feature card \"What you can still do right now\":\n  * Feature row 1: \"Apple Reminders\" with checkmark \u2014 \"Export deadlines and alerts directly to your Reminders app without calendar access.\"\n  * Feature row 2: \"DateSnap Local Push Alerts\" with checkmark \u2014 \"Receive intelligent on-device reminder notifications for captured screenshots.\"\n  * Feature row 3: \"Manual & Draft Saving\" with checkmark \u2014 \"Parse flyers, copy formatted event info, or save drafts to review later.\"\n- Step-by-step guidance card:\n  \"To enable Calendar syncing:\"\n  1. Open iPhone **Settings**\n  2. Scroll to **DateSnap**\n  3. Tap **Calendars** and choose **Full Access** or **Add Events Only**\n- Primary Action button: High-contrast luminous cyan capsule button: \"Open iPhone Settings \u2192\"\n- Secondary Action button: Glass button: \"Continue with Reminders Only\"\n- Security footer note: \"DateSnap is 100% On-Device \u00b7 Zero Cloud Sync \u00b7 Private by Design\" with lock icon.\nTone: Helpful, respectful, reassuring, never scolding, premium Midnight Prism dark aesthetic.",
+  "title": "Pencild - Calendar Permission Denied",
+  "prompt": "Design the Pencild Calendar Permission Denied Fallback Screen (Screen 17).\nGoal: Gracefully explain what the user can still do if Calendar access is denied, with zero scolding.\nDesign & Content:\n- Hero visual icon/illustration: A sleek glass shield card with an Apple Calendar icon and a gentle amber/orange lock/warning accent ring, surrounded by a soft cyan-magenta aura.\n- Headline: \"Calendar access is turned off\"\n- Subtitle: \"Pencild needs access to write detected dates into your calendar. Don't worry \u2014 your existing events remain completely private and are never read or stored.\"\n- Prominent feature card \"What you can still do right now\":\n  * Feature row 1: \"Apple Reminders\" with checkmark \u2014 \"Export deadlines and alerts directly to your Reminders app without calendar access.\"\n  * Feature row 2: \"Pencild Local Push Alerts\" with checkmark \u2014 \"Receive intelligent on-device reminder notifications for captured screenshots.\"\n  * Feature row 3: \"Manual & Draft Saving\" with checkmark \u2014 \"Parse flyers, copy formatted event info, or save drafts to review later.\"\n- Step-by-step guidance card:\n  \"To enable Calendar syncing:\"\n  1. Open iPhone **Settings**\n  2. Scroll to **Pencild**\n  3. Tap **Calendars** and choose **Full Access** or **Add Events Only**\n- Primary Action button: High-contrast luminous cyan capsule button: \"Open iPhone Settings \u2192\"\n- Secondary Action button: Glass button: \"Continue with Reminders Only\"\n- Security footer note: \"Pencild is 100% On-Device \u00b7 Zero Cloud Sync \u00b7 Private by Design\" with lock icon.\nTone: Helpful, respectful, reassuring, never scolding, premium Midnight Prism dark aesthetic.",
   "name": "projects/454854512779783540/screens/7d2a6476acc841b7be7374273debbf8b",
   "theme": {
     "colorMode": "DARK",
@@ -3815,7 +3815,7 @@ FILE: design-assets/stitch-screens/05_notification_permission_denied.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Notification Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Notification Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
 <!-- Subtle Ambient Glow Behind Hero -->
 <div class="relative w-full flex flex-col items-center pt-space-md">
 <div class="absolute -top-10 w-48 h-48 bg-gradient-to-tr from-accent-orange/15 via-tertiary-container/10 to-accent-purple/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -3845,7 +3845,7 @@ FILE: design-assets/stitch-screens/05_notification_permission_denied.html
         Notifications are muted
       </h2>
 <p class="font-body-compact text-body-compact text-muted-foreground mt-space-xs leading-relaxed">
-        Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.
+        Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.
       </p>
 </div>
 </div>
@@ -3940,7 +3940,7 @@ FILE: design-assets/stitch-screens/05_notification_permission_denied.html
 <div class="flex items-center flex-wrap gap-space-xs font-caption text-caption text-on-surface-variant">
 <span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Settings</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
-<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">DateSnap</span>
+<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Pencild</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
 <span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Notifications</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
@@ -4008,8 +4008,8 @@ FILE: design-assets/stitch-screens/05_notification_permission_denied.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2298",
-  "title": "DateSnap - Notification Permission Denied",
-  "prompt": "Design the DateSnap Notification Permission Denied Fallback Screen (Screen 18).\nGoal: Explain the impact of no notification access and provide practical alternatives with a calm fallback state.\nDesign & Content:\n- Hero visual: Elegant glass bell icon with a subtle diagonal slash and a soft warm amber/magenta glow ring inside a glass container tile.\n- Headline: \"Notifications are muted\"\n- Subtitle: \"Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.\"\n- Impact & Alternative cards:\n  * Card 1: \"Why enable notifications?\"\n    - \"Smart Lead-Time Alerts\": Get notified 1 day or 2 hours prior to events so you never miss departure windows.\n    - \"Instant Screenshot Detection\": Immediate banner prompt when a flyer or invitation is captured in Photos.\n  * Card 2: \"What still works without alerts\":\n    - \"Direct Apple Calendar Sync\": Events are still added directly into your Apple Calendar and will sound standard iOS calendar alarms.\n    - \"Apple Reminders Integration\": Scheduled to-do items continue to function normally.\n- Action Buttons:\n  * Primary CTA: Luminous cyan button: \"Enable in Settings \u2192\"\n  * Secondary Action: Translucent glass button: \"Keep Alerts Muted & Rely on Calendar\"\n- Step-by-step instructions card in clean micro-text with Settings path (Settings > DateSnap > Notifications > Allow Notifications).\n- Trust footer: \"No promotional spam. Only critical event alerts and scan confirmations.\"\nTone: Clear, supportive, non-alarming, beautifully balanced in Midnight Prism dark aesthetic.",
+  "title": "Pencild - Notification Permission Denied",
+  "prompt": "Design the Pencild Notification Permission Denied Fallback Screen (Screen 18).\nGoal: Explain the impact of no notification access and provide practical alternatives with a calm fallback state.\nDesign & Content:\n- Hero visual: Elegant glass bell icon with a subtle diagonal slash and a soft warm amber/magenta glow ring inside a glass container tile.\n- Headline: \"Notifications are muted\"\n- Subtitle: \"Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.\"\n- Impact & Alternative cards:\n  * Card 1: \"Why enable notifications?\"\n    - \"Smart Lead-Time Alerts\": Get notified 1 day or 2 hours prior to events so you never miss departure windows.\n    - \"Instant Screenshot Detection\": Immediate banner prompt when a flyer or invitation is captured in Photos.\n  * Card 2: \"What still works without alerts\":\n    - \"Direct Apple Calendar Sync\": Events are still added directly into your Apple Calendar and will sound standard iOS calendar alarms.\n    - \"Apple Reminders Integration\": Scheduled to-do items continue to function normally.\n- Action Buttons:\n  * Primary CTA: Luminous cyan button: \"Enable in Settings \u2192\"\n  * Secondary Action: Translucent glass button: \"Keep Alerts Muted & Rely on Calendar\"\n- Step-by-step instructions card in clean micro-text with Settings path (Settings > Pencild > Notifications > Allow Notifications).\n- Trust footer: \"No promotional spam. Only critical event alerts and scan confirmations.\"\nTone: Clear, supportive, non-alarming, beautifully balanced in Midnight Prism dark aesthetic.",
   "name": "projects/454854512779783540/screens/1a0a6dacd22344d797031c2746da9b37",
   "theme": {
     "colorMode": "DARK",
@@ -4399,7 +4399,7 @@ FILE: design-assets/stitch-screens/06_no_dates_found.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">No Dates Found</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe space-y-space-lg">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">No Dates Found</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe space-y-space-lg">
 <!-- Status Diagnostic Banner -->
 <div class="w-full relative overflow-hidden rounded-xl bg-surface-container/80 backdrop-blur-xl p-space-md shadow-xl flex items-center justify-between">
 <div class="absolute -top-10 -right-10 w-32 h-32 bg-status-warning/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -4470,7 +4470,7 @@ FILE: design-assets/stitch-screens/06_no_dates_found.html
       </h1>
 </div>
 <p class="font-body-compact text-body-compact text-muted-foreground leading-relaxed pl-10">
-      DateSnap analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.
+      Pencild analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.
     </p>
 </div>
 <!-- Diagnostic Breakdown Card (Accordion/Tips) -->
@@ -4623,8 +4623,8 @@ FILE: design-assets/stitch-screens/06_no_dates_found.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2744",
-  "title": "DateSnap - No Dates Found",
-  "prompt": "Design the DateSnap \"No Dates Found\" Fallback & Manual Creation Screen (Screen 10).\nGoal: Gracefully handle scans where no dates or event details could be detected, providing manual creation and capture tips.\nDesign & Content:\n- Hero Inspection Card:\n  * Shows the scanned image thumbnail (a blurry or text-sparse photo / meme / receipt) with an optical viewfinder reticle and an amber-tinted chip: \"No dates detected\".\n  * Caption: \"IMG_5829.PNG \u00b7 Scanned in 0.3s\"\n- Headline: \"Couldn't find any dates\"\n- Subtitle: \"We analyzed this image with 100% on-device OCR, but couldn't detect clear event dates, times, or ticket details.\"\n- Helpful Diagnostic & Tips Card:\n  * \"Why did this happen?\"\n    - \"Text is handwriting or low resolution\"\n    - \"No specific calendar date mentioned (e.g. 'Coming soon')\"\n    - \"Image is a photo or meme without event details\"\n- Action Suite:\n  * Primary Action: Luminous cyan capsule button: \"Create Event Manually from Image \u2192\" (pre-fills notes with any detected text and attaches thumbnail).\n  * Secondary Action: Frosted glass button: \"Scan a Different Image\"\n  * Tertiary Action: Dismiss link: \"Discard & Return to Dashboard\"\n- OCR Text Inspector: Collapsible accordion: \"View Detected Words (12 words)\" showing the snippet of raw text the engine found.\n- Privacy assurance: \"Your image was analyzed locally and never left this device.\"\nTone: Empathetic, helpful, constructive, zero dead ends, Midnight Prism design system.",
+  "title": "Pencild - No Dates Found",
+  "prompt": "Design the Pencild \"No Dates Found\" Fallback & Manual Creation Screen (Screen 10).\nGoal: Gracefully handle scans where no dates or event details could be detected, providing manual creation and capture tips.\nDesign & Content:\n- Hero Inspection Card:\n  * Shows the scanned image thumbnail (a blurry or text-sparse photo / meme / receipt) with an optical viewfinder reticle and an amber-tinted chip: \"No dates detected\".\n  * Caption: \"IMG_5829.PNG \u00b7 Scanned in 0.3s\"\n- Headline: \"Couldn't find any dates\"\n- Subtitle: \"We analyzed this image with 100% on-device OCR, but couldn't detect clear event dates, times, or ticket details.\"\n- Helpful Diagnostic & Tips Card:\n  * \"Why did this happen?\"\n    - \"Text is handwriting or low resolution\"\n    - \"No specific calendar date mentioned (e.g. 'Coming soon')\"\n    - \"Image is a photo or meme without event details\"\n- Action Suite:\n  * Primary Action: Luminous cyan capsule button: \"Create Event Manually from Image \u2192\" (pre-fills notes with any detected text and attaches thumbnail).\n  * Secondary Action: Frosted glass button: \"Scan a Different Image\"\n  * Tertiary Action: Dismiss link: \"Discard & Return to Dashboard\"\n- OCR Text Inspector: Collapsible accordion: \"View Detected Words (12 words)\" showing the snippet of raw text the engine found.\n- Privacy assurance: \"Your image was analyzed locally and never left this device.\"\nTone: Empathetic, helpful, constructive, zero dead ends, Midnight Prism design system.",
   "name": "projects/454854512779783540/screens/d973f4ad48f2487ea6be61abce9b19ae",
   "theme": {
     "colorMode": "DARK",
@@ -5014,13 +5014,13 @@ FILE: design-assets/stitch-screens/07_home_empty_state.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Home Empty State</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-xxl">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Home Empty State</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-xxl">
 <div class="flex flex-col gap-space-xs pt-space-sm">
 <div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-fixed/10 self-start shadow-[0_0_16px_rgba(116,248,227,0.15)]">
 <span class="material-symbols-outlined text-primary-fixed text-[14px]">auto_awesome</span>
 <span class="font-overline-confidence text-overline-confidence text-primary-fixed uppercase tracking-wider">AI Temporal Sync</span>
 </div>
-<h1 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight">Welcome to DateSnap</h1>
+<h1 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight">Welcome to Pencild</h1>
 <p class="font-body-compact text-body-compact text-muted-foreground">Your camera roll's calendar autopilot.</p>
 </div>
 <div class="relative w-full rounded-[28px] bg-surface-container/70 backdrop-blur-2xl p-space-xl overflow-hidden shadow-2xl">
@@ -5065,7 +5065,7 @@ FILE: design-assets/stitch-screens/07_home_empty_state.html
 </div>
 <div class="flex flex-col gap-space-xs">
 <h2 class="font-headline-section text-headline-section text-foreground-primary">No screenshots scanned yet</h2>
-<p class="font-body-compact text-body-compact text-muted-foreground max-w-xs mx-auto">Take a screenshot of a flyer, text invite, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.</p>
+<p class="font-body-compact text-body-compact text-muted-foreground max-w-xs mx-auto">Take a screenshot of a flyer, text invite, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.</p>
 </div>
 <div class="flex flex-col w-full gap-space-sm pt-space-xs">
 <button class="w-full h-14 rounded-full bg-primary-fixed text-primary-foreground font-body-strong text-body-compact font-semibold flex items-center justify-center gap-space-sm shadow-[0_6px_24px_rgba(116,248,227,0.3)] active:scale-[0.985] transition-transform duration-150" id="scan-cta">
@@ -5082,7 +5082,7 @@ FILE: design-assets/stitch-screens/07_home_empty_state.html
 </div>
 <div class="flex flex-col gap-space-md">
 <div class="flex items-center justify-between">
-<h3 class="font-headline-card text-headline-card text-foreground-primary">How DateSnap Works</h3>
+<h3 class="font-headline-card text-headline-card text-foreground-primary">How Pencild Works</h3>
 <span class="font-caption text-caption text-primary-fixed-dim">3 effortless steps</span>
 </div>
 <div class="flex flex-col gap-space-sm">
@@ -5100,7 +5100,7 @@ FILE: design-assets/stitch-screens/07_home_empty_state.html
 <span class="material-symbols-outlined text-[22px]">bolt</span>
 </div>
 <div class="flex flex-col gap-0.5 min-w-0">
-<span class="font-body-strong text-body-compact text-foreground-primary">2. Open DateSnap</span>
+<span class="font-body-strong text-body-compact text-foreground-primary">2. Open Pencild</span>
 <p class="font-body-compact text-caption text-muted-foreground">On-device neural vision parses dates, venue locations, and start/end times in 0.4 seconds.</p>
 </div>
 </div>
@@ -5183,7 +5183,7 @@ FILE: design-assets/stitch-screens/07_home_empty_state.html
       });
     }
   })();
-</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="datesnap-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav></body></html>
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="pencild-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav></body></html>
 
 
 ================================================
@@ -5203,8 +5203,8 @@ FILE: design-assets/stitch-screens/07_home_empty_state.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2824",
-  "title": "DateSnap - Home Empty State",
-  "prompt": "Design the DateSnap Home Empty State Screen (Screen 7).\nGoal: First-time user zero-data dashboard that welcomes the user, builds excitement, and guides immediate first action.\nDesign & Content:\n- Top Header: DateSnap brand mark, greeting \"Welcome to DateSnap\", subline \"Your camera roll's calendar autopilot.\"\n- Hero Empty State Showcase:\n  * Centered illuminated glass capture tile depicting a phone screen with glowing scanner brackets scanning an event ticket. Ambient multi-color neon aura (cyan/magenta).\n  * Headline: \"No screenshots scanned yet\"\n  * Subtitle: \"Take a screenshot of a flyer, text invitation, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.\"\n- Fast Getting Started Steps (Interactive Guide cards):\n  * Step 1: \"1. Snap or Screenshot\" \u2014 Take a screenshot of any Instagram story, flyer, email invite, or concert poster.\n  * Step 2: \"2. Open DateSnap\" \u2014 On-device AI parses the dates, venue, and times in 0.4 seconds.\n  * Step 3: \"3. One-Tap Save\" \u2014 Review and push straight to Apple Calendar & Reminders.\n- Primary CTA Button: Luminous cyan capsule button with camera/scan icon: \"Scan Recent Screenshots \u2192\"\n- Secondary Action Button: Frosted glass button with photo icon: \"Choose from Photo Library\"\n- Demo Sample Card:\n  * \"Want to see how it works?\" with a \"Try Sample Flyer\" pill button that lets users test the parser without giving full library access.\n- Bottom safe area padding above the tab bar (Home tab active).\nTone: Inviting, high-energy, effortless, trustworthy, Midnight Prism aesthetic.",
+  "title": "Pencild - Home Empty State",
+  "prompt": "Design the Pencild Home Empty State Screen (Screen 7).\nGoal: First-time user zero-data dashboard that welcomes the user, builds excitement, and guides immediate first action.\nDesign & Content:\n- Top Header: Pencild brand mark, greeting \"Welcome to Pencild\", subline \"Your camera roll's calendar autopilot.\"\n- Hero Empty State Showcase:\n  * Centered illuminated glass capture tile depicting a phone screen with glowing scanner brackets scanning an event ticket. Ambient multi-color neon aura (cyan/magenta).\n  * Headline: \"No screenshots scanned yet\"\n  * Subtitle: \"Take a screenshot of a flyer, text invitation, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.\"\n- Fast Getting Started Steps (Interactive Guide cards):\n  * Step 1: \"1. Snap or Screenshot\" \u2014 Take a screenshot of any Instagram story, flyer, email invite, or concert poster.\n  * Step 2: \"2. Open Pencild\" \u2014 On-device AI parses the dates, venue, and times in 0.4 seconds.\n  * Step 3: \"3. One-Tap Save\" \u2014 Review and push straight to Apple Calendar & Reminders.\n- Primary CTA Button: Luminous cyan capsule button with camera/scan icon: \"Scan Recent Screenshots \u2192\"\n- Secondary Action Button: Frosted glass button with photo icon: \"Choose from Photo Library\"\n- Demo Sample Card:\n  * \"Want to see how it works?\" with a \"Try Sample Flyer\" pill button that lets users test the parser without giving full library access.\n- Bottom safe area padding above the tab bar (Home tab active).\nTone: Inviting, high-energy, effortless, trustworthy, Midnight Prism aesthetic.",
   "name": "projects/454854512779783540/screens/b04278172768466ead0f77aec1e7fefe",
   "theme": {
     "colorMode": "DARK",
@@ -5594,7 +5594,7 @@ FILE: design-assets/stitch-screens/08_saved_event_detail.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Extraction Success Summary</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xxl">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Extraction Success Summary</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xxl">
 <!-- Subtle Ambient Glow Overlay (Decorative) -->
 <div class="relative w-full overflow-hidden pointer-events-none">
 <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-72 h-36 bg-status-success/15 rounded-full blur-3xl"></div>
@@ -5766,7 +5766,7 @@ FILE: design-assets/stitch-screens/08_saved_event_detail.html
 <div class="mt-space-xs flex items-center gap-space-xs">
 <span class="font-caption text-caption text-muted-foreground flex items-center gap-0.5">
 <span class="material-symbols-outlined text-[13px] text-primary-fixed">auto_awesome</span>
-            Extracted by DateSnap OCR Engine
+            Extracted by Pencild OCR Engine
           </span>
 </div>
 </div>
@@ -5840,8 +5840,8 @@ FILE: design-assets/stitch-screens/08_saved_event_detail.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2218",
-  "title": "DateSnap - Saved Event Detail",
-  "prompt": "Design Screen 15: DateSnap - Saved Event Detail Screen.\nGoal: Show the finalized, confirmed saved event in a calm, reassuring, highly polished presentation with clear next actions.\n\nDetailed Structure & Layout:\n1. Success Banner / Toast:\n   - Subtle top badge: \"\u2713 Successfully Saved to Apple Calendar & Reminders\" in soft mint green with glowing checkmark.\n2. Event Hero Card (Luminous Elevated Glass Showcase):\n   - Date Badge: Large dimensional date badge (56x68pt) with \"JUL\" top header and bold \"18\" numeral.\n   - Event Title: \"Neon Sunset Rooftop Session\" (Sora 24pt, bold).\n   - Time & Recurrence: \"Friday, July 18, 2025 \u00b7 7:00 PM \u2013 11:30 PM\".\n   - Location: \"Skybar Penthouse & Lounge, Los Angeles, CA\" with interactive \"Get Directions\" link.\n3. Saved Destinations & Status Section:\n   - Glass panel displaying active sync targets:\n     - \"Apple Calendar\" \u00b7 Synced to \"Personal\" (Checkmark in green)\n     - \"Apple Reminders\" \u00b7 Task created in \"Events & RSVPs\" (Checkmark in green)\n4. Configured Reminders Timeline Card:\n   - Card title: \"Scheduled Alerts (2 Active)\"\n   - Timeline row 1: \"1 day before (Jul 17, 9:00 AM) \u00b7 Apple Reminders\"\n   - Timeline row 2: \"2 hours before (Jul 18, 5:00 PM) \u00b7 Calendar Notification\"\n5. Notes & Original Source Image:\n   - Collapsible or thumbnail block: \"Extracted from Flyer Screenshot (IMG_4920.PNG)\" with small glass thumbnail preview of the party poster.\n   - Extracted notes: \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n6. Action Buttons Cluster:\n   - Primary CTA: \"Open in Apple Calendar \u2197\" (Solid cyan glowing pill CTA).\n   - Secondary Actions Row:\n     - \"Edit Event\" (Glass pill button)\n     - \"Manage Reminders\" (Glass pill button)\n     - \"Share Event\" (Share icon button)\n\nVisual Style:\n- Midnight Prism palette: Deepest navy `#050816`, frosted glass cards `rgba(18, 24, 52, 0.72)` with edge highlight, crisp Sora and Inter typography, reassuring, resolved, and dependable atmosphere. App Store screenshot caliber.",
+  "title": "Pencild - Saved Event Detail",
+  "prompt": "Design Screen 15: Pencild - Saved Event Detail Screen.\nGoal: Show the finalized, confirmed saved event in a calm, reassuring, highly polished presentation with clear next actions.\n\nDetailed Structure & Layout:\n1. Success Banner / Toast:\n   - Subtle top badge: \"\u2713 Successfully Saved to Apple Calendar & Reminders\" in soft mint green with glowing checkmark.\n2. Event Hero Card (Luminous Elevated Glass Showcase):\n   - Date Badge: Large dimensional date badge (56x68pt) with \"JUL\" top header and bold \"18\" numeral.\n   - Event Title: \"Neon Sunset Rooftop Session\" (Sora 24pt, bold).\n   - Time & Recurrence: \"Friday, July 18, 2025 \u00b7 7:00 PM \u2013 11:30 PM\".\n   - Location: \"Skybar Penthouse & Lounge, Los Angeles, CA\" with interactive \"Get Directions\" link.\n3. Saved Destinations & Status Section:\n   - Glass panel displaying active sync targets:\n     - \"Apple Calendar\" \u00b7 Synced to \"Personal\" (Checkmark in green)\n     - \"Apple Reminders\" \u00b7 Task created in \"Events & RSVPs\" (Checkmark in green)\n4. Configured Reminders Timeline Card:\n   - Card title: \"Scheduled Alerts (2 Active)\"\n   - Timeline row 1: \"1 day before (Jul 17, 9:00 AM) \u00b7 Apple Reminders\"\n   - Timeline row 2: \"2 hours before (Jul 18, 5:00 PM) \u00b7 Calendar Notification\"\n5. Notes & Original Source Image:\n   - Collapsible or thumbnail block: \"Extracted from Flyer Screenshot (IMG_4920.PNG)\" with small glass thumbnail preview of the party poster.\n   - Extracted notes: \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n6. Action Buttons Cluster:\n   - Primary CTA: \"Open in Apple Calendar \u2197\" (Solid cyan glowing pill CTA).\n   - Secondary Actions Row:\n     - \"Edit Event\" (Glass pill button)\n     - \"Manage Reminders\" (Glass pill button)\n     - \"Share Event\" (Share icon button)\n\nVisual Style:\n- Midnight Prism palette: Deepest navy `#050816`, frosted glass cards `rgba(18, 24, 52, 0.72)` with edge highlight, crisp Sora and Inter typography, reassuring, resolved, and dependable atmosphere. App Store screenshot caliber.",
   "name": "projects/454854512779783540/screens/79edd80432f24128889607dee9d678f4",
   "theme": {
     "colorMode": "DARK",
@@ -6231,7 +6231,7 @@ FILE: design-assets/stitch-screens/09_event_review_and_edit.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
 <!-- Top Context Header & Stage Badge -->
 <div class="flex items-center justify-between pt-space-sm">
 <div class="flex items-center gap-space-xs">
@@ -6534,8 +6534,8 @@ FILE: design-assets/stitch-screens/09_event_review_and_edit.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2364",
-  "title": "DateSnap - Event Review and Edit",
-  "prompt": "Design Screen 12: DateSnap - Event Review and Edit Screen.\nGoal: The core conversion screen where extracted event details are reviewed, refined, and confirmed before saving.\n\nDetailed Structure & Layout:\n1. Top Bar Context: \"Review Extracted Event\" with step pill or high confidence badge.\n2. Source Flyer Hero Preview Card:\n   - Floating glass panel with original flyer thumbnail preview (e.g., \"Neon Rooftop Sunset Session - July 18, 2025\").\n   - Badge overlay: \"96% High Confidence OCR\" with spark icon.\n   - Quick action to \"View Original Image\" in full screen.\n3. Extracted Event Form (Inline Editable, Premium Dark Glass Fields):\n   - Title Field: Editable text input with value \"Neon Sunset Rooftop Session\" with clear button and subtle glowing border on focus.\n   - Date & Time Row:\n     - Date Picker Trigger: \"Friday, July 18, 2025\" with calendar icon.\n     - Time Range Picker: \"7:00 PM \u2013 11:30 PM\" with clock icon.\n     - \"All-day\" toggle switch (currently toggled off, glowing cyan accent).\n   - Location Field:\n     - \"Skybar Penthouse & Lounge, 450 Sunset Blvd, LA\" with map pin icon and Apple Maps indicator.\n   - Notes / Description Field:\n     - \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n   - Collapsible Accordion: \"Extracted Source Text (Raw OCR)\" showing raw parsed lines with a chevron toggle.\n4. Save Destination Preview Summary:\n   - Compact glass row: \"Saving to: Apple Calendar (Personal) + 2 Reminders\" with chevron to edit.\n5. Primary & Secondary Action Cluster:\n   - Primary Large Button: \"Save Event \u2192\" in luminous glowing cyan pill (`#7CFFEA`, text `#07111F`, font-weight 700, height 56px).\n   - Secondary Button Row:\n     - \"Save as Draft\" (Frosted glass button with border)\n     - \"Not an Event\" or \"Discard\" (Destructive subtle red/muted link).\n\nVisual Style:\n- Deep navy background `#050816`, frosted cards `rgba(18, 24, 52, 0.72)` with 1px border `rgba(173, 195, 255, 0.18)` and top glass highlight `rgba(255,255,255,0.22)`.\n- Bold modern Sora typography for section titles, Inter/Apple sans for form controls.\n- Touch-friendly 48px+ hit targets. App Store screenshot quality.",
+  "title": "Pencild - Event Review and Edit",
+  "prompt": "Design Screen 12: Pencild - Event Review and Edit Screen.\nGoal: The core conversion screen where extracted event details are reviewed, refined, and confirmed before saving.\n\nDetailed Structure & Layout:\n1. Top Bar Context: \"Review Extracted Event\" with step pill or high confidence badge.\n2. Source Flyer Hero Preview Card:\n   - Floating glass panel with original flyer thumbnail preview (e.g., \"Neon Rooftop Sunset Session - July 18, 2025\").\n   - Badge overlay: \"96% High Confidence OCR\" with spark icon.\n   - Quick action to \"View Original Image\" in full screen.\n3. Extracted Event Form (Inline Editable, Premium Dark Glass Fields):\n   - Title Field: Editable text input with value \"Neon Sunset Rooftop Session\" with clear button and subtle glowing border on focus.\n   - Date & Time Row:\n     - Date Picker Trigger: \"Friday, July 18, 2025\" with calendar icon.\n     - Time Range Picker: \"7:00 PM \u2013 11:30 PM\" with clock icon.\n     - \"All-day\" toggle switch (currently toggled off, glowing cyan accent).\n   - Location Field:\n     - \"Skybar Penthouse & Lounge, 450 Sunset Blvd, LA\" with map pin icon and Apple Maps indicator.\n   - Notes / Description Field:\n     - \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n   - Collapsible Accordion: \"Extracted Source Text (Raw OCR)\" showing raw parsed lines with a chevron toggle.\n4. Save Destination Preview Summary:\n   - Compact glass row: \"Saving to: Apple Calendar (Personal) + 2 Reminders\" with chevron to edit.\n5. Primary & Secondary Action Cluster:\n   - Primary Large Button: \"Save Event \u2192\" in luminous glowing cyan pill (`#7CFFEA`, text `#07111F`, font-weight 700, height 56px).\n   - Secondary Button Row:\n     - \"Save as Draft\" (Frosted glass button with border)\n     - \"Not an Event\" or \"Discard\" (Destructive subtle red/muted link).\n\nVisual Style:\n- Deep navy background `#050816`, frosted cards `rgba(18, 24, 52, 0.72)` with 1px border `rgba(173, 195, 255, 0.18)` and top glass highlight `rgba(255,255,255,0.22)`.\n- Bold modern Sora typography for section titles, Inter/Apple sans for form controls.\n- Touch-friendly 48px+ hit targets. App Store screenshot quality.",
   "name": "projects/454854512779783540/screens/50e76e9e2a6743a98d1f320729a3738a",
   "theme": {
     "colorMode": "DARK",
@@ -6925,7 +6925,7 @@ FILE: design-assets/stitch-screens/10_reminder_schedule_editor.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
 <!-- Subtle Ambient Glows -->
 <div class="relative w-full overflow-hidden">
 <div class="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-accent-purple/20 blur-3xl pointer-events-none"></div>
@@ -7097,7 +7097,7 @@ FILE: design-assets/stitch-screens/10_reminder_schedule_editor.html
           </span>
 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/40 text-foreground-primary font-label-chip text-label-chip shadow-sm">
 <span class="material-symbols-outlined text-[14px] text-primary-container">camera_indoor</span>
-<span>DateSnap Priority Push</span>
+<span>Pencild Priority Push</span>
 </div>
 </div>
 </div>
@@ -7300,8 +7300,8 @@ FILE: design-assets/stitch-screens/10_reminder_schedule_editor.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2684",
-  "title": "DateSnap - Reminder Schedule Editor",
-  "prompt": "Design Screen 13: DateSnap - Reminder Schedule Editor.\nGoal: Allow users to configure up to 3 smart tiered reminders for an event with effortless precision.\n\nDetailed Structure & Layout:\n1. Header / Intro:\n   - Subtitle: \"Event: Neon Sunset Rooftop Session \u00b7 Jul 18, 7:00 PM\"\n   - Title: \"Reminder Schedule\"\n   - Reassuring helper text: \"Configure multi-stage alerts so you never miss ticket sales, preparation, or departure.\"\n2. Quick Presets Bar:\n   - Horizontal pill selectors: \"Default (2 alerts)\", \"Travel Heavy (3 alerts)\", \"Day-of Only\", \"Custom\" (Default active with cyan glow border).\n3. Configured Reminder Rows (Up to 3 Interactive Cards):\n   - Reminder 1 (First Warning):\n     - Offset: \"1 day before at 9:00 AM\"\n     - Delivery Channel Chip: \"Apple Reminders\" with checklist icon.\n     - Type: Preparation alert.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 2 (Departure / Travel Alert):\n     - Offset: \"2 hours before (5:00 PM)\"\n     - Delivery Channel Chip: \"Calendar Alert\" with bell icon.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 3 (Final Call):\n     - Offset: \"30 minutes before (6:30 PM)\"\n     - Delivery Channel Chip: \"DateSnap Push Notification\" with glowing brand spark.\n     - Controls: Edit offset dropdown / delete icon.\n4. \"Add Reminder\" Button:\n   - \"+ Add Alert (3 of 3 max)\" state or disabled with helpful hint.\n5. All-Day vs Timed Event Behavior Toggle / Info:\n   - Card explaining: \"Timed events trigger at exact offsets. All-day events trigger at 9:00 AM local time.\"\n6. Sticky Bottom Action Bar:\n   - Primary Button: \"Save Reminder Schedule\" (Luminous cyan `#7CFFEA` capsule CTA).\n   - Secondary cancel / reset action.\n\nVisual Style:\n- Deep navy background `#050816`, glass cards `rgba(18, 24, 52, 0.72)` with luminous cyan and magenta micro-accents.\n- Sora headers, clean badges, native iOS picker aesthetics. Touch targets 48px+.",
+  "title": "Pencild - Reminder Schedule Editor",
+  "prompt": "Design Screen 13: Pencild - Reminder Schedule Editor.\nGoal: Allow users to configure up to 3 smart tiered reminders for an event with effortless precision.\n\nDetailed Structure & Layout:\n1. Header / Intro:\n   - Subtitle: \"Event: Neon Sunset Rooftop Session \u00b7 Jul 18, 7:00 PM\"\n   - Title: \"Reminder Schedule\"\n   - Reassuring helper text: \"Configure multi-stage alerts so you never miss ticket sales, preparation, or departure.\"\n2. Quick Presets Bar:\n   - Horizontal pill selectors: \"Default (2 alerts)\", \"Travel Heavy (3 alerts)\", \"Day-of Only\", \"Custom\" (Default active with cyan glow border).\n3. Configured Reminder Rows (Up to 3 Interactive Cards):\n   - Reminder 1 (First Warning):\n     - Offset: \"1 day before at 9:00 AM\"\n     - Delivery Channel Chip: \"Apple Reminders\" with checklist icon.\n     - Type: Preparation alert.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 2 (Departure / Travel Alert):\n     - Offset: \"2 hours before (5:00 PM)\"\n     - Delivery Channel Chip: \"Calendar Alert\" with bell icon.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 3 (Final Call):\n     - Offset: \"30 minutes before (6:30 PM)\"\n     - Delivery Channel Chip: \"Pencild Push Notification\" with glowing brand spark.\n     - Controls: Edit offset dropdown / delete icon.\n4. \"Add Reminder\" Button:\n   - \"+ Add Alert (3 of 3 max)\" state or disabled with helpful hint.\n5. All-Day vs Timed Event Behavior Toggle / Info:\n   - Card explaining: \"Timed events trigger at exact offsets. All-day events trigger at 9:00 AM local time.\"\n6. Sticky Bottom Action Bar:\n   - Primary Button: \"Save Reminder Schedule\" (Luminous cyan `#7CFFEA` capsule CTA).\n   - Secondary cancel / reset action.\n\nVisual Style:\n- Deep navy background `#050816`, glass cards `rgba(18, 24, 52, 0.72)` with luminous cyan and magenta micro-accents.\n- Sora headers, clean badges, native iOS picker aesthetics. Touch targets 48px+.",
   "name": "projects/454854512779783540/screens/fc49f1067442461dbf28c683626a3b70",
   "theme": {
     "colorMode": "DARK",
@@ -7689,7 +7689,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "6c145dff8ec540b9a51f806629e55c70",
     "slug": "01_premium_paywall",
-    "title": "DateSnap - Premium Paywall",
+    "title": "Pencild - Premium Paywall",
     "htmlFile": "01_premium_paywall.html",
     "imageFile": "01_premium_paywall.png",
     "deviceType": "MOBILE",
@@ -7699,7 +7699,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "df7a78364bd54941ad1d7bb6ca34d449",
     "slug": "02_plus_paywall",
-    "title": "DateSnap - Plus Paywall",
+    "title": "Pencild - Plus Paywall",
     "htmlFile": "02_plus_paywall.html",
     "imageFile": "02_plus_paywall.png",
     "deviceType": "MOBILE",
@@ -7709,7 +7709,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "e5fc50914c2f4a788389e8aa94806f45",
     "slug": "03_history_and_archive",
-    "title": "DateSnap - History & Archive",
+    "title": "Pencild - History & Archive",
     "htmlFile": "03_history_and_archive.html",
     "imageFile": "03_history_and_archive.png",
     "deviceType": "MOBILE",
@@ -7719,7 +7719,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "7d2a6476acc841b7be7374273debbf8b",
     "slug": "04_calendar_permission_denied",
-    "title": "DateSnap - Calendar Permission Denied",
+    "title": "Pencild - Calendar Permission Denied",
     "htmlFile": "04_calendar_permission_denied.html",
     "imageFile": "04_calendar_permission_denied.png",
     "deviceType": "MOBILE",
@@ -7729,7 +7729,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "1a0a6dacd22344d797031c2746da9b37",
     "slug": "05_notification_permission_denied",
-    "title": "DateSnap - Notification Permission Denied",
+    "title": "Pencild - Notification Permission Denied",
     "htmlFile": "05_notification_permission_denied.html",
     "imageFile": "05_notification_permission_denied.png",
     "deviceType": "MOBILE",
@@ -7739,7 +7739,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "d973f4ad48f2487ea6be61abce9b19ae",
     "slug": "06_no_dates_found",
-    "title": "DateSnap - No Dates Found",
+    "title": "Pencild - No Dates Found",
     "htmlFile": "06_no_dates_found.html",
     "imageFile": "06_no_dates_found.png",
     "deviceType": "MOBILE",
@@ -7749,7 +7749,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "b04278172768466ead0f77aec1e7fefe",
     "slug": "07_home_empty_state",
-    "title": "DateSnap - Home Empty State",
+    "title": "Pencild - Home Empty State",
     "htmlFile": "07_home_empty_state.html",
     "imageFile": "07_home_empty_state.png",
     "deviceType": "MOBILE",
@@ -7759,7 +7759,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "79edd80432f24128889607dee9d678f4",
     "slug": "08_saved_event_detail",
-    "title": "DateSnap - Saved Event Detail",
+    "title": "Pencild - Saved Event Detail",
     "htmlFile": "08_saved_event_detail.html",
     "imageFile": "08_saved_event_detail.png",
     "deviceType": "MOBILE",
@@ -7769,7 +7769,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "50e76e9e2a6743a98d1f320729a3738a",
     "slug": "09_event_review_and_edit",
-    "title": "DateSnap - Event Review and Edit",
+    "title": "Pencild - Event Review and Edit",
     "htmlFile": "09_event_review_and_edit.html",
     "imageFile": "09_event_review_and_edit.png",
     "deviceType": "MOBILE",
@@ -7779,7 +7779,7 @@ FILE: design-assets/stitch-screens/index.json
   {
     "id": "fc49f1067442461dbf28c683626a3b70",
     "slug": "10_reminder_schedule_editor",
-    "title": "DateSnap - Reminder Schedule Editor",
+    "title": "Pencild - Reminder Schedule Editor",
     "htmlFile": "10_reminder_schedule_editor.html",
     "imageFile": "10_reminder_schedule_editor.png",
     "deviceType": "MOBILE",
@@ -7792,13 +7792,13 @@ FILE: design-assets/stitch-screens/index.json
 ================================================
 FILE: docs/audits/2026-10-01-production-readiness-audit.md
 ================================================
-# DateSnap iOS Pre-Release Production Readiness Audit
+# Pencild iOS Pre-Release Production Readiness Audit
 
 Date: 2026-10-01
 
 ## Scope
 
-This audit is based only on repository-visible release artifacts and configuration files available in the DateSnap iOS repo at the time of review, plus the current git working tree state.[cite:1][cite:3][cite:5][cite:6][cite:7][cite:8]
+This audit is based only on repository-visible release artifacts and configuration files available in the Pencild iOS repo at the time of review, plus the current git working tree state.[cite:1][cite:3][cite:5][cite:6][cite:7][cite:8]
 
 ## Release decision
 
@@ -7808,7 +7808,7 @@ Current recommendation: **No-go for production release** until release hygiene, 
 
 The repository contains core release assets expected for an iOS app: an Xcode project, package manifest, entitlements file, privacy manifest, StoreKit configuration, App Store export options plist, source tree, tests, and release-related runbooks under `docs/runbooks/`.[cite:1]
 
-The current branch is `main`, and the working tree is not clean: `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png` and `project.yml` are modified, while `.freebuff/` and `HANDOFF.md` are untracked.[cite:1]
+The current branch is `main`, and the working tree is not clean: `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png` and `project.yml` are modified, while `.freebuff/` and `HANDOFF.md` are untracked.[cite:1]
 
 ## Findings
 
@@ -7886,7 +7886,7 @@ This is a positive signal for feature-level rigor, but the audit did not include
 
 ## Final assessment
 
-DateSnap shows several strong production-readiness signals in repo structure, privacy positioning, and test inventory, but the current evidence set does not support a production go-live yet.[cite:1][cite:5][cite:6][cite:7][cite:8]
+Pencild shows several strong production-readiness signals in repo structure, privacy positioning, and test inventory, but the current evidence set does not support a production go-live yet.[cite:1][cite:5][cite:6][cite:7][cite:8]
 
 The biggest blockers are procedural rather than architectural: the release candidate is not frozen, resolved release values were not verified, and there is no audited proof in this review of a passing release build and QA signoff tied to a specific commit.[cite:1][cite:5][cite:6]
 
@@ -7895,7 +7895,7 @@ The biggest blockers are procedural rather than architectural: the release candi
 ================================================
 FILE: docs/audits/2026-10-02-mock-data-non-production-code-audit.md
 ================================================
-# DateSnap Mock Data, Mock Features, Non-Production Code, and TODO Audit
+# Pencild Mock Data, Mock Features, Non-Production Code, and TODO Audit
 
 Date: 2026-10-02
 
@@ -7916,59 +7916,59 @@ The most serious issues are:
 5. Reminder settings include static simulation data and controls that do not drive event/reminder scheduling.
 6. Paywalls display hard-coded fallback prices when StoreKit products are unavailable.
 
-No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or source-code placeholder markers were found under `Sources/DateSnap`. Absence of markers does not mean the features are complete; the largest gaps are polished UI states with no runtime integration.
+No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or source-code placeholder markers were found under `Sources/Pencild`. Absence of markers does not mean the features are complete; the largest gaps are polished UI states with no runtime integration.
 
 ## Inputs reviewed
 
 ### Dependency and mock infrastructure
 
-- `Sources/DateSnap/DateSnap.swift`
-- `Sources/DateSnap/ContentView.swift`
-- `Sources/DateSnap/Services/ServiceContainer.swift`
+- `Sources/Pencild/Pencild.swift`
+- `Sources/Pencild/ContentView.swift`
+- `Sources/Pencild/Services/ServiceContainer.swift`
 - `Package.swift`
 - `project.yml`
 
 ### Sample and debug infrastructure
 
-- `Sources/DateSnap/Services/SampleFlyer.swift`
-- `Sources/DateSnap/ViewModels/ScanViewModel.swift`
-- `Sources/DateSnap/Models/EventModels.swift`
-- `Sources/DateSnap/Views/ScreenGalleryView.swift`
-- `Sources/DateSnap/Views/HomeEmptyStateView.swift`
-- `Sources/DateSnap/Views/ScanFlowViews.swift`
-- `Sources/DateSnap/Views/InterpretationDiagnosticsView.swift`
-- `Sources/DateSnap/Views/EventReviewEditView.swift`
+- `Sources/Pencild/Services/SampleFlyer.swift`
+- `Sources/Pencild/ViewModels/ScanViewModel.swift`
+- `Sources/Pencild/Models/EventModels.swift`
+- `Sources/Pencild/Views/ScreenGalleryView.swift`
+- `Sources/Pencild/Views/HomeEmptyStateView.swift`
+- `Sources/Pencild/Views/ScanFlowViews.swift`
+- `Sources/Pencild/Views/InterpretationDiagnosticsView.swift`
+- `Sources/Pencild/Views/EventReviewEditView.swift`
 
 ### Production-visible settings and claims
 
-- `Sources/DateSnap/Models/SettingsState.swift`
-- `Sources/DateSnap/Views/AutomationSettingsView.swift`
-- `Sources/DateSnap/Views/ReminderSettingsView.swift`
-- `Sources/DateSnap/Views/PrivacyCenterView.swift`
-- `Sources/DateSnap/Views/SettingsHubView.swift`
-- `Sources/DateSnap/Views/ManagePlanView.swift`
-- `Sources/DateSnap/ViewModels/PurchaseViewModel.swift`
-- `Sources/DateSnap/Views/PlusPaywallView.swift`
-- `Sources/DateSnap/Views/PremiumPaywallView.swift`
-- `Sources/DateSnap/Views/HelpFeedbackView.swift` (search-based claim review)
+- `Sources/Pencild/Models/SettingsState.swift`
+- `Sources/Pencild/Views/AutomationSettingsView.swift`
+- `Sources/Pencild/Views/ReminderSettingsView.swift`
+- `Sources/Pencild/Views/PrivacyCenterView.swift`
+- `Sources/Pencild/Views/SettingsHubView.swift`
+- `Sources/Pencild/Views/ManagePlanView.swift`
+- `Sources/Pencild/ViewModels/PurchaseViewModel.swift`
+- `Sources/Pencild/Views/PlusPaywallView.swift`
+- `Sources/Pencild/Views/PremiumPaywallView.swift`
+- `Sources/Pencild/Views/HelpFeedbackView.swift` (search-based claim review)
 
 ### Production service/error behavior
 
-- `Sources/DateSnap/Services/SubscriptionService.swift`
-- `Sources/DateSnap/Services/PhotoLibraryService.swift`
-- `Sources/DateSnap/Services/CalendarService.swift`
-- `Sources/DateSnap/Services/ReminderService.swift`
-- `Sources/DateSnap/Services/NotificationService.swift`
-- `Sources/DateSnap/Services/SavedEventActions.swift`
-- `Sources/DateSnap/Services/Intelligence/EventUnderstandingPipeline.swift`
-- `Sources/DateSnap/Services/EventExtractionService.swift` (fallback/search review)
+- `Sources/Pencild/Services/SubscriptionService.swift`
+- `Sources/Pencild/Services/PhotoLibraryService.swift`
+- `Sources/Pencild/Services/CalendarService.swift`
+- `Sources/Pencild/Services/ReminderService.swift`
+- `Sources/Pencild/Services/NotificationService.swift`
+- `Sources/Pencild/Services/SavedEventActions.swift`
+- `Sources/Pencild/Services/Intelligence/EventUnderstandingPipeline.swift`
+- `Sources/Pencild/Services/EventExtractionService.swift` (fallback/search review)
 
 ### Configuration and release evidence
 
-- `Config/DateSnap-Debug.xcconfig`
-- `Config/DateSnap-Release.xcconfig`
+- `Config/Pencild-Debug.xcconfig`
+- `Config/Pencild-Release.xcconfig`
 - `ExportOptions-AppStore.plist`
-- `DateSnap.storekit`
+- `Pencild.storekit`
 - `docs/runbooks/RELEASE.md`
 - `docs/runbooks/TESTFLIGHT-QA.md`
 - Existing audit and implementation-plan documents under `docs/audits/` and `docs/plans/`
@@ -7998,11 +7998,11 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 
 **Severity:** Blocker
 
-**Evidence:** `ServiceContainer.swift` declares `ServiceContainer.mock()` plus mock implementations for Photos, OCR, extraction, Calendar, Reminders, notifications, and subscriptions in `Sources/DateSnap`. Those implementations grant permissions, return successful synthetic identifiers, return fabricated OCR/event data, and grant Plus. `ServiceContainerKey.defaultValue` is `ServiceContainer.mock()`.
+**Evidence:** `ServiceContainer.swift` declares `ServiceContainer.mock()` plus mock implementations for Photos, OCR, extraction, Calendar, Reminders, notifications, and subscriptions in `Sources/Pencild`. Those implementations grant permissions, return successful synthetic identifiers, return fabricated OCR/event data, and grant Plus. `ServiceContainerKey.defaultValue` is `ServiceContainer.mock()`.
 
-**Risk:** A missing environment injection silently changes the app from real services to always-successful fake behavior. Because the mocks live in the product target, Release contains non-production implementations even though `DateSnapApp` currently injects `.live()` explicitly.
+**Risk:** A missing environment injection silently changes the app from real services to always-successful fake behavior. Because the mocks live in the product target, Release contains non-production implementations even though `PencildApp` currently injects `.live()` explicitly.
 
-**Required treatment:** **Isolate and replace the fallback.** Move test doubles to `Tests/DateSnapTests/` and preview-only fixtures to Debug-only support. Make the production environment default fail fast during development or use a deliberately unavailable/deny-by-default implementation that cannot report success. Never default subscription access above Starter.
+**Required treatment:** **Isolate and replace the fallback.** Move test doubles to `Tests/PencildTests/` and preview-only fixtures to Debug-only support. Make the production environment default fail fast during development or use a deliberately unavailable/deny-by-default implementation that cannot report success. Never default subscription access above Starter.
 
 **Exit criteria:** Release source/binary contains no `Mock*Service`, mock event identifiers, fabricated OCR output, or permissive mock container; every production screen receives `.live()` explicitly; tests/previews inject named fixtures.
 
@@ -8094,7 +8094,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 
 **Severity:** Medium
 
-**Evidence:** `ScreenGalleryView` and `DateSnapEvent` sample fixtures are wrapped in `#if DEBUG`; ContentView presents `EmptyView` for `.screenGallery` in Release; Home simulation controls are Debug-only. The modal enum case remains compiled in Release.
+**Evidence:** `ScreenGalleryView` and `PencildEvent` sample fixtures are wrapped in `#if DEBUG`; ContentView presents `EmptyView` for `.screenGallery` in Release; Home simulation controls are Debug-only. The modal enum case remains compiled in Release.
 
 **Risk:** Current guards are reasonable, but future references can accidentally leak debug navigation. Debug descriptions also contain feature claims that may drift.
 
@@ -8130,7 +8130,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 
 **Severity:** Medium
 
-**Evidence:** No TODO-family markers were found under `Sources/DateSnap`. Older plans still describe prototype mocks/dummy timers and outdated repository structure. `AGENTS.md` describes a placeholder skeleton/pure package despite the current generated project and substantial app.
+**Evidence:** No TODO-family markers were found under `Sources/Pencild`. Older plans still describe prototype mocks/dummy timers and outdated repository structure. `AGENTS.md` describes a placeholder skeleton/pure package despite the current generated project and substantial app.
 
 **Risk:** Agents and release operators may follow stale context, redo completed work, or miss current gaps.
 
@@ -8153,7 +8153,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 | Default mock environment container | Product target | Replace | Fail fast or unavailable production default |
 | `SampleFlyer` | Product target | Retain | Verify real-pipeline behavior and labeling |
 | DEBUG screen gallery | Product target, conditional | Retain/isolate | Binary verification; stronger compile isolation |
-| DEBUG sample `DateSnapEvent`s | Product target, conditional | Retain/isolate | Binary verification |
+| DEBUG sample `PencildEvent`s | Product target, conditional | Retain/isolate | Binary verification |
 | Home simulation hub | DEBUG conditional | Retain/isolate | Binary verification |
 | `SettingsState` plan fields | Product UI state | Remove | Use StoreKit state only |
 | Automation mode/scope/digest controls | Product UI | Remove or replace | Immediate removal/reword unless implemented |
@@ -8172,7 +8172,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 ### Phase 1 — Stop fake code from entering Release
 
 1. Split production dependency wiring from test/preview fixtures.
-2. Move mock service implementations out of `Sources/DateSnap` or compile them only in Debug where previews require them.
+2. Move mock service implementations out of `Sources/Pencild` or compile them only in Debug where previews require them.
 3. Replace the environment’s permissive default with a non-successful production-safe dependency strategy.
 4. Add a Release-source/binary scan for `Mock`, known sample titles, Stitch IDs, “Simulation Hub,” and mock identifier prefixes.
 
@@ -8249,44 +8249,44 @@ Treat F-01 through F-04, F-07, and the Release portion of F-11 as hard pre-relea
 ================================================
 FILE: docs/audits/2026-10-02-production-readiness-verification.md
 ================================================
-# DateSnap Production Readiness Verification
+# Pencild Production Readiness Verification
 
 Date: 2026-10-02
 
 ## Candidate configuration verified locally
 
-- XcodeGen 2.46.0 regenerates `DateSnap.xcodeproj` from `project.yml` without a generated-project diff.
+- XcodeGen 2.46.0 regenerates `Pencild.xcodeproj` from `project.yml` without a generated-project diff.
 - Xcode 27.0 (27A266a) uses Apple Swift 6.4.
-- The project exposes the `DateSnap` application target, `DateSnapTests` unit-test target, and shared `DateSnap` scheme.
+- The project exposes the `Pencild` application target, `PencildTests` unit-test target, and shared `Pencild` scheme.
 - Evaluated Release settings resolve to:
-  - Product: `DateSnap.app`
-  - Bundle identifier: `com.datesnap.app`
+  - Product: `Pencild.app`
+  - Bundle identifier: `com.pencild.app`
   - Marketing version/build: `1.0.0 (1)`
   - Minimum deployment target: iOS 18.0
   - Info plist: `Info.plist`
-  - Entitlements: `DateSnap.entitlements`
+  - Entitlements: `Pencild.entitlements`
   - Swift optimization: `-O`
   - Testability: disabled
   - Product validation: enabled
-- `Info.plist`, `DateSnap.entitlements`, `PrivacyInfo.xcprivacy`, and `ExportOptions-AppStore.plist` pass `plutil -lint`.
+- `Info.plist`, `Pencild.entitlements`, `PrivacyInfo.xcprivacy`, and `ExportOptions-AppStore.plist` pass `plutil -lint`.
 - The app icon is 1024×1024 RGB with no alpha channel.
 
 ## Automated tests
 
-The Xcode `DateSnap` test plan completed with 43 discovered tests:
+The Xcode `Pencild` test plan completed with 43 discovered tests:
 
 - Passed: 41
 - Failed: 0
 - Skipped: 2
 
-The skipped tests are the explicitly opt-in live Foundation Models evaluations guarded by `DATESNAP_EVAL_LIVE=1`. They require compatible Apple Intelligence hardware/runtime and must be run or formally dispositioned before release approval.
+The skipped tests are the explicitly opt-in live Foundation Models evaluations guarded by `PENCILD_EVAL_LIVE=1`. They require compatible Apple Intelligence hardware/runtime and must be run or formally dispositioned before release approval.
 
 ## Privacy and capability reconciliation
 
 - Repository scanning found no `URLSession`, socket, analytics, crash-reporting, or telemetry client in the app target.
 - The app does expose user-initiated HTTPS, Apple Maps, policy/support, and StoreKit flows; release claims and traffic tests must distinguish these from app-originated data upload.
 - The required-reason API inventory found `UserDefaults`, matching `NSPrivacyAccessedAPICategoryUserDefaults` reason `CA92.1` in the privacy manifest.
-- The four StoreKit product identifiers match between `SubscriptionService` and `DateSnap.storekit`.
+- The four StoreKit product identifiers match between `SubscriptionService` and `Pencild.storekit`.
 - Notifications are local. No push, iCloud, app-group, or associated-domain capability was found, so the empty app entitlements dictionary is consistent with the repository-visible feature set.
 
 ## Remediations applied
@@ -8302,7 +8302,7 @@ The skipped tests are the explicitly opt-in live Foundation Models evaluations g
 
 These items cannot be completed from repository access alone:
 
-- Confirm `com.datesnap.app` registration and the authorized Apple Developer Team ID.
+- Confirm `com.pencild.app` registration and the authorized Apple Developer Team ID.
 - Confirm that App Store Connect version/build `1.0.0 (1)` is unused and reserve or increment it.
 - Confirm the product decision to retain iOS 18.0 as the minimum supported version.
 - Compare the four subscriptions, trials, pricing, localization, and subscription group against App Store Connect.
@@ -8317,13 +8317,13 @@ The release remains **no-go** until these external blockers and the subscription
 ================================================
 FILE: docs/audits/2026-10-02-rbac-and-subscription-entitlements-audit.md
 ================================================
-# DateSnap RBAC and Subscription Entitlements Audit
+# Pencild RBAC and Subscription Entitlements Audit
 
 Date: 2026-10-02
 
 ## Scope and terminology
 
-This audit reviews repository-visible authorization, subscription-tier mapping, premium feature gating, StoreKit entitlement resolution, and related tests. DateSnap currently has no user accounts, shared resources, server API, ownership model, or multi-user roles. It therefore does **not** currently implement role-based access control (RBAC) in the conventional sense. Its present authorization model is local subscription-based feature entitlement control.
+This audit reviews repository-visible authorization, subscription-tier mapping, premium feature gating, StoreKit entitlement resolution, and related tests. Pencild currently has no user accounts, shared resources, server API, ownership model, or multi-user roles. It therefore does **not** currently implement role-based access control (RBAC) in the conventional sense. Its present authorization model is local subscription-based feature entitlement control.
 
 The future possibilities of hosted events, invitations, RSVPs, comments, planning, group messaging, social graphs, and third-party integrations inform the modularity recommendations, but are explicitly out of scope for immediate implementation. The immediate plan protects the existing Starter/Plus/Premium feature set without inventing a backend, account system, or social-role schema.
 
@@ -8337,37 +8337,37 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 
 ### Entitlements and purchasing
 
-- `Sources/DateSnap/Services/Advisors/FeatureEntitlements.swift`
-- `Sources/DateSnap/Services/SubscriptionService.swift`
-- `Sources/DateSnap/Services/Intelligence/IntelligenceUsagePolicy.swift`
-- `Sources/DateSnap/ViewModels/PurchaseViewModel.swift`
-- `Sources/DateSnap/Views/ManagePlanView.swift` (search-based review of entitlement handling)
-- `DateSnap.storekit`
+- `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift`
+- `Sources/Pencild/Services/SubscriptionService.swift`
+- `Sources/Pencild/Services/Intelligence/IntelligenceUsagePolicy.swift`
+- `Sources/Pencild/ViewModels/PurchaseViewModel.swift`
+- `Sources/Pencild/Views/ManagePlanView.swift` (search-based review of entitlement handling)
+- `Pencild.storekit`
 
 ### State and dependency wiring
 
-- `Sources/DateSnap/DateSnap.swift`
-- `Sources/DateSnap/ContentView.swift`
-- `Sources/DateSnap/Models/AppState.swift`
-- `Sources/DateSnap/Models/SettingsState.swift`
-- `Sources/DateSnap/Services/ServiceContainer.swift`
-- `Sources/DateSnap/ViewModels/HomeViewModel.swift`
+- `Sources/Pencild/Pencild.swift`
+- `Sources/Pencild/ContentView.swift`
+- `Sources/Pencild/Models/AppState.swift`
+- `Sources/Pencild/Models/SettingsState.swift`
+- `Sources/Pencild/Services/ServiceContainer.swift`
+- `Sources/Pencild/ViewModels/HomeViewModel.swift`
 
 ### Gated feature paths
 
-- `Sources/DateSnap/Views/HomeEmptyStateView.swift`
-- `Sources/DateSnap/ViewModels/ScanViewModel.swift`
-- `Sources/DateSnap/Views/HistoryArchiveView.swift`
-- `Sources/DateSnap/Views/EventReviewEditView.swift`
-- `Sources/DateSnap/Views/InterpretationReviewViews.swift`
-- `Sources/DateSnap/ViewModels/EventReviewViewModel.swift`
-- `Sources/DateSnap/ViewModels/EventReviewViewModel+Interpretation.swift`
-- `Sources/DateSnap/Services/Advisors/ReminderStrategyService.swift`
-- `Sources/DateSnap/Services/Advisors/EventSimilarityService.swift` (usage/search review)
+- `Sources/Pencild/Views/HomeEmptyStateView.swift`
+- `Sources/Pencild/ViewModels/ScanViewModel.swift`
+- `Sources/Pencild/Views/HistoryArchiveView.swift`
+- `Sources/Pencild/Views/EventReviewEditView.swift`
+- `Sources/Pencild/Views/InterpretationReviewViews.swift`
+- `Sources/Pencild/ViewModels/EventReviewViewModel.swift`
+- `Sources/Pencild/ViewModels/EventReviewViewModel+Interpretation.swift`
+- `Sources/Pencild/Services/Advisors/ReminderStrategyService.swift`
+- `Sources/Pencild/Services/Advisors/EventSimilarityService.swift` (usage/search review)
 
 ### Tests
 
-- `Tests/DateSnapTests/AdvisorTests.swift`
+- `Tests/PencildTests/AdvisorTests.swift`
 - Repository-wide test search for subscription tiers, premium features, and entitlement behavior
 
 ### Supporting searches
@@ -8461,7 +8461,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 
 **Severity:** Medium
 
-**Evidence:** Product IDs and tier inference appear in `SubscriptionService`, `PurchaseViewModel.Plan`, `ManagePlanView`, `DateSnap.storekit`, and release documentation.
+**Evidence:** Product IDs and tier inference appear in `SubscriptionService`, `PurchaseViewModel.Plan`, `ManagePlanView`, `Pencild.storekit`, and release documentation.
 
 **Impact:** Adding or renaming a product can cause purchasing, display, and entitlement resolution to disagree. A string-contains inference such as `productID.contains("premium")` is not an authorization-grade mapping.
 
@@ -8547,7 +8547,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 4. Refresh on launch, transactions, purchase/restore, and foreground activation.
 5. Keep unknown/unverified/revoked/expired products fail-closed.
 
-**Files likely involved:** `SubscriptionService.swift`, `PurchaseViewModel.swift`, `ManagePlanView.swift`, `ContentView.swift`, `DateSnap.storekit`, tests.
+**Files likely involved:** `SubscriptionService.swift`, `PurchaseViewModel.swift`, `ManagePlanView.swift`, `ContentView.swift`, `Pencild.storekit`, tests.
 
 ### Phase 4 — Add authorization regression tests
 
@@ -8557,7 +8557,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 4. Make mocks injectable and deny by default.
 5. Add UI tests only for paywall routing and visible state; keep authorization assertions in unit/integration tests.
 
-**Files likely involved:** `Tests/DateSnapTests/AdvisorTests.swift`, new focused entitlement/action tests, mock services.
+**Files likely involved:** `Tests/PencildTests/AdvisorTests.swift`, new focused entitlement/action tests, mock services.
 
 ## Recommended immediate design constraints
 
@@ -8572,7 +8572,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 
 ## Future extensibility guardrails (not immediate implementation work)
 
-When DateSnap gains shared events or social features, add a separate authentication and resource-authorization subsystem rather than expanding `SubscriptionTier`.
+When Pencild gains shared events or social features, add a separate authentication and resource-authorization subsystem rather than expanding `SubscriptionTier`.
 
 The future model should separate four dimensions:
 
@@ -8615,16 +8615,16 @@ Treat F-01, F-02, and F-07 as required pre-release fixes for trustworthy paid-fe
 ================================================
 FILE: docs/plans/2026-09-29-apple-intelligence-event-understanding-plan.md
 ================================================
-# DateSnap On-Device Intelligence Architecture Plan
+# Pencild On-Device Intelligence Architecture Plan
 
 **Date:** 2026-09-29  
 **Status:** Implemented (Phases 0–4) — on-device verification pending; live-route latency 10–20 s per model pass  
-**Scope:** On-device Apple Intelligence for event understanding, plus reusable intelligence augmentation across DateSnap services.  
+**Scope:** On-device Apple Intelligence for event understanding, plus reusable intelligence augmentation across Pencild services.  
 **Deployment baseline:** iOS 18.0, as declared by `Package.swift` and `project.yml`.
 
 ## 1. Executive summary
 
-DateSnap already has a strong local-processing foundation: Vision OCR retains text geometry and confidence, `EventExtractionService` applies deterministic temporal and semantic heuristics, `ScanViewModel` coordinates OCR, extraction, deduplication and SwiftData persistence, and the service protocols are composed through `ServiceContainer`. `ContentView` constructs and injects `ScanViewModel`; the home and scan flows consume it. This proposal extends those seams and keeps EventKit, PhotoKit, StoreKit and notification side effects under their existing services.
+Pencild already has a strong local-processing foundation: Vision OCR retains text geometry and confidence, `EventExtractionService` applies deterministic temporal and semantic heuristics, `ScanViewModel` coordinates OCR, extraction, deduplication and SwiftData persistence, and the service protocols are composed through `ServiceContainer`. `ContentView` constructs and injects `ScanViewModel`; the home and scan flows consume it. This proposal extends those seams and keeps EventKit, PhotoKit, StoreKit and notification side effects under their existing services.
 
 Add an optional `EventUnderstandingPipeline` around the deterministic extractor. On eligible devices running the Foundation Models API, the pipeline interprets OCR evidence into typed, ranked event hypotheses. A deterministic validator checks every proposed value against the OCR evidence and current parser output. The pipeline returns a review bundle containing the preferred interpretation, material alternatives, field provenance, concise evidence explanations, action suggestions and confidence/ambiguity metadata. The baseline parser remains available on every supported iOS 18 device and runs when Apple’s on-device model cannot be used.
 
@@ -8783,7 +8783,7 @@ Compatible Apple Intelligence hardware examples include iPhone 15 Pro/Pro Max an
 - **Subscriptions:** Keep baseline extraction, evidence and manual review available to Starter users. Use Plus for enhanced screenshot/photo triage consistent with its current tier positioning. Use Premium for batch scan automation, larger archive clustering and advanced reminder plans. Show runtime availability separately from plan entitlement; an unsupported device should not be sold a model capability it cannot run.
 - **Trust and privacy:** State when interpretation ran locally, when a field is inferred and which values came from visible text. Preserve user edits as the source of truth. Do not auto-commit Calendar, Reminders, external links or RSVP actions.
 
-Follow the design tokens and component patterns in [`datesnap-design-system-updated.md`](../../datesnap-design-system-updated.md).
+Follow the design tokens and component patterns in [`pencild-design-system-updated.md`](../../pencild-design-system-updated.md).
 
 ## 9. Phased implementation roadmap
 
@@ -8820,7 +8820,7 @@ Follow the design tokens and component patterns in [`datesnap-design-system-upda
 ### Phase 4 — Evaluation, tuning and premiumization
 
 - **Goals:** Calibrate scores and question thresholds, evaluate model quality across supported languages/devices, tune latency and introduce transparent feature entitlements for automation.
-- **Likely files:** `Tests/DateSnapTests/`, `SubscriptionService.swift`, `ServiceContainer.swift`, `SettingsState.swift`, paywall and archive views; add a local evaluation harness and sanitized fixtures.
+- **Likely files:** `Tests/PencildTests/`, `SubscriptionService.swift`, `ServiceContainer.swift`, `SettingsState.swift`, paywall and archive views; add a local evaluation harness and sanitized fixtures.
 - **New files:** Extraction evaluation fixtures/reporting, `IntelligenceUsagePolicy.swift`, optional debug diagnostics view.
 - **Risks:** Overfitting to English concert posters, Apple API changes, premium gating perceived as blocking correctness and accidental content logging. Fallback: ship core interpretation behind a runtime/remote-free local feature flag; keep tier-based automation disabled until evaluation gates pass.
 - **Acceptance:** Report field-level precision/recall, doors/show accuracy, question precision, duplicate false-merge rate, latency and fallback rate by capability route. Set release thresholds from the hand-labeled baseline before rollout. Verify no OCR text or event PII enters telemetry. Keep single-scan review available across tiers and gate only clearly explained convenience/automation.
@@ -8844,7 +8844,7 @@ Follow the design tokens and component patterns in [`datesnap-design-system-upda
 ================================================
 FILE: docs/plans/2026-09-29-feature-completeness-plan.md
 ================================================
-# DateSnap: Feature-Complete Product Engineering Plan & Runtime Audit
+# Pencild: Feature-Complete Product Engineering Plan & Runtime Audit
 
 **Date:** 2026-09-29  
 **Status:** Implemented — pending on-device verification (see §8)  
@@ -8854,13 +8854,13 @@ FILE: docs/plans/2026-09-29-feature-completeness-plan.md
 
 ## 1. Executive Summary
 
-DateSnap possesses an advanced on-device algorithmic foundation: a spatial Vision OCR engine (`OCRService.swift`), a multi-detector chronological inference pipeline (`EventExtractionService.swift`), SwiftData entity models (`SwiftDataEntities.swift`), and protocol-driven EventKit, PhotoKit, UserNotifications, and StoreKit 2 services.
+Pencild possesses an advanced on-device algorithmic foundation: a spatial Vision OCR engine (`OCRService.swift`), a multi-detector chronological inference pipeline (`EventExtractionService.swift`), SwiftData entity models (`SwiftDataEntities.swift`), and protocol-driven EventKit, PhotoKit, UserNotifications, and StoreKit 2 services.
 
 However, from an end-to-end product and runtime perspective, **the app is currently operating as a disconnected prototype**. The polished SwiftUI views (`HomeEmptyStateView.swift`, `EventReviewEditView.swift`, `PlusPaywallView.swift`, `HistoryArchiveView.swift`) are almost entirely unwired from the underlying production services. User interactions rely on hardcoded `Task.sleep` simulations, mutating in-memory volatile arrays in `AppState.swift`, and cycling through pre-baked mock flyer objects (`sampleNeonSunset`, `sampleDentalCheckup`).
 
 ### The Three Fundamental Product Gaps:
 1. **Orphaned Service & ViewModel Layer:** `ScanViewModel`, `HomeViewModel`, and `EventReviewViewModel` contain full production logic for scanning, OCR, calendar/reminder creation, and SwiftData persistence, but **zero views in the app instantiate or call them**.
-2. **Cold-Launch Amnesia:** SwiftData container initialization in `DateSnap.swift` is never queried by the UI. `HistoryArchiveView.swift` displays only in-memory mock events from `AppState.events`, wiping all user-saved events on app relaunch.
+2. **Cold-Launch Amnesia:** SwiftData container initialization in `Pencild.swift` is never queried by the UI. `HistoryArchiveView.swift` displays only in-memory mock events from `AppState.events`, wiping all user-saved events on app relaunch.
 3. **Simulated Paywalls & Feature Gating:** Subscriptions in `PlusPaywallView.swift` and `PremiumPaywallView.swift` simulate purchases with dummy 1-second timers and set local booleans, completely disconnected from `SubscriptionService.swift`. The premium features promised in copy (document/PDF import, automatic background photo scanning) do not exist in code.
 
 ---
@@ -8878,7 +8878,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 | **Ambiguous Date Swap** | Detect `DD/MM` vs `MM/DD` ambiguity and offer 1-tap swap in review UI. | `EventExtractionService.swift:650`, `EventReviewEditView.swift:108` | **Partial** | Detection logic and UI card exist, but swapping is not bound to a live view model or persisted entity. | **P0** |
 | **Calendar Event Commit** | Write reviewed event to Apple Calendar with alarms upon explicit save. | `CalendarService.swift:57`, `EventReviewEditView.swift:544` | **Mock** | Button sleeps 700ms and updates `appState.events`. `EKEventStore` is never invoked from UI. | **P0** |
 | **Reminders Commit** | Write reminders with staggered offsets to Apple Reminders upon explicit save. | `ReminderService.swift:69`, `EventReviewEditView.swift:544` | **Mock** | `EKEventStore` reminders API is never called from `EventReviewEditView` or `ReminderScheduleEditorView`. | **P0** |
-| **Local Notification Alerts** | Schedule UNNotificationRequest for pre-event alerts with deep-links. | `NotificationService.swift:74` | **Partial** | Scheduling code works, but notification deep-link `DateSnapDeepLinkEvent` has no listener in `AppState`. | **P1** |
+| **Local Notification Alerts** | Schedule UNNotificationRequest for pre-event alerts with deep-links. | `NotificationService.swift:74` | **Partial** | Scheduling code works, but notification deep-link `PencildDeepLinkEvent` has no listener in `AppState`. | **P1** |
 | **Persistent History & Triage** | Retain saved events in SwiftData; support search, filter, and triage across launches. | `SwiftDataEntities.swift:131`, `HistoryArchiveView.swift:9` | **Mock** | `HistoryArchiveView` reads volatile `appState.events`. Cold launch wipes history and reverts to sample events. | **P0** |
 | **StoreKit 2 Subscriptions** | Purchase Plus/Premium, restore transactions, listen to status updates. | `SubscriptionService.swift:42`, `PlusPaywallView.swift:242` | **Mock** | Paywalls use dummy `Task.sleep` and toggle mock booleans. Real StoreKit 2 calls are bypassed. | **P0** |
 | **Files & PDF Import (Premium)** | Import multi-page event PDFs and flyers from iOS Files / iCloud Drive. | `PremiumPaywallView.swift:60`, `ManagePlanView.swift:170` | **Missing** | Heavily advertised in UI copy and paywalls, but zero code exists for `UIDocumentPicker` or `PDFKit`. | **P1** |
@@ -8906,7 +8906,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ```
 
 ### Flow 1: Home Entry Points & Ingestion
-- **Current Breakdown:** In `HomeEmptyStateView.swift:248-280`, tapping "Scan Recent Screenshots" sets `isScanning = true`, sleeps 600ms, sets `isScanning = false`, and assigns `appState.activeModal = .eventReviewEdit(DateSnapEvent.sampleNeonSunset)`. Tapping "Choose from Photo Library" sets `activeModal = .eventReviewEdit(DateSnapEvent.sampleDentalCheckup)`.
+- **Current Breakdown:** In `HomeEmptyStateView.swift:248-280`, tapping "Scan Recent Screenshots" sets `isScanning = true`, sleeps 600ms, sets `isScanning = false`, and assigns `appState.activeModal = .eventReviewEdit(PencildEvent.sampleNeonSunset)`. Tapping "Choose from Photo Library" sets `activeModal = .eventReviewEdit(PencildEvent.sampleDentalCheckup)`.
 - **Failure:** The user never actually chooses an image, nor are recent screenshots retrieved from the photo library.
 
 ### Flow 2: OCR Extraction & Temporal Inference
@@ -8914,7 +8914,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 - **Failure:** Because `ScanViewModel` is never instantiated by `HomeEmptyStateView`, real OCR and extraction are completely dead code at runtime.
 
 ### Flow 3: Candidate Review, Ambiguity Resolution & Editing
-- **Current Breakdown:** `EventReviewEditView.swift:24-35` initializes its form from the passed `DateSnapEvent`. It contains UI for editing dates, time windows, and locations.
+- **Current Breakdown:** `EventReviewEditView.swift:24-35` initializes its form from the passed `PencildEvent`. It contains UI for editing dates, time windows, and locations.
 - **Failure:** It does not use `EventReviewViewModel`. The ambiguous date banner toggles internal `@State` variables without recalculating parsed `Date` components or updating calendar targets.
 
 ### Flow 4: Save to Calendar & Reminders
@@ -8922,7 +8922,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 - **Failure:** `CalendarService.createEvent` and `ReminderService.createReminder` are never called. Nothing is written to the user's iOS Calendar or Reminders apps.
 
 ### Flow 5: Notification Scheduling & Deep-Linking
-- **Current Breakdown:** `NotificationService.swift:143-156` catches notification taps and posts `NSNotification.Name("DateSnapDeepLinkEvent")`.
+- **Current Breakdown:** `NotificationService.swift:143-156` catches notification taps and posts `NSNotification.Name("PencildDeepLinkEvent")`.
 - **Failure:** `AppState` and `ContentView` have no subscriber for this notification. Tapping an alert launches the app to the default tab without opening the saved event detail.
 
 ### Flow 6: History & Archive Persistence
@@ -8957,7 +8957,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 
 ### 5. Notifications & Follow-Up Alerts
 - **Notification Rescheduling in Schedule Editor:** In `ReminderScheduleEditorView.swift:295-305`, replace `appState.updateAlerts` with real calls to `notificationService.scheduleLocalNotifications` and `reminderService`.
-- **Deep-Link Event Routing:** Add `.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DateSnapDeepLinkEvent")))` in `ContentView.swift` to navigate directly to `.savedEventDetail(event)`.
+- **Deep-Link Event Routing:** Add `.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("PencildDeepLinkEvent")))` in `ContentView.swift` to navigate directly to `.savedEventDetail(event)`.
 
 ### 6. Subscription-Gated Functionality
 - **Real StoreKit 2 Purchasing:** Wire `PlusPaywallView` and `PremiumPaywallView` to `subscriptionService.purchase(product:)` and `subscriptionService.restorePurchases()`.
@@ -9005,27 +9005,27 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ### P0 — Core Feature Completion (Must be done for usable beta)
 
 #### Task 1: Wire Real Photo Library Ingestion & PhotosPicker
-- **Files:** `Sources/DateSnap/Views/HomeEmptyStateView.swift`, `Sources/DateSnap/ViewModels/ScanViewModel.swift`
+- **Files:** `Sources/Pencild/Views/HomeEmptyStateView.swift`, `Sources/Pencild/ViewModels/ScanViewModel.swift`
 - **Behavior:** Add SwiftUI `PhotosPicker` to "Choose from Photo Library". When an image is picked or "Scan Recent Screenshots" is tapped, load the `UIImage` and pass it to `ScanViewModel.scanImage(_:modelContext:)`.
 - **Dependencies:** `PhotoLibraryService`, `ScanViewModel`.
 - **Acceptance Criteria:** Selecting a screenshot from the simulator/device library triggers real Vision OCR and displays the scanned candidate in `EventReviewEditView`.
 
 #### Task 2: Connect Review Flow to Calendar & Reminders Execution
-- **Files:** `Sources/DateSnap/Views/EventReviewEditView.swift`, `Sources/DateSnap/ViewModels/EventReviewViewModel.swift`
+- **Files:** `Sources/Pencild/Views/EventReviewEditView.swift`, `Sources/Pencild/ViewModels/EventReviewViewModel.swift`
 - **Behavior:** Refactor `EventReviewEditView` to take `EventReviewViewModel`. Tapping "Save Event to Calendar" invokes `await viewModel.commitEvent(modelContext:)`.
 - **Dependencies:** `CalendarService`, `ReminderService`, `NotificationService`, `SwiftData`.
 - **Acceptance Criteria:** Tapping Save creates an event in the native Apple Calendar app and alerts in Apple Reminders with matching titles, locations, and times.
 
 #### Task 3: SwiftData Persistence & Cold-Launch Continuity
-- **Files:** `Sources/DateSnap/Views/HistoryArchiveView.swift`, `Sources/DateSnap/Models/AppState.swift`
+- **Files:** `Sources/Pencild/Views/HistoryArchiveView.swift`, `Sources/Pencild/Models/AppState.swift`
 - **Behavior:** Remove seeded sample events from `AppState`. In `HistoryArchiveView`, use `@Query(sort: \SavedEvent.createdAt, order: .reverse) private var savedEvents: [SavedEvent]`.
 - **Dependencies:** `SwiftDataEntities.swift`.
 - **Acceptance Criteria:** Events saved during a session remain visible, searchable, and filterable in History after force-quitting and relaunching the app.
 
 #### Task 4: StoreKit 2 Purchase & Entitlement Wiring
-- **Files:** `Sources/DateSnap/Views/PlusPaywallView.swift`, `Sources/DateSnap/Views/PremiumPaywallView.swift`, `Sources/DateSnap/Services/SubscriptionService.swift`
+- **Files:** `Sources/Pencild/Views/PlusPaywallView.swift`, `Sources/Pencild/Views/PremiumPaywallView.swift`, `Sources/Pencild/Services/SubscriptionService.swift`
 - **Behavior:** Replace `Task.sleep` in paywalls with `try await subscriptionService.purchase(product:)` and `try await subscriptionService.restorePurchases()`. Bind tier display to `subscriptionService.currentTier`.
-- **Dependencies:** StoreKit 2, `DateSnap.storekit`.
+- **Dependencies:** StoreKit 2, `Pencild.storekit`.
 - **Acceptance Criteria:** Purchasing in the StoreKit testing environment unlocks the corresponding tier badge and capabilities without errors.
 
 ---
@@ -9033,41 +9033,41 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ### P1 — Product Completeness (Before calling app feature complete)
 
 #### Task 5: Fix "Doors vs Show" Priority & Note Preservation
-- **Files:** `Sources/DateSnap/Services/EventExtractionService.swift:894-912`
+- **Files:** `Sources/Pencild/Services/EventExtractionService.swift:894-912`
 - **Behavior:** In `DateInference.extractTimeWindow`, check for `isShow`. If present, assign the show time as the primary start time. Store the door time in the event notes snippet (`Doors open at X`).
 - **Dependencies:** `EventExtractionService`.
 - **Acceptance Criteria:** A flyer stating "Doors 7:00 PM / Show 8:30 PM" produces a candidate with `startDate` at 8:30 PM and notes stating "Doors open at 7:00 PM".
 
 #### Task 6: Actionable Notification Deep-Linking
-- **Files:** `Sources/DateSnap/ContentView.swift`, `Sources/DateSnap/Models/AppState.swift`, `Sources/DateSnap/Services/NotificationService.swift`
-- **Behavior:** Listen for `NotificationCenter.default.publisher(for: NSNotification.Name("DateSnapDeepLinkEvent"))` in `ContentView` and route `appState.activeModal` to `.savedEventDetail(event)`.
+- **Files:** `Sources/Pencild/ContentView.swift`, `Sources/Pencild/Models/AppState.swift`, `Sources/Pencild/Services/NotificationService.swift`
+- **Behavior:** Listen for `NotificationCenter.default.publisher(for: NSNotification.Name("PencildDeepLinkEvent"))` in `ContentView` and route `appState.activeModal` to `.savedEventDetail(event)`.
 - **Dependencies:** `NotificationService`, `SwiftData`.
-- **Acceptance Criteria:** Tapping a scheduled local notification banner opens DateSnap directly into the saved event detail screen.
+- **Acceptance Criteria:** Tapping a scheduled local notification banner opens Pencild directly into the saved event detail screen.
 
 #### Task 7: Interactive "Try Sample Flyer" Flow
-- **Files:** `Sources/DateSnap/Views/HomeEmptyStateView.swift`, bundled asset or generated test flyer UIImage.
+- **Files:** `Sources/Pencild/Views/HomeEmptyStateView.swift`, bundled asset or generated test flyer UIImage.
 - **Behavior:** Tapping "Try Sample Flyer" passes a sample concert flyer image into `ScanViewModel.scanImage(_:)` and launches `EventReviewEditView` with real parsed candidates.
 - **Dependencies:** `ScanViewModel`, `HomeEmptyStateView`.
 - **Acceptance Criteria:** Users can experience the end-to-end extraction and review flow on first launch without granting photo permissions.
 
 #### Task 8: Settings Deep-Link Recovery
-- **Files:** `Sources/DateSnap/Views/CalendarPermissionDeniedView.swift`, `Sources/DateSnap/Views/NotificationPermissionDeniedView.swift`
+- **Files:** `Sources/Pencild/Views/CalendarPermissionDeniedView.swift`, `Sources/Pencild/Views/NotificationPermissionDeniedView.swift`
 - **Behavior:** Replace toast placeholders with `UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)`.
 - **Dependencies:** UIKit.
-- **Acceptance Criteria:** Tapping "Open iPhone Settings" launches the iOS Settings page for DateSnap.
+- **Acceptance Criteria:** Tapping "Open iPhone Settings" launches the iOS Settings page for Pencild.
 
 ---
 
 ### P2 — Polish & Advanced Features (Post-Beta)
 
 #### Task 9: Multi-Page PDF & iOS Files Import (Premium)
-- **Files:** New `DocumentPickerService.swift`, `Sources/DateSnap/Views/HomeEmptyStateView.swift`
+- **Files:** New `DocumentPickerService.swift`, `Sources/Pencild/Views/HomeEmptyStateView.swift`
 - **Behavior:** Add `.fileImporter` supporting PDF and render each PDF page into a `UIImage` using `PDFKit` (`PDFPage.draw`) for batch OCR. Gate behind `SubscriptionTier.premium`.
 - **Dependencies:** `PDFKit`, `SubscriptionService`.
 - **Acceptance Criteria:** Premium users can import a multi-page event itinerary PDF and extract all dates into review candidates.
 
 #### Task 10: History Triage & Batch Cleanup
-- **Files:** `Sources/DateSnap/Views/HistoryArchiveView.swift`
+- **Files:** `Sources/Pencild/Views/HistoryArchiveView.swift`
 - **Behavior:** Add swipe-to-archive, swipe-to-delete, and batch triage actions on persisted `SavedEvent` items.
 - **Dependencies:** SwiftData `ModelContext`.
 - **Acceptance Criteria:** Swiping an item in History transitions its status between Saved, Archived, and Deleted with immediate persistence.
@@ -9103,7 +9103,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 
 ## 8. Definition of Feature Complete
 
-DateSnap is considered **feature complete** when all of the following conditions are verified at runtime on an iOS 18 device/simulator:
+Pencild is considered **feature complete** when all of the following conditions are verified at runtime on an iOS 18 device/simulator:
 
 1. **Working Ingestion Paths:**
    - User can select any photo or flyer via `PhotosPicker` and initiate scanning.
@@ -9118,7 +9118,7 @@ DateSnap is considered **feature complete** when all of the following conditions
    - Saves happen **only** after explicit user confirmation in `EventReviewEditView`.
 4. **Actionable Notifications:**
    - Pre-event alert notifications are scheduled with `UNUserNotificationCenter`.
-   - Tapping an alert banner deep-links the user into DateSnap and displays the saved event details.
+   - Tapping an alert banner deep-links the user into Pencild and displays the saved event details.
 5. **Persistent History Across Cold Launches:**
    - Saved events persist in SwiftData.
    - Force-quitting and reopening the app loads saved events in History.
@@ -9136,7 +9136,7 @@ DateSnap is considered **feature complete** when all of the following conditions
 ================================================
 FILE: docs/plans/2026-09-29-wave-2-release-plan.md
 ================================================
-# DateSnap: Wave 2 Release Planning & Launch Execution Plan
+# Pencild: Wave 2 Release Planning & Launch Execution Plan
 
 **Date:** 2026-09-29  
 **Status:** Approved for Implementation  
@@ -9146,13 +9146,13 @@ FILE: docs/plans/2026-09-29-wave-2-release-plan.md
 
 ## 1. Executive Summary
 
-Wave 1 established DateSnap’s algorithmic core, SwiftData entities, protocol-driven services, and foundational configuration assets (`Info.plist`, `PrivacyInfo.xcprivacy`, `DateSnap.storekit`, `DateSnap.entitlements`, and `Config/`).
+Wave 1 established Pencild’s algorithmic core, SwiftData entities, protocol-driven services, and foundational configuration assets (`Info.plist`, `PrivacyInfo.xcprivacy`, `Pencild.storekit`, `Pencild.entitlements`, and `Config/`).
 
 **Wave 2 is the distribution, packaging, code signing, TestFlight, and App Store launch operation.** Currently, the app cannot be uploaded to TestFlight or submitted to the App Store due to five primary launch blockers:
 
-1. **Projectization Mismatch:** The repository remains in a pure SwiftPM structure (`Package.swift`). When archived via `xcodebuild`, an SPM `.executableTarget` produces a UNIX Mach-O command-line binary at `/usr/local/bin/DateSnap`, not an iOS Application Bundle (`DateSnap.app`) inside an `.xcarchive`. A concrete `DateSnap.xcodeproj` target must be materialized.
+1. **Projectization Mismatch:** The repository remains in a pure SwiftPM structure (`Package.swift`). When archived via `xcodebuild`, an SPM `.executableTarget` produces a UNIX Mach-O command-line binary at `/usr/local/bin/Pencild`, not an iOS Application Bundle (`Pencild.app`) inside an `.xcarchive`. A concrete `Pencild.xcodeproj` target must be materialized.
 2. **Missing Asset Catalog & App Icon:** The repository lacks an `Assets.xcassets` catalog containing the mandatory 1024×1024 App Store icon asset. Without it, App Store Connect binary validation immediately rejects the upload.
-3. **Pending Developer Portal & App Store Connect Provisioning:** The App ID (`com.datesnap.app`), In-App Purchase capability, Subscription Group (`DateSnap Memberships`), and the 4 subscription products are defined in code and local configs, but do not yet exist in the live Apple Developer portal or App Store Connect.
+3. **Pending Developer Portal & App Store Connect Provisioning:** The App ID (`com.pencild.app`), In-App Purchase capability, Subscription Group (`Pencild Memberships`), and the 4 subscription products are defined in code and local configs, but do not yet exist in the live Apple Developer portal or App Store Connect.
 4. **Unwired UI Gating & QA Failures:** The views still use dummy timers (`Task.sleep`) and mock arrays in `AppState.swift`. Distributing the app in this state will fail the manual QA verification gates defined in `TESTFLIGHT-QA.md`.
 5. **External Legal/Web URL Dependencies:** Apple Review mandates live, public HTTPS endpoints for the **Privacy Policy URL** and **Support URL**. Submitting placeholder URLs guarantees immediate review rejection.
 
@@ -9171,8 +9171,8 @@ The release documentation suite establishes the following non-negotiable operati
   * 100% on-device Vision OCR and NaturalLanguage processing.
   * Zero remote telemetry, zero analytics trackers, and "Data Not Collected" declared on the App Store Nutrition Label.
 * **StoreKit Expectations (`RELEASE.md`):**
-  * 4 specific subscription identifiers: `com.datesnap.plus.monthly`, `com.datesnap.plus.annual`, `com.datesnap.premium.monthly`, `com.datesnap.premium.annual`.
-  * Subscription Group: `DateSnap Memberships`.
+  * 4 specific subscription identifiers: `com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, `com.pencild.premium.annual`.
+  * Subscription Group: `Pencild Memberships`.
 * **Versioning & Build Numbering:**
   * Marketing Version: `1.0.0` (Semantic `MAJOR.MINOR.PATCH`).
   * Build Number: Monotonically increasing integer (`1`, `2`, `3`...).
@@ -9187,12 +9187,12 @@ The release documentation suite establishes the following non-negotiable operati
 
 | Item / Dimension | Target Baseline Requirement | Actual Repository State | Status | Risk / Gap Severity |
 |---|---|---|---|---|
-| **Xcode Project Structure** | `DateSnap.xcodeproj` with iOS Application product type (`.app`). | Pure `Package.swift` with `.executableTarget`. No `.xcodeproj` exists. | **Missing** | **Showstopper:** Cannot produce `.xcarchive` or `.ipa`. |
+| **Xcode Project Structure** | `Pencild.xcodeproj` with iOS Application product type (`.app`). | Pure `Package.swift` with `.executableTarget`. No `.xcodeproj` exists. | **Missing** | **Showstopper:** Cannot produce `.xcarchive` or `.ipa`. |
 | **Info.plist** | Production usage descriptions for Photos, Calendar, Reminders, and encryption flags. | `Info.plist` written to disk with all required keys. | **Confirmed Ready** | Ready to be bound to Xcode project target. |
-| **Entitlements** | Standard sandbox entitlements matching local capabilities. | `DateSnap.entitlements` created. | **Confirmed Ready** | Ready. |
+| **Entitlements** | Standard sandbox entitlements matching local capabilities. | `Pencild.entitlements` created. | **Confirmed Ready** | Ready. |
 | **Apple Privacy Manifest** | `PrivacyInfo.xcprivacy` with zero tracking and Required Reason `CA92.1`. | `PrivacyInfo.xcprivacy` created on disk. | **Confirmed Ready** | Mandatory compliance satisfied. |
 | **Asset Catalog & AppIcon** | `Assets.xcassets` with 1024×1024 PNG App Store icon. | No `.xcassets` found in repository. | **Missing** | **Showstopper:** Archive export/upload rejected without AppIcon. |
-| **StoreKit Configuration** | Local testing `.storekit` with 4 products and 1 group. | `DateSnap.storekit` written with full tier metadata. | **Confirmed Ready** | Ready for Xcode Scheme binding. |
+| **StoreKit Configuration** | Local testing `.storekit` with 4 products and 1 group. | `Pencild.storekit` written with full tier metadata. | **Confirmed Ready** | Ready for Xcode Scheme binding. |
 | **Export Options Plist** | Plist configuring automatic App Store export. | `ExportOptions-AppStore.plist` created. | **Confirmed Ready** | Ready (requires `YOUR_TEAM_ID` replacement). |
 | **Build Settings Configuration** | Split Base/Debug/Release `.xcconfig` files. | `Config/` populated with modular settings. | **Confirmed Ready** | Ready. |
 | **StoreKit Service Code** | StoreKit 2 manager handling the 4 target IDs. | `SubscriptionService.swift` fully implemented. | **Confirmed Ready** | Code ready; UI calls must be connected. |
@@ -9206,33 +9206,33 @@ The release documentation suite establishes the following non-negotiable operati
 ## 4. Packaging and Project Readiness
 
 ### The Projectization Imperative
-In SwiftPM, an executable target (`.executableTarget(name: "DateSnap", path: "Sources/DateSnap")`) is designed for command-line utilities. When built for an iOS device destination with the `archive` action:
+In SwiftPM, an executable target (`.executableTarget(name: "Pencild", path: "Sources/Pencild")`) is designed for command-line utilities. When built for an iOS device destination with the `archive` action:
 ```
-GenerateDSYMFile .../InstallationBuildProductsLocation/usr/local/bin/DateSnap
-Strip .../InstallationBuildProductsLocation/usr/local/bin/DateSnap
+GenerateDSYMFile .../InstallationBuildProductsLocation/usr/local/bin/Pencild
+Strip .../InstallationBuildProductsLocation/usr/local/bin/Pencild
 ```
-Xcode installs the output as an unbundled binary in `/usr/local/bin/DateSnap`. It does **not** create a signed `DateSnap.app` bundle inside a `Products/Applications/` directory of the archive. Therefore:
+Xcode installs the output as an unbundled binary in `/usr/local/bin/Pencild`. It does **not** create a signed `Pencild.app` bundle inside a `Products/Applications/` directory of the archive. Therefore:
 - `xcodebuild -exportArchive` fails immediately because no iOS application bundle exists.
 - Provisioning profiles cannot be embedded.
 - `Info.plist`, asset catalogs, and privacy manifests cannot be packaged.
 
 ### Required Xcode Project Specification
-We must materialize `DateSnap.xcodeproj` with the following configuration:
-* **Project Name:** `DateSnap.xcodeproj`
-* **Main Target:** `DateSnap` (Product Type: `com.apple.product-type.application`)
-* **Bundle Identifier:** `com.datesnap.app` (or user’s registered reverse-DNS)
+We must materialize `Pencild.xcodeproj` with the following configuration:
+* **Project Name:** `Pencild.xcodeproj`
+* **Main Target:** `Pencild` (Product Type: `com.apple.product-type.application`)
+* **Bundle Identifier:** `com.pencild.app` (or user’s registered reverse-DNS)
 * **Deployment Target:** `iOS 18.0`
 * **Swift Language Mode:** `Swift 6` with `ApproachableConcurrency` enabled
-* **Source Files Attached:** All files under `Sources/DateSnap/`
+* **Source Files Attached:** All files under `Sources/Pencild/`
 * **Configurations:**
-  * `Debug`: Inherits `Config/DateSnap-Debug.xcconfig`
-  * `Release`: Inherits `Config/DateSnap-Release.xcconfig`
+  * `Debug`: Inherits `Config/Pencild-Debug.xcconfig`
+  * `Release`: Inherits `Config/Pencild-Release.xcconfig`
 * **Resource Bundle Files Attached:**
   * `Info.plist` (Target Info.plist File)
-  * `DateSnap.entitlements` (Code Sign Entitlements)
+  * `Pencild.entitlements` (Code Sign Entitlements)
   * `PrivacyInfo.xcprivacy` (Copy Bundle Resources)
   * `Assets.xcassets` (AppIcon & AccentColor)
-* **Test Target:** `DateSnapTests` attaching `Tests/DateSnapTests/`
+* **Test Target:** `PencildTests` attaching `Tests/PencildTests/`
 
 ---
 
@@ -9243,16 +9243,16 @@ We must materialize `DateSnap.xcodeproj` with the following configuration:
 │                                SIGNING & PROVISIONING ARCHITECTURE                      │
 │                                                                                         │
 │  [developer.apple.com]                                                                  │
-│    ├── 1. Register App ID: com.datesnap.app (Enable In-App Purchase)                     │
+│    ├── 1. Register App ID: com.pencild.app (Enable In-App Purchase)                     │
 │    └── 2. Distribution Certificate: Apple Distribution: Your Team (10-char Team ID)    │
 │                                                                                         │
 │  [Xcode Project Settings]                                                               │
 │    ├── Automatic Signing: Enabled                                                       │
 │    ├── Team: Selected (YOUR_TEAM_ID)                                                    │
-│    └── Bundle ID: com.datesnap.app                                                      │
+│    └── Bundle ID: com.pencild.app                                                      │
 │                                                                                         │
 │  [App Store Connect]                                                                    │
-│    ├── App Record Created (SKU: DATESNAP-IOS-01)                                        │
+│    ├── App Record Created (SKU: PENCILD-IOS-01)                                        │
 │    └── TestFlight builds receive automated App Store Managed Re-signing upon upload    │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -9262,8 +9262,8 @@ We must materialize `DateSnap.xcodeproj` with the following configuration:
 #### 1. In `developer.apple.com` (Certificates, Identifiers & Profiles):
 1. **Identifiers > App IDs > Register an App ID:**
    * **App Type:** App
-   * **Description:** DateSnap iOS
-   * **Bundle ID:** Explicit -> `com.datesnap.app`
+   * **Description:** Pencild iOS
+   * **Bundle ID:** Explicit -> `com.pencild.app`
    * **Capabilities:** Check **In-App Purchase** (mandatory for StoreKit 2 receipt validation).
 2. **Certificates:** Generate an **Apple Distribution** certificate if one does not already exist for the team.
 
@@ -9271,7 +9271,7 @@ We must materialize `DateSnap.xcodeproj` with the following configuration:
 1. **Signing & Capabilities:**
    * Set **Signing Style** to **Automatic** (`CODE_SIGN_STYLE = Automatic`).
    * Select your **Team** (`DEVELOPMENT_TEAM = YOUR_TEAM_ID`).
-   * Xcode automatically creates and manages the `iOS Team Provisioning Profile: com.datesnap.app` and downloads the distribution certificate.
+   * Xcode automatically creates and manages the `iOS Team Provisioning Profile: com.pencild.app` and downloads the distribution certificate.
 
 #### 3. In App Store Connect:
 * Upon upload via `xcrun altool`, Apple’s ingestion pipeline validates the signature against the App ID, strips the development provisioning profile, and applies the official App Store / TestFlight DRM signature.
@@ -9304,21 +9304,21 @@ We must materialize `DateSnap.xcodeproj` with the following configuration:
 ## 7. StoreKit & Subscription Release Plan
 
 ### 1. App Store Connect Product Alignment
-The exact four product identifiers from `SubscriptionService.swift:54-59` and `DateSnap.storekit` must be registered in App Store Connect:
+The exact four product identifiers from `SubscriptionService.swift:54-59` and `Pencild.storekit` must be registered in App Store Connect:
 
 ```
-Subscription Group: "DateSnap Memberships" (Group ID: 21589001)
-├── Tier 1 (Top Level): DateSnap Premium
-│   ├── com.datesnap.premium.annual  ($69.99 / year)  [No Trial]
-│   └── com.datesnap.premium.monthly ($8.99 / month)  [No Trial]
-└── Tier 2 (Standard): DateSnap Plus
-    ├── com.datesnap.plus.annual     ($39.99 / year)  [Introductory Offer: 7-Day Free Trial]
-    └── com.datesnap.plus.monthly    ($4.99 / month)  [Introductory Offer: 7-Day Free Trial]
+Subscription Group: "Pencild Memberships" (Group ID: 21589001)
+├── Tier 1 (Top Level): Pencild Premium
+│   ├── com.pencild.premium.annual  ($69.99 / year)  [No Trial]
+│   └── com.pencild.premium.monthly ($8.99 / month)  [No Trial]
+└── Tier 2 (Standard): Pencild Plus
+    ├── com.pencild.plus.annual     ($39.99 / year)  [Introductory Offer: 7-Day Free Trial]
+    └── com.pencild.plus.monthly    ($4.99 / month)  [Introductory Offer: 7-Day Free Trial]
 ```
 
 ### 2. Operational Verification Stages
-1. **Local StoreKit Simulation (`DateSnap.storekit`):**
-   - Bind scheme to `DateSnap.storekit`.
+1. **Local StoreKit Simulation (`Pencild.storekit`):**
+   - Bind scheme to `Pencild.storekit`.
    - Test transactions, instant purchases, renewal acceleration, and billing failure simulations without internet access.
 2. **App Store Connect Sandbox Testing:**
    - Create a Sandbox Tester account in App Store Connect (Users and Access > Sandbox Testers).
@@ -9381,13 +9381,13 @@ Subscription Group: "DateSnap Memberships" (Group ID: 21589001)
 
 | Metadata Item | Target Specification | Status | Action Required |
 |---|---|---|---|
-| **App Name** | `DateSnap: Screenshot to Calendar` | Drafted | Enter into App Store Connect. |
+| **App Name** | `Pencild: Screenshot to Calendar` | Drafted | Enter into App Store Connect. |
 | **Subtitle** | `On-Device Flyer & Event Sync` | Drafted | Enter into App Store Connect. |
 | **Primary Category** | `Utilities` | Defined | Select in App Store Connect. |
 | **Secondary Category** | `Productivity` | Defined | Select in App Store Connect. |
-| **Privacy Policy URL** | `https://datesnap.app/privacy` | **Blocked** | Must be deployed to public web. |
-| **Support URL** | `https://datesnap.app/support` | **Blocked** | Must be deployed to public web. |
-| **Marketing URL** | `https://datesnap.app` | **Blocked** | Must be deployed to public web. |
+| **Privacy Policy URL** | `https://pencild.app/privacy` | **Blocked** | Must be deployed to public web. |
+| **Support URL** | `https://pencild.app/support` | **Blocked** | Must be deployed to public web. |
+| **Marketing URL** | `https://pencild.app` | **Blocked** | Must be deployed to public web. |
 | **Age Rating** | `4+` | Defined | Complete questionnaire in Connect. |
 | **Data Nutrition Label** | `Data Not Collected` | Defined | Check all categories as Not Collected. |
 | **Screenshots (6.9")** | iPhone 16 Pro Max (1320 × 2868 px) | Missing | Capture 4–6 screens from Simulator. |
@@ -9401,14 +9401,14 @@ Subscription Group: "DateSnap Memberships" (Group ID: 21589001)
 
 ### Corrected, Truthful Build Commands
 
-Once `DateSnap.xcodeproj` is established, execute these commands from the repository root:
+Once `Pencild.xcodeproj` is established, execute these commands from the repository root:
 
 #### Step 1: Clean & Build Verification
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 xcodebuild clean build \
-  -project DateSnap.xcodeproj \
-  -scheme DateSnap \
+  -project Pencild.xcodeproj \
+  -scheme Pencild \
   -destination 'generic/platform=iOS Simulator' \
   -configuration Debug
 ```
@@ -9417,11 +9417,11 @@ xcodebuild clean build \
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 xcodebuild clean archive \
-  -project DateSnap.xcodeproj \
-  -scheme DateSnap \
+  -project Pencild.xcodeproj \
+  -scheme Pencild \
   -configuration Release \
   -destination 'generic/platform=iOS' \
-  -archivePath './build/DateSnap.xcarchive' \
+  -archivePath './build/Pencild.xcarchive' \
   DEVELOPMENT_TEAM="YOUR_TEAM_ID" \
   CODE_SIGN_STYLE="Automatic"
 ```
@@ -9430,7 +9430,7 @@ xcodebuild clean archive \
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 xcodebuild -exportArchive \
-  -archivePath './build/DateSnap.xcarchive' \
+  -archivePath './build/Pencild.xcarchive' \
   -exportPath './build/Exported' \
   -exportOptionsPlist './ExportOptions-AppStore.plist'
 ```
@@ -9440,14 +9440,14 @@ Using App Store Connect API Key (recommended):
 ```bash
 # Validate IPA against App Store rules
 xcrun altool --validate-app \
-  -f "./build/Exported/DateSnap.ipa" \
+  -f "./build/Exported/Pencild.ipa" \
   -t ios \
   --apiKey "YOUR_API_KEY_ID" \
   --apiIssuer "YOUR_ISSUER_UUID"
 
 # Upload binary to App Store Connect
 xcrun altool --upload-app \
-  -f "./build/Exported/DateSnap.ipa" \
+  -f "./build/Exported/Pencild.ipa" \
   -t ios \
   --apiKey "YOUR_API_KEY_ID" \
   --apiIssuer "YOUR_ISSUER_UUID"
@@ -9467,15 +9467,15 @@ xcrun altool --upload-app \
 ```
 
 ### P0 — Required Before Internal TestFlight
-* **Task 0.1 (Projectization):** Materialize `DateSnap.xcodeproj` targeting iOS 18 with configurations mapped to `Config/*.xcconfig`. *(Owner: Xcode Config / Code)*
+* **Task 0.1 (Projectization):** Materialize `Pencild.xcodeproj` targeting iOS 18 with configurations mapped to `Config/*.xcconfig`. *(Owner: Xcode Config / Code)*
 * **Task 0.2 (Asset Catalog):** Create `Assets.xcassets` with 1024×1024 App Store AppIcon. *(Owner: Design / Xcode Config)*
-* **Task 0.3 (App ID Registration):** Register App ID `com.datesnap.app` on `developer.apple.com` with In-App Purchase enabled. *(Owner: Apple Portal)*
+* **Task 0.3 (App ID Registration):** Register App ID `com.pencild.app` on `developer.apple.com` with In-App Purchase enabled. *(Owner: Apple Portal)*
 * **Task 0.4 (App Store Connect App Record):** Create app record in App Store Connect with Primary Language and SKU. *(Owner: App Store Connect)*
 * **Task 0.5 (Archive & Upload Build 1):** Execute archive, export, and upload via `altool` for internal team testing. *(Owner: Release Engineer)*
 
 ### P1 — Required Before External TestFlight / Beta App Review
 * **Task 1.1 (Connect UI to ViewModels):** Wire `HomeEmptyStateView` to `PhotosPicker` and `EventReviewEditView` to `EventReviewViewModel` to satisfy `TESTFLIGHT-QA.md`. *(Owner: Code)*
-* **Task 1.2 (App Store Connect Subscriptions):** Configure Subscription Group `DateSnap Memberships` and the 4 products in App Store Connect. *(Owner: App Store Connect)*
+* **Task 1.2 (App Store Connect Subscriptions):** Configure Subscription Group `Pencild Memberships` and the 4 products in App Store Connect. *(Owner: App Store Connect)*
 * **Task 1.3 (Beta Review Notes):** Populate Beta App Review information using `APP-REVIEW-NOTES.md`. *(Owner: App Store Connect)*
 * **Task 1.4 (Sandbox QA Execution):** Execute physical device QA checklist on iOS 18 hardware. *(Owner: QA)*
 
@@ -9495,14 +9495,14 @@ xcrun altool --upload-app \
 
 By the conclusion of Wave 2, the following artifacts must exist:
 
-- [ ] `DateSnap.xcodeproj` with application target and active `DateSnap` scheme.
+- [ ] `Pencild.xcodeproj` with application target and active `Pencild` scheme.
 - [ ] `Assets.xcassets/AppIcon.appiconset` with 1024×1024 PNG master icon.
-- [ ] Registered App ID `com.datesnap.app` on `developer.apple.com`.
+- [ ] Registered App ID `com.pencild.app` on `developer.apple.com`.
 - [ ] Configured Subscription Group and 4 IAP products in App Store Connect.
-- [ ] Bound and verified `Info.plist`, `DateSnap.entitlements`, and `PrivacyInfo.xcprivacy`.
-- [ ] Signed and exported `DateSnap.ipa` uploaded to App Store Connect.
+- [ ] Bound and verified `Info.plist`, `Pencild.entitlements`, and `PrivacyInfo.xcprivacy`.
+- [ ] Signed and exported `Pencild.ipa` uploaded to App Store Connect.
 - [ ] Approved TestFlight Beta build with verified QA test matrix.
-- [ ] Live Privacy Policy URL (`https://datesnap.app/privacy`) and Support URL (`https://datesnap.app/support`).
+- [ ] Live Privacy Policy URL (`https://pencild.app/privacy`) and Support URL (`https://pencild.app/support`).
 - [ ] Complete App Store version record (screenshots, descriptions, reviewer notes).
 
 ---
@@ -9510,7 +9510,7 @@ By the conclusion of Wave 2, the following artifacts must exist:
 ## 13. Operational Go/No-Go Checklists
 
 ### A. Internal TestFlight Go/No-Go
-* [ ] Does `xcodebuild archive` produce a valid `.xcarchive` containing `Products/Applications/DateSnap.app`?
+* [ ] Does `xcodebuild archive` produce a valid `.xcarchive` containing `Products/Applications/Pencild.app`?
 * [ ] Does `xcrun altool --validate-app` pass with zero fatal validation errors?
 * [ ] Does the uploaded binary process to "Ready to Test" in App Store Connect?
 * **Decision:** **GO** to add internal testers.
@@ -9539,25 +9539,25 @@ By the conclusion of Wave 2, the following artifacts must exist:
 ## Answers to Specific Questions
 
 ### 1. Is the repository currently in a shape that can actually be archived for iOS release?
-**No.** The repository is configured solely as a SwiftPM executable target (`Package.swift`). Running `xcodebuild -scheme DateSnap -destination 'generic/platform=iOS' archive` compiles a UNIX CLI binary to `/usr/local/bin/DateSnap` and does not generate an `.app` bundle or an `.ipa`. A standard `DateSnap.xcodeproj` iOS Application target must be created before archiving is possible.
+**No.** The repository is configured solely as a SwiftPM executable target (`Package.swift`). Running `xcodebuild -scheme Pencild -destination 'generic/platform=iOS' archive` compiles a UNIX CLI binary to `/usr/local/bin/Pencild` and does not generate an `.app` bundle or an `.ipa`. A standard `Pencild.xcodeproj` iOS Application target must be created before archiving is possible.
 
 ### 2. Are all required permission strings, entitlements, and privacy-manifest artifacts present?
 **Yes, the configuration files are present on disk, but pending target attachment.**
-`Info.plist` contains all 5 required permission strings (`NSPhotoLibraryUsageDescription`, `NSCalendarsFullAccessUsageDescription`, `NSCalendarsUsageDescription`, `NSRemindersFullAccessUsageDescription`, `NSRemindersUsageDescription`), `DateSnap.entitlements` is prepared, and `PrivacyInfo.xcprivacy` declares zero tracking and Required Reason `CA92.1` for `UserDefaults`. Once `DateSnap.xcodeproj` is generated, these files must be bound in build settings.
+`Info.plist` contains all 5 required permission strings (`NSPhotoLibraryUsageDescription`, `NSCalendarsFullAccessUsageDescription`, `NSCalendarsUsageDescription`, `NSRemindersFullAccessUsageDescription`, `NSRemindersUsageDescription`), `Pencild.entitlements` is prepared, and `PrivacyInfo.xcprivacy` declares zero tracking and Required Reason `CA92.1` for `UserDefaults`. Once `Pencild.xcodeproj` is generated, these files must be bound in build settings.
 
 ### 3. Are the subscription products and paywall assumptions consistent with the real code?
 **The identifiers are consistent, but UI execution is simulated.**
-The four product IDs in the docs (`com.datesnap.plus.monthly`, `com.datesnap.plus.annual`, `com.datesnap.premium.monthly`, `com.datesnap.premium.annual`) match `SubscriptionService.swift:54-59` and `DateSnap.storekit` exactly. However, the paywall views still run `Task.sleep` simulations. They must call `subscriptionService.purchase(product:)` to function in TestFlight and sandbox environments.
+The four product IDs in the docs (`com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, `com.pencild.premium.annual`) match `SubscriptionService.swift:54-59` and `Pencild.storekit` exactly. However, the paywall views still run `Task.sleep` simulations. They must call `subscriptionService.purchase(product:)` to function in TestFlight and sandbox environments.
 
 ### 4. Are the release claims around offline/on-device/privacy supportable by the actual implementation?
 **Yes, 100% supportable.**
 Code auditing proves zero network calls (`URLSession`, sockets, analytics) exist in `Sources/`. All OCR and inference runs locally on the CPU/Neural Engine. The App Store Nutrition Label claim of "Data Not Collected" and the offline guarantee in `TESTFLIGHT-QA.md` are technically truthful and verified.
 
-### 5. What exact work remains before DateSnap can be safely distributed to internal testers?
-1. Create `DateSnap.xcodeproj` pointing to `Sources/DateSnap/` and bind `Config/*.xcconfig`.
+### 5. What exact work remains before Pencild can be safely distributed to internal testers?
+1. Create `Pencild.xcodeproj` pointing to `Sources/Pencild/` and bind `Config/*.xcconfig`.
 2. Add a 1024×1024 AppIcon into `Assets.xcassets`.
-3. Register App ID `com.datesnap.app` on `developer.apple.com`.
-4. Create the DateSnap app record in App Store Connect.
+3. Register App ID `com.pencild.app` on `developer.apple.com`.
+4. Create the Pencild app record in App Store Connect.
 5. Archive and upload Build 1 via `xcrun altool`.
 
 ### 6. What exact additional work remains before external TestFlight and Beta App Review?
@@ -9573,7 +9573,7 @@ Code auditing proves zero network calls (`URLSession`, sockets, analytics) exist
 5. Paste the final review notes into the App Review Information section.
 
 ### 8. What non-code dependencies remain?
-1. **Live URLs:** `https://datesnap.app/privacy` and `https://datesnap.app/support` must be deployed and publicly resolvable.
+1. **Live URLs:** `https://pencild.app/privacy` and `https://pencild.app/support` must be deployed and publicly resolvable.
 2. **Graphic Assets:** 1024×1024 master app icon and App Store marketing screenshots.
 3. **Apple Account Setup:** Administrative access to Apple Developer and App Store Connect portals for App ID and IAP configuration.
 
@@ -9582,11 +9582,11 @@ Code auditing proves zero network calls (`URLSession`, sockets, analytics) exist
 ================================================
 FILE: docs/plans/2026-10-01-production-readiness-implementation-plan.md
 ================================================
-# DateSnap Production Readiness Implementation Plan
+# Pencild Production Readiness Implementation Plan
 
 ## 1. Objective
 
-Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release candidate for TestFlight and App Store submission, with every approval artifact tied to one immutable commit and build number. The current audit outcome is **no-go** until all blockers below are resolved and every blocking verification in this plan passes.
+Prepare a reproducible, signed, tested, privacy-compliant Pencild 1.0.0 release candidate for TestFlight and App Store submission, with every approval artifact tied to one immutable commit and build number. The current audit outcome is **no-go** until all blockers below are resolved and every blocking verification in this plan passes.
 
 ## 2. Inputs Reviewed
 
@@ -9594,25 +9594,25 @@ Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release
 
 - `project.yml`
 - `Package.swift`
-- `Config/DateSnap-Base.xcconfig`
-- `Config/DateSnap-Debug.xcconfig`
-- `Config/DateSnap-Release.xcconfig`
+- `Config/Pencild-Base.xcconfig`
+- `Config/Pencild-Debug.xcconfig`
+- `Config/Pencild-Release.xcconfig`
 - `Info.plist`
-- `DateSnap.entitlements`
+- `Pencild.entitlements`
 - `ExportOptions-AppStore.plist`
-- `DateSnap.storekit`
-- Generated project presence and tracked files under `DateSnap.xcodeproj/` via git
+- `Pencild.storekit`
+- Generated project presence and tracked files under `Pencild.xcodeproj/` via git
 - Current branch, working-tree status, and `project.yml` diff via git
 
 ### Privacy/compliance
 
 - `PrivacyInfo.xcprivacy`
-- `Sources/DateSnap/Services/PhotoLibraryService.swift`
-- `Sources/DateSnap/Services/CalendarService.swift`
-- `Sources/DateSnap/Services/ReminderService.swift`
-- `Sources/DateSnap/Services/NotificationService.swift`
-- `Sources/DateSnap/Services/SubscriptionService.swift`
-- `Sources/DateSnap/ViewModels/HomeViewModel.swift`
+- `Sources/Pencild/Services/PhotoLibraryService.swift`
+- `Sources/Pencild/Services/CalendarService.swift`
+- `Sources/Pencild/Services/ReminderService.swift`
+- `Sources/Pencild/Services/NotificationService.swift`
+- `Sources/Pencild/Services/SubscriptionService.swift`
+- `Sources/Pencild/ViewModels/HomeViewModel.swift`
 - Repository searches for network APIs/URLs, required-reason APIs, permission requests, and StoreKit product identifiers
 
 ### Release process
@@ -9624,15 +9624,15 @@ Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release
 
 ### Tests
 
-- Test inventory under `Tests/DateSnapTests/`
-- `Tests/DateSnapTests/DateSnapTests.swift`
-- `Tests/DateSnapTests/AppleIntelligenceLiveTests.swift`
+- Test inventory under `Tests/PencildTests/`
+- `Tests/PencildTests/PencildTests.swift`
+- `Tests/PencildTests/AppleIntelligenceLiveTests.swift`
 
-The discovered test inventory also includes `AdvisorTests.swift`, `ExtractionEvaluationTests.swift`, `DateSnapInferenceTests.swift`, `InterpretationRecordTests.swift`, `EventUnderstandingTests.swift`, `EvidenceValidationTests.swift`, and `EventUnderstandingPipelineTests.swift`. These files were inventoried but not individually content-reviewed for this planning pass.
+The discovered test inventory also includes `AdvisorTests.swift`, `ExtractionEvaluationTests.swift`, `PencildInferenceTests.swift`, `InterpretationRecordTests.swift`, `EventUnderstandingTests.swift`, `EvidenceValidationTests.swift`, and `EventUnderstandingPipelineTests.swift`. These files were inventoried but not individually content-reviewed for this planning pass.
 
 ## 3. Executive Summary
 
-DateSnap is structurally close to a releasable candidate, but it cannot ship from the current repository state. The working tree is dirty on `main`; the Release xcconfig and App Store export plist still contain `YOUR_TEAM_ID`; and no passing test, archive, export, or TestFlight QA evidence is tied to a frozen commit. The shortest path is to decide the intended source changes, establish real Release signing/version values, regenerate and validate the Xcode project, reconcile privacy/capabilities and submission claims against the built archive, then freeze, tag, archive, export, upload, and run the existing physical-device QA checklist.
+Pencild is structurally close to a releasable candidate, but it cannot ship from the current repository state. The working tree is dirty on `main`; the Release xcconfig and App Store export plist still contain `YOUR_TEAM_ID`; and no passing test, archive, export, or TestFlight QA evidence is tied to a frozen commit. The shortest path is to decide the intended source changes, establish real Release signing/version values, regenerate and validate the Xcode project, reconcile privacy/capabilities and submission claims against the built archive, then freeze, tag, archive, export, upload, and run the existing physical-device QA checklist.
 
 The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_PROJECT_VERSION = 1`; the remaining requirement is to confirm those are the effective Release values and are acceptable/unused in App Store Connect. The app declares no tracking or collected data, uses only the UserDefaults required-reason category, and has an empty app entitlements file. Those declarations are plausible from the reviewed source, but remain **verification required** against the final archive and App Store Connect. Local notifications do not require the remote push notification entitlement.
 
@@ -9641,8 +9641,8 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 ### Blocker 1 — Release candidate is not frozen or reproducible
 
 - **Why it blocks release:** The shipped source cannot map to a reviewed immutable commit while intended and accidental changes are mixed together.
-- **Evidence:** Current `main` status shows modified `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png` and `project.yml`, plus untracked `.freebuff/`, `HANDOFF.md`, and `docs/audits/`. The `project.yml` diff changes assets and the privacy manifest to explicit resource build phases, affecting the shipped bundle.
-- **Exact files involved:** The paths above, generated `DateSnap.xcodeproj/`, this plan, and any approved ignore rules. `lancedb/` must remain untouched.
+- **Evidence:** Current `main` status shows modified `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png` and `project.yml`, plus untracked `.freebuff/`, `HANDOFF.md`, and `docs/audits/`. The `project.yml` diff changes assets and the privacy manifest to explicit resource build phases, affecting the shipped bundle.
+- **Exact files involved:** The paths above, generated `Pencild.xcodeproj/`, this plan, and any approved ignore rules. `lancedb/` must remain untouched.
 - **Required remediation:** Classify every dirty item as ship, documentation/tooling, ignore, or remove; do not delete untracked content without owner approval; determine the repository's XcodeGen command/version (**verification required**); regenerate and review the project; commit and review the candidate; tag only after all pre-tag gates pass.
 - **Verification method:** `git status --short --branch`, `git diff --check`, staged-diff review, `git rev-parse HEAD`, and annotated-tag verification.
 - **Exit criteria:** Reviewed commit, empty `git status --porcelain`, synchronized generated project, and annotated `v1.0.0-b<build>` tag resolving to the candidate SHA.
@@ -9651,7 +9651,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 - **Why it blocks release:** A trustworthy generic-device archive and App Store export cannot use `YOUR_TEAM_ID`.
 - **Evidence:** The placeholder exists in both xcconfigs, `ExportOptions-AppStore.plist`, and the archive command in `docs/runbooks/RELEASE.md`.
-- **Exact files involved:** `Config/DateSnap-Release.xcconfig`, `Config/DateSnap-Debug.xcconfig`, `ExportOptions-AppStore.plist`, `docs/runbooks/RELEASE.md`, and the Apple account record for `com.datesnap.app`.
+- **Exact files involved:** `Config/Pencild-Release.xcconfig`, `Config/Pencild-Debug.xcconfig`, `ExportOptions-AppStore.plist`, `docs/runbooks/RELEASE.md`, and the Apple account record for `com.pencild.app`.
 - **Required remediation:** Confirm the authorized Team ID and registered App ID (**verification required**); select one documented source of truth; replace/remove all placeholder release paths; never commit credentials or private keys; ensure automatic signing resolves an Apple Distribution identity and App Store profile.
 - **Verification method:** Inspect Release `xcodebuild -showBuildSettings`, archive codesign entitlements, and decoded embedded provisioning profile.
 - **Exit criteria:** No release placeholder remains; team, bundle ID, archive signature, profile, and export Team ID agree.
@@ -9659,8 +9659,8 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 ### Blocker 3 — No release-candidate build, test, archive, or export evidence
 
 - **Why it blocks release:** Test inventory and runbooks are not proof that the exact candidate is distributable.
-- **Evidence:** No passing result was supplied; the smoke test only expects `true`; the live Foundation Models test is disabled unless `DATESNAP_EVAL_LIVE=1`; no archive/export/TestFlight signoff is tied to a SHA.
-- **Exact files involved:** `DateSnap.xcodeproj`, `project.yml`, `Tests/DateSnapTests/`, all three release runbooks, and generated release evidence.
+- **Evidence:** No passing result was supplied; the smoke test only expects `true`; the live Foundation Models test is disabled unless `PENCILD_EVAL_LIVE=1`; no archive/export/TestFlight signoff is tied to a SHA.
+- **Exact files involved:** `Pencild.xcodeproj`, `project.yml`, `Tests/PencildTests/`, all three release runbooks, and generated release evidence.
 - **Required remediation:** Run all automated tests; execute or disposition the opt-in live route; archive and export Release; upload that build; complete critical/high physical-device QA; retain logs, xcresult, metadata, and signoff. Evidence storage location is **verification required** because none is defined.
 - **Verification method:** Successful test/archive/export exits, retained artifacts, App Store processing success, and QA checklist mapped to SHA/version/build.
 - **Exit criteria:** Tests pass, archive/export succeeds, exact build processes in TestFlight, critical/high QA passes, and release approval is recorded.
@@ -9671,7 +9671,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 - **Goal:** Create one reviewed, reproducible release input.
 - **Tasks:** Triage dirty files; protect `lancedb/` and credentials; define XcodeGen ownership; synchronize generated output; commit, review, and tag; record SHA, version, build, Xcode, and Swift versions.
-- **Files:** `project.yml`, `DateSnap.xcodeproj/`, app icon, `.gitignore` if approved, audit, plan, and runbooks.
+- **Files:** `project.yml`, `Pencild.xcodeproj/`, app icon, `.gitignore` if approved, audit, plan, and runbooks.
 - **Dependencies:** Configuration/compliance work and automated tests must finish before final tagging.
 - **Output artifacts:** Clean status, reviewed commit, annotated tag, release manifest.
 
@@ -9703,7 +9703,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 - **Goal:** Prove the empty app entitlements file is intentional.
 - **Tasks:** Inventory protected capabilities; confirm notifications are local-only; compare Xcode capabilities, source entitlements, profile, and signed entitlements; add nothing without a proven feature requirement.
-- **Files:** `DateSnap.entitlements`, `project.yml`, generated project, notification/calendar/reminder/photo services.
+- **Files:** `Pencild.entitlements`, `project.yml`, generated project, notification/calendar/reminder/photo services.
 - **Dependencies:** Final feature scope and signed archive.
 - **Output artifacts:** Capability matrix and entitlement dumps.
 
@@ -9738,7 +9738,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
    - **Files to inspect:** Both xcconfigs, export plist, release runbook.
    - **Files to edit:** Release xcconfig, optionally Debug xcconfig, export plist, release runbook.
    - **Commands or checks to run:** Search `YOUR_TEAM_ID`; verify Certificates, Identifiers & Profiles and App Store Connect.
-   - **Expected output:** Approved Team ID and confirmed `com.datesnap.app` registration.
+   - **Expected output:** Approved Team ID and confirmed `com.pencild.app` registration.
    - **Owner role suggestion:** Apple account holder + release engineer.
 
 3. **Priority: blocker — Establish version/build.**
@@ -9766,7 +9766,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 6. **Priority: blocker — Validate effective Release settings.**
    - **Rationale:** Project/target values may override source config.
    - **Files to inspect/edit:** xcconfigs, project.yml, generated project, Info.plist; edit only incorrect sources.
-   - **Commands or checks to run:** `xcodebuild -showBuildSettings -project DateSnap.xcodeproj -scheme DateSnap -configuration Release`.
+   - **Commands or checks to run:** `xcodebuild -showBuildSettings -project Pencild.xcodeproj -scheme Pencild -configuration Release`.
    - **Expected output:** Correct bundle ID, versions, target, plist, entitlements, signing, optimization, testability, validation.
    - **Owner role suggestion:** Release/build engineer.
 
@@ -9800,8 +9800,8 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 11. **Priority: blocker — Run automated candidate tests.**
     - **Rationale:** No passing result currently supports release.
-    - **Files to inspect/edit:** All `Tests/DateSnapTests/`; fix real failures without weakening assertions.
-    - **Commands or checks to run:** `xcodebuild test ... -destination 'platform=iOS Simulator,name=<available iOS 18 device>' -resultBundlePath <evidence>/DateSnapTests.xcresult`; run `DATESNAP_EVAL_LIVE=1` where compatible.
+    - **Files to inspect/edit:** All `Tests/PencildTests/`; fix real failures without weakening assertions.
+    - **Commands or checks to run:** `xcodebuild test ... -destination 'platform=iOS Simulator,name=<available iOS 18 device>' -resultBundlePath <evidence>/PencildTests.xcresult`; run `PENCILD_EVAL_LIVE=1` where compatible.
     - **Expected output:** Zero unexplained failures, documented skips, retained xcresult.
     - **Owner role suggestion:** iOS engineer + QA automation.
 
@@ -9889,27 +9889,27 @@ Gate rules: no tag with dirty state or placeholders; no upload without passing t
 | File path | Why it matters | Likely action | Risk if incorrect |
 |---|---|---|---|
 | `project.yml` | Target/resource/config authority | Accept resource change; regenerate/review | Manifest/assets missing or project drift |
-| `DateSnap.xcodeproj/` | Actual documented build input | Regenerate per convention | Built settings differ from reviewed source |
+| `Pencild.xcodeproj/` | Actual documented build input | Regenerate per convention | Built settings differ from reviewed source |
 | `Package.swift` | Platform and package graph | Retain/change iOS 18 only by decision | Project/package mismatch |
-| `Config/DateSnap-Base.xcconfig` | ID, version/build, target | Confirm or increment | Rejected/wrong version |
-| `Config/DateSnap-Debug.xcconfig` | Developer signing | Replace placeholder if policy requires | Local builds fail |
-| `Config/DateSnap-Release.xcconfig` | Distribution behavior/signing | Replace placeholder; validate | Archive/sign failure |
+| `Config/Pencild-Base.xcconfig` | ID, version/build, target | Confirm or increment | Rejected/wrong version |
+| `Config/Pencild-Debug.xcconfig` | Developer signing | Replace placeholder if policy requires | Local builds fail |
+| `Config/Pencild-Release.xcconfig` | Distribution behavior/signing | Replace placeholder; validate | Archive/sign failure |
 | `Info.plist` | Metadata, prompts, encryption | Edit only for verified mismatch | Runtime crash/review rejection |
 | `PrivacyInfo.xcprivacy` | Privacy declarations | Update only from inventory | Validation failure/misrepresentation |
-| `DateSnap.entitlements` | Signed capabilities | Keep empty if verified | Missing or excessive privilege |
+| `Pencild.entitlements` | Signed capabilities | Keep empty if verified | Missing or excessive privilege |
 | `ExportOptions-AppStore.plist` | App Store export/team | Replace placeholder; validate options | Export/wrong-team failure |
-| `DateSnap.storekit` | Local subscription model | Reconcile production parity | Local-only success, production failure |
-| `Sources/DateSnap/Services/PhotoLibraryService.swift` | Photos/offline behavior | Verify scope and states | Privacy or scan defect |
-| `Sources/DateSnap/Services/CalendarService.swift` | Calendar full access | Verify prompt and CRUD | Permission/write failure |
-| `Sources/DateSnap/Services/ReminderService.swift` | Reminder full access | Verify prompt/create | Permission/review mismatch |
-| `Sources/DateSnap/Services/NotificationService.swift` | Local alerts/deep link | Verify local-only and denial | Broken alerts/capability confusion |
-| `Sources/DateSnap/Services/SubscriptionService.swift` | Product IDs/entitlements | Verify lifecycle/parity | Revenue/access defect |
-| `Sources/DateSnap/ViewModels/HomeViewModel.swift` | Permission orchestration | Verify transitions/errors | First-run/denial failure |
-| `Tests/DateSnapTests/` | Automated evidence | Run all; strengthen proven gaps | Regression or false confidence |
+| `Pencild.storekit` | Local subscription model | Reconcile production parity | Local-only success, production failure |
+| `Sources/Pencild/Services/PhotoLibraryService.swift` | Photos/offline behavior | Verify scope and states | Privacy or scan defect |
+| `Sources/Pencild/Services/CalendarService.swift` | Calendar full access | Verify prompt and CRUD | Permission/write failure |
+| `Sources/Pencild/Services/ReminderService.swift` | Reminder full access | Verify prompt/create | Permission/review mismatch |
+| `Sources/Pencild/Services/NotificationService.swift` | Local alerts/deep link | Verify local-only and denial | Broken alerts/capability confusion |
+| `Sources/Pencild/Services/SubscriptionService.swift` | Product IDs/entitlements | Verify lifecycle/parity | Revenue/access defect |
+| `Sources/Pencild/ViewModels/HomeViewModel.swift` | Permission orchestration | Verify transitions/errors | First-run/denial failure |
+| `Tests/PencildTests/` | Automated evidence | Run all; strengthen proven gaps | Regression or false confidence |
 | `docs/runbooks/RELEASE.md` | Operator procedure | Remove placeholders; prove commands | Failed/non-reproducible release |
 | `docs/runbooks/TESTFLIGHT-QA.md` | QA gate | Correct denial/network wording; record build | False pass/fail |
 | `docs/runbooks/APP-REVIEW-NOTES.md` | Review claims | Verify claims, links, IAPs, contact | Delay/rejection |
-| `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png` | Store asset/dirty item | Review and intentionally commit/revert | Validation/branding defect |
+| `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png` | Store asset/dirty item | Review and intentionally commit/revert | Validation/branding defect |
 | `.gitignore` | Tree hygiene | Add only approved exclusions | Hidden required input |
 | `lancedb/` | Protected runtime data | Do not delete or stage | Data loss/repository bloat |
 
@@ -9938,7 +9938,7 @@ FILE: docs/prompts/extraction-hardening.md
 ================================================
 # Prompt: OCR + Event Extraction Hardening
 
-You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI, Vision/NaturalLanguage/EventKit, and on-device ML pipelines. Your task is to **evolve the existing protocol-driven service layer of "DateSnap"** — a privacy-first iOS app that scans screenshots/photos locally and creates Apple Calendar events, Reminders, and local notifications — by hardening `OCRService` and rebuilding `EventExtractionService` into a production-grade date-inference engine.
+You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI, Vision/NaturalLanguage/EventKit, and on-device ML pipelines. Your task is to **evolve the existing protocol-driven service layer of "Pencild"** — a privacy-first iOS app that scans screenshots/photos locally and creates Apple Calendar events, Reminders, and local notifications — by hardening `OCRService` and rebuilding `EventExtractionService` into a production-grade date-inference engine.
 
 **This code already exists. Do not rewrite from scratch — extend, refactor, and complete it.**
 
@@ -9948,19 +9948,19 @@ You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI
 |---|---|
 | `Package.swift` | swift-tools **6.4**, platform **`.iOS(.v18)`**, upcoming feature `ApproachableConcurrency`. Your concurrency style must match this, not Swift 5.9. |
 | `AGENTS.md` | Build commands, design-doc mandate, layout rules. |
-| `datesnap-design-system-updated.md` | Mandatory for any UI you touch. Confidence tiers must use `--color-success #46E39A` / `--color-warning #FFBE55` / `--color-error #FF6B7A`, and the Accessibility section requires **icon + label + color**, never color alone. |
-| `Sources/DateSnap/Services/OCRService.swift` | `OCRServiceProtocol` (:6-8) + `OCRService` (:11-65). Runs `VNRecognizeTextRequest` in `Task.detached`. **Discards `boundingBox` metadata** — this blocks visual-hierarchy title inference. |
-| `Sources/DateSnap/Services/EventExtractionService.swift` | `EventExtractionServiceProtocol` (:62-64), DTO→model bridging (:5-59, :112-113), single-date parse engine (:124-318), naive confidence sum (:85-93), title/location/URL extractors (:321-397). Returns **at most 1 candidate** (:109). |
-| `Sources/DateSnap/Services/ServiceContainer.swift` | Production DI hub and environment integration. The app target intentionally contains no mock service implementations; add protocol-specific test doubles only under `Tests/DateSnapTests` when tests require them. |
-| `Sources/DateSnap/Services/DateSnapError.swift` | Domain errors already defined. `ExtractionError.ambiguousDateResolutionFailed` (:120) and `OCRError.insufficientConfidence` (:90) exist but are **never thrown** — wire them up. |
-| `Sources/DateSnap/Persistence/SwiftDataEntities.swift` | `ScannedAsset.candidates` cascade relationship (:57-58), `EventCandidate` (:81-128) — note **no dedupe key, no per-field confidences, no ambiguity flag, no timezone field yet**. `SavedEvent` (:131-165). |
-| `Sources/DateSnap/ViewModels/ScanViewModel.swift` | The 3-stage pipeline `fetchingImage → processingOCR → extractingEvents → complete/noDatesFound/failed` (:13-36) and persistence step (:96-112). |
-| `Sources/DateSnap/ViewModels/EventReviewViewModel.swift` | Review/commit flow; already surfaces `yearAssumed` (:54) and caps reminders at 3 offsets (:102-110). |
-| `Sources/DateSnap/Models/SettingsState.swift` | `confidence` threshold (default 85, :70) and `draftLowConfidence` (:71) — extraction output must be consumable by these gates. |
-| `Sources/DateSnap/Views/HelpFeedbackView.swift` | Product promises to the user: relative dates ("Tomorrow 10am"), ambiguous dates are **prompted, not guessed** (:32), confidence threshold gating (:45). |
-| `Sources/DateSnap/Views/EventReviewEditView.swift`, `NoDatesFoundView.swift` | Where ambiguity review and empty states render. |
+| `pencild-design-system-updated.md` | Mandatory for any UI you touch. Confidence tiers must use `--color-success #46E39A` / `--color-warning #FFBE55` / `--color-error #FF6B7A`, and the Accessibility section requires **icon + label + color**, never color alone. |
+| `Sources/Pencild/Services/OCRService.swift` | `OCRServiceProtocol` (:6-8) + `OCRService` (:11-65). Runs `VNRecognizeTextRequest` in `Task.detached`. **Discards `boundingBox` metadata** — this blocks visual-hierarchy title inference. |
+| `Sources/Pencild/Services/EventExtractionService.swift` | `EventExtractionServiceProtocol` (:62-64), DTO→model bridging (:5-59, :112-113), single-date parse engine (:124-318), naive confidence sum (:85-93), title/location/URL extractors (:321-397). Returns **at most 1 candidate** (:109). |
+| `Sources/Pencild/Services/ServiceContainer.swift` | Production DI hub and environment integration. The app target intentionally contains no mock service implementations; add protocol-specific test doubles only under `Tests/PencildTests` when tests require them. |
+| `Sources/Pencild/Services/PencildError.swift` | Domain errors already defined. `ExtractionError.ambiguousDateResolutionFailed` (:120) and `OCRError.insufficientConfidence` (:90) exist but are **never thrown** — wire them up. |
+| `Sources/Pencild/Persistence/SwiftDataEntities.swift` | `ScannedAsset.candidates` cascade relationship (:57-58), `EventCandidate` (:81-128) — note **no dedupe key, no per-field confidences, no ambiguity flag, no timezone field yet**. `SavedEvent` (:131-165). |
+| `Sources/Pencild/ViewModels/ScanViewModel.swift` | The 3-stage pipeline `fetchingImage → processingOCR → extractingEvents → complete/noDatesFound/failed` (:13-36) and persistence step (:96-112). |
+| `Sources/Pencild/ViewModels/EventReviewViewModel.swift` | Review/commit flow; already surfaces `yearAssumed` (:54) and caps reminders at 3 offsets (:102-110). |
+| `Sources/Pencild/Models/SettingsState.swift` | `confidence` threshold (default 85, :70) and `draftLowConfidence` (:71) — extraction output must be consumable by these gates. |
+| `Sources/Pencild/Views/HelpFeedbackView.swift` | Product promises to the user: relative dates ("Tomorrow 10am"), ambiguous dates are **prompted, not guessed** (:32), confidence threshold gating (:45). |
+| `Sources/Pencild/Views/EventReviewEditView.swift`, `NoDatesFoundView.swift` | Where ambiguity review and empty states render. |
 
-Verify with: `xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16' build`
+Verify with: `xcodebuild -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 16' build`
 
 ## 1. HARD CONSTRAINTS
 
@@ -9969,9 +9969,9 @@ Verify with: `xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,n
 - **Protocol stability:** keep the signatures at `OCRServiceProtocol` (`OCRService.swift:7`) and `EventExtractionServiceProtocol` (`EventExtractionService.swift:63`) source-compatible for existing production callers. Add new capabilities via **protocol extensions with default implementations** or additive protocol requirements, then update any test-target doubles that exist.
 - **SwiftData safety:** `@Model` instances (`EventCandidate`, `ScannedAsset`) must only be constructed/inserted on the MainActor caller's context. Keep the existing DTO pattern (`ExtractedCandidateData`, `EventExtractionService.swift:5-59`) — run heavy parsing in `Task.detached`, map to models after.
 - **Schema changes are additive-only** (new fields with defaults) so existing stores migrate.
-- **Errors:** throw `DateSnapError` / `OCRError` / `ExtractionError` — never raw strings.
+- **Errors:** throw `PencildError` / `OCRError` / `ExtractionError` — never raw strings.
 - **Comment style:** `// MARK: -` section headers and doc comments only; no line-by-line narration.
-- **UI:** any new view/banner must follow `datesnap-design-system-updated.md` (glass surfaces, semantic tokens, 44pt targets).
+- **UI:** any new view/banner must follow `pencild-design-system-updated.md` (glass surfaces, semantic tokens, 44pt targets).
 
 ## 2. WORKSTREAM A — OCRService: structured OCR with layout metadata
 
@@ -10075,9 +10075,9 @@ Rejected blocks must not appear in `extractedCandidates`; if **everything** is r
 
 ## 5. ACCEPTANCE CRITERIA
 
-- `xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16' build` passes with zero warnings introduced by your changes.
+- `xcodebuild -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 16' build` passes with zero warnings introduced by your changes.
 - Production sources contain no mock service implementations or `ServiceContainer.mock()` factory. Any test-target doubles and previews explicitly inject all required dependencies and compile.
-- New parsing logic is pure and deterministic (anchor date injected) and covered by a new `DateSnapTests` test target in `Package.swift` with fixtures for: relative dates, ambiguous numerics in `en_US`/`en_GB`/`de_DE`, assumed-year rollover incl. Feb 29, date ranges, doors/show windows, receipt false-positives, and dedupe key stability.
+- New parsing logic is pure and deterministic (anchor date injected) and covered by a new `PencildTests` test target in `Package.swift` with fixtures for: relative dates, ambiguous numerics in `en_US`/`en_GB`/`de_DE`, assumed-year rollover incl. Feb 29, date ranges, doors/show windows, receipt false-positives, and dedupe key stability.
 - Grep-verified: no `URLSession`, `http`, or third-party imports added under `Sources/`.
 - Every new user-visible state has icon + label + color (design doc, Accessibility section).
 
@@ -10097,10 +10097,10 @@ Provide this exact information in App Store Connect under **App Review Informati
 ```text
 Dear Apple App Review Team,
 
-DateSnap is a privacy-first utility that processes screenshots and event flyers on-device using Apple's Vision and NaturalLanguage frameworks to create Apple Calendar events and Reminders.
+Pencild is a privacy-first utility that processes screenshots and event flyers on-device using Apple's Vision and NaturalLanguage frameworks to create Apple Calendar events and Reminders.
 
 1. PERMISSIONS RATIONALE:
-- Photo Library (Read): Used exclusively to let users select event flyers or detect screenshots in their Screenshots album. Vision OCR and text extraction run locally. DateSnap does not upload images, OCR strings, or photo metadata.
+- Photo Library (Read): Used exclusively to let users select event flyers or detect screenshots in their Screenshots album. Vision OCR and text extraction run locally. Pencild does not upload images, OCR strings, or photo metadata.
 - Calendars & Reminders (Full Access): Used exclusively to write and sync the extracted events and staggered alert reminders into the user's native Apple Calendar and Reminders apps upon explicit user confirmation.
 
 2. ON-DEVICE PRIVACY VERIFICATION:
@@ -10111,9 +10111,9 @@ The core flyer analysis, date inference, Calendar, and Reminders workflow can be
 - To test with sample images, you can save any concert flyer, conference ticket, or wedding invitation into the Photos app on the review device and tap "Scan Recent Screenshots" or "Choose from Photo Library".
 
 4. IN-APP PURCHASES & SUBSCRIPTIONS:
-- DateSnap includes auto-renewable subscriptions in the "DateSnap Memberships" group:
-  * DateSnap Plus (Monthly & Annual): Unlocks automated screenshot scanning. Includes a 7-day free trial.
-  * DateSnap Premium (Monthly & Annual): Unlocks full automation, document import, and unlimited archive triage.
+- Pencild includes auto-renewable subscriptions in the "Pencild Memberships" group:
+  * Pencild Plus (Monthly & Annual): Unlocks automated screenshot scanning. Includes a 7-day free trial.
+  * Pencild Premium (Monthly & Annual): Unlocks full automation, document import, and unlimited archive triage.
 - Subscription terms, privacy policy, and terms of use are accessible directly in the paywall footer and in the Settings tab.
 
 5. REVIEWER CONTACT:
@@ -10126,25 +10126,25 @@ If you encounter any questions or require additional details during review, plea
 
 | Field | Value / Guidance |
 |---|---|
-| **App Name** | DateSnap: Screenshot to Calendar |
+| **App Name** | Pencild: Screenshot to Calendar |
 | **Subtitle** | On-Device Flyer & Event Sync |
 | **Primary Category** | Utilities |
 | **Secondary Category** | Productivity |
 | **Content Rights** | Contains no third-party content requiring explicit license. |
 | **Age Rating** | 4+ (No unrestricted web access, no user-generated content). |
 | **Data Nutrition Label** | "Data Not Collected" across all data categories. |
-| **Privacy Policy URL** | `https://datesnap.app/privacy` *(Must be live and valid)* |
-| **Support URL** | `https://datesnap.app/support` *(Must be live and valid)* |
-| **Marketing URL** | `https://datesnap.app` |
+| **Privacy Policy URL** | `https://pencild.app/privacy` *(Must be live and valid)* |
+| **Support URL** | `https://pencild.app/support` *(Must be live and valid)* |
+| **Marketing URL** | `https://pencild.app` |
 
 
 
 ================================================
 FILE: docs/runbooks/RELEASE.md
 ================================================
-# DateSnap Release Runbook
+# Pencild Release Runbook
 
-This runbook outlines the step-by-step procedures for building, archiving, validating, and submitting **DateSnap** to TestFlight and the Apple App Store.
+This runbook outlines the step-by-step procedures for building, archiving, validating, and submitting **Pencild** to TestFlight and the Apple App Store.
 
 ---
 
@@ -10187,18 +10187,18 @@ Before archiving:
 Set the authorized Apple Developer Team ID in the shell without committing it:
 
 ```bash
-export DATESNAP_DEVELOPMENT_TEAM="<10-character Team ID>"
-test -n "$DATESNAP_DEVELOPMENT_TEAM"
+export PENCILD_DEVELOPMENT_TEAM="<10-character Team ID>"
+test -n "$PENCILD_DEVELOPMENT_TEAM"
 ```
 
 ```bash
 xcodebuild clean archive \
-  -project DateSnap.xcodeproj \
-  -scheme DateSnap \
+  -project Pencild.xcodeproj \
+  -scheme Pencild \
   -configuration Release \
   -destination "generic/platform=iOS" \
-  -archivePath "./build/DateSnap.xcarchive" \
-  DEVELOPMENT_TEAM="$DATESNAP_DEVELOPMENT_TEAM" \
+  -archivePath "./build/Pencild.xcarchive" \
+  DEVELOPMENT_TEAM="$PENCILD_DEVELOPMENT_TEAM" \
   CODE_SIGN_STYLE="Automatic"
 ```
 
@@ -10206,13 +10206,13 @@ Before export, scan the archived Release application. This is a blocking check: 
 
 ```bash
 scripts/verify-release-content.sh \
-  "./build/DateSnap.xcarchive/Products/Applications/DateSnap.app"
+  "./build/Pencild.xcarchive/Products/Applications/Pencild.app"
 ```
 
 ### Step B: Validate & Export IPA
 ```bash
 xcodebuild -exportArchive \
-  -archivePath "./build/DateSnap.xcarchive" \
+  -archivePath "./build/Pencild.xcarchive" \
   -exportPath "./build/Exported" \
   -exportOptionsPlist "./ExportOptions-AppStore.plist"
 ```
@@ -10225,7 +10225,7 @@ For automation, Xcode 27 includes `altool`. Confirm it is available with `xcrun 
 
 ```bash
 xcrun altool --upload-app \
-  -f "./build/Exported/DateSnap.ipa" \
+  -f "./build/Exported/Pencild.ipa" \
   -t ios \
   --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
   --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
@@ -10235,7 +10235,7 @@ Do not commit the `.p8` private key or API credentials. For a manual fallback, u
 
 ```bash
 xcrun altool --upload-app \
-  -f "./build/Exported/DateSnap.ipa" \
+  -f "./build/Exported/Pencild.ipa" \
   -t ios \
   -u "$APPLE_ID" \
   -p "@keychain:ALTOOL_APP_SPECIFIC_PASSWORD"
@@ -10261,7 +10261,7 @@ xcrun altool --upload-app \
    - Promotional text, description, keywords, support URL, and marketing URL.
    - Privacy Nutrition Label: Select "Data Not Collected" across all categories.
 2. **In-App Purchases:**
-   - Attach the 4 subscription products (`com.datesnap.plus.monthly`, `com.datesnap.plus.annual`, `com.datesnap.premium.monthly`, `com.datesnap.premium.annual`) to the version submission.
+   - Attach the 4 subscription products (`com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, `com.pencild.premium.annual`) to the version submission.
 3. **Phased Release:**
    - Enable 7-day automatic phased release to minimize blast radius for unanticipated edge-case issues.
 
@@ -10272,7 +10272,7 @@ FILE: docs/runbooks/TESTFLIGHT-QA.md
 ================================================
 # TestFlight QA Verification Plan
 
-This checklist outlines the manual and automated validation procedures for TestFlight builds of DateSnap on physical iOS 18+ hardware.
+This checklist outlines the manual and automated validation procedures for TestFlight builds of Pencild on physical iOS 18+ hardware.
 
 ---
 
@@ -10282,12 +10282,12 @@ This checklist outlines the manual and automated validation procedures for TestF
 - [ ] **Clean Install:** Launch app on fresh device. Verify `AppState` initializes cleanly without corrupted state.
 - [ ] **Photo Library Authorization:**
   - Select "Scan Recent Screenshots" or "Choose from Photo Library".
-  - Verify native system modal displays custom description: *"DateSnap analyzes screenshots and event flyers directly on your iPhone..."*.
+  - Verify native system modal displays custom description: *"Pencild analyzes screenshots and event flyers directly on your iPhone..."*.
   - Test "Limited Access": Select 2 screenshots. Confirm app processes only selected assets without crashing.
   - Test "Deny Access": Confirm the app shows the **Allow Photo Access** guidance, offers **Open Settings**, and still allows **Choose a Photo Instead** through the system picker without freezing.
 - [ ] **Apple Calendar Authorization:**
   - Save an extracted candidate to Calendar.
-  - Verify system modal requests full access with custom description: *"DateSnap requires full calendar access to schedule extracted events..."*.
+  - Verify system modal requests full access with custom description: *"Pencild requires full calendar access to schedule extracted events..."*.
   - Verify event is inserted into the user's default calendar with correct title, start time, end time, and alarm offsets.
 - [ ] **Apple Reminders Authorization:**
   - Toggle reminder alert schedule.
@@ -10353,16 +10353,16 @@ import urllib.request
 PROJECT_ID = "454854512779783540"
 
 SCREENS = [
-    {"id": "6c145dff8ec540b9a51f806629e55c70", "slug": "01_premium_paywall", "title": "DateSnap - Premium Paywall"},
-    {"id": "df7a78364bd54941ad1d7bb6ca34d449", "slug": "02_plus_paywall", "title": "DateSnap - Plus Paywall"},
-    {"id": "e5fc50914c2f4a788389e8aa94806f45", "slug": "03_history_and_archive", "title": "DateSnap - History & Archive"},
-    {"id": "7d2a6476acc841b7be7374273debbf8b", "slug": "04_calendar_permission_denied", "title": "DateSnap - Calendar Permission Denied"},
-    {"id": "1a0a6dacd22344d797031c2746da9b37", "slug": "05_notification_permission_denied", "title": "DateSnap - Notification Permission Denied"},
-    {"id": "d973f4ad48f2487ea6be61abce9b19ae", "slug": "06_no_dates_found", "title": "DateSnap - No Dates Found"},
-    {"id": "b04278172768466ead0f77aec1e7fefe", "slug": "07_home_empty_state", "title": "DateSnap - Home Empty State"},
-    {"id": "79edd80432f24128889607dee9d678f4", "slug": "08_saved_event_detail", "title": "DateSnap - Saved Event Detail"},
-    {"id": "50e76e9e2a6743a98d1f320729a3738a", "slug": "09_event_review_and_edit", "title": "DateSnap - Event Review and Edit"},
-    {"id": "fc49f1067442461dbf28c683626a3b70", "slug": "10_reminder_schedule_editor", "title": "DateSnap - Reminder Schedule Editor"},
+    {"id": "6c145dff8ec540b9a51f806629e55c70", "slug": "01_premium_paywall", "title": "Pencild - Premium Paywall"},
+    {"id": "df7a78364bd54941ad1d7bb6ca34d449", "slug": "02_plus_paywall", "title": "Pencild - Plus Paywall"},
+    {"id": "e5fc50914c2f4a788389e8aa94806f45", "slug": "03_history_and_archive", "title": "Pencild - History & Archive"},
+    {"id": "7d2a6476acc841b7be7374273debbf8b", "slug": "04_calendar_permission_denied", "title": "Pencild - Calendar Permission Denied"},
+    {"id": "1a0a6dacd22344d797031c2746da9b37", "slug": "05_notification_permission_denied", "title": "Pencild - Notification Permission Denied"},
+    {"id": "d973f4ad48f2487ea6be61abce9b19ae", "slug": "06_no_dates_found", "title": "Pencild - No Dates Found"},
+    {"id": "b04278172768466ead0f77aec1e7fefe", "slug": "07_home_empty_state", "title": "Pencild - Home Empty State"},
+    {"id": "79edd80432f24128889607dee9d678f4", "slug": "08_saved_event_detail", "title": "Pencild - Saved Event Detail"},
+    {"id": "50e76e9e2a6743a98d1f320729a3738a", "slug": "09_event_review_and_edit", "title": "Pencild - Event Review and Edit"},
+    {"id": "fc49f1067442461dbf28c683626a3b70", "slug": "10_reminder_schedule_editor", "title": "Pencild - Reminder Schedule Editor"},
 ]
 
 def get_token():
@@ -10452,7 +10452,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-source_root="$repo_root/Sources/DateSnap"
+source_root="$repo_root/Sources/Pencild"
 
 source_forbidden='ServiceContainer[.]mock[(]|\bMock[A-Za-z0-9_]*Service\b|mock-(calendar-event|reminder|notification|deadline)-'
 release_forbidden='ServiceContainer[.]mock|Mock[A-Za-z0-9_]*Service|Mock Rooftop Sunset Party|mock-(calendar-event|reminder|notification|deadline)-|All 17 Stitch Screens|Stitch ID:|Screen State & Simulation Hub|6c145dff8ec540b9a51f806629e55c70'
@@ -10461,7 +10461,7 @@ failure=0
 
 echo "Checking production sources for forbidden mock service code..."
 if rg --line-number --glob '*.swift' --regexp "$source_forbidden" "$source_root"; then
-    echo "error: production mock service code was found under Sources/DateSnap" >&2
+    echo "error: production mock service code was found under Sources/Pencild" >&2
     failure=1
 else
     echo "Source scan passed."
@@ -10501,7 +10501,7 @@ echo "Release-content verification passed."
 
 
 ================================================
-FILE: Sources/DateSnap/ContentView.swift
+FILE: Sources/Pencild/ContentView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -10628,10 +10628,10 @@ struct ContentView: View {
         }
         guard let eventId = DeepLinkInbox.shared.consume() else { return }
         guard let candidate = SavedEventActions.candidate(id: eventId, in: modelContext) else {
-            appState.showToast("That event is no longer in DateSnap")
+            appState.showToast("That event is no longer in Pencild")
             return
         }
-        let event = candidate.toDateSnapEvent()
+        let event = candidate.toPencildEvent()
         appState.activeModal = nil
         // Let any presented sheet dismiss before presenting the detail.
         Task { @MainActor in
@@ -10710,13 +10710,13 @@ struct ContentView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/DateSnap.swift
+FILE: Sources/Pencild/Pencild.swift
 ================================================
 import SwiftUI
 import SwiftData
 
 @main
-struct DateSnapApp: App {
+struct PencildApp: App {
     @StateObject private var services = ServiceContainer.live()
 
     var body: some Scene {
@@ -10736,7 +10736,7 @@ struct DateSnapApp: App {
 
 
 ================================================
-FILE: Sources/DateSnap/Models/AppState.swift
+FILE: Sources/Pencild/Models/AppState.swift
 ================================================
 import SwiftUI
 import Combine
@@ -10765,9 +10765,9 @@ enum AppModalScreen: Identifiable, Sendable {
     case calendarPermissionDenied
     case notificationPermissionDenied
     case noDatesFound
-    case savedEventDetail(DateSnapEvent)
-    case eventReviewEdit(DateSnapEvent)
-    case reminderScheduleEditor(DateSnapEvent)
+    case savedEventDetail(PencildEvent)
+    case eventReviewEdit(PencildEvent)
+    case reminderScheduleEditor(PencildEvent)
     case recentScreenshots
     case screenGallery
     
@@ -10848,14 +10848,14 @@ final class AppState: ObservableObject {
 
     /// Opens the review screen for a scanned candidate.
     func review(_ candidate: EventCandidate) {
-        activeModal = .eventReviewEdit(candidate.toDateSnapEvent())
+        activeModal = .eventReviewEdit(candidate.toPencildEvent())
     }
 }
 
 
 
 ================================================
-FILE: Sources/DateSnap/Models/EventModels.swift
+FILE: Sources/Pencild/Models/EventModels.swift
 ================================================
 import Foundation
 import SwiftUI
@@ -10897,7 +10897,7 @@ enum AlertChannel: String, CaseIterable, Identifiable, Sendable {
     case notification = "Local Push Alert"
     case reminders = "Apple Reminders"
     case calendar = "Calendar Alarm"
-    case push = "DateSnap Priority Push"
+    case push = "Pencild Priority Push"
     
     var id: String { rawValue }
     
@@ -10930,8 +10930,8 @@ enum ReminderPreset: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-// MARK: - DateSnap Event Model
-struct DateSnapEvent: Identifiable, Hashable, Sendable {
+// MARK: - Pencild Event Model
+struct PencildEvent: Identifiable, Hashable, Sendable {
     var id: String
     var title: String
     var month: String
@@ -10960,8 +10960,8 @@ struct DateSnapEvent: Identifiable, Hashable, Sendable {
 
 #if DEBUG
 // Sample events are only used by the DEBUG screen gallery and SwiftUI previews.
-extension DateSnapEvent {
-    static let sampleNeonSunset = DateSnapEvent(
+extension PencildEvent {
+    static let sampleNeonSunset = PencildEvent(
         id: "event-sunset-082",
         title: "Neon Sunset Rooftop Session",
         month: "Jul",
@@ -11013,7 +11013,7 @@ extension DateSnapEvent {
         ]
     )
     
-    static let sampleDentalCheckup = DateSnapEvent(
+    static let sampleDentalCheckup = PencildEvent(
         id: "event-dental-02",
         title: "Dr. Aris Dental Checkup",
         month: "Jul",
@@ -11047,7 +11047,7 @@ extension DateSnapEvent {
         ]
     )
     
-    static let sampleSummerMixer = DateSnapEvent(
+    static let sampleSummerMixer = PencildEvent(
         id: "event-mixer-14",
         title: "Summer Rooftop Mixer",
         month: "Aug",
@@ -11073,7 +11073,7 @@ extension DateSnapEvent {
 
 
 ================================================
-FILE: Sources/DateSnap/Models/SettingsState.swift
+FILE: Sources/Pencild/Models/SettingsState.swift
 ================================================
 import SwiftUI
 
@@ -11086,7 +11086,7 @@ final class SettingsState: ObservableObject {
     @Published var isAnnual: Bool = true
     @Published var autoRenewal: Bool = true
 
-    var planName: String { isAnnual ? "DateSnap Plus (Annual)" : "DateSnap Plus (Monthly)" }
+    var planName: String { isAnnual ? "Pencild Plus (Annual)" : "Pencild Plus (Monthly)" }
     var planPrice: String { isAnnual ? "$29.99" : "$4.99" }
 
     // MARK: - Privacy & Security (Settings Hub <-> Privacy Center)
@@ -11180,7 +11180,7 @@ final class SettingsState: ObservableObject {
     enum DeliveryRoute: String, CaseIterable, Identifiable {
         case calendar = "Calendar"
         case reminders = "Reminders"
-        case push = "DateSnap"
+        case push = "Pencild"
         var id: String { rawValue }
 
         var subtitle: String {
@@ -11209,7 +11209,7 @@ final class SettingsState: ObservableObject {
                    channel: "Calendar Notification"),
         TimedAlert(glyph: "bolt.fill", title: "30 Minutes Before",
                    time: Calendar.current.date(from: DateComponents(hour: 19, minute: 30)) ?? Date(),
-                   channel: "DateSnap Local Push"),
+                   channel: "Pencild Local Push"),
     ]
     @Published var allDayDayOf: Bool = true
     @Published var allDayDayBefore: Bool = true
@@ -11244,7 +11244,7 @@ final class SettingsState: ObservableObject {
 
 
 ================================================
-FILE: Sources/DateSnap/Persistence/SwiftDataEntities.swift
+FILE: Sources/Pencild/Persistence/SwiftDataEntities.swift
 ================================================
 import Foundation
 import SwiftData
@@ -11272,7 +11272,7 @@ public enum ConfidenceTier: String, CaseIterable, Sendable {
         }
     }
 
-    /// Color tokens from DateSnap Design System (Success #46E39A, Warning #FFBE55, Error #FF6B7A)
+    /// Color tokens from Pencild Design System (Success #46E39A, Warning #FFBE55, Error #FF6B7A)
     public var hexColor: String {
         switch self {
         case .high: return "46E39A"
@@ -11598,9 +11598,9 @@ public final class SavedEvent {
     }
 }
 
-// MARK: - Convenience Conversions with DateSnapEvent UI Struct
+// MARK: - Convenience Conversions with PencildEvent UI Struct
 extension EventCandidate {
-    func toDateSnapEvent() -> DateSnapEvent {
+    func toPencildEvent() -> PencildEvent {
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "MMM"
         let dayFormatter = DateFormatter()
@@ -11630,7 +11630,7 @@ extension EventCandidate {
         if !notes.isEmpty { noteLines.append(notes) }
         if let rsvpUrl { noteLines.append("RSVP: \(rsvpUrl)") }
 
-        return DateSnapEvent(
+        return PencildEvent(
             id: id,
             title: title,
             month: monthFormatter.string(from: startDate),
@@ -11662,7 +11662,7 @@ extension EventCandidate {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/CalendarService.swift
+FILE: Sources/Pencild/Services/CalendarService.swift
 ================================================
 import Foundation
 import EventKit
@@ -11698,13 +11698,13 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
                 let granted = try await eventStore.requestFullAccessToEvents()
                 return granted
             } catch {
-                throw DateSnapError.calendar(.accessDenied)
+                throw PencildError.calendar(.accessDenied)
             }
         } else {
             return try await withCheckedThrowingContinuation { continuation in
                 eventStore.requestAccess(to: .event) { granted, error in
                     if let error = error {
-                        continuation.resume(throwing: DateSnapError.calendar(.eventCreationFailed(error.localizedDescription)))
+                        continuation.resume(throwing: PencildError.calendar(.eventCreationFailed(error.localizedDescription)))
                     } else {
                         continuation.resume(returning: granted)
                     }
@@ -11738,7 +11738,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         if !isAuthorized {
             let granted = try await requestEventAccess()
             guard granted else {
-                throw DateSnapError.calendar(.accessDenied)
+                throw PencildError.calendar(.accessDenied)
             }
         }
 
@@ -11750,7 +11750,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         } else if let firstWritable = fetchWritableCalendars().first {
             targetCalendar = firstWritable
         } else {
-            throw DateSnapError.calendar(.noWritableCalendarFound)
+            throw PencildError.calendar(.noWritableCalendarFound)
         }
 
         let event = EKEvent(eventStore: eventStore)
@@ -11762,7 +11762,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
             let externalId = event.calendarItemExternalIdentifier ?? event.eventIdentifier ?? UUID().uuidString
             return externalId
         } catch {
-            throw DateSnapError.calendar(.eventCreationFailed(error.localizedDescription))
+            throw PencildError.calendar(.eventCreationFailed(error.localizedDescription))
         }
     }
 
@@ -11782,7 +11782,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
             try eventStore.save(event, span: .thisEvent, commit: true)
             return event.calendarItemExternalIdentifier ?? externalIdentifier
         } catch {
-            throw DateSnapError.calendar(.eventCreationFailed(error.localizedDescription))
+            throw PencildError.calendar(.eventCreationFailed(error.localizedDescription))
         }
     }
 
@@ -11791,7 +11791,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         do {
             try eventStore.remove(event, span: .thisEvent, commit: true)
         } catch {
-            throw DateSnapError.calendar(.eventCreationFailed(error.localizedDescription))
+            throw PencildError.calendar(.eventCreationFailed(error.localizedDescription))
         }
     }
 
@@ -11835,7 +11835,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
             }
         }
         if candidate.yearAssumed {
-            notesComponents.append("Note: Year was inferred automatically by DateSnap.")
+            notesComponents.append("Note: Year was inferred automatically by Pencild.")
         }
         if !candidate.rawTextSnippet.isEmpty {
             notesComponents.append("Extracted Text:\n\(candidate.rawTextSnippet)")
@@ -11861,12 +11861,12 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
 
 
 ================================================
-FILE: Sources/DateSnap/Services/DateSnapError.swift
+FILE: Sources/Pencild/Services/PencildError.swift
 ================================================
 import Foundation
 
-// MARK: - DateSnap Root Domain Error
-public enum DateSnapError: LocalizedError, Sendable, CustomStringConvertible {
+// MARK: - Pencild Root Domain Error
+public enum PencildError: LocalizedError, Sendable, CustomStringConvertible {
     case photoLibrary(PhotoLibraryError)
     case ocr(OCRError)
     case extraction(ExtractionError)
@@ -11878,7 +11878,7 @@ public enum DateSnapError: LocalizedError, Sendable, CustomStringConvertible {
     case general(String)
 
     public var description: String {
-        errorDescription ?? "An unknown DateSnap error occurred."
+        errorDescription ?? "An unknown Pencild error occurred."
     }
 
     public var errorDescription: String? {
@@ -11938,7 +11938,7 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied, .accessRestricted, .limitedAccess:
-            return "Open DateSnap Settings or iOS System Settings to grant full Photo Library permissions."
+            return "Open Pencild Settings or iOS System Settings to grant full Photo Library permissions."
         case .assetNotFound, .imageConversionFailed:
             return "Please ensure the screenshot exists in your Photos app and try again."
         case .smartAlbumNotFound:
@@ -12030,7 +12030,7 @@ public enum CalendarError: LocalizedError, Sendable {
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied:
-            return "Go to iOS Settings > DateSnap > Calendars and select 'Full Access'."
+            return "Go to iOS Settings > Pencild > Calendars and select 'Full Access'."
         case .noWritableCalendarFound:
             return "Ensure you have at least one editable calendar in the Apple Calendar app."
         default:
@@ -12055,14 +12055,14 @@ public enum ReminderError: LocalizedError, Sendable {
         case .reminderCreationFailed(let reason):
             return "Failed to save reminder in Apple Reminders: \(reason)"
         case .maxOffsetsExceeded:
-            return "DateSnap supports a maximum of 3 staggered reminder offsets per event."
+            return "Pencild supports a maximum of 3 staggered reminder offsets per event."
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied:
-            return "Go to iOS Settings > DateSnap > Reminders and grant full access."
+            return "Go to iOS Settings > Pencild > Reminders and grant full access."
         default:
             return "Verify your Reminders lists in the Apple Reminders app."
         }
@@ -12089,7 +12089,7 @@ public enum NotificationError: LocalizedError, Sendable {
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied:
-            return "Enable notifications in iOS Settings > Notifications > DateSnap."
+            return "Enable notifications in iOS Settings > Notifications > Pencild."
         default:
             return "Ensure the reminder time is in the future."
         }
@@ -12137,7 +12137,7 @@ public enum SubscriptionError: LocalizedError, Sendable {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/NotificationService.swift
+FILE: Sources/Pencild/Services/NotificationService.swift
 ================================================
 import Foundation
 import UserNotifications
@@ -12165,11 +12165,11 @@ extension NotificationServiceProtocol {
 
 // MARK: - Production Notification Service
 public final class NotificationService: NSObject, NotificationServiceProtocol, UNUserNotificationCenterDelegate, @unchecked Sendable {
-    public static let categoryIdentifier = "DATESNAP_EVENT_ALERT"
+    public static let categoryIdentifier = "PENCILD_EVENT_ALERT"
     public static let viewEventActionIdentifier = "VIEW_EVENT_ACTION"
     public static let dismissActionIdentifier = "DISMISS_ACTION"
     /// Category for alerts whose event has an RSVP/ticket link copied from the flyer.
-    public static let linkCategoryIdentifier = "DATESNAP_EVENT_ALERT_LINK"
+    public static let linkCategoryIdentifier = "PENCILD_EVENT_ALERT_LINK"
     public static let openLinkActionIdentifier = "OPEN_LINK_ACTION"
 
     private let notificationCenter: UNUserNotificationCenter
@@ -12188,7 +12188,7 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
             let granted = try await notificationCenter.requestAuthorization(options: options)
             return granted
         } catch {
-            throw DateSnapError.notifications(.accessDenied)
+            throw PencildError.notifications(.accessDenied)
         }
     }
 
@@ -12245,7 +12245,7 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
         if status != .authorized && status != .provisional {
             let granted = try await requestAuthorization()
             guard granted else {
-                throw DateSnapError.notifications(.accessDenied)
+                throw PencildError.notifications(.accessDenied)
             }
         }
 
@@ -12265,7 +12265,7 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
             content.categoryIdentifier = link == nil ? Self.categoryIdentifier : Self.linkCategoryIdentifier
 
             var userInfo: [String: String] = [
-                "type": "datesnap_event_reminder",
+                "type": "pencild_event_reminder",
                 "offsetIndex": "\(index)"
             ]
             if let id = eventId {
@@ -12279,14 +12279,14 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
             let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: triggerDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
-            let identifier = "datesnap-\(eventId ?? UUID().uuidString)-offset\(index)"
+            let identifier = "pencild-\(eventId ?? UUID().uuidString)-offset\(index)"
             let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
             do {
                 try await notificationCenter.add(request)
                 scheduledIds.append(identifier)
             } catch {
-                throw DateSnapError.notifications(.schedulingFailed(error.localizedDescription))
+                throw PencildError.notifications(.schedulingFailed(error.localizedDescription))
             }
         }
 
@@ -12343,7 +12343,7 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
 @MainActor
 public final class DeepLinkInbox: ObservableObject {
     public static let shared = DeepLinkInbox()
-    public static let notificationName = NSNotification.Name("DateSnapDeepLinkEvent")
+    public static let notificationName = NSNotification.Name("PencildDeepLinkEvent")
 
     @Published public private(set) var pendingEventId: String?
     /// A flyer link the user asked to open from a notification action.
@@ -12373,7 +12373,7 @@ public final class DeepLinkInbox: ObservableObject {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/OCRService.swift
+FILE: Sources/Pencild/Services/OCRService.swift
 ================================================
 import Foundation
 import UIKit
@@ -12450,7 +12450,7 @@ public final class OCRService: OCRServiceProtocol {
 
     public func recognizeLines(in image: UIImage, confidenceFloor: Float = 0.35) async throws -> OCRResult {
         guard let cgImage = image.cgImage else {
-            throw DateSnapError.ocr(.imageProcessingFailed)
+            throw PencildError.ocr(.imageProcessingFailed)
         }
 
         let orientation = CGImagePropertyOrientation(image.imageOrientation)
@@ -12467,11 +12467,11 @@ public final class OCRService: OCRServiceProtocol {
             do {
                 try handler.perform([request])
             } catch {
-                throw DateSnapError.ocr(.visionRequestFailed(error.localizedDescription))
+                throw PencildError.ocr(.visionRequestFailed(error.localizedDescription))
             }
 
             guard let observations = request.results, !observations.isEmpty else {
-                throw DateSnapError.ocr(.noTextRecognized)
+                throw PencildError.ocr(.noTextRecognized)
             }
 
             var detectedLines: [OCRLine] = []
@@ -12493,7 +12493,7 @@ public final class OCRService: OCRServiceProtocol {
             }
 
             guard !detectedLines.isEmpty else {
-                throw DateSnapError.ocr(.noTextRecognized)
+                throw PencildError.ocr(.noTextRecognized)
             }
 
             // In Vision coordinates, origin is lower-left (0,0) and top is (1,1).
@@ -12505,7 +12505,7 @@ public final class OCRService: OCRServiceProtocol {
 
             // Guard against unreadable or heavily blurred screenshots
             if meanConfidence < confidenceFloor {
-                throw DateSnapError.ocr(.insufficientConfidence(meanConfidence))
+                throw PencildError.ocr(.insufficientConfidence(meanConfidence))
             }
 
             return OCRResult(fullText: fullText, lines: detectedLines, meanConfidence: meanConfidence)
@@ -12534,7 +12534,7 @@ extension CGImagePropertyOrientation {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/PhotoCandidateRanker.swift
+FILE: Sources/Pencild/Services/PhotoCandidateRanker.swift
 ================================================
 import Foundation
 import Photos
@@ -12576,7 +12576,7 @@ enum PhotoCandidateRanker {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/PhotoLibraryService.swift
+FILE: Sources/Pencild/Services/PhotoLibraryService.swift
 ================================================
 import Foundation
 import Photos
@@ -12624,7 +12624,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
     public func fetchRecentScreenshots(limit: Int = 20) async throws -> [PHAsset] {
         let currentStatus = authorizationStatus(for: .readWrite)
         guard currentStatus == .authorized || currentStatus == .limited else {
-            throw DateSnapError.photoLibrary(.accessDenied)
+            throw PencildError.photoLibrary(.accessDenied)
         }
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -12636,7 +12636,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                 )
 
                 guard let screenshotsAlbum = collections.firstObject else {
-                    continuation.resume(throwing: DateSnapError.photoLibrary(.smartAlbumNotFound))
+                    continuation.resume(throwing: PencildError.photoLibrary(.smartAlbumNotFound))
                     return
                 }
 
@@ -12678,7 +12678,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                 if let image = image {
                     continuation.resume(returning: image)
                 } else {
-                    continuation.resume(throwing: DateSnapError.photoLibrary(.imageConversionFailed))
+                    continuation.resume(throwing: PencildError.photoLibrary(.imageConversionFailed))
                 }
             }
         }
@@ -12724,7 +12724,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
 
 
 ================================================
-FILE: Sources/DateSnap/Services/ReminderService.swift
+FILE: Sources/Pencild/Services/ReminderService.swift
 ================================================
 import Foundation
 import EventKit
@@ -12831,13 +12831,13 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
                 let granted = try await eventStore.requestFullAccessToReminders()
                 return granted
             } catch {
-                throw DateSnapError.reminders(.accessDenied)
+                throw PencildError.reminders(.accessDenied)
             }
         } else {
             return try await withCheckedThrowingContinuation { continuation in
                 eventStore.requestAccess(to: .reminder) { granted, error in
                     if let error = error {
-                        continuation.resume(throwing: DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription)))
+                        continuation.resume(throwing: PencildError.reminders(.reminderCreationFailed(error.localizedDescription)))
                     } else {
                         continuation.resume(returning: granted)
                     }
@@ -12862,7 +12862,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         offsets: [ReminderOffset] = ReminderOffset.defaultStaggered
     ) async throws -> String {
         guard offsets.count <= 3 else {
-            throw DateSnapError.reminders(.maxOffsetsExceeded)
+            throw PencildError.reminders(.maxOffsetsExceeded)
         }
 
         let status = authorizationStatus()
@@ -12875,7 +12875,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         if !isAuthorized {
             let granted = try await requestReminderAccess()
             guard granted else {
-                throw DateSnapError.reminders(.accessDenied)
+                throw PencildError.reminders(.accessDenied)
             }
         }
 
@@ -12887,7 +12887,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         } else if let firstWritable = fetchReminderLists().first {
             targetList = firstWritable
         } else {
-            throw DateSnapError.reminders(.noListFound)
+            throw PencildError.reminders(.noListFound)
         }
 
         let reminder = EKReminder(eventStore: eventStore)
@@ -12899,17 +12899,17 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
             let identifier = reminder.calendarItemExternalIdentifier ?? reminder.calendarItemIdentifier
             return identifier
         } catch {
-            throw DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription))
+            throw PencildError.reminders(.reminderCreationFailed(error.localizedDescription))
         }
     }
 
     // MARK: - Deadline Reminder
     public func createDeadlineReminder(title: String, due: Date, url: String?, list: EKCalendar? = nil) async throws -> String {
         if authorizationStatus() != .fullAccess {
-            guard try await requestReminderAccess() else { throw DateSnapError.reminders(.accessDenied) }
+            guard try await requestReminderAccess() else { throw PencildError.reminders(.accessDenied) }
         }
         guard let targetList = list ?? defaultReminderList() ?? fetchReminderLists().first else {
-            throw DateSnapError.reminders(.noListFound)
+            throw PencildError.reminders(.noListFound)
         }
         let reminder = EKReminder(eventStore: eventStore)
         reminder.title = title
@@ -12919,15 +12919,15 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         reminder.addAlarm(EKAlarm(absoluteDate: due))
         if let url, let link = URL(string: url.hasPrefix("http") ? url : "https://\(url)") {
             reminder.url = link
-            reminder.notes = "Link from the flyer: \(url)\nCaptured on-device by DateSnap"
+            reminder.notes = "Link from the flyer: \(url)\nCaptured on-device by Pencild"
         } else {
-            reminder.notes = "Captured on-device by DateSnap"
+            reminder.notes = "Captured on-device by Pencild"
         }
         do {
             try eventStore.save(reminder, commit: true)
             return reminder.calendarItemExternalIdentifier ?? reminder.calendarItemIdentifier
         } catch {
-            throw DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription))
+            throw PencildError.reminders(.reminderCreationFailed(error.localizedDescription))
         }
     }
 
@@ -12939,7 +12939,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         offsets: [ReminderOffset]
     ) async throws -> String {
         guard offsets.count <= 3 else {
-            throw DateSnapError.reminders(.maxOffsetsExceeded)
+            throw PencildError.reminders(.maxOffsetsExceeded)
         }
         guard let reminder = existingReminder(externalIdentifier) else {
             return try await createReminder(candidate: candidate, list: list, offsets: offsets)
@@ -12950,7 +12950,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
             try eventStore.save(reminder, commit: true)
             return reminder.calendarItemExternalIdentifier ?? externalIdentifier
         } catch {
-            throw DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription))
+            throw PencildError.reminders(.reminderCreationFailed(error.localizedDescription))
         }
     }
 
@@ -12959,7 +12959,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         do {
             try eventStore.remove(reminder, commit: true)
         } catch {
-            throw DateSnapError.reminders(.reminderCreationFailed(error.localizedDescription))
+            throw PencildError.reminders(.reminderCreationFailed(error.localizedDescription))
         }
     }
 
@@ -12993,7 +12993,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         if let rsvp = candidate.rsvpUrl {
             notesList.append("RSVP/Tickets: \(rsvp)")
         }
-        notesList.append("Captured on-device by DateSnap")
+        notesList.append("Captured on-device by Pencild")
         reminder.notes = notesList.joined(separator: "\n")
 
         // Up to 3 staggered alarms, replacing any existing ones
@@ -13008,7 +13008,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
 
 
 ================================================
-FILE: Sources/DateSnap/Services/SampleFlyer.swift
+FILE: Sources/Pencild/Services/SampleFlyer.swift
 ================================================
 import UIKit
 
@@ -13073,7 +13073,7 @@ enum SampleFlyer {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/SavedEventActions.swift
+FILE: Sources/Pencild/Services/SavedEventActions.swift
 ================================================
 import Foundation
 import SwiftData
@@ -13085,7 +13085,7 @@ struct SavedEventActions {
     let services: ServiceContainer
     let modelContext: ModelContext
 
-    /// Finds the saved record for a candidate id (the id carried by `DateSnapEvent` and notification payloads).
+    /// Finds the saved record for a candidate id (the id carried by `PencildEvent` and notification payloads).
     static func savedEvent(candidateId: String, in context: ModelContext) -> SavedEvent? {
         let descriptor = FetchDescriptor<EventCandidate>(predicate: #Predicate { $0.id == candidateId })
         return (try? context.fetch(descriptor))?.first?.savedEvent
@@ -13149,7 +13149,7 @@ struct SavedEventActions {
         try? modelContext.save()
     }
 
-    /// Deletes the DateSnap record. When `removeFromCalendar` is set, the Calendar event and reminder are removed too.
+    /// Deletes the Pencild record. When `removeFromCalendar` is set, the Calendar event and reminder are removed too.
     func delete(_ saved: SavedEvent, removeFromCalendar: Bool) {
         services.notifications.removePendingNotifications(identifiers: saved.scheduledNotificationIds)
         if removeFromCalendar {
@@ -13168,7 +13168,7 @@ struct SavedEventActions {
         try? modelContext.save()
     }
 
-    /// Erases every scan, candidate and saved record DateSnap holds (Calendar and Reminders entries are kept).
+    /// Erases every scan, candidate and saved record Pencild holds (Calendar and Reminders entries are kept).
     func eraseAllLocalData() {
         let saved = (try? modelContext.fetch(FetchDescriptor<SavedEvent>())) ?? []
         services.notifications.removePendingNotifications(identifiers: saved.flatMap(\.scheduledNotificationIds))
@@ -13183,7 +13183,7 @@ struct SavedEventActions {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/ScanImageEnhancer.swift
+FILE: Sources/Pencild/Services/ScanImageEnhancer.swift
 ================================================
 import UIKit
 import CoreImage
@@ -13214,7 +13214,7 @@ enum ScanImageEnhancer {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/ServiceContainer.swift
+FILE: Sources/Pencild/Services/ServiceContainer.swift
 ================================================
 import Foundation
 import SwiftUI
@@ -13298,7 +13298,7 @@ extension EnvironmentValues {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/SubscriptionService.swift
+FILE: Sources/Pencild/Services/SubscriptionService.swift
 ================================================
 import Foundation
 import StoreKit
@@ -13313,9 +13313,9 @@ public enum SubscriptionTier: String, CaseIterable, Identifiable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .starter: return "DateSnap Starter"
-        case .plus: return "DateSnap Plus"
-        case .premium: return "DateSnap Premium"
+        case .starter: return "Pencild Starter"
+        case .plus: return "Pencild Plus"
+        case .premium: return "Pencild Premium"
         }
     }
 
@@ -13354,10 +13354,10 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     }
 
     public static let productIdentifiers: Set<String> = [
-        "com.datesnap.plus.monthly",
-        "com.datesnap.plus.annual",
-        "com.datesnap.premium.monthly",
-        "com.datesnap.premium.annual"
+        "com.pencild.plus.monthly",
+        "com.pencild.plus.annual",
+        "com.pencild.premium.monthly",
+        "com.pencild.premium.annual"
     ]
 
     private var updateListenerTask: Task<Void, Error>? = nil
@@ -13401,7 +13401,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             self.availableProducts = sorted
             return sorted
         } catch {
-            throw DateSnapError.subscription(.productNotFound(error.localizedDescription))
+            throw PencildError.subscription(.productNotFound(error.localizedDescription))
         }
     }
 
@@ -13414,7 +13414,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
         do {
             result = try await product.purchase()
         } catch {
-            throw DateSnapError.subscription(.purchaseFailed(error.localizedDescription))
+            throw PencildError.subscription(.purchaseFailed(error.localizedDescription))
         }
 
         switch result {
@@ -13425,13 +13425,13 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             return currentTier
 
         case .userCancelled:
-            throw DateSnapError.subscription(.purchaseCancelled)
+            throw PencildError.subscription(.purchaseCancelled)
 
         case .pending:
-            throw DateSnapError.subscription(.purchasePending)
+            throw PencildError.subscription(.purchasePending)
 
         @unknown default:
-            throw DateSnapError.subscription(.purchaseFailed("Unknown purchase outcome."))
+            throw PencildError.subscription(.purchaseFailed("Unknown purchase outcome."))
         }
     }
 
@@ -13445,7 +13445,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             await updateCustomerProductStatus()
             return currentTier
         } catch {
-            throw DateSnapError.subscription(.verificationFailed)
+            throw PencildError.subscription(.verificationFailed)
         }
     }
 
@@ -13466,9 +13466,9 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
 
         self.purchasedProductIDs = purchasedIDs
 
-        if purchasedIDs.contains("com.datesnap.premium.monthly") || purchasedIDs.contains("com.datesnap.premium.annual") {
+        if purchasedIDs.contains("com.pencild.premium.monthly") || purchasedIDs.contains("com.pencild.premium.annual") {
             self.currentTier = .premium
-        } else if purchasedIDs.contains("com.datesnap.plus.monthly") || purchasedIDs.contains("com.datesnap.plus.annual") {
+        } else if purchasedIDs.contains("com.pencild.plus.monthly") || purchasedIDs.contains("com.pencild.plus.annual") {
             self.currentTier = .plus
         } else {
             self.currentTier = .starter
@@ -13479,7 +13479,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     nonisolated private static func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified:
-            throw DateSnapError.subscription(.verificationFailed)
+            throw PencildError.subscription(.verificationFailed)
         case .verified(let safe):
             return safe
         }
@@ -13489,7 +13489,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Advisors/CalendarRecommendationService.swift
+FILE: Sources/Pencild/Services/Advisors/CalendarRecommendationService.swift
 ================================================
 import Foundation
 
@@ -13530,7 +13530,7 @@ public struct CalendarRecommendationService: Sendable {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Advisors/EventSimilarityService.swift
+FILE: Sources/Pencild/Services/Advisors/EventSimilarityService.swift
 ================================================
 import Foundation
 
@@ -13602,7 +13602,7 @@ public enum EventSimilarityService {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Advisors/FeatureEntitlements.swift
+FILE: Sources/Pencild/Services/Advisors/FeatureEntitlements.swift
 ================================================
 import Foundation
 
@@ -13769,7 +13769,7 @@ public protocol EntitlementProviding: Sendable {
 // MARK: - Subscription Product ID
 
 /// A typed, hashable identifier for a StoreKit product. Raw values are the exact product
-/// identifiers from `DateSnap.storekit` (the four known IDs). Tier and annual status are
+/// identifiers from `Pencild.storekit` (the four known IDs). Tier and annual status are
 /// derived from the raw value, not inferred via substring matching.
 public struct SubscriptionProductID: Sendable, Hashable {
     public let rawValue: String
@@ -13789,12 +13789,12 @@ public struct SubscriptionProductID: Sendable, Hashable {
 /// product-ID-to-tier mapping so that no duplicate/substring-based inference exists anywhere
 /// in the codebase (addressing F-05). Unknown product IDs resolve to no entitlement.
 public enum SubscriptionCatalog {
-    /// The four known product identifiers from `DateSnap.storekit`.
+    /// The four known product identifiers from `Pencild.storekit`.
     public static let allProductIDs: Set<SubscriptionProductID> = [
-        SubscriptionProductID(rawValue: "com.datesnap.plus.monthly", tier: .plus, isAnnual: false),
-        SubscriptionProductID(rawValue: "com.datesnap.plus.annual", tier: .plus, isAnnual: true),
-        SubscriptionProductID(rawValue: "com.datesnap.premium.monthly", tier: .premium, isAnnual: false),
-        SubscriptionProductID(rawValue: "com.datesnap.premium.annual", tier: .premium, isAnnual: true),
+        SubscriptionProductID(rawValue: "com.pencild.plus.monthly", tier: .plus, isAnnual: false),
+        SubscriptionProductID(rawValue: "com.pencild.plus.annual", tier: .plus, isAnnual: true),
+        SubscriptionProductID(rawValue: "com.pencild.premium.monthly", tier: .premium, isAnnual: false),
+        SubscriptionProductID(rawValue: "com.pencild.premium.annual", tier: .premium, isAnnual: true),
     ]
 
     /// The complete set of product identifiers.
@@ -13833,7 +13833,7 @@ extension SubscriptionTier {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Advisors/ReminderStrategyService.swift
+FILE: Sources/Pencild/Services/Advisors/ReminderStrategyService.swift
 ================================================
 import Foundation
 
@@ -13905,7 +13905,7 @@ public enum ReminderStrategyService {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/AppleFoundationModelInterpreter.swift
+FILE: Sources/Pencild/Services/Intelligence/AppleFoundationModelInterpreter.swift
 ================================================
 import Foundation
 
@@ -13915,7 +13915,7 @@ import FoundationModels
 // MARK: - Apple Intelligence Capability
 
 /// Maps `SystemLanguageModel` availability (OS, device, Apple Intelligence setting, model readiness and
-/// language) to DateSnap's capability. Queried per scan; never cached.
+/// language) to Pencild's capability. Queried per scan; never cached.
 @available(iOS 26.0, macOS 26.0, *)
 struct AppleIntelligenceCapabilityProvider: IntelligenceCapabilityProviding {
     func currentCapability(for locale: Locale) -> IntelligenceCapability {
@@ -14042,7 +14042,7 @@ actor AppleFoundationModelInterpreter: OnDeviceEventInterpreting {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/EventDurationPolicy.swift
+FILE: Sources/Pencild/Services/Intelligence/EventDurationPolicy.swift
 ================================================
 import Foundation
 
@@ -14074,7 +14074,7 @@ public enum EventDurationPolicy {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/EventUnderstandingModels.swift
+FILE: Sources/Pencild/Services/Intelligence/EventUnderstandingModels.swift
 ================================================
 import Foundation
 import CoreGraphics
@@ -14496,7 +14496,7 @@ public struct EventUnderstandingResult: Sendable, Codable {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/EventUnderstandingPipeline.swift
+FILE: Sources/Pencild/Services/Intelligence/EventUnderstandingPipeline.swift
 ================================================
 import Foundation
 import os
@@ -14680,7 +14680,7 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
 /// Privacy-safe logging: stages, durations, routes and counts only. Never logs OCR text, titles,
 /// URLs or contact data.
 enum IntelligenceTelemetry {
-    private static let logger = Logger(subsystem: "com.datesnap.app", category: "intelligence")
+    private static let logger = Logger(subsystem: "com.pencild.app", category: "intelligence")
     private static let signposter = OSSignposter(logger: logger)
 
     struct Span {
@@ -14745,7 +14745,7 @@ extension EventInterpretationCandidate {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/EvidenceValidator.swift
+FILE: Sources/Pencild/Services/Intelligence/EvidenceValidator.swift
 ================================================
 import Foundation
 
@@ -15079,7 +15079,7 @@ public enum EvidenceValidator {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/IntelligenceCapabilities.swift
+FILE: Sources/Pencild/Services/Intelligence/IntelligenceCapabilities.swift
 ================================================
 import Foundation
 
@@ -15103,13 +15103,13 @@ public enum IntelligenceUnavailableReason: String, Sendable, Codable, CaseIterab
     public var userFacingDescription: String {
         switch self {
         case .osUnsupported, .frameworkUnavailable:
-            return "Needs iOS 26 or later. Scans use DateSnap's on-device rules."
+            return "Needs iOS 26 or later. Scans use Pencild's on-device rules."
         case .deviceNotEligible:
-            return "This device doesn't support Apple Intelligence. Scans use DateSnap's on-device rules."
+            return "This device doesn't support Apple Intelligence. Scans use Pencild's on-device rules."
         case .appleIntelligenceNotEnabled:
             return "Turn on Apple Intelligence in iOS Settings to enable enhanced interpretation."
         case .modelNotReady:
-            return "Apple Intelligence is still getting ready. Scans use DateSnap's on-device rules for now."
+            return "Apple Intelligence is still getting ready. Scans use Pencild's on-device rules for now."
         case .languageUnsupported:
             return "Enhanced interpretation isn't available in your language yet."
         case .disabledByUser:
@@ -15157,7 +15157,7 @@ public struct AvailableCapabilityProvider: IntelligenceCapabilityProviding {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/IntelligenceComposition.swift
+FILE: Sources/Pencild/Services/Intelligence/IntelligenceComposition.swift
 ================================================
 import Foundation
 
@@ -15195,7 +15195,7 @@ enum IntelligenceComposition {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/IntelligencePolicy.swift
+FILE: Sources/Pencild/Services/Intelligence/IntelligencePolicy.swift
 ================================================
 import Foundation
 
@@ -15259,7 +15259,7 @@ public struct IntelligencePolicy: Sendable {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/IntelligenceUsagePolicy.swift
+FILE: Sources/Pencild/Services/Intelligence/IntelligenceUsagePolicy.swift
 ================================================
 import Foundation
 
@@ -15308,7 +15308,7 @@ public struct IntelligenceUsagePolicy: Sendable {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/InterpretationRanker.swift
+FILE: Sources/Pencild/Services/Intelligence/InterpretationRanker.swift
 ================================================
 import Foundation
 
@@ -15492,7 +15492,7 @@ public enum InterpretationRanker {
 
 
 ================================================
-FILE: Sources/DateSnap/Services/Intelligence/RuleBasedEventAnalyzer.swift
+FILE: Sources/Pencild/Services/Intelligence/RuleBasedEventAnalyzer.swift
 ================================================
 import Foundation
 import CoreGraphics
@@ -15958,7 +15958,7 @@ public enum RuleBasedEventAnalyzer {
 
 
 ================================================
-FILE: Sources/DateSnap/Theme/Colors.swift
+FILE: Sources/Pencild/Theme/Colors.swift
 ================================================
 import SwiftUI
 
@@ -16054,7 +16054,7 @@ extension Color {
 
 
 ================================================
-FILE: Sources/DateSnap/Theme/GlassModifiers.swift
+FILE: Sources/Pencild/Theme/GlassModifiers.swift
 ================================================
 import SwiftUI
 
@@ -16252,7 +16252,7 @@ struct DSSecondaryButtonStyle: ButtonStyle {
 
 
 ================================================
-FILE: Sources/DateSnap/Theme/Typography.swift
+FILE: Sources/Pencild/Theme/Typography.swift
 ================================================
 import SwiftUI
 
@@ -16302,7 +16302,7 @@ struct DSTypography {
 
 
 ================================================
-FILE: Sources/DateSnap/ViewModels/EventReviewViewModel+Interpretation.swift
+FILE: Sources/Pencild/ViewModels/EventReviewViewModel+Interpretation.swift
 ================================================
 import Foundation
 import SwiftData
@@ -16459,7 +16459,7 @@ extension EventReviewViewModel {
 
 
 ================================================
-FILE: Sources/DateSnap/ViewModels/EventReviewViewModel.swift
+FILE: Sources/Pencild/ViewModels/EventReviewViewModel.swift
 ================================================
 import Foundation
 import SwiftUI
@@ -16737,9 +16737,9 @@ public final class EventReviewViewModel: ObservableObject {
                     alarms: alarmIntervals
                 )
             }
-        } catch DateSnapError.calendar(.accessDenied) {
+        } catch PencildError.calendar(.accessDenied) {
             calendarAccessDenied = true
-            errorMessage = DateSnapError.calendar(.accessDenied).localizedDescription
+            errorMessage = PencildError.calendar(.accessDenied).localizedDescription
             return false
         } catch {
             errorMessage = error.localizedDescription
@@ -16844,7 +16844,7 @@ enum EventAlertText {
 
 
 ================================================
-FILE: Sources/DateSnap/ViewModels/HomeViewModel.swift
+FILE: Sources/Pencild/ViewModels/HomeViewModel.swift
 ================================================
 import Foundation
 import SwiftUI
@@ -17018,7 +17018,7 @@ public final class HomeViewModel: ObservableObject {
 
 
 ================================================
-FILE: Sources/DateSnap/ViewModels/PurchaseViewModel.swift
+FILE: Sources/Pencild/ViewModels/PurchaseViewModel.swift
 ================================================
 import Foundation
 import StoreKit
@@ -17031,8 +17031,8 @@ final class PurchaseViewModel: ObservableObject {
     enum Plan: Sendable {
         case plus, premium
 
-        var monthlyID: String { self == .plus ? "com.datesnap.plus.monthly" : "com.datesnap.premium.monthly" }
-        var annualID: String { self == .plus ? "com.datesnap.plus.annual" : "com.datesnap.premium.annual" }
+        var monthlyID: String { self == .plus ? "com.pencild.plus.monthly" : "com.pencild.premium.monthly" }
+        var annualID: String { self == .plus ? "com.pencild.plus.annual" : "com.pencild.premium.annual" }
         var tier: SubscriptionTier { self == .plus ? .plus : .premium }
     }
 
@@ -17102,9 +17102,9 @@ final class PurchaseViewModel: ObservableObject {
         defer { isPurchasing = false }
         do {
             return try await subscription.purchase(product: product)
-        } catch DateSnapError.subscription(.purchaseCancelled) {
+        } catch PencildError.subscription(.purchaseCancelled) {
             return nil
-        } catch DateSnapError.subscription(.purchasePending) {
+        } catch PencildError.subscription(.purchasePending) {
             errorMessage = "Your purchase is pending approval. It will unlock automatically once approved."
             return nil
         } catch {
@@ -17128,16 +17128,16 @@ final class PurchaseViewModel: ObservableObject {
 }
 
 // MARK: - Legal Links
-enum DateSnapLinks {
+enum PencildLinks {
     static let privacyPolicy: URL = {
-        guard let url = URL(string: "https://datesnap.app/privacy") else {
+        guard let url = URL(string: "https://pencild.app/privacy") else {
             preconditionFailure("Invalid Privacy Policy URL")
         }
         return url
     }()
 
     static let support: URL = {
-        guard let url = URL(string: "https://datesnap.app/support") else {
+        guard let url = URL(string: "https://pencild.app/support") else {
             preconditionFailure("Invalid Support URL")
         }
         return url
@@ -17155,7 +17155,7 @@ enum DateSnapLinks {
 
 
 ================================================
-FILE: Sources/DateSnap/ViewModels/ScanViewModel.swift
+FILE: Sources/Pencild/ViewModels/ScanViewModel.swift
 ================================================
 import Foundation
 import SwiftUI
@@ -17246,7 +17246,7 @@ public final class ScanViewModel: ObservableObject {
     /// Scans raw image data (from `PhotosPicker` or the Files importer).
     public func scanImageData(_ data: Data, assetIdentifier: String = UUID().uuidString, modelContext: ModelContext? = nil) async {
         guard let image = UIImage(data: data) else {
-            stage = .failed(DateSnapError.photoLibrary(.imageConversionFailed).localizedDescription)
+            stage = .failed(PencildError.photoLibrary(.imageConversionFailed).localizedDescription)
             return
         }
         await scanImage(image, assetIdentifier: assetIdentifier, modelContext: modelContext)
@@ -17254,7 +17254,7 @@ public final class ScanViewModel: ObservableObject {
 
     /// Scans the bundled-at-runtime sample flyer; needs no photo permissions.
     public func scanSampleFlyer(modelContext: ModelContext? = nil) async {
-        await scanImage(SampleFlyer.render(), assetIdentifier: "datesnap-sample-flyer", modelContext: modelContext)
+        await scanImage(SampleFlyer.render(), assetIdentifier: "pencild-sample-flyer", modelContext: modelContext)
     }
 
     // MARK: - Files / PDF Import Pipeline (Premium)
@@ -17317,7 +17317,7 @@ public final class ScanViewModel: ObservableObject {
             let ocrResult: OCRResult
             do {
                 ocrResult = try await recognizeWithRetry(page)
-            } catch DateSnapError.ocr(.noTextRecognized) {
+            } catch PencildError.ocr(.noTextRecognized) {
                 continue
             } catch {
                 if pages.count == 1 {
@@ -17426,8 +17426,8 @@ public final class ScanViewModel: ObservableObject {
         let first: OCRResult
         do {
             first = try await ocrService.recognizeLines(in: page, confidenceFloor: 0.35)
-        } catch DateSnapError.ocr(.noTextRecognized) {
-            guard let enhanced = ScanImageEnhancer.enhanced(page) else { throw DateSnapError.ocr(.noTextRecognized) }
+        } catch PencildError.ocr(.noTextRecognized) {
+            guard let enhanced = ScanImageEnhancer.enhanced(page) else { throw PencildError.ocr(.noTextRecognized) }
             return try await ocrService.recognizeLines(in: enhanced, confidenceFloor: 0.35)
         }
         let quality = RuleBasedEventAnalyzer.qualityReport(for: first, anchor: Date())
@@ -17474,7 +17474,7 @@ public final class ScanViewModel: ObservableObject {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/AutomationSettingsView.swift
+FILE: Sources/Pencild/Views/AutomationSettingsView.swift
 ================================================
 import SwiftUI
 
@@ -17795,7 +17795,7 @@ struct AutomationSettingsView: View {
                 Text("iOS Sandbox Respect Guarantee")
                     .font(DSTypography.bodyCompact().weight(.semibold))
                     .foregroundStyle(Color.dsForeground)
-                Text("Background scans run strictly when system capacity permits. DateSnap will never employ continuous background audio tricks, artificial GPS wake locks, or unprompted battery drains. Your snapshots stay encrypted on-device.")
+                Text("Background scans run strictly when system capacity permits. Pencild will never employ continuous background audio tricks, artificial GPS wake locks, or unprompted battery drains. Your snapshots stay encrypted on-device.")
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }
@@ -17808,7 +17808,7 @@ struct AutomationSettingsView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/CalendarPermissionDeniedView.swift
+FILE: Sources/Pencild/Views/CalendarPermissionDeniedView.swift
 ================================================
 import SwiftUI
 import UIKit
@@ -17931,7 +17931,7 @@ struct CalendarPermissionDeniedView: View {
                             .foregroundStyle(Color.dsForeground)
                             .multilineTextAlignment(.center)
                         
-                        Text("DateSnap needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.")
+                        Text("Pencild needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.")
                             .font(DSTypography.bodyBase())
                             .foregroundStyle(Color.dsMutedForeground)
                             .multilineTextAlignment(.center)
@@ -17963,7 +17963,7 @@ struct CalendarPermissionDeniedView: View {
                         
                         abilityRow(
                             icon: "bell.badge.fill",
-                            title: "DateSnap Local Push Alerts",
+                            title: "Pencild Local Push Alerts",
                             description: "Receive intelligent on-device notifications & pre-event sound cues for snapped screenshots."
                         )
                         
@@ -17989,7 +17989,7 @@ struct CalendarPermissionDeniedView: View {
                         
                         VStack(alignment: .leading, spacing: 6) {
                             stepRow(number: "1", text: "Open iPhone Settings")
-                            stepRow(number: "2", text: "Scroll down to select DateSnap")
+                            stepRow(number: "2", text: "Scroll down to select Pencild")
                             stepRow(number: "3", text: "Tap Calendars → select 'Add Events Only' or 'Full Access'")
                         }
                         .padding(.top, 4)
@@ -18068,21 +18068,21 @@ struct CalendarPermissionDeniedView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/EventReviewEditView.swift
+FILE: Sources/Pencild/Views/EventReviewEditView.swift
 ================================================
 import SwiftUI
 import SwiftData
 import EventKit
 
 /// Entry point for reviewing a scanned (or saved) event. Resolves the persisted candidate behind the
-/// `DateSnapEvent` and hands it to a form bound to `EventReviewViewModel`.
+/// `PencildEvent` and hands it to a form bound to `EventReviewViewModel`.
 struct EventReviewEditView: View {
     @Environment(\.services) private var services
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: AppState
 
-    let event: DateSnapEvent
+    let event: PencildEvent
 
     var body: some View {
         if let candidate = SavedEventActions.candidate(id: event.id, in: modelContext) {
@@ -18236,7 +18236,7 @@ struct EventReviewForm: View {
                 Image(systemName: "calendar.badge.clock")
                     .font(.system(size: 20))
                     .foregroundStyle(Color.dsPrimary)
-                Text("DateSnap")
+                Text("Pencild")
                     .font(DSTypography.headlineCard())
                     .foregroundStyle(Color.dsForeground)
             }
@@ -18551,7 +18551,7 @@ struct EventReviewForm: View {
             }
 
             if viewModel.yearAssumed {
-                Label("Year wasn't on the flyer — DateSnap picked the next upcoming one.", systemImage: "info.circle")
+                Label("Year wasn't on the flyer — Pencild picked the next upcoming one.", systemImage: "info.circle")
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsWarning)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -18910,7 +18910,7 @@ struct EventReviewForm: View {
 
     private func openSavedEvent(_ candidateID: String) {
         guard let match = SavedEventActions.candidate(id: candidateID, in: modelContext) else { return }
-        Task { await appState.present(.savedEventDetail(match.toDateSnapEvent())) }
+        Task { await appState.present(.savedEventDetail(match.toPencildEvent())) }
     }
 
     private func save() async {
@@ -18929,7 +18929,7 @@ struct EventReviewForm: View {
         } else {
             appState.showToast(wasUpdate ? "✓ Calendar event updated" : "✓ Event saved to Calendar & Reminders")
         }
-        await appState.present(.savedEventDetail(viewModel.candidate.toDateSnapEvent()))
+        await appState.present(.savedEventDetail(viewModel.candidate.toPencildEvent()))
     }
 
     private var successToast: some View {
@@ -18972,7 +18972,7 @@ struct EventReviewForm: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/HelpFeedbackView.swift
+FILE: Sources/Pencild/Views/HelpFeedbackView.swift
 ================================================
 import SwiftUI
 import UIKit
@@ -19002,26 +19002,26 @@ struct HelpFeedbackView: View {
     }
 
     let faqs: [FAQTopic] = [
-        FAQTopic(id: 1, icon: "cpu.fill", question: "How does DateSnap find dates in screenshots?",
-                 answer: "DateSnap utilizes CoreML and on-device natural language parsing. When you snap or select an image, the app isolates date phrases (like \"Next Thursday at 8 PM\" or \"Nov 14-16\"), extracts temporal context, and formulates standard calendar records without sending your photo to any third-party server."),
+        FAQTopic(id: 1, icon: "cpu.fill", question: "How does Pencild find dates in screenshots?",
+                 answer: "Pencild utilizes CoreML and on-device natural language parsing. When you snap or select an image, the app isolates date phrases (like \"Next Thursday at 8 PM\" or \"Nov 14-16\"), extracts temporal context, and formulates standard calendar records without sending your photo to any third-party server."),
         FAQTopic(id: 2, icon: "arrow.triangle.2.circlepath", question: "Why did an event scan with the wrong time?",
                  answer: "Posters with stylized serif typography or multi-timezone notices (e.g. \"7 PM EST / 4 PM PST\") can sometimes lead to ambiguous matches. You can tap any parsed event card to manually adjust the time or date pill before saving, or use the crop preview tool to pinpoint the specific time lockup."),
         FAQTopic(id: 3, icon: "lock.shield.fill", question: "Are private photos uploaded to a cloud?",
                  answer: "Never. Your visual camera roll remains entirely localized. No screenshots, images, OCR strings, or metadata leave your physical device. We uphold a strict zero-telemetry media policy so your tickets, personal chats, and medical appointments stay private."),
         FAQTopic(id: 4, icon: "arrow.left.arrow.right", question: "How do I export to Google or Outlook?",
-                 answer: "DateSnap seamlessly bridges into your default system EventKit calendar. If your iPhone already syncs with Google Calendar, Microsoft Exchange, or Outlook in iOS Settings > Calendar > Accounts, DateSnap automatically deposits your verified dates into your preferred cloud schedule."),
+                 answer: "Pencild seamlessly bridges into your default system EventKit calendar. If your iPhone already syncs with Google Calendar, Microsoft Exchange, or Outlook in iOS Settings > Calendar > Accounts, Pencild automatically deposits your verified dates into your preferred cloud schedule."),
     ]
 
     let topics: [SupportTopic] = [
         SupportTopic(id: "quickStart", icon: "book.fill", title: "Quick Start",
                      subtitle: "Master screenshot capture in 2 mins",
-                     body: "1. Screenshot any flyer, invite, or ticket.\n2. Open DateSnap — the Neural Intake Engine scans automatically.\n3. Review the parsed event card and adjust date or time pills if needed.\n4. Save to Apple Calendar & Reminders with 3-tier staggered alerts."),
+                     body: "1. Screenshot any flyer, invite, or ticket.\n2. Open Pencild — the Neural Intake Engine scans automatically.\n3. Review the parsed event card and adjust date or time pills if needed.\n4. Save to Apple Calendar & Reminders with 3-tier staggered alerts."),
         SupportTopic(id: "troubleshootOCR", icon: "doc.text.viewfinder.fill", title: "Troubleshoot OCR",
                      subtitle: "Fix unread or blurred flyer dates",
                      body: "Blurry or stylized dates are the most common OCR failure. Crop the scan preview to isolate the date lockup, raise the Confidence Threshold in Automation Settings to 85%+, or enable Draft Low Confidence Events so ambiguous scans land in your review tray instead of being discarded."),
         SupportTopic(id: "permissions", icon: "lock.open.fill", title: "Permissions",
                      subtitle: "Enable Calendar & Photos sync",
-                     body: "DateSnap needs Photos access (read-only) to intake screenshots and Calendar access (write-only) to save events. If a permission was denied, open iOS Settings > DateSnap and toggle Photos & Calendars back on. The app works fully on-device either way."),
+                     body: "Pencild needs Photos access (read-only) to intake screenshots and Calendar access (write-only) to save events. If a permission was denied, open iOS Settings > Pencild and toggle Photos & Calendars back on. The app works fully on-device either way."),
     ]
 
     var filteredFAQs: [FAQTopic] {
@@ -19050,7 +19050,7 @@ struct HelpFeedbackView: View {
                 humanSupport
                 appEnvironment
                 bottomLinks
-                SettingsFooterNote(lines: ["DateSnap respects your time and peace of mind. All data extracted remains strictly yours."])
+                SettingsFooterNote(lines: ["Pencild respects your time and peace of mind. All data extracted remains strictly yours."])
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
@@ -19069,7 +19069,7 @@ struct HelpFeedbackView: View {
 
     private var careHeader: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("DATESNAP CARE HUB")
+            Text("PENCILD CARE HUB")
                 .font(DSTypography.overlineConfidence())
                 .foregroundStyle(Color.dsPrimary)
             HStack(alignment: .firstTextBaseline) {
@@ -19197,10 +19197,10 @@ struct HelpFeedbackView: View {
 
     private var privacyGuarantee: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("The DateSnap Privacy Guarantee")
+            Text("The Pencild Privacy Guarantee")
                 .font(DSTypography.headlineCard())
                 .foregroundStyle(Color.dsForeground)
-            Text("Unlike cloud scanners, DateSnap processes your personal screenshots strictly on-device utilizing the local Apple Neural Engine.")
+            Text("Unlike cloud scanners, Pencild processes your personal screenshots strictly on-device utilizing the local Apple Neural Engine.")
                 .font(DSTypography.caption())
                 .foregroundStyle(Color.dsMutedForeground)
             HStack(spacing: 10) {
@@ -19294,13 +19294,13 @@ struct HelpFeedbackView: View {
                                   tint: .dsInfo, trailing: "Reply < 2 hrs")
             VStack(spacing: 14) {
                 Button {
-                    if let url = URL(string: "mailto:support@datesnap.app?subject=DateSnap%20Support%20Request") {
+                    if let url = URL(string: "mailto:support@pencild.app?subject=Pencild%20Support%20Request") {
                         UIApplication.shared.open(url)
                     }
                 } label: {
                     SettingRow(icon: "envelope.fill", iconTint: .dsPrimary,
                                title: "Send Message to Support",
-                               subtitle: "Direct access to DateSnap core engineers") {
+                               subtitle: "Direct access to Pencild core engineers") {
                         SettingsChevron()
                     }
                     .contentShape(Rectangle())
@@ -19312,7 +19312,7 @@ struct HelpFeedbackView: View {
                 Button {
                     topicGuide = SupportTopic(id: "bugReport", icon: "ant.fill", title: "Submit a Bug Report",
                                               subtitle: "Attach sanitized diagnostic capture logs",
-                                              body: "Email support@datesnap.app with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
+                                              body: "Email support@pencild.app with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
                 } label: {
                     SettingRow(icon: "ant.fill", iconTint: .dsError,
                                title: "Submit a Bug Report",
@@ -19328,7 +19328,7 @@ struct HelpFeedbackView: View {
                 Button {
                     topicGuide = SupportTopic(id: "featureRequest", icon: "lightbulb.fill", title: "Request a Feature",
                                               subtitle: "Help shape our next scheduled release",
-                                              body: "Feature requests go straight to the engineering backlog. Send your idea to support@datesnap.app with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
+                                              body: "Feature requests go straight to the engineering backlog. Send your idea to support@pencild.app with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
                 } label: {
                     SettingRow(icon: "lightbulb.fill", iconTint: .dsWarning,
                                title: "Request a Feature",
@@ -19394,7 +19394,7 @@ struct HelpFeedbackView: View {
 
     private var diagnosticSummary: String {
         """
-        DateSnap Diagnostic Summary
+        Pencild Diagnostic Summary
         ---------------------------
         Client: v4.2.1 (Build 4802)
         Core Engine: Apple Neural v18.2
@@ -19489,7 +19489,7 @@ private struct TopicGuideSheet: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/HistoryArchiveView.swift
+FILE: Sources/Pencild/Views/HistoryArchiveView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -19713,9 +19713,9 @@ struct HistoryArchiveView: View {
                 titleVisibility: .visible,
                 presenting: pendingDelete
             ) { saved in
-                Button("Delete from DateSnap Only", role: .destructive) {
+                Button("Delete from Pencild Only", role: .destructive) {
                     actions.delete(saved, removeFromCalendar: false)
-                    appState.showToast("Removed from DateSnap history")
+                    appState.showToast("Removed from Pencild history")
                 }
                 if saved.externalCalendarEventId != nil {
                     Button("Delete from Calendar & Reminders Too", role: .destructive) {
@@ -19724,7 +19724,7 @@ struct HistoryArchiveView: View {
                     }
                 }
             } message: { _ in
-                Text("Pending DateSnap alerts for this event will be cancelled.")
+                Text("Pending Pencild alerts for this event will be cancelled.")
             }
         }
     }
@@ -19791,7 +19791,7 @@ struct HistoryArchiveView: View {
     
     @ViewBuilder
     private func eventCard(saved: SavedEvent) -> some View {
-        let event = saved.candidate?.toDateSnapEvent()
+        let event = saved.candidate?.toPencildEvent()
         if let event {
             Button {
                 if saved.status == .draft {
@@ -19909,7 +19909,7 @@ struct HistoryArchiveView: View {
                 Label("Archive", systemImage: "archivebox")
             }
         }
-        if saved.status == .saved, let event = saved.candidate?.toDateSnapEvent() {
+        if saved.status == .saved, let event = saved.candidate?.toPencildEvent() {
             Button {
                 appState.activeModal = .eventReviewEdit(event)
             } label: {
@@ -19927,7 +19927,7 @@ struct HistoryArchiveView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/HomeEmptyStateView.swift
+FILE: Sources/Pencild/Views/HomeEmptyStateView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -19949,7 +19949,7 @@ struct HomeEmptyStateView: View {
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
 
-    /// Screenshots the library observer has seen that DateSnap has not scanned yet (Plus auto-detection).
+    /// Screenshots the library observer has seen that Pencild has not scanned yet (Plus auto-detection).
     private var newScreenshots: [PHAsset] {
         let scanned = Set(scannedAssets.map(\.assetIdentifier))
         let unscanned = homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }
@@ -19972,7 +19972,7 @@ struct HomeEmptyStateView: View {
                             }
                             .foregroundStyle(Color.dsPrimary)
                             
-                            Text("Welcome to DateSnap")
+                            Text("Welcome to Pencild")
                                 .font(DSTypography.displayTitle())
                                 .foregroundStyle(Color.dsForeground)
                             
@@ -19986,7 +19986,7 @@ struct HomeEmptyStateView: View {
                         // Paywall / Tier Pill
                         Button {
                             if appState.isPremiumMember {
-                                appState.showToast("DateSnap Premium Active")
+                                appState.showToast("Pencild Premium Active")
                             } else if appState.isPlusMember {
                                 appState.activeModal = .premiumPaywall
                             } else {
@@ -20187,7 +20187,7 @@ struct HomeEmptyStateView: View {
                                 .foregroundStyle(Color.dsForeground)
                                 .multilineTextAlignment(.center)
                             
-                            Text("Take a screenshot of a flyer, text invite, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.")
+                            Text("Take a screenshot of a flyer, text invite, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.")
                                 .font(DSTypography.bodyCompact())
                                 .foregroundStyle(Color.dsMutedForeground)
                                 .multilineTextAlignment(.center)
@@ -20245,7 +20245,7 @@ struct HomeEmptyStateView: View {
                                 .frame(maxWidth: .infinity, minHeight: 44)
                             }
                             .disabled(scanViewModel.isProcessing)
-                            .accessibilityHint(appState.isPremiumMember ? "Scan a PDF or image from Files" : "Requires DateSnap Premium")
+                            .accessibilityHint(appState.isPremiumMember ? "Scan a PDF or image from Files" : "Requires Pencild Premium")
                         }
                         .padding(.top, 4)
                     }
@@ -20255,10 +20255,10 @@ struct HomeEmptyStateView: View {
 
                     autoDetectedScreenshotsCard
                     
-                    // "How DateSnap Works" 3 Effortless Steps
+                    // "How Pencild Works" 3 Effortless Steps
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
-                            Text("How DateSnap Works")
+                            Text("How Pencild Works")
                                 .font(DSTypography.headlineCard())
                                 .foregroundStyle(Color.dsForeground)
                             Spacer()
@@ -20277,7 +20277,7 @@ struct HomeEmptyStateView: View {
                         stepCard(
                             icon: "bolt.fill",
                             iconColor: Color.dsPrimary,
-                            title: "2. Open DateSnap",
+                            title: "2. Open Pencild",
                             description: "On-device neural vision parses dates, venue locations, and start/end times in 0.4 seconds."
                         )
                         
@@ -20435,7 +20435,7 @@ struct HomeEmptyStateView: View {
                 Button("Choose a Photo Instead") { showPhotoPicker = true }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("DateSnap needs Photo Library access to find your recent screenshots. You can still pick individual photos without it.")
+                Text("Pencild needs Photo Library access to find your recent screenshots. You can still pick individual photos without it.")
             }
         }
     }
@@ -20498,7 +20498,7 @@ struct HomeEmptyStateView: View {
                         }
                     }
                 }
-                Text("DateSnap Plus watches your Screenshots album, checks new ones on device, and shows likely events first. Nothing is saved until you review it.")
+                Text("Pencild Plus watches your Screenshots album, checks new ones on device, and shows likely events first. Nothing is saved until you review it.")
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }
@@ -20626,7 +20626,7 @@ struct RoundedCornerBracket: Shape {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/InterpretationDiagnosticsView.swift
+FILE: Sources/Pencild/Views/InterpretationDiagnosticsView.swift
 ================================================
 import SwiftUI
 
@@ -20688,7 +20688,7 @@ struct InterpretationDiagnosticsView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/InterpretationReviewViews.swift
+FILE: Sources/Pencild/Views/InterpretationReviewViews.swift
 ================================================
 import SwiftUI
 
@@ -20701,7 +20701,7 @@ struct EngineRouteBadge: View {
         HStack(spacing: 6) {
             Image(systemName: route == .onDeviceModel ? "wand.and.sparkles" : "cpu")
                 .font(.system(size: 12, weight: .semibold))
-            Text(route == .onDeviceModel ? "Interpreted on device with Apple Intelligence" : "Read by DateSnap's on-device rules")
+            Text(route == .onDeviceModel ? "Interpreted on device with Apple Intelligence" : "Read by Pencild's on-device rules")
                 .font(DSTypography.caption())
         }
         .foregroundStyle(route == .onDeviceModel ? Color.dsPrimary : Color.dsMutedForeground)
@@ -21146,7 +21146,7 @@ struct ReviewSuggestionsCard: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/ManagePlanView.swift
+FILE: Sources/Pencild/Views/ManagePlanView.swift
 ================================================
 import SwiftUI
 import UIKit
@@ -21184,7 +21184,7 @@ struct ManagePlanView: View {
                 if tier != .premium { upsell }
                 controls
                 SettingsFooterNote(
-                    lines: ["Subscriptions are handled securely through your Apple ID. Modify or cancel anytime in iPhone Settings at least 24 hours before renewal. DateSnap never receives, parses, or stores payment credentials."],
+                    lines: ["Subscriptions are handled securely through your Apple ID. Modify or cancel anytime in iPhone Settings at least 24 hours before renewal. Pencild never receives, parses, or stores payment credentials."],
                     systemImage: "info.circle.fill"
                 )
                 footerLinks
@@ -21246,7 +21246,7 @@ struct ManagePlanView: View {
 
     private var planName: String {
         switch tier {
-        case .starter: return "DateSnap Starter"
+        case .starter: return "Pencild Starter"
         case .plus, .premium:
             guard let entitlement else { return tier.displayName }
             return "\(tier.displayName) (\(entitlement.isAnnual ? "Annual" : "Monthly"))"
@@ -21516,13 +21516,13 @@ struct ManagePlanView: View {
     private var footerLinks: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Button("Terms of Use (EULA)") { openURL(DateSnapLinks.termsOfUse) }
+                Button("Terms of Use (EULA)") { openURL(PencildLinks.termsOfUse) }
                 Text("•").foregroundStyle(Color.dsMutedForeground)
-                Button("Privacy Policy") { openURL(DateSnapLinks.privacyPolicy) }
+                Button("Privacy Policy") { openURL(PencildLinks.privacyPolicy) }
             }
             .font(DSTypography.caption())
             .foregroundStyle(Color.dsSecondary)
-            Text("DateSnap \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")) • StoreKit 2")
+            Text("Pencild \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")) • StoreKit 2")
                 .font(.system(size: 10))
                 .foregroundStyle(Color.dsMutedForeground.opacity(0.7))
         }
@@ -21532,7 +21532,7 @@ struct ManagePlanView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/MarketingKitView.swift
+FILE: Sources/Pencild/Views/MarketingKitView.swift
 ================================================
 import SwiftUI
 import UIKit
@@ -21543,7 +21543,7 @@ struct MarketingKitView: View {
     @EnvironmentObject private var appState: AppState
 
     let subjectLine = "Stop losing dates in your camera roll 📸 ➔ 🗓️"
-    let previewText = "DateSnap's on-device AI turns your flyers and screenshots into Apple Calendar events in seconds."
+    let previewText = "Pencild's on-device AI turns your flyers and screenshots into Apple Calendar events in seconds."
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -21579,7 +21579,7 @@ struct MarketingKitView: View {
                     .rotationEffect(.degrees(9))
                     .offset(x: 82, y: 14)
                 VStack(spacing: 4) {
-                    Text("DateSnap")
+                    Text("Pencild")
                         .font(DSTypography.displayHero())
                         .foregroundStyle(Color.dsForeground)
                     Text("Precision Temporal AI")
@@ -21615,7 +21615,7 @@ struct MarketingKitView: View {
             VStack(spacing: 14) {
                 copyBlock("Headline Hook", "X / Instagram",
                           quote: "“Your camera roll is where event plans go to die. We fixed that.”",
-                          body: "DateSnap reads dates from concert posters, festival lineups, and group chats like a human. 0.12s on-device OCR, zero cloud lag, zero privacy compromises.")
+                          body: "Pencild reads dates from concert posters, festival lineups, and group chats like a human. 0.12s on-device OCR, zero cloud lag, zero privacy compromises.")
                 Divider().overlay(Color.dsBorder)
                 copyBlock("Feature Spotlight", "LinkedIn / Tech",
                           quote: "“Introducing Temporal AI: Instant Natural Language Extraction on iOS.”",
@@ -21725,14 +21725,14 @@ struct MarketingKitView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Hey there,")
                     Text("How many times have you screenshotted a festival flyer, a party invitation, or a ticket drop date... only to completely forget about it until the day after?")
-                    Text("We built DateSnap to end that frustration forever. Using local CoreML and Apple's Neural Engine, DateSnap scans any screenshot in 0.12 seconds, extracts relative dates like \"Next Friday at 9\", and schedules 3-tier custom alerts across Apple Calendar and Reminders.")
+                    Text("We built Pencild to end that frustration forever. Using local CoreML and Apple's Neural Engine, Pencild scans any screenshot in 0.12 seconds, extracts relative dates like \"Next Friday at 9\", and schedules 3-tier custom alerts across Apple Calendar and Reminders.")
                     Text("✨ What you get:")
                     VStack(alignment: .leading, spacing: 5) {
                         emailBullet("100% On-Device Privacy", "Zero cloud uploads, zero telemetry. Your photos stay strictly in local memory.")
                         emailBullet("3-Tier Staggered Alerts", "24h outfit/ticket prep, departure transit alarms, and gate-opening push pings.")
                         emailBullet("Zero Manual Typing", "Automatic titles, locations, links, and auto-purged screenshot storage.")
                     }
-                    Text("Download DateSnap on the iOS App Store today and experience seamless screenshot-to-calendar superpowers.")
+                    Text("Download Pencild on the iOS App Store today and experience seamless screenshot-to-calendar superpowers.")
                 }
                 .font(DSTypography.caption())
                 .foregroundStyle(Color.dsMutedForeground)
@@ -21741,7 +21741,7 @@ struct MarketingKitView: View {
                     appState.showToast("App Store campaign link opened")
                 } label: {
                     HStack {
-                        Text("Get DateSnap on the App Store")
+                        Text("Get Pencild on the App Store")
                         Image(systemName: "arrow.right")
                     }
                 }
@@ -21799,7 +21799,7 @@ struct MarketingKitView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/NoDatesFoundView.swift
+FILE: Sources/Pencild/Views/NoDatesFoundView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -21975,7 +21975,7 @@ struct NoDatesFoundView: View {
                             .font(DSTypography.displayTitle())
                             .foregroundStyle(Color.dsForeground)
                         
-                        Text("DateSnap analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.")
+                        Text("Pencild analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.")
                             .font(DSTypography.bodyBase())
                             .foregroundStyle(Color.dsMutedForeground)
                             .multilineTextAlignment(.center)
@@ -22144,7 +22144,7 @@ struct NoDatesFoundView: View {
         modelContext.insert(candidate)
         try? modelContext.save()
         appState.rememberSourceImage(appState.lastScanImage, for: [candidate])
-        Task { await appState.present(.eventReviewEdit(candidate.toDateSnapEvent())) }
+        Task { await appState.present(.eventReviewEdit(candidate.toPencildEvent())) }
     }
     
     @ViewBuilder
@@ -22174,7 +22174,7 @@ struct NoDatesFoundView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/NotificationPermissionDeniedView.swift
+FILE: Sources/Pencild/Views/NotificationPermissionDeniedView.swift
 ================================================
 import SwiftUI
 import UIKit
@@ -22261,7 +22261,7 @@ struct NotificationPermissionDeniedView: View {
                             .foregroundStyle(Color.dsForeground)
                             .multilineTextAlignment(.center)
                         
-                        Text("Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.")
+                        Text("Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.")
                             .font(DSTypography.bodyBase())
                             .foregroundStyle(Color.dsMutedForeground)
                             .multilineTextAlignment(.center)
@@ -22325,7 +22325,7 @@ struct NotificationPermissionDeniedView: View {
                     HStack(spacing: 6) {
                         Text("Settings")
                         Image(systemName: "chevron.right").font(.system(size: 10))
-                        Text("DateSnap")
+                        Text("Pencild")
                         Image(systemName: "chevron.right").font(.system(size: 10))
                         Text("Notifications")
                         Image(systemName: "chevron.right").font(.system(size: 10))
@@ -22416,7 +22416,7 @@ struct NotificationPermissionDeniedView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/PlusPaywallView.swift
+FILE: Sources/Pencild/Views/PlusPaywallView.swift
 ================================================
 import SwiftUI
 
@@ -22463,7 +22463,7 @@ struct PlusPaywallView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "bolt.fill")
                                 .font(.system(size: 12, weight: .bold))
-                            Text("DATESNAP PLUS")
+                            Text("PENCILD PLUS")
                                 .font(DSTypography.overlineConfidence())
                         }
                         .foregroundStyle(Color.dsPrimary)
@@ -22554,7 +22554,7 @@ struct PlusPaywallView: View {
                             icon: "arrow.triangle.2.circlepath",
                             iconColor: Color.dsSecondary,
                             title: "Calendar, Reminders & Push",
-                            subtitle: "Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push."
+                            subtitle: "Triple-destination sync across Apple Calendar, Reminders, and Pencild local push."
                         )
                         
                         featureRow(
@@ -22686,7 +22686,7 @@ struct PlusPaywallView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "doc.text.fill")
                                 .font(.system(size: 13))
-                            Text("Need Multi-Page PDF & Cloud Drive import? Explore DateSnap Premium")
+                            Text("Need Multi-Page PDF & Cloud Drive import? Explore Pencild Premium")
                                 .font(DSTypography.caption())
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 10))
@@ -22706,11 +22706,11 @@ struct PlusPaywallView: View {
                         }
                         Text("•").foregroundStyle(Color.dsMutedForeground)
                         Button("Terms of Use") {
-                            openURL(DateSnapLinks.termsOfUse)
+                            openURL(PencildLinks.termsOfUse)
                         }
                         Text("•").foregroundStyle(Color.dsMutedForeground)
                         Button("Privacy Policy") {
-                            openURL(DateSnapLinks.privacyPolicy)
+                            openURL(PencildLinks.privacyPolicy)
                         }
                     }
                     .font(DSTypography.caption())
@@ -22749,7 +22749,7 @@ struct PlusPaywallView: View {
 
     private func purchase() async {
         guard let tier = await purchases.purchase(.plus, annual: selectedPlanIsAnnual) else { return }
-        appState.showToast(tier == .premium ? "🎉 DateSnap Premium is active" : "🎉 Welcome to DateSnap Plus!")
+        appState.showToast(tier == .premium ? "🎉 Pencild Premium is active" : "🎉 Welcome to Pencild Plus!")
         dismiss()
     }
 
@@ -22792,7 +22792,7 @@ struct PlusPaywallView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/PremiumPaywallView.swift
+FILE: Sources/Pencild/Views/PremiumPaywallView.swift
 ================================================
 import SwiftUI
 
@@ -22838,7 +22838,7 @@ struct PremiumPaywallView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "sparkles")
                                 .font(.system(size: 12, weight: .bold))
-                            Text("DATESNAP PREMIUM")
+                            Text("PENCILD PREMIUM")
                                 .font(DSTypography.overlineConfidence())
                         }
                         .foregroundStyle(Color.dsWarning)
@@ -22914,7 +22914,7 @@ struct PremiumPaywallView: View {
                         featureRow(
                             icon: "infinity",
                             iconColor: Color.dsPrimary,
-                            title: "Everything in DateSnap Plus",
+                            title: "Everything in Pencild Plus",
                             subtitle: "Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization."
                         )
                         
@@ -23079,11 +23079,11 @@ struct PremiumPaywallView: View {
                             }
                             Text("•").foregroundStyle(Color.dsMutedForeground)
                             Button("Terms of Use") {
-                                openURL(DateSnapLinks.termsOfUse)
+                                openURL(PencildLinks.termsOfUse)
                             }
                             Text("•").foregroundStyle(Color.dsMutedForeground)
                             Button("Privacy Policy") {
-                                openURL(DateSnapLinks.privacyPolicy)
+                                openURL(PencildLinks.privacyPolicy)
                             }
                         }
                         .font(DSTypography.caption())
@@ -23123,7 +23123,7 @@ struct PremiumPaywallView: View {
 
     private func purchase() async {
         guard await purchases.purchase(.premium, annual: selectedPlanIsAnnual) != nil else { return }
-        appState.showToast("🎉 Welcome to DateSnap Premium!")
+        appState.showToast("🎉 Welcome to Pencild Premium!")
         dismiss()
     }
 
@@ -23166,7 +23166,7 @@ struct PremiumPaywallView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/PrivacyCenterView.swift
+FILE: Sources/Pencild/Views/PrivacyCenterView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -23265,7 +23265,7 @@ struct PrivacyCenterView: View {
                 permissionRow("photo.on.rectangle.angled", .dsInfo, "Photo Library", "Limited & Local",
                               "Read-only access to scan screenshots you pick. Images are processed in memory on-device.")
                 permissionRow("calendar.add.on", .dsSecondary, "Apple Calendar", "Events You Save",
-                              "Used only to add, update, or remove events you confirm in DateSnap. Nothing is uploaded.")
+                              "Used only to add, update, or remove events you confirm in Pencild. Nothing is uploaded.")
                 permissionRow("checklist", .dsPrimary, "Reminders Access", "Events You Save",
                               "Adds a reminder for each event you save to the list you choose; nothing is uploaded.")
                 permissionRow("bell.badge.fill", .dsWarning, "Local Notifications", "Device Generated",
@@ -23397,9 +23397,9 @@ struct PrivacyCenterView: View {
 
                 Divider().overlay(Color.dsBorder)
 
-                documentRow("lock.shield", "Privacy Policy & Telemetry Declaration", url: DateSnapLinks.privacyPolicy)
-                documentRow("doc.plaintext", "Terms of Use", url: DateSnapLinks.termsOfUse)
-                documentRow("questionmark.circle", "Support", url: DateSnapLinks.support)
+                documentRow("lock.shield", "Privacy Policy & Telemetry Declaration", url: PencildLinks.privacyPolicy)
+                documentRow("doc.plaintext", "Terms of Use", url: PencildLinks.termsOfUse)
+                documentRow("questionmark.circle", "Support", url: PencildLinks.support)
 
                 Divider().overlay(Color.dsBorder)
 
@@ -23445,7 +23445,7 @@ struct PrivacyCenterView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/ReminderScheduleEditorView.swift
+FILE: Sources/Pencild/Views/ReminderScheduleEditorView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -23500,7 +23500,7 @@ struct ReminderScheduleEditorView: View {
                                 Image(systemName: "calendar.badge.clock")
                                     .font(.system(size: 20))
                                     .foregroundStyle(Color.dsPrimary)
-                                Text("DateSnap")
+                                Text("Pencild")
                                     .font(DSTypography.headlineCard())
                                     .foregroundStyle(Color.dsForeground)
                             }
@@ -23896,7 +23896,7 @@ struct SavedEventScheduleEditor: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var appState: AppState
 
-    let event: DateSnapEvent
+    let event: PencildEvent
 
     var body: some View {
         if let saved = SavedEventActions.savedEvent(candidateId: event.id, in: modelContext),
@@ -23914,7 +23914,7 @@ struct SavedEventScheduleEditor: View {
                         ? "✓ Reminder schedule updated (\(offsets.count) alert\(offsets.count == 1 ? "" : "s"))"
                         : "Calendar updated — local alerts are off in iOS Settings")
                     return true
-                } catch DateSnapError.calendar(.accessDenied) {
+                } catch PencildError.calendar(.accessDenied) {
                     await appState.present(.calendarPermissionDenied)
                     return false
                 } catch {
@@ -23935,7 +23935,7 @@ struct SavedEventScheduleEditor: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/ReminderSettingsView.swift
+FILE: Sources/Pencild/Views/ReminderSettingsView.swift
 ================================================
 import SwiftUI
 
@@ -24090,7 +24090,7 @@ struct ReminderSettingsView: View {
                             .foregroundStyle(Color.dsMutedForeground)
                         Spacer()
                         Menu {
-                            ForEach(["Apple Reminders", "Calendar Notification", "DateSnap Local Push"], id: \.self) { channel in
+                            ForEach(["Apple Reminders", "Calendar Notification", "Pencild Local Push"], id: \.self) { channel in
                                 Button(channel) { update(alert) { $0.channel = channel } }
                             }
                         } label: {
@@ -24367,7 +24367,7 @@ struct ReminderSettingsView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/SavedEventDetailView.swift
+FILE: Sources/Pencild/Views/SavedEventDetailView.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -24379,15 +24379,15 @@ struct SavedEventDetailView: View {
     @EnvironmentObject private var appState: AppState
     
     /// Snapshot used to open the screen; the live record is re-read so edits show immediately.
-    let snapshot: DateSnapEvent
+    let snapshot: PencildEvent
 
-    init(event: DateSnapEvent) {
+    init(event: PencildEvent) {
         self.snapshot = event
     }
 
     private var candidate: EventCandidate? { SavedEventActions.candidate(id: snapshot.id, in: modelContext) }
     private var saved: SavedEvent? { candidate?.savedEvent }
-    private var event: DateSnapEvent { candidate?.toDateSnapEvent() ?? snapshot }
+    private var event: PencildEvent { candidate?.toPencildEvent() ?? snapshot }
     private var isInCalendar: Bool { saved?.externalCalendarEventId != nil && saved?.status == .saved }
     private var hasReminder: Bool { !(saved?.externalReminderIds.isEmpty ?? true) }
 
@@ -24427,7 +24427,7 @@ struct SavedEventDetailView: View {
                                 Image(systemName: "calendar.badge.clock")
                                     .font(.system(size: 20))
                                     .foregroundStyle(Color.dsPrimary)
-                                Text("DateSnap")
+                                Text("Pencild")
                                     .font(DSTypography.headlineCard())
                                     .foregroundStyle(Color.dsForeground)
                             }
@@ -24452,7 +24452,7 @@ struct SavedEventDetailView: View {
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundStyle(Color(red: 4/255, green: 27/255, blue: 16/255))
                             }
-                            Text(isInCalendar ? (hasReminder ? "SAVED TO APPLE CALENDAR & REMINDERS" : "SAVED TO APPLE CALENDAR") : (saved?.status == .archived ? "ARCHIVED IN DATESNAP" : "NOT YET IN CALENDAR"))
+                            Text(isInCalendar ? (hasReminder ? "SAVED TO APPLE CALENDAR & REMINDERS" : "SAVED TO APPLE CALENDAR") : (saved?.status == .archived ? "ARCHIVED IN PENCILD" : "NOT YET IN CALENDAR"))
                                 .font(DSTypography.overlineConfidence())
                                 .foregroundStyle(Color.dsSuccess)
                         }
@@ -24776,7 +24776,7 @@ struct SavedEventDetailView: View {
                                         Image(systemName: "sparkles")
                                             .font(.system(size: 10))
                                             .foregroundStyle(Color.dsPrimary)
-                                        Text("Extracted by DateSnap OCR Engine")
+                                        Text("Extracted by Pencild OCR Engine")
                                             .font(.system(size: 10))
                                             .foregroundStyle(Color.dsMutedForeground)
                                     }
@@ -24871,7 +24871,7 @@ struct SavedEventDetailView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/ScanFlowViews.swift
+FILE: Sources/Pencild/Views/ScanFlowViews.swift
 ================================================
 import SwiftUI
 import SwiftData
@@ -24894,7 +24894,7 @@ extension AppState {
         case .complete(let candidates):
             rememberSourceImage(scan.currentProcessingImage, for: candidates)
             guard let first = candidates.first else { return }
-            await present(.eventReviewEdit(first.toDateSnapEvent()))
+            await present(.eventReviewEdit(first.toPencildEvent()))
             if candidates.count > 1 {
                 showToast("\(candidates.count - 1) more event\(candidates.count == 2 ? "" : "s") waiting in Review")
             }
@@ -25002,7 +25002,7 @@ struct RecentScreenshotsView: View {
                                 .font(DSTypography.bodyStrong())
                                 .foregroundStyle(Color.dsForeground)
                             Text(homeViewModel.photoAuthorizationStatus == .limited
-                                 ? "DateSnap can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
+                                 ? "Pencild can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
                                  : "Take a screenshot of an event, then come back.")
                                 .font(DSTypography.caption())
                                 .foregroundStyle(Color.dsMutedForeground)
@@ -25155,7 +25155,7 @@ private struct ReviewQueueRow: View {
     let candidate: EventCandidate
 
     var body: some View {
-        let event = candidate.toDateSnapEvent()
+        let event = candidate.toPencildEvent()
         let tier = candidate.confidenceTier
         HStack(spacing: 14) {
             DSDateBadge(month: event.month, day: event.day, isSelected: false)
@@ -25188,7 +25188,7 @@ private struct ReviewQueueRow: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/ScreenGalleryView.swift
+FILE: Sources/Pencild/Views/ScreenGalleryView.swift
 ================================================
 import SwiftUI
 
@@ -25276,7 +25276,7 @@ struct ScreenGalleryView: View {
             stitchId: "79edd80432f24128889607dee9d678f4",
             description: "Full event card, directions, Apple Calendar & Reminders sync status, and active alerts.",
             category: "Core Flow",
-            modal: .savedEventDetail(DateSnapEvent.sampleNeonSunset)
+            modal: .savedEventDetail(PencildEvent.sampleNeonSunset)
         ),
         ScreenItem(
             id: 9,
@@ -25284,7 +25284,7 @@ struct ScreenGalleryView: View {
             stitchId: "50e76e9e2a6743a98d1f320729a3738a",
             description: "Editable title/date/time/location, original flyer preview, raw OCR, and target calendar.",
             category: "Core Flow",
-            modal: .eventReviewEdit(DateSnapEvent.sampleNeonSunset)
+            modal: .eventReviewEdit(PencildEvent.sampleNeonSunset)
         ),
         ScreenItem(
             id: 10,
@@ -25292,7 +25292,7 @@ struct ScreenGalleryView: View {
             stitchId: "fc49f1067442461dbf28c683626a3b70",
             description: "Multi-tier alert timing, smart presets (Default, Travel Heavy, Day-of), and channel picker.",
             category: "Core Flow",
-            modal: .reminderScheduleEditor(DateSnapEvent.sampleNeonSunset)
+            modal: .reminderScheduleEditor(PencildEvent.sampleNeonSunset)
         ),
         ScreenItem(
             id: 11,
@@ -25365,7 +25365,7 @@ struct ScreenGalleryView: View {
                 VStack(spacing: 16) {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("DATESNAP DESIGN SYSTEM")
+                            Text("PENCILD DESIGN SYSTEM")
                                 .font(DSTypography.overlineConfidence())
                                 .foregroundStyle(Color.dsPrimary)
                             Text("All 17 Stitch Screens")
@@ -25453,7 +25453,7 @@ struct ScreenGalleryView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/SettingsClusterView.swift
+FILE: Sources/Pencild/Views/SettingsClusterView.swift
 ================================================
 import SwiftUI
 
@@ -25501,7 +25501,7 @@ struct SettingsClusterView: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/SettingsComponents.swift
+FILE: Sources/Pencild/Views/SettingsComponents.swift
 ================================================
 import SwiftUI
 
@@ -25713,7 +25713,7 @@ struct SettingsFooterNote: View {
 
 
 ================================================
-FILE: Sources/DateSnap/Views/SettingsHubView.swift
+FILE: Sources/Pencild/Views/SettingsHubView.swift
 ================================================
 import SwiftUI
 
@@ -25791,7 +25791,7 @@ struct SettingsHubView: View {
                     .background(Circle().fill(Color.dsMuted))
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
-                        Text("Your DateSnap")
+                        Text("Your Pencild")
                             .font(DSTypography.headlineCard())
                             .foregroundStyle(Color.dsForeground)
                         ValueChip(text: tierChipText, tint: .dsAccent, filled: true)
@@ -26086,11 +26086,11 @@ struct SettingsHubView: View {
 
 
 ================================================
-FILE: Tests/DateSnapTests/AdvisorTests.swift
+FILE: Tests/PencildTests/AdvisorTests.swift
 ================================================
 import Foundation
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 @Suite("Cross-service advisors")
 struct AdvisorTests {
@@ -26146,7 +26146,7 @@ struct AdvisorServiceTests {
 
     @Test("Calendar suggestions follow the user's own choices per category")
     func calendarRecommendation() {
-        let service = CalendarRecommendationService(defaultsSuiteName: "datesnap.tests.\(UUID().uuidString)")
+        let service = CalendarRecommendationService(defaultsSuiteName: "pencild.tests.\(UUID().uuidString)")
         #expect(service.suggestedCalendarIdentifier(for: .concert, available: ["work", "fun"]) == nil)
         service.recordChoice(calendarIdentifier: "fun", for: .concert)
         #expect(service.suggestedCalendarIdentifier(for: .concert, available: ["work", "fun"]) == "fun")
@@ -26159,7 +26159,7 @@ struct AdvisorServiceTests {
 struct NotificationLinkTests {
     @Test("Only http(s) links from the flyer become notification actions")
     func validatedLinks() {
-        #expect(NotificationService.validatedLink("datesnap.app/rsvp")?.absoluteString == "https://datesnap.app/rsvp")
+        #expect(NotificationService.validatedLink("pencild.app/rsvp")?.absoluteString == "https://pencild.app/rsvp")
         #expect(NotificationService.validatedLink("https://tickets.example.com/e/1")?.host == "tickets.example.com")
         #expect(NotificationService.validatedLink("javascript:alert(1)") == nil)
         #expect(NotificationService.validatedLink("tel:5551234567") == nil)
@@ -26172,7 +26172,7 @@ struct NotificationLinkTests {
 struct IntelligenceUsagePolicyTests {
     @Test("Daily triage budgets depend on tier and reset each day")
     func budgets() {
-        let policy = IntelligenceUsagePolicy(defaultsSuiteName: "datesnap.tests.usage.\(UUID().uuidString)")
+        let policy = IntelligenceUsagePolicy(defaultsSuiteName: "pencild.tests.usage.\(UUID().uuidString)")
         let day = testAnchor
         #expect(policy.consume(.likelyEventTriage, count: 5, tier: .starter, now: day) == 0)
         #expect(policy.consume(.likelyEventTriage, count: 25, tier: .plus, now: day) == 25)
@@ -26208,8 +26208,8 @@ struct EventActionLinkValidationTests {
         let validWeb = ActionSuggestion(kind: .website, target: "https://example.com/tickets")
         #expect(EventActionsChecklist.validatedActionURL(for: validWeb)?.absoluteString == "https://example.com/tickets")
 
-        let validRSVP = ActionSuggestion(kind: .rsvp, target: "datesnap.app/rsvp")
-        #expect(EventActionsChecklist.validatedActionURL(for: validRSVP)?.absoluteString == "https://datesnap.app/rsvp")
+        let validRSVP = ActionSuggestion(kind: .rsvp, target: "pencild.app/rsvp")
+        #expect(EventActionsChecklist.validatedActionURL(for: validRSVP)?.absoluteString == "https://pencild.app/rsvp")
 
         // Malicious schemes
         let javascriptScheme = ActionSuggestion(kind: .website, target: "javascript:alert(1)")
@@ -26226,18 +26226,18 @@ struct EventActionLinkValidationTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/AppleIntelligenceLiveTests.swift
+FILE: Tests/PencildTests/AppleIntelligenceLiveTests.swift
 ================================================
 import Foundation
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 /// Exercises the real Foundation Models route when this machine can run it; otherwise verifies the fallback.
 @Suite("Apple Intelligence live route")
 struct AppleIntelligenceLiveTests {
-    /// Opt-in (DATESNAP_EVAL_LIVE=1) because a real model pass takes 10–20 s.
+    /// Opt-in (PENCILD_EVAL_LIVE=1) because a real model pass takes 10–20 s.
     @Test("Live pipeline returns a validated result or a clean rules-only fallback",
-          .enabled(if: ProcessInfo.processInfo.environment["DATESNAP_EVAL_LIVE"] == "1"))
+          .enabled(if: ProcessInfo.processInfo.environment["PENCILD_EVAL_LIVE"] == "1"))
     func livePipeline() async throws {
         let poster = makeOCR([
             ("SUMMER NIGHTS", 0.09),
@@ -26267,14 +26267,14 @@ struct AppleIntelligenceLiveTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/DateSnapInferenceTests.swift
+FILE: Tests/PencildTests/PencildInferenceTests.swift
 ================================================
 import Foundation
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 @Suite("DateInference & Extraction Engine Tests")
-struct DateSnapInferenceTests {
+struct PencildInferenceTests {
 
     // MARK: - 1. Relative Dates Tests
 
@@ -26637,34 +26637,34 @@ struct DateSnapInferenceTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/DateSnapTests.swift
+FILE: Tests/PencildTests/PencildTests.swift
 ================================================
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
-@Suite("DateSnap Smoke Tests")
-struct DateSnapSmokeTests {
+@Suite("Pencild Smoke Tests")
+struct PencildSmokeTests {
     @Test("Smoke test initialization")
     func smokeTest() {
         #expect(true)
     }
 
-    @Test("DateSnapLinks URLs are valid")
-    func testDateSnapLinks() {
-        #expect(DateSnapLinks.support.absoluteString == "https://datesnap.app/support")
-        #expect(DateSnapLinks.privacyPolicy.absoluteString == "https://datesnap.app/privacy")
-        #expect(DateSnapLinks.termsOfUse.absoluteString == "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+    @Test("PencildLinks URLs are valid")
+    func testPencildLinks() {
+        #expect(PencildLinks.support.absoluteString == "https://pencild.app/support")
+        #expect(PencildLinks.privacyPolicy.absoluteString == "https://pencild.app/privacy")
+        #expect(PencildLinks.termsOfUse.absoluteString == "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
     }
 }
 
 
 
 ================================================
-FILE: Tests/DateSnapTests/EventUnderstandingPipelineTests.swift
+FILE: Tests/PencildTests/EventUnderstandingPipelineTests.swift
 ================================================
 import Foundation
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 /// Deterministic stand-in for the Foundation Models interpreter.
 struct ScriptedInterpreter: OnDeviceEventInterpreting {
@@ -26781,12 +26781,12 @@ struct EventUnderstandingPipelineTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/EventUnderstandingTests.swift
+FILE: Tests/PencildTests/EventUnderstandingTests.swift
 ================================================
 import Foundation
 import CoreGraphics
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 /// Builds an OCR result with top-to-bottom lines; larger `size` means larger type.
 func makeOCR(_ lines: [(String, CGFloat)], confidence: Float = 0.95) -> OCRResult {
@@ -26814,7 +26814,7 @@ struct RuleBasedEventAnalyzerTests {
         ("SHOW 8:30 PM", 0.04),
         ("SKYBAR PENTHOUSE", 0.04),
         ("8440 Sunset Blvd, West Hollywood, CA", 0.03),
-        ("RSVP by Oct 10 at datesnap.app/rsvp", 0.03),
+        ("RSVP by Oct 10 at pencild.app/rsvp", 0.03),
         ("21+ · $25 · Every Saturday", 0.03)
     ])
 
@@ -26856,7 +26856,7 @@ struct RuleBasedEventAnalyzerTests {
     func actionsAndRecurrence() throws {
         let event = try #require(analyze(flyer).events.first)
         let rsvp = try #require(event.actions.first { $0.kind == .rsvp })
-        #expect(rsvp.target.contains("datesnap.app/rsvp"))
+        #expect(rsvp.target.contains("pencild.app/rsvp"))
         #expect(rsvp.deadline != nil)
         #expect(event.recurrence?.kind == .weekly)
     }
@@ -26902,11 +26902,11 @@ struct RuleBasedEventAnalyzerTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/EvidenceValidationTests.swift
+FILE: Tests/PencildTests/EvidenceValidationTests.swift
 ================================================
 import Foundation
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 @Suite("Evidence validation, ranking and questions")
 struct EvidenceValidationTests {
@@ -27041,12 +27041,12 @@ struct EvidenceValidationTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/ExtractionEvaluationTests.swift
+FILE: Tests/PencildTests/ExtractionEvaluationTests.swift
 ================================================
 import Foundation
 import CoreGraphics
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 // MARK: - Labeled Fixtures
 /// Synthetic, sanitized flyers (no real people or contact data) with hand labels.
@@ -27236,8 +27236,8 @@ struct ExtractionEvaluationTests {
         #expect(outcome.sameEventMatched)
     }
 
-    /// Opt-in (DATESNAP_EVAL_LIVE=1): runs the corpus through the live route when Apple Intelligence is available.
-    @Test("Live route report", .enabled(if: ProcessInfo.processInfo.environment["DATESNAP_EVAL_LIVE"] == "1"))
+    /// Opt-in (PENCILD_EVAL_LIVE=1): runs the corpus through the live route when Apple Intelligence is available.
+    @Test("Live route report", .enabled(if: ProcessInfo.processInfo.environment["PENCILD_EVAL_LIVE"] == "1"))
     func liveRouteReport() async {
         let report = await ExtractionEvaluator.evaluate(IntelligenceComposition.liveUnderstanding(), route: "live", anchor: testAnchor)
         print(report)
@@ -27251,12 +27251,12 @@ struct ExtractionEvaluationTests {
 
 
 ================================================
-FILE: Tests/DateSnapTests/InterpretationRecordTests.swift
+FILE: Tests/PencildTests/InterpretationRecordTests.swift
 ================================================
 import Foundation
 import SwiftData
 import Testing
-@testable import DateSnap
+@testable import Pencild
 
 @Suite("Interpretation record persistence")
 @MainActor
@@ -27326,7 +27326,7 @@ FILE: .stitch/designs/01_premium_paywall.html
 <div class="inline-flex items-center gap-space-xs px-3.5 py-1.5 rounded-full bg-surface-container-high/80 backdrop-blur-xl shadow-lg relative">
 <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#74f8e3]"></span>
 <span class="font-overline-confidence text-overline-confidence uppercase tracking-wider text-primary-container font-semibold">
-        ✦ DATESNAP PREMIUM
+        ✦ PENCILD PREMIUM
       </span>
 <span class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-glass-specular-top to-transparent rounded-full pointer-events-none"></span>
 </div>
@@ -27388,7 +27388,7 @@ FILE: .stitch/designs/01_premium_paywall.html
 <span class="material-symbols-outlined text-[22px]">all_inclusive</span>
 </div>
 <div class="flex flex-col min-w-0 pr-space-xs">
-<h2 class="font-headline-card text-headline-card text-foreground-primary text-[15px] leading-tight">Everything in DateSnap Plus</h2>
+<h2 class="font-headline-card text-headline-card text-foreground-primary text-[15px] leading-tight">Everything in Pencild Plus</h2>
 <p class="font-caption text-caption text-muted-foreground mt-1 leading-relaxed">
           Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.
         </p>
@@ -27580,8 +27580,8 @@ FILE: .stitch/designs/01_premium_paywall.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2932",
-  "title": "DateSnap - Premium Paywall",
-  "prompt": "Design the DateSnap Premium Paywall screen (Screen 20).\nThis is the flagship power-tier paywall for DateSnap, designed with top-tier fidelity, cinematic glassmorphism, luminous edge highlights, and balanced whitespace matching Phase A.\nBackground: Deep midnight navy (#050816) with subtle ambient purple and warm orange atmospheric light flares.\nHeader:\n- Top bar with frosted circular dismiss button (close icon) on left, and 'Restore' text button on right.\nHero Section:\n- Category Pill: '\u2726 DATESNAP PREMIUM' with luminous gradient border and live pulse dot.\n- Headline: 'Turn flyers and files into plans.' in Sora 30px bold, pure white #F7F8FF.\n- Subheadline: 'Import event PDFs and images from Files, then save the important dates in seconds.' (15px Inter, muted lavender #A8B0D4).\n- Dynamic Hero Visual: Layered glass icon lockup showing a PDF document badge with an active neon scan beam line passing horizontally across it, and a gold sparkle badge.\n\nFeature Highlights (Cinematic glass cards, rounded-2xl, rgba(18, 24, 52, 0.75), border 1px solid rgba(173, 195, 255, 0.18), specular top highlight line):\n1. 'Everything in DateSnap Plus' (Icon: all_inclusive in purple container) \u2014 'Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.'\n2. 'Files & Cloud Drive Import' (Icon: folder_open in cyan container) \u2014 'Import PDFs, itineraries, and flyers directly from iOS Files, iCloud Drive, and Dropbox.'\n3. 'Multi-Page PDF Scanning' (Icon: picture_as_pdf in magenta container) \u2014 'Extract multi-day conference agendas, school schedules, and sports tourneys with one tap.'\n4. 'Batch Document Scanning' (Icon: layers in orange container) \u2014 'Queue up to 10 event flyers, passes, or tickets at once with lightning on-device OCR.'\n5. 'Advanced Calendar Rules' (Icon: tune in emerald green container) \u2014 'Custom calendar color tagging, recurring scan routines, and location geofence alerts.'\n\nInteractive Pricing Cards (Radio group):\n- Annual Plan (Selected by default):\n  - Border: Glowing neon cyan/indigo gradient border, inner specular highlight.\n  - Left side: 'Annual' heading, bright cyan 'Save 50%' badge pill, subtext '$49.99 billed annually \u00b7 Includes 7-Day Free Trial'.\n  - Right side: '$4.16' / mo in Sora bold cyan text, with active glowing checkmark circle.\n- Monthly Plan:\n  - Frosted glass container.\n  - Left side: 'Monthly' heading, subtext '$8.99 billed monthly, cancel anytime'.\n  - Right side: '$8.99' / mo, with subtle unselected radio circle.\n\nCTA & Trust Footer:\n- Primary CTA: Capsule 56px height button in luminous cyan (#7CFFEA) with dark text (#07111F), 'Try Premium Free for 7 Days \u2192'.\n- Trust note: Shield icon + 'Renews at $49.99/yr. Notification sent 2 days prior to billing. Cancel anytime in Apple ID.'\n- Legal footer: 'Restore Purchases \u00b7 Subscription Terms \u00b7 Privacy Policy'.",
+  "title": "Pencild - Premium Paywall",
+  "prompt": "Design the Pencild Premium Paywall screen (Screen 20).\nThis is the flagship power-tier paywall for Pencild, designed with top-tier fidelity, cinematic glassmorphism, luminous edge highlights, and balanced whitespace matching Phase A.\nBackground: Deep midnight navy (#050816) with subtle ambient purple and warm orange atmospheric light flares.\nHeader:\n- Top bar with frosted circular dismiss button (close icon) on left, and 'Restore' text button on right.\nHero Section:\n- Category Pill: '\u2726 PENCILD PREMIUM' with luminous gradient border and live pulse dot.\n- Headline: 'Turn flyers and files into plans.' in Sora 30px bold, pure white #F7F8FF.\n- Subheadline: 'Import event PDFs and images from Files, then save the important dates in seconds.' (15px Inter, muted lavender #A8B0D4).\n- Dynamic Hero Visual: Layered glass icon lockup showing a PDF document badge with an active neon scan beam line passing horizontally across it, and a gold sparkle badge.\n\nFeature Highlights (Cinematic glass cards, rounded-2xl, rgba(18, 24, 52, 0.75), border 1px solid rgba(173, 195, 255, 0.18), specular top highlight line):\n1. 'Everything in Pencild Plus' (Icon: all_inclusive in purple container) \u2014 'Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.'\n2. 'Files & Cloud Drive Import' (Icon: folder_open in cyan container) \u2014 'Import PDFs, itineraries, and flyers directly from iOS Files, iCloud Drive, and Dropbox.'\n3. 'Multi-Page PDF Scanning' (Icon: picture_as_pdf in magenta container) \u2014 'Extract multi-day conference agendas, school schedules, and sports tourneys with one tap.'\n4. 'Batch Document Scanning' (Icon: layers in orange container) \u2014 'Queue up to 10 event flyers, passes, or tickets at once with lightning on-device OCR.'\n5. 'Advanced Calendar Rules' (Icon: tune in emerald green container) \u2014 'Custom calendar color tagging, recurring scan routines, and location geofence alerts.'\n\nInteractive Pricing Cards (Radio group):\n- Annual Plan (Selected by default):\n  - Border: Glowing neon cyan/indigo gradient border, inner specular highlight.\n  - Left side: 'Annual' heading, bright cyan 'Save 50%' badge pill, subtext '$49.99 billed annually \u00b7 Includes 7-Day Free Trial'.\n  - Right side: '$4.16' / mo in Sora bold cyan text, with active glowing checkmark circle.\n- Monthly Plan:\n  - Frosted glass container.\n  - Left side: 'Monthly' heading, subtext '$8.99 billed monthly, cancel anytime'.\n  - Right side: '$8.99' / mo, with subtle unselected radio circle.\n\nCTA & Trust Footer:\n- Primary CTA: Capsule 56px height button in luminous cyan (#7CFFEA) with dark text (#07111F), 'Try Premium Free for 7 Days \u2192'.\n- Trust note: Shield icon + 'Renews at $49.99/yr. Notification sent 2 days prior to billing. Cancel anytime in Apple ID.'\n- Legal footer: 'Restore Purchases \u00b7 Subscription Terms \u00b7 Privacy Policy'.",
   "name": "projects/454854512779783540/screens/6c145dff8ec540b9a51f806629e55c70",
   "theme": {
     "colorMode": "DARK",
@@ -27982,7 +27982,7 @@ FILE: .stitch/designs/02_plus_paywall.html
 <!-- Branded Pill Badge -->
 <div class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container/90 shadow-sm backdrop-blur-xl mb-space-md">
 <span class="text-primary-container font-headline-card text-caption tracking-wider select-none">✦</span>
-<span class="font-overline-confidence text-overline-confidence tracking-[0.14em] uppercase text-foreground-primary">DATESNAP PLUS</span>
+<span class="font-overline-confidence text-overline-confidence tracking-[0.14em] uppercase text-foreground-primary">PENCILD PLUS</span>
 <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse ml-0.5"></span>
 </div>
 <!-- Main Headline -->
@@ -28072,7 +28072,7 @@ FILE: .stitch/designs/02_plus_paywall.html
           Calendar, Reminders &amp; Push
         </h3>
 <p class="font-body-base text-body-compact text-muted-foreground leading-relaxed">
-          Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push.
+          Triple-destination sync across Apple Calendar, Reminders, and Pencild local push.
         </p>
 </div>
 </div>
@@ -28228,8 +28228,8 @@ FILE: .stitch/designs/02_plus_paywall.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2782",
-  "title": "DateSnap - Plus Paywall",
-  "prompt": "Design the DateSnap Plus Paywall screen (Screen 19).\nThis must be extraordinarily high fidelity, matching the polished visual depth, rich glass cards, and precise typography of DateSnap Phase A (Saved Event Detail and Event Review).\nBackground: Deep midnight navy (#050816) with subtle atmospheric radial glows (electric blue and magenta blur in background).\nHeader:\n- Top bar with clean circular glass Close button on left or right, and subtle 'Restore' button.\nHero Section:\n- Glowing branded badge pill at top: '\u2726 DATESNAP PLUS' with cyan/magenta subtle gradient edge.\n- Main headline: 'Never miss a date you saved.' (30px Sora font, bold, crisp white #F7F8FF, tight tracking).\n- Subheadline: 'Automatically find events in screenshots and set the reminders that work for you.' (15px Inter, text-muted-foreground #A8B0D4, max-w-sm, centered).\n- Visual Interactive Anchor: A sleek layered preview card showing a scanned concert flyer thumbnail ('Neon Sunset Rooftop') with a '99% AI CONFIDENCE' badge and '3 custom reminders primed' status tag, illustrating the core value.\n\nFeature List (Individual elevated glass cards with rounded-2xl, background rgba(18, 24, 52, 0.72), 1px glass border rgba(173, 195, 255, 0.18), and specular top highlight):\n1. 'Unlimited Screenshot Scans' with a vibrant cyan scan icon container, subtitle: 'Scan and extract events from concert flyers, stories, and chat invites without limits.'\n2. 'Up to 3 Reminders Per Event' with a bell icon in soft orange container, subtitle: 'Fine-tune departure countdowns, ticket drop buzzers, and prep alerts with precision.'\n3. 'Calendar, Reminders & Push' with calendar/sync icon in purple container, subtitle: 'Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push.'\n4. 'Custom Defaults & Smart Drafts' with sliders/wand icon in green container, subtitle: 'Auto-apply your favorite timing offsets and triage ambiguous dates effortlessly.'\n\nInteractive Plan Selector (Radio group with 2 distinct glass cards):\n- Annual Plan (Selected by default):\n  - Highlighted with luminous cyan/blue glowing border (1.5px solid #7CFFEA or gradient), soft back glow.\n  - Left side: 'Annual' title in bold, 'Save 48%' high-contrast badge pill in bright cyan (#7CFFEA) with dark text, and subtext '$29.99 billed annually (Includes 7-Day Free Trial)'.\n  - Right side: '$2.49 / mo' in bold Sora, with a filled checkmark circle in #7CFFEA.\n- Monthly Plan:\n  - Clean frosted glass card with subtle border.\n  - Left side: 'Monthly' title, subtext '$4.99 billed monthly, cancel anytime'.\n  - Right side: '$4.99 / mo' in Sora, with an empty muted radio circle.\n\nCTA & Legal Reassurance:\n- Primary CTA Button: Full width 56px height capsule button in luminous cyan (#7CFFEA) with dark navy text (#07111F), bold 16px Sora: 'Start 7-Day Free Trial \u2192' with subtle outer glow.\n- Trust guarantee note: Lock icon with 'Renews at $29.99/year after trial. Cancel anytime in App Store settings with zero surprise charges.'\n- Footer links: 'Restore Purchases \u00b7 Terms of Service \u00b7 Privacy Policy' in muted caption font.\nEnsure all spacing is balanced, cards are distinctly separated, text has zero overlap, and icons are properly sized.",
+  "title": "Pencild - Plus Paywall",
+  "prompt": "Design the Pencild Plus Paywall screen (Screen 19).\nThis must be extraordinarily high fidelity, matching the polished visual depth, rich glass cards, and precise typography of Pencild Phase A (Saved Event Detail and Event Review).\nBackground: Deep midnight navy (#050816) with subtle atmospheric radial glows (electric blue and magenta blur in background).\nHeader:\n- Top bar with clean circular glass Close button on left or right, and subtle 'Restore' button.\nHero Section:\n- Glowing branded badge pill at top: '\u2726 PENCILD PLUS' with cyan/magenta subtle gradient edge.\n- Main headline: 'Never miss a date you saved.' (30px Sora font, bold, crisp white #F7F8FF, tight tracking).\n- Subheadline: 'Automatically find events in screenshots and set the reminders that work for you.' (15px Inter, text-muted-foreground #A8B0D4, max-w-sm, centered).\n- Visual Interactive Anchor: A sleek layered preview card showing a scanned concert flyer thumbnail ('Neon Sunset Rooftop') with a '99% AI CONFIDENCE' badge and '3 custom reminders primed' status tag, illustrating the core value.\n\nFeature List (Individual elevated glass cards with rounded-2xl, background rgba(18, 24, 52, 0.72), 1px glass border rgba(173, 195, 255, 0.18), and specular top highlight):\n1. 'Unlimited Screenshot Scans' with a vibrant cyan scan icon container, subtitle: 'Scan and extract events from concert flyers, stories, and chat invites without limits.'\n2. 'Up to 3 Reminders Per Event' with a bell icon in soft orange container, subtitle: 'Fine-tune departure countdowns, ticket drop buzzers, and prep alerts with precision.'\n3. 'Calendar, Reminders & Push' with calendar/sync icon in purple container, subtitle: 'Triple-destination sync across Apple Calendar, Reminders, and Pencild local push.'\n4. 'Custom Defaults & Smart Drafts' with sliders/wand icon in green container, subtitle: 'Auto-apply your favorite timing offsets and triage ambiguous dates effortlessly.'\n\nInteractive Plan Selector (Radio group with 2 distinct glass cards):\n- Annual Plan (Selected by default):\n  - Highlighted with luminous cyan/blue glowing border (1.5px solid #7CFFEA or gradient), soft back glow.\n  - Left side: 'Annual' title in bold, 'Save 48%' high-contrast badge pill in bright cyan (#7CFFEA) with dark text, and subtext '$29.99 billed annually (Includes 7-Day Free Trial)'.\n  - Right side: '$2.49 / mo' in bold Sora, with a filled checkmark circle in #7CFFEA.\n- Monthly Plan:\n  - Clean frosted glass card with subtle border.\n  - Left side: 'Monthly' title, subtext '$4.99 billed monthly, cancel anytime'.\n  - Right side: '$4.99 / mo' in Sora, with an empty muted radio circle.\n\nCTA & Legal Reassurance:\n- Primary CTA Button: Full width 56px height capsule button in luminous cyan (#7CFFEA) with dark navy text (#07111F), bold 16px Sora: 'Start 7-Day Free Trial \u2192' with subtle outer glow.\n- Trust guarantee note: Lock icon with 'Renews at $29.99/year after trial. Cancel anytime in App Store settings with zero surprise charges.'\n- Footer links: 'Restore Purchases \u00b7 Terms of Service \u00b7 Privacy Policy' in muted caption font.\nEnsure all spacing is balanced, cards are distinctly separated, text has zero overlap, and icons are properly sized.",
   "name": "projects/454854512779783540/screens/df7a78364bd54941ad1d7bb6ca34d449",
   "theme": {
     "colorMode": "DARK",
@@ -28619,7 +28619,7 @@ FILE: .stitch/designs/03_history_and_archive.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Datesnap History</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-lg pb-12">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Pencild History</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-lg pb-12">
 <!-- Subtle Ambient Glows in Background -->
 <div class="fixed top-16 left-1/2 -translate-x-1/2 w-80 h-32 bg-secondary-container/20 rounded-full blur-[80px] pointer-events-none -z-10"></div>
 <div class="fixed top-96 right-0 w-64 h-64 bg-accent-purple/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
@@ -28956,7 +28956,7 @@ FILE: .stitch/designs/03_history_and_archive.html
       }
     })();
   </script>
-</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="datesnap-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="pencild-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav>
 </body></html>
 
 
@@ -28977,8 +28977,8 @@ FILE: .stitch/designs/03_history_and_archive.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2734",
-  "title": "DateSnap - History & Archive",
-  "prompt": "Design the DateSnap History screen (Screen 16).\nGoal: Show previously saved events and scan activity in a lightweight, elegant, and useful way.\nDesign & Content:\n- Top Title: \"History & Archive\" with supportive subtitle \"All synced events, past scans, and triage records.\"\n- Search bar with glass pill design: \"Search events, venues, dates...\" with search icon.\n- Segmented filter tabs: \"Saved (18)\" [Active cyan pill], \"Drafts (3)\", \"Dismissed (5)\", \"All Scans\".\n- Grouped chronological sections:\n  * Section: \"THIS MONTH - JULY 2025\"\n    - Item 1: Card for \"Neon Sunset Rooftop Session\" | Date badge `JUL 18` | Synced to Apple Calendar & Reminders (green check pill `Synced`) | Venue: Skybar Lounge | Extracted from screenshot | Thumbnail of flyer with magnifying glass icon.\n    - Item 2: Card for \"Dr. Aris Dental Checkup\" | Date badge `JUL 02` | Synced to Apple Calendar | 10:30 AM | Direct calendar link icon.\n  * Section: \"JUNE 2025\"\n    - Item 3: Card for \"Summer Rooftop Mixer\" | Date badge `JUN 24` | Synced | Skybar Lounge | Thumbnail preview.\n    - Item 4: Card for \"SF Tech Founders Meetup\" | Date badge `JUN 12` | Synced to Apple Calendar.\n  * Section: \"MAY 2025\"\n    - Item 5: Card for \"Flight UA 882 to SFO\" | Date badge `MAY 28` | Airport terminal gate details.\n- Visual distinction: Crisp glowing badges for successfully synced vs amber/muted for past drafts.\n- Compact glass rows with subtle borders, chevron icons, and swipe action hints.\n- Bottom safe area padding above the tab bar.\nTone: Organized, archival, low-clutter, premium glass tech aesthetic using Midnight Prism design system.",
+  "title": "Pencild - History & Archive",
+  "prompt": "Design the Pencild History screen (Screen 16).\nGoal: Show previously saved events and scan activity in a lightweight, elegant, and useful way.\nDesign & Content:\n- Top Title: \"History & Archive\" with supportive subtitle \"All synced events, past scans, and triage records.\"\n- Search bar with glass pill design: \"Search events, venues, dates...\" with search icon.\n- Segmented filter tabs: \"Saved (18)\" [Active cyan pill], \"Drafts (3)\", \"Dismissed (5)\", \"All Scans\".\n- Grouped chronological sections:\n  * Section: \"THIS MONTH - JULY 2025\"\n    - Item 1: Card for \"Neon Sunset Rooftop Session\" | Date badge `JUL 18` | Synced to Apple Calendar & Reminders (green check pill `Synced`) | Venue: Skybar Lounge | Extracted from screenshot | Thumbnail of flyer with magnifying glass icon.\n    - Item 2: Card for \"Dr. Aris Dental Checkup\" | Date badge `JUL 02` | Synced to Apple Calendar | 10:30 AM | Direct calendar link icon.\n  * Section: \"JUNE 2025\"\n    - Item 3: Card for \"Summer Rooftop Mixer\" | Date badge `JUN 24` | Synced | Skybar Lounge | Thumbnail preview.\n    - Item 4: Card for \"SF Tech Founders Meetup\" | Date badge `JUN 12` | Synced to Apple Calendar.\n  * Section: \"MAY 2025\"\n    - Item 5: Card for \"Flight UA 882 to SFO\" | Date badge `MAY 28` | Airport terminal gate details.\n- Visual distinction: Crisp glowing badges for successfully synced vs amber/muted for past drafts.\n- Compact glass rows with subtle borders, chevron icons, and swipe action hints.\n- Bottom safe area padding above the tab bar.\nTone: Organized, archival, low-clutter, premium glass tech aesthetic using Midnight Prism design system.",
   "name": "projects/454854512779783540/screens/e5fc50914c2f4a788389e8aa94806f45",
   "theme": {
     "colorMode": "DARK",
@@ -29368,7 +29368,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Calendar Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Calendar Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
 <!-- Ambient Atmospheric Backdrops -->
 <div class="relative w-full flex flex-col items-center pt-space-md">
 <!-- Hero Glass Shield Visual -->
@@ -29406,7 +29406,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
 </div>
 <h1 class="font-headline-section text-headline-section text-foreground-primary tracking-tight">Calendar access is turned off</h1>
 <p class="font-body-compact text-body-compact text-muted-foreground mt-space-sm leading-relaxed max-w-sm mx-auto">
-        DateSnap needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.
+        Pencild needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.
       </p>
 </div>
 <!-- "What you can still do right now" Bento Glass Card -->
@@ -29437,7 +29437,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
 <span class="material-symbols-outlined text-status-success text-[18px]">check</span>
 </div>
 <div class="flex flex-col min-w-0">
-<span class="font-body-strong text-body-compact text-foreground-primary">DateSnap Local Push Alerts</span>
+<span class="font-body-strong text-body-compact text-foreground-primary">Pencild Local Push Alerts</span>
 <span class="font-caption text-caption text-muted-foreground mt-0.5 leading-snug">Receive intelligent on-device notifications &amp; pre-event sound cues for snapped screenshots.</span>
 </div>
 </div>
@@ -29472,7 +29472,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
 <li class="flex items-center gap-space-md text-on-surface">
 <span class="w-6 h-6 rounded-full bg-muted-surface flex items-center justify-center font-overline-confidence text-overline-confidence text-foreground-primary shrink-0">2</span>
 <span class="font-body-compact text-body-compact text-on-surface">
-            Scroll to find <span class="font-body-strong text-foreground-primary">DateSnap</span>
+            Scroll to find <span class="font-body-strong text-foreground-primary">Pencild</span>
 </span>
 </li>
 <li class="flex items-center gap-space-md text-on-surface">
@@ -29500,7 +29500,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
 <div class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md rounded-xl bg-surface-container-lowest/50 mb-space-lg text-center">
 <span class="material-symbols-outlined text-status-success text-[16px] shrink-0">verified_user</span>
 <p class="font-caption text-caption text-muted-foreground">
-        DateSnap is 100% On-Device · Zero Cloud Sync · Private by Design
+        Pencild is 100% On-Device · Zero Cloud Sync · Private by Design
       </p>
 </div>
 </div>
@@ -29516,7 +29516,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
         setTimeout(() => {
           settingsBtn.classList.remove('scale-[0.97]');
           // Deep link trigger emulation for native app layer
-          console.log('[DateSnap] Opening iOS System Settings...');
+          console.log('[Pencild] Opening iOS System Settings...');
         }, 150);
       });
     }
@@ -29526,7 +29526,7 @@ FILE: .stitch/designs/04_calendar_permission_denied.html
         remindersBtn.classList.add('opacity-70');
         setTimeout(() => {
           remindersBtn.classList.remove('opacity-70');
-          console.log('[DateSnap] Fallback to Reminders mode engaged.');
+          console.log('[Pencild] Fallback to Reminders mode engaged.');
         }, 150);
       });
     }
@@ -29551,8 +29551,8 @@ FILE: .stitch/designs/04_calendar_permission_denied.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2534",
-  "title": "DateSnap - Calendar Permission Denied",
-  "prompt": "Design the DateSnap Calendar Permission Denied Fallback Screen (Screen 17).\nGoal: Gracefully explain what the user can still do if Calendar access is denied, with zero scolding.\nDesign & Content:\n- Hero visual icon/illustration: A sleek glass shield card with an Apple Calendar icon and a gentle amber/orange lock/warning accent ring, surrounded by a soft cyan-magenta aura.\n- Headline: \"Calendar access is turned off\"\n- Subtitle: \"DateSnap needs access to write detected dates into your calendar. Don't worry \u2014 your existing events remain completely private and are never read or stored.\"\n- Prominent feature card \"What you can still do right now\":\n  * Feature row 1: \"Apple Reminders\" with checkmark \u2014 \"Export deadlines and alerts directly to your Reminders app without calendar access.\"\n  * Feature row 2: \"DateSnap Local Push Alerts\" with checkmark \u2014 \"Receive intelligent on-device reminder notifications for captured screenshots.\"\n  * Feature row 3: \"Manual & Draft Saving\" with checkmark \u2014 \"Parse flyers, copy formatted event info, or save drafts to review later.\"\n- Step-by-step guidance card:\n  \"To enable Calendar syncing:\"\n  1. Open iPhone **Settings**\n  2. Scroll to **DateSnap**\n  3. Tap **Calendars** and choose **Full Access** or **Add Events Only**\n- Primary Action button: High-contrast luminous cyan capsule button: \"Open iPhone Settings \u2192\"\n- Secondary Action button: Glass button: \"Continue with Reminders Only\"\n- Security footer note: \"DateSnap is 100% On-Device \u00b7 Zero Cloud Sync \u00b7 Private by Design\" with lock icon.\nTone: Helpful, respectful, reassuring, never scolding, premium Midnight Prism dark aesthetic.",
+  "title": "Pencild - Calendar Permission Denied",
+  "prompt": "Design the Pencild Calendar Permission Denied Fallback Screen (Screen 17).\nGoal: Gracefully explain what the user can still do if Calendar access is denied, with zero scolding.\nDesign & Content:\n- Hero visual icon/illustration: A sleek glass shield card with an Apple Calendar icon and a gentle amber/orange lock/warning accent ring, surrounded by a soft cyan-magenta aura.\n- Headline: \"Calendar access is turned off\"\n- Subtitle: \"Pencild needs access to write detected dates into your calendar. Don't worry \u2014 your existing events remain completely private and are never read or stored.\"\n- Prominent feature card \"What you can still do right now\":\n  * Feature row 1: \"Apple Reminders\" with checkmark \u2014 \"Export deadlines and alerts directly to your Reminders app without calendar access.\"\n  * Feature row 2: \"Pencild Local Push Alerts\" with checkmark \u2014 \"Receive intelligent on-device reminder notifications for captured screenshots.\"\n  * Feature row 3: \"Manual & Draft Saving\" with checkmark \u2014 \"Parse flyers, copy formatted event info, or save drafts to review later.\"\n- Step-by-step guidance card:\n  \"To enable Calendar syncing:\"\n  1. Open iPhone **Settings**\n  2. Scroll to **Pencild**\n  3. Tap **Calendars** and choose **Full Access** or **Add Events Only**\n- Primary Action button: High-contrast luminous cyan capsule button: \"Open iPhone Settings \u2192\"\n- Secondary Action button: Glass button: \"Continue with Reminders Only\"\n- Security footer note: \"Pencild is 100% On-Device \u00b7 Zero Cloud Sync \u00b7 Private by Design\" with lock icon.\nTone: Helpful, respectful, reassuring, never scolding, premium Midnight Prism dark aesthetic.",
   "name": "projects/454854512779783540/screens/7d2a6476acc841b7be7374273debbf8b",
   "theme": {
     "colorMode": "DARK",
@@ -29942,7 +29942,7 @@ FILE: .stitch/designs/05_notification_permission_denied.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Notification Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Notification Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
 <!-- Subtle Ambient Glow Behind Hero -->
 <div class="relative w-full flex flex-col items-center pt-space-md">
 <div class="absolute -top-10 w-48 h-48 bg-gradient-to-tr from-accent-orange/15 via-tertiary-container/10 to-accent-purple/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -29972,7 +29972,7 @@ FILE: .stitch/designs/05_notification_permission_denied.html
         Notifications are muted
       </h2>
 <p class="font-body-compact text-body-compact text-muted-foreground mt-space-xs leading-relaxed">
-        Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.
+        Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.
       </p>
 </div>
 </div>
@@ -30067,7 +30067,7 @@ FILE: .stitch/designs/05_notification_permission_denied.html
 <div class="flex items-center flex-wrap gap-space-xs font-caption text-caption text-on-surface-variant">
 <span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Settings</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
-<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">DateSnap</span>
+<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Pencild</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
 <span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Notifications</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
@@ -30135,8 +30135,8 @@ FILE: .stitch/designs/05_notification_permission_denied.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2298",
-  "title": "DateSnap - Notification Permission Denied",
-  "prompt": "Design the DateSnap Notification Permission Denied Fallback Screen (Screen 18).\nGoal: Explain the impact of no notification access and provide practical alternatives with a calm fallback state.\nDesign & Content:\n- Hero visual: Elegant glass bell icon with a subtle diagonal slash and a soft warm amber/magenta glow ring inside a glass container tile.\n- Headline: \"Notifications are muted\"\n- Subtitle: \"Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.\"\n- Impact & Alternative cards:\n  * Card 1: \"Why enable notifications?\"\n    - \"Smart Lead-Time Alerts\": Get notified 1 day or 2 hours prior to events so you never miss departure windows.\n    - \"Instant Screenshot Detection\": Immediate banner prompt when a flyer or invitation is captured in Photos.\n  * Card 2: \"What still works without alerts\":\n    - \"Direct Apple Calendar Sync\": Events are still added directly into your Apple Calendar and will sound standard iOS calendar alarms.\n    - \"Apple Reminders Integration\": Scheduled to-do items continue to function normally.\n- Action Buttons:\n  * Primary CTA: Luminous cyan button: \"Enable in Settings \u2192\"\n  * Secondary Action: Translucent glass button: \"Keep Alerts Muted & Rely on Calendar\"\n- Step-by-step instructions card in clean micro-text with Settings path (Settings > DateSnap > Notifications > Allow Notifications).\n- Trust footer: \"No promotional spam. Only critical event alerts and scan confirmations.\"\nTone: Clear, supportive, non-alarming, beautifully balanced in Midnight Prism dark aesthetic.",
+  "title": "Pencild - Notification Permission Denied",
+  "prompt": "Design the Pencild Notification Permission Denied Fallback Screen (Screen 18).\nGoal: Explain the impact of no notification access and provide practical alternatives with a calm fallback state.\nDesign & Content:\n- Hero visual: Elegant glass bell icon with a subtle diagonal slash and a soft warm amber/magenta glow ring inside a glass container tile.\n- Headline: \"Notifications are muted\"\n- Subtitle: \"Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.\"\n- Impact & Alternative cards:\n  * Card 1: \"Why enable notifications?\"\n    - \"Smart Lead-Time Alerts\": Get notified 1 day or 2 hours prior to events so you never miss departure windows.\n    - \"Instant Screenshot Detection\": Immediate banner prompt when a flyer or invitation is captured in Photos.\n  * Card 2: \"What still works without alerts\":\n    - \"Direct Apple Calendar Sync\": Events are still added directly into your Apple Calendar and will sound standard iOS calendar alarms.\n    - \"Apple Reminders Integration\": Scheduled to-do items continue to function normally.\n- Action Buttons:\n  * Primary CTA: Luminous cyan button: \"Enable in Settings \u2192\"\n  * Secondary Action: Translucent glass button: \"Keep Alerts Muted & Rely on Calendar\"\n- Step-by-step instructions card in clean micro-text with Settings path (Settings > Pencild > Notifications > Allow Notifications).\n- Trust footer: \"No promotional spam. Only critical event alerts and scan confirmations.\"\nTone: Clear, supportive, non-alarming, beautifully balanced in Midnight Prism dark aesthetic.",
   "name": "projects/454854512779783540/screens/1a0a6dacd22344d797031c2746da9b37",
   "theme": {
     "colorMode": "DARK",
@@ -30526,7 +30526,7 @@ FILE: .stitch/designs/06_no_dates_found.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">No Dates Found</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe space-y-space-lg">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">No Dates Found</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe space-y-space-lg">
 <!-- Status Diagnostic Banner -->
 <div class="w-full relative overflow-hidden rounded-xl bg-surface-container/80 backdrop-blur-xl p-space-md shadow-xl flex items-center justify-between">
 <div class="absolute -top-10 -right-10 w-32 h-32 bg-status-warning/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -30597,7 +30597,7 @@ FILE: .stitch/designs/06_no_dates_found.html
       </h1>
 </div>
 <p class="font-body-compact text-body-compact text-muted-foreground leading-relaxed pl-10">
-      DateSnap analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.
+      Pencild analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.
     </p>
 </div>
 <!-- Diagnostic Breakdown Card (Accordion/Tips) -->
@@ -30750,8 +30750,8 @@ FILE: .stitch/designs/06_no_dates_found.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2744",
-  "title": "DateSnap - No Dates Found",
-  "prompt": "Design the DateSnap \"No Dates Found\" Fallback & Manual Creation Screen (Screen 10).\nGoal: Gracefully handle scans where no dates or event details could be detected, providing manual creation and capture tips.\nDesign & Content:\n- Hero Inspection Card:\n  * Shows the scanned image thumbnail (a blurry or text-sparse photo / meme / receipt) with an optical viewfinder reticle and an amber-tinted chip: \"No dates detected\".\n  * Caption: \"IMG_5829.PNG \u00b7 Scanned in 0.3s\"\n- Headline: \"Couldn't find any dates\"\n- Subtitle: \"We analyzed this image with 100% on-device OCR, but couldn't detect clear event dates, times, or ticket details.\"\n- Helpful Diagnostic & Tips Card:\n  * \"Why did this happen?\"\n    - \"Text is handwriting or low resolution\"\n    - \"No specific calendar date mentioned (e.g. 'Coming soon')\"\n    - \"Image is a photo or meme without event details\"\n- Action Suite:\n  * Primary Action: Luminous cyan capsule button: \"Create Event Manually from Image \u2192\" (pre-fills notes with any detected text and attaches thumbnail).\n  * Secondary Action: Frosted glass button: \"Scan a Different Image\"\n  * Tertiary Action: Dismiss link: \"Discard & Return to Dashboard\"\n- OCR Text Inspector: Collapsible accordion: \"View Detected Words (12 words)\" showing the snippet of raw text the engine found.\n- Privacy assurance: \"Your image was analyzed locally and never left this device.\"\nTone: Empathetic, helpful, constructive, zero dead ends, Midnight Prism design system.",
+  "title": "Pencild - No Dates Found",
+  "prompt": "Design the Pencild \"No Dates Found\" Fallback & Manual Creation Screen (Screen 10).\nGoal: Gracefully handle scans where no dates or event details could be detected, providing manual creation and capture tips.\nDesign & Content:\n- Hero Inspection Card:\n  * Shows the scanned image thumbnail (a blurry or text-sparse photo / meme / receipt) with an optical viewfinder reticle and an amber-tinted chip: \"No dates detected\".\n  * Caption: \"IMG_5829.PNG \u00b7 Scanned in 0.3s\"\n- Headline: \"Couldn't find any dates\"\n- Subtitle: \"We analyzed this image with 100% on-device OCR, but couldn't detect clear event dates, times, or ticket details.\"\n- Helpful Diagnostic & Tips Card:\n  * \"Why did this happen?\"\n    - \"Text is handwriting or low resolution\"\n    - \"No specific calendar date mentioned (e.g. 'Coming soon')\"\n    - \"Image is a photo or meme without event details\"\n- Action Suite:\n  * Primary Action: Luminous cyan capsule button: \"Create Event Manually from Image \u2192\" (pre-fills notes with any detected text and attaches thumbnail).\n  * Secondary Action: Frosted glass button: \"Scan a Different Image\"\n  * Tertiary Action: Dismiss link: \"Discard & Return to Dashboard\"\n- OCR Text Inspector: Collapsible accordion: \"View Detected Words (12 words)\" showing the snippet of raw text the engine found.\n- Privacy assurance: \"Your image was analyzed locally and never left this device.\"\nTone: Empathetic, helpful, constructive, zero dead ends, Midnight Prism design system.",
   "name": "projects/454854512779783540/screens/d973f4ad48f2487ea6be61abce9b19ae",
   "theme": {
     "colorMode": "DARK",
@@ -31141,13 +31141,13 @@ FILE: .stitch/designs/07_home_empty_state.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Home Empty State</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-xxl">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Home Empty State</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-xxl">
 <div class="flex flex-col gap-space-xs pt-space-sm">
 <div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-fixed/10 self-start shadow-[0_0_16px_rgba(116,248,227,0.15)]">
 <span class="material-symbols-outlined text-primary-fixed text-[14px]">auto_awesome</span>
 <span class="font-overline-confidence text-overline-confidence text-primary-fixed uppercase tracking-wider">AI Temporal Sync</span>
 </div>
-<h1 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight">Welcome to DateSnap</h1>
+<h1 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight">Welcome to Pencild</h1>
 <p class="font-body-compact text-body-compact text-muted-foreground">Your camera roll's calendar autopilot.</p>
 </div>
 <div class="relative w-full rounded-[28px] bg-surface-container/70 backdrop-blur-2xl p-space-xl overflow-hidden shadow-2xl">
@@ -31192,7 +31192,7 @@ FILE: .stitch/designs/07_home_empty_state.html
 </div>
 <div class="flex flex-col gap-space-xs">
 <h2 class="font-headline-section text-headline-section text-foreground-primary">No screenshots scanned yet</h2>
-<p class="font-body-compact text-body-compact text-muted-foreground max-w-xs mx-auto">Take a screenshot of a flyer, text invite, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.</p>
+<p class="font-body-compact text-body-compact text-muted-foreground max-w-xs mx-auto">Take a screenshot of a flyer, text invite, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.</p>
 </div>
 <div class="flex flex-col w-full gap-space-sm pt-space-xs">
 <button class="w-full h-14 rounded-full bg-primary-fixed text-primary-foreground font-body-strong text-body-compact font-semibold flex items-center justify-center gap-space-sm shadow-[0_6px_24px_rgba(116,248,227,0.3)] active:scale-[0.985] transition-transform duration-150" id="scan-cta">
@@ -31209,7 +31209,7 @@ FILE: .stitch/designs/07_home_empty_state.html
 </div>
 <div class="flex flex-col gap-space-md">
 <div class="flex items-center justify-between">
-<h3 class="font-headline-card text-headline-card text-foreground-primary">How DateSnap Works</h3>
+<h3 class="font-headline-card text-headline-card text-foreground-primary">How Pencild Works</h3>
 <span class="font-caption text-caption text-primary-fixed-dim">3 effortless steps</span>
 </div>
 <div class="flex flex-col gap-space-sm">
@@ -31227,7 +31227,7 @@ FILE: .stitch/designs/07_home_empty_state.html
 <span class="material-symbols-outlined text-[22px]">bolt</span>
 </div>
 <div class="flex flex-col gap-0.5 min-w-0">
-<span class="font-body-strong text-body-compact text-foreground-primary">2. Open DateSnap</span>
+<span class="font-body-strong text-body-compact text-foreground-primary">2. Open Pencild</span>
 <p class="font-body-compact text-caption text-muted-foreground">On-device neural vision parses dates, venue locations, and start/end times in 0.4 seconds.</p>
 </div>
 </div>
@@ -31310,7 +31310,7 @@ FILE: .stitch/designs/07_home_empty_state.html
       });
     }
   })();
-</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="datesnap-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav></body></html>
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="pencild-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav></body></html>
 
 
 ================================================
@@ -31330,8 +31330,8 @@ FILE: .stitch/designs/07_home_empty_state.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2824",
-  "title": "DateSnap - Home Empty State",
-  "prompt": "Design the DateSnap Home Empty State Screen (Screen 7).\nGoal: First-time user zero-data dashboard that welcomes the user, builds excitement, and guides immediate first action.\nDesign & Content:\n- Top Header: DateSnap brand mark, greeting \"Welcome to DateSnap\", subline \"Your camera roll's calendar autopilot.\"\n- Hero Empty State Showcase:\n  * Centered illuminated glass capture tile depicting a phone screen with glowing scanner brackets scanning an event ticket. Ambient multi-color neon aura (cyan/magenta).\n  * Headline: \"No screenshots scanned yet\"\n  * Subtitle: \"Take a screenshot of a flyer, text invitation, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.\"\n- Fast Getting Started Steps (Interactive Guide cards):\n  * Step 1: \"1. Snap or Screenshot\" \u2014 Take a screenshot of any Instagram story, flyer, email invite, or concert poster.\n  * Step 2: \"2. Open DateSnap\" \u2014 On-device AI parses the dates, venue, and times in 0.4 seconds.\n  * Step 3: \"3. One-Tap Save\" \u2014 Review and push straight to Apple Calendar & Reminders.\n- Primary CTA Button: Luminous cyan capsule button with camera/scan icon: \"Scan Recent Screenshots \u2192\"\n- Secondary Action Button: Frosted glass button with photo icon: \"Choose from Photo Library\"\n- Demo Sample Card:\n  * \"Want to see how it works?\" with a \"Try Sample Flyer\" pill button that lets users test the parser without giving full library access.\n- Bottom safe area padding above the tab bar (Home tab active).\nTone: Inviting, high-energy, effortless, trustworthy, Midnight Prism aesthetic.",
+  "title": "Pencild - Home Empty State",
+  "prompt": "Design the Pencild Home Empty State Screen (Screen 7).\nGoal: First-time user zero-data dashboard that welcomes the user, builds excitement, and guides immediate first action.\nDesign & Content:\n- Top Header: Pencild brand mark, greeting \"Welcome to Pencild\", subline \"Your camera roll's calendar autopilot.\"\n- Hero Empty State Showcase:\n  * Centered illuminated glass capture tile depicting a phone screen with glowing scanner brackets scanning an event ticket. Ambient multi-color neon aura (cyan/magenta).\n  * Headline: \"No screenshots scanned yet\"\n  * Subtitle: \"Take a screenshot of a flyer, text invitation, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.\"\n- Fast Getting Started Steps (Interactive Guide cards):\n  * Step 1: \"1. Snap or Screenshot\" \u2014 Take a screenshot of any Instagram story, flyer, email invite, or concert poster.\n  * Step 2: \"2. Open Pencild\" \u2014 On-device AI parses the dates, venue, and times in 0.4 seconds.\n  * Step 3: \"3. One-Tap Save\" \u2014 Review and push straight to Apple Calendar & Reminders.\n- Primary CTA Button: Luminous cyan capsule button with camera/scan icon: \"Scan Recent Screenshots \u2192\"\n- Secondary Action Button: Frosted glass button with photo icon: \"Choose from Photo Library\"\n- Demo Sample Card:\n  * \"Want to see how it works?\" with a \"Try Sample Flyer\" pill button that lets users test the parser without giving full library access.\n- Bottom safe area padding above the tab bar (Home tab active).\nTone: Inviting, high-energy, effortless, trustworthy, Midnight Prism aesthetic.",
   "name": "projects/454854512779783540/screens/b04278172768466ead0f77aec1e7fefe",
   "theme": {
     "colorMode": "DARK",
@@ -31721,7 +31721,7 @@ FILE: .stitch/designs/08_saved_event_detail.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Extraction Success Summary</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xxl">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Extraction Success Summary</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xxl">
 <!-- Subtle Ambient Glow Overlay (Decorative) -->
 <div class="relative w-full overflow-hidden pointer-events-none">
 <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-72 h-36 bg-status-success/15 rounded-full blur-3xl"></div>
@@ -31893,7 +31893,7 @@ FILE: .stitch/designs/08_saved_event_detail.html
 <div class="mt-space-xs flex items-center gap-space-xs">
 <span class="font-caption text-caption text-muted-foreground flex items-center gap-0.5">
 <span class="material-symbols-outlined text-[13px] text-primary-fixed">auto_awesome</span>
-            Extracted by DateSnap OCR Engine
+            Extracted by Pencild OCR Engine
           </span>
 </div>
 </div>
@@ -31967,8 +31967,8 @@ FILE: .stitch/designs/08_saved_event_detail.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2218",
-  "title": "DateSnap - Saved Event Detail",
-  "prompt": "Design Screen 15: DateSnap - Saved Event Detail Screen.\nGoal: Show the finalized, confirmed saved event in a calm, reassuring, highly polished presentation with clear next actions.\n\nDetailed Structure & Layout:\n1. Success Banner / Toast:\n   - Subtle top badge: \"\u2713 Successfully Saved to Apple Calendar & Reminders\" in soft mint green with glowing checkmark.\n2. Event Hero Card (Luminous Elevated Glass Showcase):\n   - Date Badge: Large dimensional date badge (56x68pt) with \"JUL\" top header and bold \"18\" numeral.\n   - Event Title: \"Neon Sunset Rooftop Session\" (Sora 24pt, bold).\n   - Time & Recurrence: \"Friday, July 18, 2025 \u00b7 7:00 PM \u2013 11:30 PM\".\n   - Location: \"Skybar Penthouse & Lounge, Los Angeles, CA\" with interactive \"Get Directions\" link.\n3. Saved Destinations & Status Section:\n   - Glass panel displaying active sync targets:\n     - \"Apple Calendar\" \u00b7 Synced to \"Personal\" (Checkmark in green)\n     - \"Apple Reminders\" \u00b7 Task created in \"Events & RSVPs\" (Checkmark in green)\n4. Configured Reminders Timeline Card:\n   - Card title: \"Scheduled Alerts (2 Active)\"\n   - Timeline row 1: \"1 day before (Jul 17, 9:00 AM) \u00b7 Apple Reminders\"\n   - Timeline row 2: \"2 hours before (Jul 18, 5:00 PM) \u00b7 Calendar Notification\"\n5. Notes & Original Source Image:\n   - Collapsible or thumbnail block: \"Extracted from Flyer Screenshot (IMG_4920.PNG)\" with small glass thumbnail preview of the party poster.\n   - Extracted notes: \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n6. Action Buttons Cluster:\n   - Primary CTA: \"Open in Apple Calendar \u2197\" (Solid cyan glowing pill CTA).\n   - Secondary Actions Row:\n     - \"Edit Event\" (Glass pill button)\n     - \"Manage Reminders\" (Glass pill button)\n     - \"Share Event\" (Share icon button)\n\nVisual Style:\n- Midnight Prism palette: Deepest navy `#050816`, frosted glass cards `rgba(18, 24, 52, 0.72)` with edge highlight, crisp Sora and Inter typography, reassuring, resolved, and dependable atmosphere. App Store screenshot caliber.",
+  "title": "Pencild - Saved Event Detail",
+  "prompt": "Design Screen 15: Pencild - Saved Event Detail Screen.\nGoal: Show the finalized, confirmed saved event in a calm, reassuring, highly polished presentation with clear next actions.\n\nDetailed Structure & Layout:\n1. Success Banner / Toast:\n   - Subtle top badge: \"\u2713 Successfully Saved to Apple Calendar & Reminders\" in soft mint green with glowing checkmark.\n2. Event Hero Card (Luminous Elevated Glass Showcase):\n   - Date Badge: Large dimensional date badge (56x68pt) with \"JUL\" top header and bold \"18\" numeral.\n   - Event Title: \"Neon Sunset Rooftop Session\" (Sora 24pt, bold).\n   - Time & Recurrence: \"Friday, July 18, 2025 \u00b7 7:00 PM \u2013 11:30 PM\".\n   - Location: \"Skybar Penthouse & Lounge, Los Angeles, CA\" with interactive \"Get Directions\" link.\n3. Saved Destinations & Status Section:\n   - Glass panel displaying active sync targets:\n     - \"Apple Calendar\" \u00b7 Synced to \"Personal\" (Checkmark in green)\n     - \"Apple Reminders\" \u00b7 Task created in \"Events & RSVPs\" (Checkmark in green)\n4. Configured Reminders Timeline Card:\n   - Card title: \"Scheduled Alerts (2 Active)\"\n   - Timeline row 1: \"1 day before (Jul 17, 9:00 AM) \u00b7 Apple Reminders\"\n   - Timeline row 2: \"2 hours before (Jul 18, 5:00 PM) \u00b7 Calendar Notification\"\n5. Notes & Original Source Image:\n   - Collapsible or thumbnail block: \"Extracted from Flyer Screenshot (IMG_4920.PNG)\" with small glass thumbnail preview of the party poster.\n   - Extracted notes: \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n6. Action Buttons Cluster:\n   - Primary CTA: \"Open in Apple Calendar \u2197\" (Solid cyan glowing pill CTA).\n   - Secondary Actions Row:\n     - \"Edit Event\" (Glass pill button)\n     - \"Manage Reminders\" (Glass pill button)\n     - \"Share Event\" (Share icon button)\n\nVisual Style:\n- Midnight Prism palette: Deepest navy `#050816`, frosted glass cards `rgba(18, 24, 52, 0.72)` with edge highlight, crisp Sora and Inter typography, reassuring, resolved, and dependable atmosphere. App Store screenshot caliber.",
   "name": "projects/454854512779783540/screens/79edd80432f24128889607dee9d678f4",
   "theme": {
     "colorMode": "DARK",
@@ -32358,7 +32358,7 @@ FILE: .stitch/designs/09_event_review_and_edit.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
 <!-- Top Context Header & Stage Badge -->
 <div class="flex items-center justify-between pt-space-sm">
 <div class="flex items-center gap-space-xs">
@@ -32661,8 +32661,8 @@ FILE: .stitch/designs/09_event_review_and_edit.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2364",
-  "title": "DateSnap - Event Review and Edit",
-  "prompt": "Design Screen 12: DateSnap - Event Review and Edit Screen.\nGoal: The core conversion screen where extracted event details are reviewed, refined, and confirmed before saving.\n\nDetailed Structure & Layout:\n1. Top Bar Context: \"Review Extracted Event\" with step pill or high confidence badge.\n2. Source Flyer Hero Preview Card:\n   - Floating glass panel with original flyer thumbnail preview (e.g., \"Neon Rooftop Sunset Session - July 18, 2025\").\n   - Badge overlay: \"96% High Confidence OCR\" with spark icon.\n   - Quick action to \"View Original Image\" in full screen.\n3. Extracted Event Form (Inline Editable, Premium Dark Glass Fields):\n   - Title Field: Editable text input with value \"Neon Sunset Rooftop Session\" with clear button and subtle glowing border on focus.\n   - Date & Time Row:\n     - Date Picker Trigger: \"Friday, July 18, 2025\" with calendar icon.\n     - Time Range Picker: \"7:00 PM \u2013 11:30 PM\" with clock icon.\n     - \"All-day\" toggle switch (currently toggled off, glowing cyan accent).\n   - Location Field:\n     - \"Skybar Penthouse & Lounge, 450 Sunset Blvd, LA\" with map pin icon and Apple Maps indicator.\n   - Notes / Description Field:\n     - \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n   - Collapsible Accordion: \"Extracted Source Text (Raw OCR)\" showing raw parsed lines with a chevron toggle.\n4. Save Destination Preview Summary:\n   - Compact glass row: \"Saving to: Apple Calendar (Personal) + 2 Reminders\" with chevron to edit.\n5. Primary & Secondary Action Cluster:\n   - Primary Large Button: \"Save Event \u2192\" in luminous glowing cyan pill (`#7CFFEA`, text `#07111F`, font-weight 700, height 56px).\n   - Secondary Button Row:\n     - \"Save as Draft\" (Frosted glass button with border)\n     - \"Not an Event\" or \"Discard\" (Destructive subtle red/muted link).\n\nVisual Style:\n- Deep navy background `#050816`, frosted cards `rgba(18, 24, 52, 0.72)` with 1px border `rgba(173, 195, 255, 0.18)` and top glass highlight `rgba(255,255,255,0.22)`.\n- Bold modern Sora typography for section titles, Inter/Apple sans for form controls.\n- Touch-friendly 48px+ hit targets. App Store screenshot quality.",
+  "title": "Pencild - Event Review and Edit",
+  "prompt": "Design Screen 12: Pencild - Event Review and Edit Screen.\nGoal: The core conversion screen where extracted event details are reviewed, refined, and confirmed before saving.\n\nDetailed Structure & Layout:\n1. Top Bar Context: \"Review Extracted Event\" with step pill or high confidence badge.\n2. Source Flyer Hero Preview Card:\n   - Floating glass panel with original flyer thumbnail preview (e.g., \"Neon Rooftop Sunset Session - July 18, 2025\").\n   - Badge overlay: \"96% High Confidence OCR\" with spark icon.\n   - Quick action to \"View Original Image\" in full screen.\n3. Extracted Event Form (Inline Editable, Premium Dark Glass Fields):\n   - Title Field: Editable text input with value \"Neon Sunset Rooftop Session\" with clear button and subtle glowing border on focus.\n   - Date & Time Row:\n     - Date Picker Trigger: \"Friday, July 18, 2025\" with calendar icon.\n     - Time Range Picker: \"7:00 PM \u2013 11:30 PM\" with clock icon.\n     - \"All-day\" toggle switch (currently toggled off, glowing cyan accent).\n   - Location Field:\n     - \"Skybar Penthouse & Lounge, 450 Sunset Blvd, LA\" with map pin icon and Apple Maps indicator.\n   - Notes / Description Field:\n     - \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n   - Collapsible Accordion: \"Extracted Source Text (Raw OCR)\" showing raw parsed lines with a chevron toggle.\n4. Save Destination Preview Summary:\n   - Compact glass row: \"Saving to: Apple Calendar (Personal) + 2 Reminders\" with chevron to edit.\n5. Primary & Secondary Action Cluster:\n   - Primary Large Button: \"Save Event \u2192\" in luminous glowing cyan pill (`#7CFFEA`, text `#07111F`, font-weight 700, height 56px).\n   - Secondary Button Row:\n     - \"Save as Draft\" (Frosted glass button with border)\n     - \"Not an Event\" or \"Discard\" (Destructive subtle red/muted link).\n\nVisual Style:\n- Deep navy background `#050816`, frosted cards `rgba(18, 24, 52, 0.72)` with 1px border `rgba(173, 195, 255, 0.18)` and top glass highlight `rgba(255,255,255,0.22)`.\n- Bold modern Sora typography for section titles, Inter/Apple sans for form controls.\n- Touch-friendly 48px+ hit targets. App Store screenshot quality.",
   "name": "projects/454854512779783540/screens/50e76e9e2a6743a98d1f320729a3738a",
   "theme": {
     "colorMode": "DARK",
@@ -33052,7 +33052,7 @@ FILE: .stitch/designs/10_reminder_schedule_editor.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
 <!-- Subtle Ambient Glows -->
 <div class="relative w-full overflow-hidden">
 <div class="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-accent-purple/20 blur-3xl pointer-events-none"></div>
@@ -33224,7 +33224,7 @@ FILE: .stitch/designs/10_reminder_schedule_editor.html
           </span>
 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/40 text-foreground-primary font-label-chip text-label-chip shadow-sm">
 <span class="material-symbols-outlined text-[14px] text-primary-container">camera_indoor</span>
-<span>DateSnap Priority Push</span>
+<span>Pencild Priority Push</span>
 </div>
 </div>
 </div>
@@ -33427,8 +33427,8 @@ FILE: .stitch/designs/10_reminder_schedule_editor.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2684",
-  "title": "DateSnap - Reminder Schedule Editor",
-  "prompt": "Design Screen 13: DateSnap - Reminder Schedule Editor.\nGoal: Allow users to configure up to 3 smart tiered reminders for an event with effortless precision.\n\nDetailed Structure & Layout:\n1. Header / Intro:\n   - Subtitle: \"Event: Neon Sunset Rooftop Session \u00b7 Jul 18, 7:00 PM\"\n   - Title: \"Reminder Schedule\"\n   - Reassuring helper text: \"Configure multi-stage alerts so you never miss ticket sales, preparation, or departure.\"\n2. Quick Presets Bar:\n   - Horizontal pill selectors: \"Default (2 alerts)\", \"Travel Heavy (3 alerts)\", \"Day-of Only\", \"Custom\" (Default active with cyan glow border).\n3. Configured Reminder Rows (Up to 3 Interactive Cards):\n   - Reminder 1 (First Warning):\n     - Offset: \"1 day before at 9:00 AM\"\n     - Delivery Channel Chip: \"Apple Reminders\" with checklist icon.\n     - Type: Preparation alert.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 2 (Departure / Travel Alert):\n     - Offset: \"2 hours before (5:00 PM)\"\n     - Delivery Channel Chip: \"Calendar Alert\" with bell icon.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 3 (Final Call):\n     - Offset: \"30 minutes before (6:30 PM)\"\n     - Delivery Channel Chip: \"DateSnap Push Notification\" with glowing brand spark.\n     - Controls: Edit offset dropdown / delete icon.\n4. \"Add Reminder\" Button:\n   - \"+ Add Alert (3 of 3 max)\" state or disabled with helpful hint.\n5. All-Day vs Timed Event Behavior Toggle / Info:\n   - Card explaining: \"Timed events trigger at exact offsets. All-day events trigger at 9:00 AM local time.\"\n6. Sticky Bottom Action Bar:\n   - Primary Button: \"Save Reminder Schedule\" (Luminous cyan `#7CFFEA` capsule CTA).\n   - Secondary cancel / reset action.\n\nVisual Style:\n- Deep navy background `#050816`, glass cards `rgba(18, 24, 52, 0.72)` with luminous cyan and magenta micro-accents.\n- Sora headers, clean badges, native iOS picker aesthetics. Touch targets 48px+.",
+  "title": "Pencild - Reminder Schedule Editor",
+  "prompt": "Design Screen 13: Pencild - Reminder Schedule Editor.\nGoal: Allow users to configure up to 3 smart tiered reminders for an event with effortless precision.\n\nDetailed Structure & Layout:\n1. Header / Intro:\n   - Subtitle: \"Event: Neon Sunset Rooftop Session \u00b7 Jul 18, 7:00 PM\"\n   - Title: \"Reminder Schedule\"\n   - Reassuring helper text: \"Configure multi-stage alerts so you never miss ticket sales, preparation, or departure.\"\n2. Quick Presets Bar:\n   - Horizontal pill selectors: \"Default (2 alerts)\", \"Travel Heavy (3 alerts)\", \"Day-of Only\", \"Custom\" (Default active with cyan glow border).\n3. Configured Reminder Rows (Up to 3 Interactive Cards):\n   - Reminder 1 (First Warning):\n     - Offset: \"1 day before at 9:00 AM\"\n     - Delivery Channel Chip: \"Apple Reminders\" with checklist icon.\n     - Type: Preparation alert.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 2 (Departure / Travel Alert):\n     - Offset: \"2 hours before (5:00 PM)\"\n     - Delivery Channel Chip: \"Calendar Alert\" with bell icon.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 3 (Final Call):\n     - Offset: \"30 minutes before (6:30 PM)\"\n     - Delivery Channel Chip: \"Pencild Push Notification\" with glowing brand spark.\n     - Controls: Edit offset dropdown / delete icon.\n4. \"Add Reminder\" Button:\n   - \"+ Add Alert (3 of 3 max)\" state or disabled with helpful hint.\n5. All-Day vs Timed Event Behavior Toggle / Info:\n   - Card explaining: \"Timed events trigger at exact offsets. All-day events trigger at 9:00 AM local time.\"\n6. Sticky Bottom Action Bar:\n   - Primary Button: \"Save Reminder Schedule\" (Luminous cyan `#7CFFEA` capsule CTA).\n   - Secondary cancel / reset action.\n\nVisual Style:\n- Deep navy background `#050816`, glass cards `rgba(18, 24, 52, 0.72)` with luminous cyan and magenta micro-accents.\n- Sora headers, clean badges, native iOS picker aesthetics. Touch targets 48px+.",
   "name": "projects/454854512779783540/screens/fc49f1067442461dbf28c683626a3b70",
   "theme": {
     "colorMode": "DARK",
@@ -33816,7 +33816,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "6c145dff8ec540b9a51f806629e55c70",
     "slug": "01_premium_paywall",
-    "title": "DateSnap - Premium Paywall",
+    "title": "Pencild - Premium Paywall",
     "htmlFile": "01_premium_paywall.html",
     "imageFile": "01_premium_paywall.png",
     "deviceType": "MOBILE",
@@ -33826,7 +33826,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "df7a78364bd54941ad1d7bb6ca34d449",
     "slug": "02_plus_paywall",
-    "title": "DateSnap - Plus Paywall",
+    "title": "Pencild - Plus Paywall",
     "htmlFile": "02_plus_paywall.html",
     "imageFile": "02_plus_paywall.png",
     "deviceType": "MOBILE",
@@ -33836,7 +33836,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "e5fc50914c2f4a788389e8aa94806f45",
     "slug": "03_history_and_archive",
-    "title": "DateSnap - History & Archive",
+    "title": "Pencild - History & Archive",
     "htmlFile": "03_history_and_archive.html",
     "imageFile": "03_history_and_archive.png",
     "deviceType": "MOBILE",
@@ -33846,7 +33846,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "7d2a6476acc841b7be7374273debbf8b",
     "slug": "04_calendar_permission_denied",
-    "title": "DateSnap - Calendar Permission Denied",
+    "title": "Pencild - Calendar Permission Denied",
     "htmlFile": "04_calendar_permission_denied.html",
     "imageFile": "04_calendar_permission_denied.png",
     "deviceType": "MOBILE",
@@ -33856,7 +33856,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "1a0a6dacd22344d797031c2746da9b37",
     "slug": "05_notification_permission_denied",
-    "title": "DateSnap - Notification Permission Denied",
+    "title": "Pencild - Notification Permission Denied",
     "htmlFile": "05_notification_permission_denied.html",
     "imageFile": "05_notification_permission_denied.png",
     "deviceType": "MOBILE",
@@ -33866,7 +33866,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "d973f4ad48f2487ea6be61abce9b19ae",
     "slug": "06_no_dates_found",
-    "title": "DateSnap - No Dates Found",
+    "title": "Pencild - No Dates Found",
     "htmlFile": "06_no_dates_found.html",
     "imageFile": "06_no_dates_found.png",
     "deviceType": "MOBILE",
@@ -33876,7 +33876,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "b04278172768466ead0f77aec1e7fefe",
     "slug": "07_home_empty_state",
-    "title": "DateSnap - Home Empty State",
+    "title": "Pencild - Home Empty State",
     "htmlFile": "07_home_empty_state.html",
     "imageFile": "07_home_empty_state.png",
     "deviceType": "MOBILE",
@@ -33886,7 +33886,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "79edd80432f24128889607dee9d678f4",
     "slug": "08_saved_event_detail",
-    "title": "DateSnap - Saved Event Detail",
+    "title": "Pencild - Saved Event Detail",
     "htmlFile": "08_saved_event_detail.html",
     "imageFile": "08_saved_event_detail.png",
     "deviceType": "MOBILE",
@@ -33896,7 +33896,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "50e76e9e2a6743a98d1f320729a3738a",
     "slug": "09_event_review_and_edit",
-    "title": "DateSnap - Event Review and Edit",
+    "title": "Pencild - Event Review and Edit",
     "htmlFile": "09_event_review_and_edit.html",
     "imageFile": "09_event_review_and_edit.png",
     "deviceType": "MOBILE",
@@ -33906,7 +33906,7 @@ FILE: .stitch/designs/index.json
   {
     "id": "fc49f1067442461dbf28c683626a3b70",
     "slug": "10_reminder_schedule_editor",
-    "title": "DateSnap - Reminder Schedule Editor",
+    "title": "Pencild - Reminder Schedule Editor",
     "htmlFile": "10_reminder_schedule_editor.html",
     "imageFile": "10_reminder_schedule_editor.png",
     "deviceType": "MOBILE",
@@ -33937,7 +33937,7 @@ FILE: .stitch/screens/01_premium_paywall.html
 <div class="inline-flex items-center gap-space-xs px-3.5 py-1.5 rounded-full bg-surface-container-high/80 backdrop-blur-xl shadow-lg relative">
 <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#74f8e3]"></span>
 <span class="font-overline-confidence text-overline-confidence uppercase tracking-wider text-primary-container font-semibold">
-        ✦ DATESNAP PREMIUM
+        ✦ PENCILD PREMIUM
       </span>
 <span class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-glass-specular-top to-transparent rounded-full pointer-events-none"></span>
 </div>
@@ -33999,7 +33999,7 @@ FILE: .stitch/screens/01_premium_paywall.html
 <span class="material-symbols-outlined text-[22px]">all_inclusive</span>
 </div>
 <div class="flex flex-col min-w-0 pr-space-xs">
-<h2 class="font-headline-card text-headline-card text-foreground-primary text-[15px] leading-tight">Everything in DateSnap Plus</h2>
+<h2 class="font-headline-card text-headline-card text-foreground-primary text-[15px] leading-tight">Everything in Pencild Plus</h2>
 <p class="font-caption text-caption text-muted-foreground mt-1 leading-relaxed">
           Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.
         </p>
@@ -34191,8 +34191,8 @@ FILE: .stitch/screens/01_premium_paywall.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2932",
-  "title": "DateSnap - Premium Paywall",
-  "prompt": "Design the DateSnap Premium Paywall screen (Screen 20).\nThis is the flagship power-tier paywall for DateSnap, designed with top-tier fidelity, cinematic glassmorphism, luminous edge highlights, and balanced whitespace matching Phase A.\nBackground: Deep midnight navy (#050816) with subtle ambient purple and warm orange atmospheric light flares.\nHeader:\n- Top bar with frosted circular dismiss button (close icon) on left, and 'Restore' text button on right.\nHero Section:\n- Category Pill: '\u2726 DATESNAP PREMIUM' with luminous gradient border and live pulse dot.\n- Headline: 'Turn flyers and files into plans.' in Sora 30px bold, pure white #F7F8FF.\n- Subheadline: 'Import event PDFs and images from Files, then save the important dates in seconds.' (15px Inter, muted lavender #A8B0D4).\n- Dynamic Hero Visual: Layered glass icon lockup showing a PDF document badge with an active neon scan beam line passing horizontally across it, and a gold sparkle badge.\n\nFeature Highlights (Cinematic glass cards, rounded-2xl, rgba(18, 24, 52, 0.75), border 1px solid rgba(173, 195, 255, 0.18), specular top highlight line):\n1. 'Everything in DateSnap Plus' (Icon: all_inclusive in purple container) \u2014 'Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.'\n2. 'Files & Cloud Drive Import' (Icon: folder_open in cyan container) \u2014 'Import PDFs, itineraries, and flyers directly from iOS Files, iCloud Drive, and Dropbox.'\n3. 'Multi-Page PDF Scanning' (Icon: picture_as_pdf in magenta container) \u2014 'Extract multi-day conference agendas, school schedules, and sports tourneys with one tap.'\n4. 'Batch Document Scanning' (Icon: layers in orange container) \u2014 'Queue up to 10 event flyers, passes, or tickets at once with lightning on-device OCR.'\n5. 'Advanced Calendar Rules' (Icon: tune in emerald green container) \u2014 'Custom calendar color tagging, recurring scan routines, and location geofence alerts.'\n\nInteractive Pricing Cards (Radio group):\n- Annual Plan (Selected by default):\n  - Border: Glowing neon cyan/indigo gradient border, inner specular highlight.\n  - Left side: 'Annual' heading, bright cyan 'Save 50%' badge pill, subtext '$49.99 billed annually \u00b7 Includes 7-Day Free Trial'.\n  - Right side: '$4.16' / mo in Sora bold cyan text, with active glowing checkmark circle.\n- Monthly Plan:\n  - Frosted glass container.\n  - Left side: 'Monthly' heading, subtext '$8.99 billed monthly, cancel anytime'.\n  - Right side: '$8.99' / mo, with subtle unselected radio circle.\n\nCTA & Trust Footer:\n- Primary CTA: Capsule 56px height button in luminous cyan (#7CFFEA) with dark text (#07111F), 'Try Premium Free for 7 Days \u2192'.\n- Trust note: Shield icon + 'Renews at $49.99/yr. Notification sent 2 days prior to billing. Cancel anytime in Apple ID.'\n- Legal footer: 'Restore Purchases \u00b7 Subscription Terms \u00b7 Privacy Policy'.",
+  "title": "Pencild - Premium Paywall",
+  "prompt": "Design the Pencild Premium Paywall screen (Screen 20).\nThis is the flagship power-tier paywall for Pencild, designed with top-tier fidelity, cinematic glassmorphism, luminous edge highlights, and balanced whitespace matching Phase A.\nBackground: Deep midnight navy (#050816) with subtle ambient purple and warm orange atmospheric light flares.\nHeader:\n- Top bar with frosted circular dismiss button (close icon) on left, and 'Restore' text button on right.\nHero Section:\n- Category Pill: '\u2726 PENCILD PREMIUM' with luminous gradient border and live pulse dot.\n- Headline: 'Turn flyers and files into plans.' in Sora 30px bold, pure white #F7F8FF.\n- Subheadline: 'Import event PDFs and images from Files, then save the important dates in seconds.' (15px Inter, muted lavender #A8B0D4).\n- Dynamic Hero Visual: Layered glass icon lockup showing a PDF document badge with an active neon scan beam line passing horizontally across it, and a gold sparkle badge.\n\nFeature Highlights (Cinematic glass cards, rounded-2xl, rgba(18, 24, 52, 0.75), border 1px solid rgba(173, 195, 255, 0.18), specular top highlight line):\n1. 'Everything in Pencild Plus' (Icon: all_inclusive in purple container) \u2014 'Unlimited screenshot scans, 3-tiered reminders, and automated Apple Calendar synchronization.'\n2. 'Files & Cloud Drive Import' (Icon: folder_open in cyan container) \u2014 'Import PDFs, itineraries, and flyers directly from iOS Files, iCloud Drive, and Dropbox.'\n3. 'Multi-Page PDF Scanning' (Icon: picture_as_pdf in magenta container) \u2014 'Extract multi-day conference agendas, school schedules, and sports tourneys with one tap.'\n4. 'Batch Document Scanning' (Icon: layers in orange container) \u2014 'Queue up to 10 event flyers, passes, or tickets at once with lightning on-device OCR.'\n5. 'Advanced Calendar Rules' (Icon: tune in emerald green container) \u2014 'Custom calendar color tagging, recurring scan routines, and location geofence alerts.'\n\nInteractive Pricing Cards (Radio group):\n- Annual Plan (Selected by default):\n  - Border: Glowing neon cyan/indigo gradient border, inner specular highlight.\n  - Left side: 'Annual' heading, bright cyan 'Save 50%' badge pill, subtext '$49.99 billed annually \u00b7 Includes 7-Day Free Trial'.\n  - Right side: '$4.16' / mo in Sora bold cyan text, with active glowing checkmark circle.\n- Monthly Plan:\n  - Frosted glass container.\n  - Left side: 'Monthly' heading, subtext '$8.99 billed monthly, cancel anytime'.\n  - Right side: '$8.99' / mo, with subtle unselected radio circle.\n\nCTA & Trust Footer:\n- Primary CTA: Capsule 56px height button in luminous cyan (#7CFFEA) with dark text (#07111F), 'Try Premium Free for 7 Days \u2192'.\n- Trust note: Shield icon + 'Renews at $49.99/yr. Notification sent 2 days prior to billing. Cancel anytime in Apple ID.'\n- Legal footer: 'Restore Purchases \u00b7 Subscription Terms \u00b7 Privacy Policy'.",
   "name": "projects/454854512779783540/screens/6c145dff8ec540b9a51f806629e55c70",
   "theme": {
     "colorMode": "DARK",
@@ -34593,7 +34593,7 @@ FILE: .stitch/screens/02_plus_paywall.html
 <!-- Branded Pill Badge -->
 <div class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container/90 shadow-sm backdrop-blur-xl mb-space-md">
 <span class="text-primary-container font-headline-card text-caption tracking-wider select-none">✦</span>
-<span class="font-overline-confidence text-overline-confidence tracking-[0.14em] uppercase text-foreground-primary">DATESNAP PLUS</span>
+<span class="font-overline-confidence text-overline-confidence tracking-[0.14em] uppercase text-foreground-primary">PENCILD PLUS</span>
 <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse ml-0.5"></span>
 </div>
 <!-- Main Headline -->
@@ -34683,7 +34683,7 @@ FILE: .stitch/screens/02_plus_paywall.html
           Calendar, Reminders &amp; Push
         </h3>
 <p class="font-body-base text-body-compact text-muted-foreground leading-relaxed">
-          Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push.
+          Triple-destination sync across Apple Calendar, Reminders, and Pencild local push.
         </p>
 </div>
 </div>
@@ -34839,8 +34839,8 @@ FILE: .stitch/screens/02_plus_paywall.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2782",
-  "title": "DateSnap - Plus Paywall",
-  "prompt": "Design the DateSnap Plus Paywall screen (Screen 19).\nThis must be extraordinarily high fidelity, matching the polished visual depth, rich glass cards, and precise typography of DateSnap Phase A (Saved Event Detail and Event Review).\nBackground: Deep midnight navy (#050816) with subtle atmospheric radial glows (electric blue and magenta blur in background).\nHeader:\n- Top bar with clean circular glass Close button on left or right, and subtle 'Restore' button.\nHero Section:\n- Glowing branded badge pill at top: '\u2726 DATESNAP PLUS' with cyan/magenta subtle gradient edge.\n- Main headline: 'Never miss a date you saved.' (30px Sora font, bold, crisp white #F7F8FF, tight tracking).\n- Subheadline: 'Automatically find events in screenshots and set the reminders that work for you.' (15px Inter, text-muted-foreground #A8B0D4, max-w-sm, centered).\n- Visual Interactive Anchor: A sleek layered preview card showing a scanned concert flyer thumbnail ('Neon Sunset Rooftop') with a '99% AI CONFIDENCE' badge and '3 custom reminders primed' status tag, illustrating the core value.\n\nFeature List (Individual elevated glass cards with rounded-2xl, background rgba(18, 24, 52, 0.72), 1px glass border rgba(173, 195, 255, 0.18), and specular top highlight):\n1. 'Unlimited Screenshot Scans' with a vibrant cyan scan icon container, subtitle: 'Scan and extract events from concert flyers, stories, and chat invites without limits.'\n2. 'Up to 3 Reminders Per Event' with a bell icon in soft orange container, subtitle: 'Fine-tune departure countdowns, ticket drop buzzers, and prep alerts with precision.'\n3. 'Calendar, Reminders & Push' with calendar/sync icon in purple container, subtitle: 'Triple-destination sync across Apple Calendar, Reminders, and DateSnap local push.'\n4. 'Custom Defaults & Smart Drafts' with sliders/wand icon in green container, subtitle: 'Auto-apply your favorite timing offsets and triage ambiguous dates effortlessly.'\n\nInteractive Plan Selector (Radio group with 2 distinct glass cards):\n- Annual Plan (Selected by default):\n  - Highlighted with luminous cyan/blue glowing border (1.5px solid #7CFFEA or gradient), soft back glow.\n  - Left side: 'Annual' title in bold, 'Save 48%' high-contrast badge pill in bright cyan (#7CFFEA) with dark text, and subtext '$29.99 billed annually (Includes 7-Day Free Trial)'.\n  - Right side: '$2.49 / mo' in bold Sora, with a filled checkmark circle in #7CFFEA.\n- Monthly Plan:\n  - Clean frosted glass card with subtle border.\n  - Left side: 'Monthly' title, subtext '$4.99 billed monthly, cancel anytime'.\n  - Right side: '$4.99 / mo' in Sora, with an empty muted radio circle.\n\nCTA & Legal Reassurance:\n- Primary CTA Button: Full width 56px height capsule button in luminous cyan (#7CFFEA) with dark navy text (#07111F), bold 16px Sora: 'Start 7-Day Free Trial \u2192' with subtle outer glow.\n- Trust guarantee note: Lock icon with 'Renews at $29.99/year after trial. Cancel anytime in App Store settings with zero surprise charges.'\n- Footer links: 'Restore Purchases \u00b7 Terms of Service \u00b7 Privacy Policy' in muted caption font.\nEnsure all spacing is balanced, cards are distinctly separated, text has zero overlap, and icons are properly sized.",
+  "title": "Pencild - Plus Paywall",
+  "prompt": "Design the Pencild Plus Paywall screen (Screen 19).\nThis must be extraordinarily high fidelity, matching the polished visual depth, rich glass cards, and precise typography of Pencild Phase A (Saved Event Detail and Event Review).\nBackground: Deep midnight navy (#050816) with subtle atmospheric radial glows (electric blue and magenta blur in background).\nHeader:\n- Top bar with clean circular glass Close button on left or right, and subtle 'Restore' button.\nHero Section:\n- Glowing branded badge pill at top: '\u2726 PENCILD PLUS' with cyan/magenta subtle gradient edge.\n- Main headline: 'Never miss a date you saved.' (30px Sora font, bold, crisp white #F7F8FF, tight tracking).\n- Subheadline: 'Automatically find events in screenshots and set the reminders that work for you.' (15px Inter, text-muted-foreground #A8B0D4, max-w-sm, centered).\n- Visual Interactive Anchor: A sleek layered preview card showing a scanned concert flyer thumbnail ('Neon Sunset Rooftop') with a '99% AI CONFIDENCE' badge and '3 custom reminders primed' status tag, illustrating the core value.\n\nFeature List (Individual elevated glass cards with rounded-2xl, background rgba(18, 24, 52, 0.72), 1px glass border rgba(173, 195, 255, 0.18), and specular top highlight):\n1. 'Unlimited Screenshot Scans' with a vibrant cyan scan icon container, subtitle: 'Scan and extract events from concert flyers, stories, and chat invites without limits.'\n2. 'Up to 3 Reminders Per Event' with a bell icon in soft orange container, subtitle: 'Fine-tune departure countdowns, ticket drop buzzers, and prep alerts with precision.'\n3. 'Calendar, Reminders & Push' with calendar/sync icon in purple container, subtitle: 'Triple-destination sync across Apple Calendar, Reminders, and Pencild local push.'\n4. 'Custom Defaults & Smart Drafts' with sliders/wand icon in green container, subtitle: 'Auto-apply your favorite timing offsets and triage ambiguous dates effortlessly.'\n\nInteractive Plan Selector (Radio group with 2 distinct glass cards):\n- Annual Plan (Selected by default):\n  - Highlighted with luminous cyan/blue glowing border (1.5px solid #7CFFEA or gradient), soft back glow.\n  - Left side: 'Annual' title in bold, 'Save 48%' high-contrast badge pill in bright cyan (#7CFFEA) with dark text, and subtext '$29.99 billed annually (Includes 7-Day Free Trial)'.\n  - Right side: '$2.49 / mo' in bold Sora, with a filled checkmark circle in #7CFFEA.\n- Monthly Plan:\n  - Clean frosted glass card with subtle border.\n  - Left side: 'Monthly' title, subtext '$4.99 billed monthly, cancel anytime'.\n  - Right side: '$4.99 / mo' in Sora, with an empty muted radio circle.\n\nCTA & Legal Reassurance:\n- Primary CTA Button: Full width 56px height capsule button in luminous cyan (#7CFFEA) with dark navy text (#07111F), bold 16px Sora: 'Start 7-Day Free Trial \u2192' with subtle outer glow.\n- Trust guarantee note: Lock icon with 'Renews at $29.99/year after trial. Cancel anytime in App Store settings with zero surprise charges.'\n- Footer links: 'Restore Purchases \u00b7 Terms of Service \u00b7 Privacy Policy' in muted caption font.\nEnsure all spacing is balanced, cards are distinctly separated, text has zero overlap, and icons are properly sized.",
   "name": "projects/454854512779783540/screens/df7a78364bd54941ad1d7bb6ca34d449",
   "theme": {
     "colorMode": "DARK",
@@ -35230,7 +35230,7 @@ FILE: .stitch/screens/03_history_and_archive.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Datesnap History</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-lg pb-12">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Pencild History</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-lg pb-12">
 <!-- Subtle Ambient Glows in Background -->
 <div class="fixed top-16 left-1/2 -translate-x-1/2 w-80 h-32 bg-secondary-container/20 rounded-full blur-[80px] pointer-events-none -z-10"></div>
 <div class="fixed top-96 right-0 w-64 h-64 bg-accent-purple/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
@@ -35567,7 +35567,7 @@ FILE: .stitch/screens/03_history_and_archive.html
       }
     })();
   </script>
-</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="datesnap-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="pencild-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav>
 </body></html>
 
 
@@ -35588,8 +35588,8 @@ FILE: .stitch/screens/03_history_and_archive.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2734",
-  "title": "DateSnap - History & Archive",
-  "prompt": "Design the DateSnap History screen (Screen 16).\nGoal: Show previously saved events and scan activity in a lightweight, elegant, and useful way.\nDesign & Content:\n- Top Title: \"History & Archive\" with supportive subtitle \"All synced events, past scans, and triage records.\"\n- Search bar with glass pill design: \"Search events, venues, dates...\" with search icon.\n- Segmented filter tabs: \"Saved (18)\" [Active cyan pill], \"Drafts (3)\", \"Dismissed (5)\", \"All Scans\".\n- Grouped chronological sections:\n  * Section: \"THIS MONTH - JULY 2025\"\n    - Item 1: Card for \"Neon Sunset Rooftop Session\" | Date badge `JUL 18` | Synced to Apple Calendar & Reminders (green check pill `Synced`) | Venue: Skybar Lounge | Extracted from screenshot | Thumbnail of flyer with magnifying glass icon.\n    - Item 2: Card for \"Dr. Aris Dental Checkup\" | Date badge `JUL 02` | Synced to Apple Calendar | 10:30 AM | Direct calendar link icon.\n  * Section: \"JUNE 2025\"\n    - Item 3: Card for \"Summer Rooftop Mixer\" | Date badge `JUN 24` | Synced | Skybar Lounge | Thumbnail preview.\n    - Item 4: Card for \"SF Tech Founders Meetup\" | Date badge `JUN 12` | Synced to Apple Calendar.\n  * Section: \"MAY 2025\"\n    - Item 5: Card for \"Flight UA 882 to SFO\" | Date badge `MAY 28` | Airport terminal gate details.\n- Visual distinction: Crisp glowing badges for successfully synced vs amber/muted for past drafts.\n- Compact glass rows with subtle borders, chevron icons, and swipe action hints.\n- Bottom safe area padding above the tab bar.\nTone: Organized, archival, low-clutter, premium glass tech aesthetic using Midnight Prism design system.",
+  "title": "Pencild - History & Archive",
+  "prompt": "Design the Pencild History screen (Screen 16).\nGoal: Show previously saved events and scan activity in a lightweight, elegant, and useful way.\nDesign & Content:\n- Top Title: \"History & Archive\" with supportive subtitle \"All synced events, past scans, and triage records.\"\n- Search bar with glass pill design: \"Search events, venues, dates...\" with search icon.\n- Segmented filter tabs: \"Saved (18)\" [Active cyan pill], \"Drafts (3)\", \"Dismissed (5)\", \"All Scans\".\n- Grouped chronological sections:\n  * Section: \"THIS MONTH - JULY 2025\"\n    - Item 1: Card for \"Neon Sunset Rooftop Session\" | Date badge `JUL 18` | Synced to Apple Calendar & Reminders (green check pill `Synced`) | Venue: Skybar Lounge | Extracted from screenshot | Thumbnail of flyer with magnifying glass icon.\n    - Item 2: Card for \"Dr. Aris Dental Checkup\" | Date badge `JUL 02` | Synced to Apple Calendar | 10:30 AM | Direct calendar link icon.\n  * Section: \"JUNE 2025\"\n    - Item 3: Card for \"Summer Rooftop Mixer\" | Date badge `JUN 24` | Synced | Skybar Lounge | Thumbnail preview.\n    - Item 4: Card for \"SF Tech Founders Meetup\" | Date badge `JUN 12` | Synced to Apple Calendar.\n  * Section: \"MAY 2025\"\n    - Item 5: Card for \"Flight UA 882 to SFO\" | Date badge `MAY 28` | Airport terminal gate details.\n- Visual distinction: Crisp glowing badges for successfully synced vs amber/muted for past drafts.\n- Compact glass rows with subtle borders, chevron icons, and swipe action hints.\n- Bottom safe area padding above the tab bar.\nTone: Organized, archival, low-clutter, premium glass tech aesthetic using Midnight Prism design system.",
   "name": "projects/454854512779783540/screens/e5fc50914c2f4a788389e8aa94806f45",
   "theme": {
     "colorMode": "DARK",
@@ -35979,7 +35979,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Calendar Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Calendar Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
 <!-- Ambient Atmospheric Backdrops -->
 <div class="relative w-full flex flex-col items-center pt-space-md">
 <!-- Hero Glass Shield Visual -->
@@ -36017,7 +36017,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
 </div>
 <h1 class="font-headline-section text-headline-section text-foreground-primary tracking-tight">Calendar access is turned off</h1>
 <p class="font-body-compact text-body-compact text-muted-foreground mt-space-sm leading-relaxed max-w-sm mx-auto">
-        DateSnap needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.
+        Pencild needs access to write detected dates into your calendar. Don’t worry — your existing events remain completely private and are never read or stored.
       </p>
 </div>
 <!-- "What you can still do right now" Bento Glass Card -->
@@ -36048,7 +36048,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
 <span class="material-symbols-outlined text-status-success text-[18px]">check</span>
 </div>
 <div class="flex flex-col min-w-0">
-<span class="font-body-strong text-body-compact text-foreground-primary">DateSnap Local Push Alerts</span>
+<span class="font-body-strong text-body-compact text-foreground-primary">Pencild Local Push Alerts</span>
 <span class="font-caption text-caption text-muted-foreground mt-0.5 leading-snug">Receive intelligent on-device notifications &amp; pre-event sound cues for snapped screenshots.</span>
 </div>
 </div>
@@ -36083,7 +36083,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
 <li class="flex items-center gap-space-md text-on-surface">
 <span class="w-6 h-6 rounded-full bg-muted-surface flex items-center justify-center font-overline-confidence text-overline-confidence text-foreground-primary shrink-0">2</span>
 <span class="font-body-compact text-body-compact text-on-surface">
-            Scroll to find <span class="font-body-strong text-foreground-primary">DateSnap</span>
+            Scroll to find <span class="font-body-strong text-foreground-primary">Pencild</span>
 </span>
 </li>
 <li class="flex items-center gap-space-md text-on-surface">
@@ -36111,7 +36111,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
 <div class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md rounded-xl bg-surface-container-lowest/50 mb-space-lg text-center">
 <span class="material-symbols-outlined text-status-success text-[16px] shrink-0">verified_user</span>
 <p class="font-caption text-caption text-muted-foreground">
-        DateSnap is 100% On-Device · Zero Cloud Sync · Private by Design
+        Pencild is 100% On-Device · Zero Cloud Sync · Private by Design
       </p>
 </div>
 </div>
@@ -36127,7 +36127,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
         setTimeout(() => {
           settingsBtn.classList.remove('scale-[0.97]');
           // Deep link trigger emulation for native app layer
-          console.log('[DateSnap] Opening iOS System Settings...');
+          console.log('[Pencild] Opening iOS System Settings...');
         }, 150);
       });
     }
@@ -36137,7 +36137,7 @@ FILE: .stitch/screens/04_calendar_permission_denied.html
         remindersBtn.classList.add('opacity-70');
         setTimeout(() => {
           remindersBtn.classList.remove('opacity-70');
-          console.log('[DateSnap] Fallback to Reminders mode engaged.');
+          console.log('[Pencild] Fallback to Reminders mode engaged.');
         }, 150);
       });
     }
@@ -36162,8 +36162,8 @@ FILE: .stitch/screens/04_calendar_permission_denied.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2534",
-  "title": "DateSnap - Calendar Permission Denied",
-  "prompt": "Design the DateSnap Calendar Permission Denied Fallback Screen (Screen 17).\nGoal: Gracefully explain what the user can still do if Calendar access is denied, with zero scolding.\nDesign & Content:\n- Hero visual icon/illustration: A sleek glass shield card with an Apple Calendar icon and a gentle amber/orange lock/warning accent ring, surrounded by a soft cyan-magenta aura.\n- Headline: \"Calendar access is turned off\"\n- Subtitle: \"DateSnap needs access to write detected dates into your calendar. Don't worry \u2014 your existing events remain completely private and are never read or stored.\"\n- Prominent feature card \"What you can still do right now\":\n  * Feature row 1: \"Apple Reminders\" with checkmark \u2014 \"Export deadlines and alerts directly to your Reminders app without calendar access.\"\n  * Feature row 2: \"DateSnap Local Push Alerts\" with checkmark \u2014 \"Receive intelligent on-device reminder notifications for captured screenshots.\"\n  * Feature row 3: \"Manual & Draft Saving\" with checkmark \u2014 \"Parse flyers, copy formatted event info, or save drafts to review later.\"\n- Step-by-step guidance card:\n  \"To enable Calendar syncing:\"\n  1. Open iPhone **Settings**\n  2. Scroll to **DateSnap**\n  3. Tap **Calendars** and choose **Full Access** or **Add Events Only**\n- Primary Action button: High-contrast luminous cyan capsule button: \"Open iPhone Settings \u2192\"\n- Secondary Action button: Glass button: \"Continue with Reminders Only\"\n- Security footer note: \"DateSnap is 100% On-Device \u00b7 Zero Cloud Sync \u00b7 Private by Design\" with lock icon.\nTone: Helpful, respectful, reassuring, never scolding, premium Midnight Prism dark aesthetic.",
+  "title": "Pencild - Calendar Permission Denied",
+  "prompt": "Design the Pencild Calendar Permission Denied Fallback Screen (Screen 17).\nGoal: Gracefully explain what the user can still do if Calendar access is denied, with zero scolding.\nDesign & Content:\n- Hero visual icon/illustration: A sleek glass shield card with an Apple Calendar icon and a gentle amber/orange lock/warning accent ring, surrounded by a soft cyan-magenta aura.\n- Headline: \"Calendar access is turned off\"\n- Subtitle: \"Pencild needs access to write detected dates into your calendar. Don't worry \u2014 your existing events remain completely private and are never read or stored.\"\n- Prominent feature card \"What you can still do right now\":\n  * Feature row 1: \"Apple Reminders\" with checkmark \u2014 \"Export deadlines and alerts directly to your Reminders app without calendar access.\"\n  * Feature row 2: \"Pencild Local Push Alerts\" with checkmark \u2014 \"Receive intelligent on-device reminder notifications for captured screenshots.\"\n  * Feature row 3: \"Manual & Draft Saving\" with checkmark \u2014 \"Parse flyers, copy formatted event info, or save drafts to review later.\"\n- Step-by-step guidance card:\n  \"To enable Calendar syncing:\"\n  1. Open iPhone **Settings**\n  2. Scroll to **Pencild**\n  3. Tap **Calendars** and choose **Full Access** or **Add Events Only**\n- Primary Action button: High-contrast luminous cyan capsule button: \"Open iPhone Settings \u2192\"\n- Secondary Action button: Glass button: \"Continue with Reminders Only\"\n- Security footer note: \"Pencild is 100% On-Device \u00b7 Zero Cloud Sync \u00b7 Private by Design\" with lock icon.\nTone: Helpful, respectful, reassuring, never scolding, premium Midnight Prism dark aesthetic.",
   "name": "projects/454854512779783540/screens/7d2a6476acc841b7be7374273debbf8b",
   "theme": {
     "colorMode": "DARK",
@@ -36553,7 +36553,7 @@ FILE: .stitch/screens/05_notification_permission_denied.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Notification Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">Notification Permission Denied</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe">
 <!-- Subtle Ambient Glow Behind Hero -->
 <div class="relative w-full flex flex-col items-center pt-space-md">
 <div class="absolute -top-10 w-48 h-48 bg-gradient-to-tr from-accent-orange/15 via-tertiary-container/10 to-accent-purple/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -36583,7 +36583,7 @@ FILE: .stitch/screens/05_notification_permission_denied.html
         Notifications are muted
       </h2>
 <p class="font-body-compact text-body-compact text-muted-foreground mt-space-xs leading-relaxed">
-        Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.
+        Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.
       </p>
 </div>
 </div>
@@ -36678,7 +36678,7 @@ FILE: .stitch/screens/05_notification_permission_denied.html
 <div class="flex items-center flex-wrap gap-space-xs font-caption text-caption text-on-surface-variant">
 <span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Settings</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
-<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">DateSnap</span>
+<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Pencild</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
 <span class="bg-surface-container-high px-space-xs py-0.5 rounded text-foreground-primary">Notifications</span>
 <span class="material-symbols-outlined text-[12px] text-muted-foreground">chevron_right</span>
@@ -36746,8 +36746,8 @@ FILE: .stitch/screens/05_notification_permission_denied.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2298",
-  "title": "DateSnap - Notification Permission Denied",
-  "prompt": "Design the DateSnap Notification Permission Denied Fallback Screen (Screen 18).\nGoal: Explain the impact of no notification access and provide practical alternatives with a calm fallback state.\nDesign & Content:\n- Hero visual: Elegant glass bell icon with a subtle diagonal slash and a soft warm amber/magenta glow ring inside a glass container tile.\n- Headline: \"Notifications are muted\"\n- Subtitle: \"Without notification permission, DateSnap can't alert you when new dates are detected in screenshots or remind you before an event begins.\"\n- Impact & Alternative cards:\n  * Card 1: \"Why enable notifications?\"\n    - \"Smart Lead-Time Alerts\": Get notified 1 day or 2 hours prior to events so you never miss departure windows.\n    - \"Instant Screenshot Detection\": Immediate banner prompt when a flyer or invitation is captured in Photos.\n  * Card 2: \"What still works without alerts\":\n    - \"Direct Apple Calendar Sync\": Events are still added directly into your Apple Calendar and will sound standard iOS calendar alarms.\n    - \"Apple Reminders Integration\": Scheduled to-do items continue to function normally.\n- Action Buttons:\n  * Primary CTA: Luminous cyan button: \"Enable in Settings \u2192\"\n  * Secondary Action: Translucent glass button: \"Keep Alerts Muted & Rely on Calendar\"\n- Step-by-step instructions card in clean micro-text with Settings path (Settings > DateSnap > Notifications > Allow Notifications).\n- Trust footer: \"No promotional spam. Only critical event alerts and scan confirmations.\"\nTone: Clear, supportive, non-alarming, beautifully balanced in Midnight Prism dark aesthetic.",
+  "title": "Pencild - Notification Permission Denied",
+  "prompt": "Design the Pencild Notification Permission Denied Fallback Screen (Screen 18).\nGoal: Explain the impact of no notification access and provide practical alternatives with a calm fallback state.\nDesign & Content:\n- Hero visual: Elegant glass bell icon with a subtle diagonal slash and a soft warm amber/magenta glow ring inside a glass container tile.\n- Headline: \"Notifications are muted\"\n- Subtitle: \"Without notification permission, Pencild can't alert you when new dates are detected in screenshots or remind you before an event begins.\"\n- Impact & Alternative cards:\n  * Card 1: \"Why enable notifications?\"\n    - \"Smart Lead-Time Alerts\": Get notified 1 day or 2 hours prior to events so you never miss departure windows.\n    - \"Instant Screenshot Detection\": Immediate banner prompt when a flyer or invitation is captured in Photos.\n  * Card 2: \"What still works without alerts\":\n    - \"Direct Apple Calendar Sync\": Events are still added directly into your Apple Calendar and will sound standard iOS calendar alarms.\n    - \"Apple Reminders Integration\": Scheduled to-do items continue to function normally.\n- Action Buttons:\n  * Primary CTA: Luminous cyan button: \"Enable in Settings \u2192\"\n  * Secondary Action: Translucent glass button: \"Keep Alerts Muted & Rely on Calendar\"\n- Step-by-step instructions card in clean micro-text with Settings path (Settings > Pencild > Notifications > Allow Notifications).\n- Trust footer: \"No promotional spam. Only critical event alerts and scan confirmations.\"\nTone: Clear, supportive, non-alarming, beautifully balanced in Midnight Prism dark aesthetic.",
   "name": "projects/454854512779783540/screens/1a0a6dacd22344d797031c2746da9b37",
   "theme": {
     "colorMode": "DARK",
@@ -37137,7 +37137,7 @@ FILE: .stitch/screens/06_no_dates_found.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">No Dates Found</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe space-y-space-lg">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary ml-space-xs">No Dates Found</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Close" class="w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground-primary hover:bg-muted-surface active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">close</span></button></div></div></header><main class="flex flex-col relative w-full pt-16 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full pb-safe space-y-space-lg">
 <!-- Status Diagnostic Banner -->
 <div class="w-full relative overflow-hidden rounded-xl bg-surface-container/80 backdrop-blur-xl p-space-md shadow-xl flex items-center justify-between">
 <div class="absolute -top-10 -right-10 w-32 h-32 bg-status-warning/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -37208,7 +37208,7 @@ FILE: .stitch/screens/06_no_dates_found.html
       </h1>
 </div>
 <p class="font-body-compact text-body-compact text-muted-foreground leading-relaxed pl-10">
-      DateSnap analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.
+      Pencild analyzed this screenshot through local OCR layers, but found no calendar anchors, timestamps, or reservation syntax.
     </p>
 </div>
 <!-- Diagnostic Breakdown Card (Accordion/Tips) -->
@@ -37361,8 +37361,8 @@ FILE: .stitch/screens/06_no_dates_found.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2744",
-  "title": "DateSnap - No Dates Found",
-  "prompt": "Design the DateSnap \"No Dates Found\" Fallback & Manual Creation Screen (Screen 10).\nGoal: Gracefully handle scans where no dates or event details could be detected, providing manual creation and capture tips.\nDesign & Content:\n- Hero Inspection Card:\n  * Shows the scanned image thumbnail (a blurry or text-sparse photo / meme / receipt) with an optical viewfinder reticle and an amber-tinted chip: \"No dates detected\".\n  * Caption: \"IMG_5829.PNG \u00b7 Scanned in 0.3s\"\n- Headline: \"Couldn't find any dates\"\n- Subtitle: \"We analyzed this image with 100% on-device OCR, but couldn't detect clear event dates, times, or ticket details.\"\n- Helpful Diagnostic & Tips Card:\n  * \"Why did this happen?\"\n    - \"Text is handwriting or low resolution\"\n    - \"No specific calendar date mentioned (e.g. 'Coming soon')\"\n    - \"Image is a photo or meme without event details\"\n- Action Suite:\n  * Primary Action: Luminous cyan capsule button: \"Create Event Manually from Image \u2192\" (pre-fills notes with any detected text and attaches thumbnail).\n  * Secondary Action: Frosted glass button: \"Scan a Different Image\"\n  * Tertiary Action: Dismiss link: \"Discard & Return to Dashboard\"\n- OCR Text Inspector: Collapsible accordion: \"View Detected Words (12 words)\" showing the snippet of raw text the engine found.\n- Privacy assurance: \"Your image was analyzed locally and never left this device.\"\nTone: Empathetic, helpful, constructive, zero dead ends, Midnight Prism design system.",
+  "title": "Pencild - No Dates Found",
+  "prompt": "Design the Pencild \"No Dates Found\" Fallback & Manual Creation Screen (Screen 10).\nGoal: Gracefully handle scans where no dates or event details could be detected, providing manual creation and capture tips.\nDesign & Content:\n- Hero Inspection Card:\n  * Shows the scanned image thumbnail (a blurry or text-sparse photo / meme / receipt) with an optical viewfinder reticle and an amber-tinted chip: \"No dates detected\".\n  * Caption: \"IMG_5829.PNG \u00b7 Scanned in 0.3s\"\n- Headline: \"Couldn't find any dates\"\n- Subtitle: \"We analyzed this image with 100% on-device OCR, but couldn't detect clear event dates, times, or ticket details.\"\n- Helpful Diagnostic & Tips Card:\n  * \"Why did this happen?\"\n    - \"Text is handwriting or low resolution\"\n    - \"No specific calendar date mentioned (e.g. 'Coming soon')\"\n    - \"Image is a photo or meme without event details\"\n- Action Suite:\n  * Primary Action: Luminous cyan capsule button: \"Create Event Manually from Image \u2192\" (pre-fills notes with any detected text and attaches thumbnail).\n  * Secondary Action: Frosted glass button: \"Scan a Different Image\"\n  * Tertiary Action: Dismiss link: \"Discard & Return to Dashboard\"\n- OCR Text Inspector: Collapsible accordion: \"View Detected Words (12 words)\" showing the snippet of raw text the engine found.\n- Privacy assurance: \"Your image was analyzed locally and never left this device.\"\nTone: Empathetic, helpful, constructive, zero dead ends, Midnight Prism design system.",
   "name": "projects/454854512779783540/screens/d973f4ad48f2487ea6be61abce9b19ae",
   "theme": {
     "colorMode": "DARK",
@@ -37752,13 +37752,13 @@ FILE: .stitch/screens/07_home_empty_state.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Home Empty State</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-xxl">
+  </head><body class="bg-background-base font-body-base text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card tracking-tight text-foreground-primary">Home Empty State</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-background-base min-h-screen px-margin"><div class="flex flex-col w-full gap-space-xxl">
 <div class="flex flex-col gap-space-xs pt-space-sm">
 <div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-fixed/10 self-start shadow-[0_0_16px_rgba(116,248,227,0.15)]">
 <span class="material-symbols-outlined text-primary-fixed text-[14px]">auto_awesome</span>
 <span class="font-overline-confidence text-overline-confidence text-primary-fixed uppercase tracking-wider">AI Temporal Sync</span>
 </div>
-<h1 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight">Welcome to DateSnap</h1>
+<h1 class="font-display-hero-mobile text-display-hero-mobile text-foreground-primary tracking-tight">Welcome to Pencild</h1>
 <p class="font-body-compact text-body-compact text-muted-foreground">Your camera roll's calendar autopilot.</p>
 </div>
 <div class="relative w-full rounded-[28px] bg-surface-container/70 backdrop-blur-2xl p-space-xl overflow-hidden shadow-2xl">
@@ -37803,7 +37803,7 @@ FILE: .stitch/screens/07_home_empty_state.html
 </div>
 <div class="flex flex-col gap-space-xs">
 <h2 class="font-headline-section text-headline-section text-foreground-primary">No screenshots scanned yet</h2>
-<p class="font-body-compact text-body-compact text-muted-foreground max-w-xs mx-auto">Take a screenshot of a flyer, text invite, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.</p>
+<p class="font-body-compact text-body-compact text-muted-foreground max-w-xs mx-auto">Take a screenshot of a flyer, text invite, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.</p>
 </div>
 <div class="flex flex-col w-full gap-space-sm pt-space-xs">
 <button class="w-full h-14 rounded-full bg-primary-fixed text-primary-foreground font-body-strong text-body-compact font-semibold flex items-center justify-center gap-space-sm shadow-[0_6px_24px_rgba(116,248,227,0.3)] active:scale-[0.985] transition-transform duration-150" id="scan-cta">
@@ -37820,7 +37820,7 @@ FILE: .stitch/screens/07_home_empty_state.html
 </div>
 <div class="flex flex-col gap-space-md">
 <div class="flex items-center justify-between">
-<h3 class="font-headline-card text-headline-card text-foreground-primary">How DateSnap Works</h3>
+<h3 class="font-headline-card text-headline-card text-foreground-primary">How Pencild Works</h3>
 <span class="font-caption text-caption text-primary-fixed-dim">3 effortless steps</span>
 </div>
 <div class="flex flex-col gap-space-sm">
@@ -37838,7 +37838,7 @@ FILE: .stitch/screens/07_home_empty_state.html
 <span class="material-symbols-outlined text-[22px]">bolt</span>
 </div>
 <div class="flex flex-col gap-0.5 min-w-0">
-<span class="font-body-strong text-body-compact text-foreground-primary">2. Open DateSnap</span>
+<span class="font-body-strong text-body-compact text-foreground-primary">2. Open Pencild</span>
 <p class="font-body-compact text-caption text-muted-foreground">On-device neural vision parses dates, venue locations, and start/end times in 0.4 seconds.</p>
 </div>
 </div>
@@ -37921,7 +37921,7 @@ FILE: .stitch/screens/07_home_empty_state.html
       });
     }
   })();
-</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="datesnap-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav></body></html>
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-tabbar-surface backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]"><div class="flex justify-around items-center h-20 px-margin"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full transition-all duration-200 text-primary-fixed-dim bg-primary-fixed/10 shadow-[0_0_20px_rgba(124,255,234,0.25)]" data-path="home-empty-state" href="#"><span class="material-symbols-outlined text-[22px]">crop_free</span><span class="font-caption text-caption">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="review-queue" href="#"><span class="material-symbols-outlined text-[22px]">auto_awesome</span><span class="font-caption text-caption">Review</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="pencild-history" href="#"><span class="material-symbols-outlined text-[22px]">history</span><span class="font-caption text-caption">History</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] px-space-sm py-space-xs rounded-full text-muted-foreground/65 hover:text-foreground-primary transition-all duration-200" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-caption text-caption">Settings</span></a></div></nav></body></html>
 
 
 ================================================
@@ -37941,8 +37941,8 @@ FILE: .stitch/screens/07_home_empty_state.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2824",
-  "title": "DateSnap - Home Empty State",
-  "prompt": "Design the DateSnap Home Empty State Screen (Screen 7).\nGoal: First-time user zero-data dashboard that welcomes the user, builds excitement, and guides immediate first action.\nDesign & Content:\n- Top Header: DateSnap brand mark, greeting \"Welcome to DateSnap\", subline \"Your camera roll's calendar autopilot.\"\n- Hero Empty State Showcase:\n  * Centered illuminated glass capture tile depicting a phone screen with glowing scanner brackets scanning an event ticket. Ambient multi-color neon aura (cyan/magenta).\n  * Headline: \"No screenshots scanned yet\"\n  * Subtitle: \"Take a screenshot of a flyer, text invitation, or ticket, and DateSnap will instantly turn it into a calendar event with custom reminders.\"\n- Fast Getting Started Steps (Interactive Guide cards):\n  * Step 1: \"1. Snap or Screenshot\" \u2014 Take a screenshot of any Instagram story, flyer, email invite, or concert poster.\n  * Step 2: \"2. Open DateSnap\" \u2014 On-device AI parses the dates, venue, and times in 0.4 seconds.\n  * Step 3: \"3. One-Tap Save\" \u2014 Review and push straight to Apple Calendar & Reminders.\n- Primary CTA Button: Luminous cyan capsule button with camera/scan icon: \"Scan Recent Screenshots \u2192\"\n- Secondary Action Button: Frosted glass button with photo icon: \"Choose from Photo Library\"\n- Demo Sample Card:\n  * \"Want to see how it works?\" with a \"Try Sample Flyer\" pill button that lets users test the parser without giving full library access.\n- Bottom safe area padding above the tab bar (Home tab active).\nTone: Inviting, high-energy, effortless, trustworthy, Midnight Prism aesthetic.",
+  "title": "Pencild - Home Empty State",
+  "prompt": "Design the Pencild Home Empty State Screen (Screen 7).\nGoal: First-time user zero-data dashboard that welcomes the user, builds excitement, and guides immediate first action.\nDesign & Content:\n- Top Header: Pencild brand mark, greeting \"Welcome to Pencild\", subline \"Your camera roll's calendar autopilot.\"\n- Hero Empty State Showcase:\n  * Centered illuminated glass capture tile depicting a phone screen with glowing scanner brackets scanning an event ticket. Ambient multi-color neon aura (cyan/magenta).\n  * Headline: \"No screenshots scanned yet\"\n  * Subtitle: \"Take a screenshot of a flyer, text invitation, or ticket, and Pencild will instantly turn it into a calendar event with custom reminders.\"\n- Fast Getting Started Steps (Interactive Guide cards):\n  * Step 1: \"1. Snap or Screenshot\" \u2014 Take a screenshot of any Instagram story, flyer, email invite, or concert poster.\n  * Step 2: \"2. Open Pencild\" \u2014 On-device AI parses the dates, venue, and times in 0.4 seconds.\n  * Step 3: \"3. One-Tap Save\" \u2014 Review and push straight to Apple Calendar & Reminders.\n- Primary CTA Button: Luminous cyan capsule button with camera/scan icon: \"Scan Recent Screenshots \u2192\"\n- Secondary Action Button: Frosted glass button with photo icon: \"Choose from Photo Library\"\n- Demo Sample Card:\n  * \"Want to see how it works?\" with a \"Try Sample Flyer\" pill button that lets users test the parser without giving full library access.\n- Bottom safe area padding above the tab bar (Home tab active).\nTone: Inviting, high-energy, effortless, trustworthy, Midnight Prism aesthetic.",
   "name": "projects/454854512779783540/screens/b04278172768466ead0f77aec1e7fefe",
   "theme": {
     "colorMode": "DARK",
@@ -38332,7 +38332,7 @@ FILE: .stitch/screens/08_saved_event_detail.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Extraction Success Summary</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xxl">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Extraction Success Summary</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xxl">
 <!-- Subtle Ambient Glow Overlay (Decorative) -->
 <div class="relative w-full overflow-hidden pointer-events-none">
 <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-72 h-36 bg-status-success/15 rounded-full blur-3xl"></div>
@@ -38504,7 +38504,7 @@ FILE: .stitch/screens/08_saved_event_detail.html
 <div class="mt-space-xs flex items-center gap-space-xs">
 <span class="font-caption text-caption text-muted-foreground flex items-center gap-0.5">
 <span class="material-symbols-outlined text-[13px] text-primary-fixed">auto_awesome</span>
-            Extracted by DateSnap OCR Engine
+            Extracted by Pencild OCR Engine
           </span>
 </div>
 </div>
@@ -38578,8 +38578,8 @@ FILE: .stitch/screens/08_saved_event_detail.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2218",
-  "title": "DateSnap - Saved Event Detail",
-  "prompt": "Design Screen 15: DateSnap - Saved Event Detail Screen.\nGoal: Show the finalized, confirmed saved event in a calm, reassuring, highly polished presentation with clear next actions.\n\nDetailed Structure & Layout:\n1. Success Banner / Toast:\n   - Subtle top badge: \"\u2713 Successfully Saved to Apple Calendar & Reminders\" in soft mint green with glowing checkmark.\n2. Event Hero Card (Luminous Elevated Glass Showcase):\n   - Date Badge: Large dimensional date badge (56x68pt) with \"JUL\" top header and bold \"18\" numeral.\n   - Event Title: \"Neon Sunset Rooftop Session\" (Sora 24pt, bold).\n   - Time & Recurrence: \"Friday, July 18, 2025 \u00b7 7:00 PM \u2013 11:30 PM\".\n   - Location: \"Skybar Penthouse & Lounge, Los Angeles, CA\" with interactive \"Get Directions\" link.\n3. Saved Destinations & Status Section:\n   - Glass panel displaying active sync targets:\n     - \"Apple Calendar\" \u00b7 Synced to \"Personal\" (Checkmark in green)\n     - \"Apple Reminders\" \u00b7 Task created in \"Events & RSVPs\" (Checkmark in green)\n4. Configured Reminders Timeline Card:\n   - Card title: \"Scheduled Alerts (2 Active)\"\n   - Timeline row 1: \"1 day before (Jul 17, 9:00 AM) \u00b7 Apple Reminders\"\n   - Timeline row 2: \"2 hours before (Jul 18, 5:00 PM) \u00b7 Calendar Notification\"\n5. Notes & Original Source Image:\n   - Collapsible or thumbnail block: \"Extracted from Flyer Screenshot (IMG_4920.PNG)\" with small glass thumbnail preview of the party poster.\n   - Extracted notes: \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n6. Action Buttons Cluster:\n   - Primary CTA: \"Open in Apple Calendar \u2197\" (Solid cyan glowing pill CTA).\n   - Secondary Actions Row:\n     - \"Edit Event\" (Glass pill button)\n     - \"Manage Reminders\" (Glass pill button)\n     - \"Share Event\" (Share icon button)\n\nVisual Style:\n- Midnight Prism palette: Deepest navy `#050816`, frosted glass cards `rgba(18, 24, 52, 0.72)` with edge highlight, crisp Sora and Inter typography, reassuring, resolved, and dependable atmosphere. App Store screenshot caliber.",
+  "title": "Pencild - Saved Event Detail",
+  "prompt": "Design Screen 15: Pencild - Saved Event Detail Screen.\nGoal: Show the finalized, confirmed saved event in a calm, reassuring, highly polished presentation with clear next actions.\n\nDetailed Structure & Layout:\n1. Success Banner / Toast:\n   - Subtle top badge: \"\u2713 Successfully Saved to Apple Calendar & Reminders\" in soft mint green with glowing checkmark.\n2. Event Hero Card (Luminous Elevated Glass Showcase):\n   - Date Badge: Large dimensional date badge (56x68pt) with \"JUL\" top header and bold \"18\" numeral.\n   - Event Title: \"Neon Sunset Rooftop Session\" (Sora 24pt, bold).\n   - Time & Recurrence: \"Friday, July 18, 2025 \u00b7 7:00 PM \u2013 11:30 PM\".\n   - Location: \"Skybar Penthouse & Lounge, Los Angeles, CA\" with interactive \"Get Directions\" link.\n3. Saved Destinations & Status Section:\n   - Glass panel displaying active sync targets:\n     - \"Apple Calendar\" \u00b7 Synced to \"Personal\" (Checkmark in green)\n     - \"Apple Reminders\" \u00b7 Task created in \"Events & RSVPs\" (Checkmark in green)\n4. Configured Reminders Timeline Card:\n   - Card title: \"Scheduled Alerts (2 Active)\"\n   - Timeline row 1: \"1 day before (Jul 17, 9:00 AM) \u00b7 Apple Reminders\"\n   - Timeline row 2: \"2 hours before (Jul 18, 5:00 PM) \u00b7 Calendar Notification\"\n5. Notes & Original Source Image:\n   - Collapsible or thumbnail block: \"Extracted from Flyer Screenshot (IMG_4920.PNG)\" with small glass thumbnail preview of the party poster.\n   - Extracted notes: \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n6. Action Buttons Cluster:\n   - Primary CTA: \"Open in Apple Calendar \u2197\" (Solid cyan glowing pill CTA).\n   - Secondary Actions Row:\n     - \"Edit Event\" (Glass pill button)\n     - \"Manage Reminders\" (Glass pill button)\n     - \"Share Event\" (Share icon button)\n\nVisual Style:\n- Midnight Prism palette: Deepest navy `#050816`, frosted glass cards `rgba(18, 24, 52, 0.72)` with edge highlight, crisp Sora and Inter typography, reassuring, resolved, and dependable atmosphere. App Store screenshot caliber.",
   "name": "projects/454854512779783540/screens/79edd80432f24128889607dee9d678f4",
   "theme": {
     "colorMode": "DARK",
@@ -38969,7 +38969,7 @@ FILE: .stitch/screens/09_event_review_and_edit.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Event Parser &amp; Extraction</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
 <!-- Top Context Header & Stage Badge -->
 <div class="flex items-center justify-between pt-space-sm">
 <div class="flex items-center gap-space-xs">
@@ -39272,8 +39272,8 @@ FILE: .stitch/screens/09_event_review_and_edit.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2364",
-  "title": "DateSnap - Event Review and Edit",
-  "prompt": "Design Screen 12: DateSnap - Event Review and Edit Screen.\nGoal: The core conversion screen where extracted event details are reviewed, refined, and confirmed before saving.\n\nDetailed Structure & Layout:\n1. Top Bar Context: \"Review Extracted Event\" with step pill or high confidence badge.\n2. Source Flyer Hero Preview Card:\n   - Floating glass panel with original flyer thumbnail preview (e.g., \"Neon Rooftop Sunset Session - July 18, 2025\").\n   - Badge overlay: \"96% High Confidence OCR\" with spark icon.\n   - Quick action to \"View Original Image\" in full screen.\n3. Extracted Event Form (Inline Editable, Premium Dark Glass Fields):\n   - Title Field: Editable text input with value \"Neon Sunset Rooftop Session\" with clear button and subtle glowing border on focus.\n   - Date & Time Row:\n     - Date Picker Trigger: \"Friday, July 18, 2025\" with calendar icon.\n     - Time Range Picker: \"7:00 PM \u2013 11:30 PM\" with clock icon.\n     - \"All-day\" toggle switch (currently toggled off, glowing cyan accent).\n   - Location Field:\n     - \"Skybar Penthouse & Lounge, 450 Sunset Blvd, LA\" with map pin icon and Apple Maps indicator.\n   - Notes / Description Field:\n     - \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n   - Collapsible Accordion: \"Extracted Source Text (Raw OCR)\" showing raw parsed lines with a chevron toggle.\n4. Save Destination Preview Summary:\n   - Compact glass row: \"Saving to: Apple Calendar (Personal) + 2 Reminders\" with chevron to edit.\n5. Primary & Secondary Action Cluster:\n   - Primary Large Button: \"Save Event \u2192\" in luminous glowing cyan pill (`#7CFFEA`, text `#07111F`, font-weight 700, height 56px).\n   - Secondary Button Row:\n     - \"Save as Draft\" (Frosted glass button with border)\n     - \"Not an Event\" or \"Discard\" (Destructive subtle red/muted link).\n\nVisual Style:\n- Deep navy background `#050816`, frosted cards `rgba(18, 24, 52, 0.72)` with 1px border `rgba(173, 195, 255, 0.18)` and top glass highlight `rgba(255,255,255,0.22)`.\n- Bold modern Sora typography for section titles, Inter/Apple sans for form controls.\n- Touch-friendly 48px+ hit targets. App Store screenshot quality.",
+  "title": "Pencild - Event Review and Edit",
+  "prompt": "Design Screen 12: Pencild - Event Review and Edit Screen.\nGoal: The core conversion screen where extracted event details are reviewed, refined, and confirmed before saving.\n\nDetailed Structure & Layout:\n1. Top Bar Context: \"Review Extracted Event\" with step pill or high confidence badge.\n2. Source Flyer Hero Preview Card:\n   - Floating glass panel with original flyer thumbnail preview (e.g., \"Neon Rooftop Sunset Session - July 18, 2025\").\n   - Badge overlay: \"96% High Confidence OCR\" with spark icon.\n   - Quick action to \"View Original Image\" in full screen.\n3. Extracted Event Form (Inline Editable, Premium Dark Glass Fields):\n   - Title Field: Editable text input with value \"Neon Sunset Rooftop Session\" with clear button and subtle glowing border on focus.\n   - Date & Time Row:\n     - Date Picker Trigger: \"Friday, July 18, 2025\" with calendar icon.\n     - Time Range Picker: \"7:00 PM \u2013 11:30 PM\" with clock icon.\n     - \"All-day\" toggle switch (currently toggled off, glowing cyan accent).\n   - Location Field:\n     - \"Skybar Penthouse & Lounge, 450 Sunset Blvd, LA\" with map pin icon and Apple Maps indicator.\n   - Notes / Description Field:\n     - \"Doors open at 6:30 PM. Tickets required at the door. VIP entry via North elevator.\"\n   - Collapsible Accordion: \"Extracted Source Text (Raw OCR)\" showing raw parsed lines with a chevron toggle.\n4. Save Destination Preview Summary:\n   - Compact glass row: \"Saving to: Apple Calendar (Personal) + 2 Reminders\" with chevron to edit.\n5. Primary & Secondary Action Cluster:\n   - Primary Large Button: \"Save Event \u2192\" in luminous glowing cyan pill (`#7CFFEA`, text `#07111F`, font-weight 700, height 56px).\n   - Secondary Button Row:\n     - \"Save as Draft\" (Frosted glass button with border)\n     - \"Not an Event\" or \"Discard\" (Destructive subtle red/muted link).\n\nVisual Style:\n- Deep navy background `#050816`, frosted cards `rgba(18, 24, 52, 0.72)` with 1px border `rgba(173, 195, 255, 0.18)` and top glass highlight `rgba(255,255,255,0.22)`.\n- Bold modern Sora typography for section titles, Inter/Apple sans for form controls.\n- Touch-friendly 48px+ hit targets. App Store screenshot quality.",
   "name": "projects/454854512779783540/screens/50e76e9e2a6743a98d1f320729a3738a",
   "theme": {
     "colorMode": "DARK",
@@ -39663,7 +39663,7 @@ FILE: .stitch/screens/10_reminder_schedule_editor.html
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="datesnap-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">DateSnap</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
+  </head><body class="bg-background-base text-foreground-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-primary-foreground"><header class="fixed top-0 inset-x-0 z-50 bg-tabbar-surface/80 backdrop-blur-2xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] -ml-space-xs rounded-full flex items-center justify-center text-secondary hover:text-foreground-primary active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><img alt="pencild-logo-glass-vibrant.png" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XeLUDnXp7iyUTA2jPHq5zqExHxH4O4x24d58ump6Rf5Oy0eDj0AxtZ6HyyKrKV1_Aq4VUY3xu_VnLD_386WEn13Eq4bLcRunUWCz5RxPRbZSBF4yqMy-ac5uCPVXSzDfcFjv8TvkPNTjL9oKfDWJ0MWHW28kzD1oEl6Q8hwspSNP9FLrNDAaBGBMT3drRfTLRQrR0h2RebYdChCvCW-RzaDWpk2pM0jad8PEmdCoZ_X9v8blFP40hyhwuWWvrEF-7-HVEqL-Q"><span class="font-headline-card text-headline-card text-foreground-primary tracking-tight truncate ml-space-xs">Pencild</span></div><div class="flex items-center gap-space-xs"><h1 class="hidden sm:block font-body-strong text-body-strong text-muted-foreground truncate max-w-[140px]">Schedule Conflict Resolver</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-background-base min-h-screen"><div class="flex flex-col w-full text-foreground-primary px-margin space-y-space-lg pb-12">
 <!-- Subtle Ambient Glows -->
 <div class="relative w-full overflow-hidden">
 <div class="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-accent-purple/20 blur-3xl pointer-events-none"></div>
@@ -39835,7 +39835,7 @@ FILE: .stitch/screens/10_reminder_schedule_editor.html
           </span>
 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/40 text-foreground-primary font-label-chip text-label-chip shadow-sm">
 <span class="material-symbols-outlined text-[14px] text-primary-container">camera_indoor</span>
-<span>DateSnap Priority Push</span>
+<span>Pencild Priority Push</span>
 </div>
 </div>
 </div>
@@ -40038,8 +40038,8 @@ FILE: .stitch/screens/10_reminder_schedule_editor.json
   "generatedBy": "figaro_agent",
   "width": "780",
   "height": "2684",
-  "title": "DateSnap - Reminder Schedule Editor",
-  "prompt": "Design Screen 13: DateSnap - Reminder Schedule Editor.\nGoal: Allow users to configure up to 3 smart tiered reminders for an event with effortless precision.\n\nDetailed Structure & Layout:\n1. Header / Intro:\n   - Subtitle: \"Event: Neon Sunset Rooftop Session \u00b7 Jul 18, 7:00 PM\"\n   - Title: \"Reminder Schedule\"\n   - Reassuring helper text: \"Configure multi-stage alerts so you never miss ticket sales, preparation, or departure.\"\n2. Quick Presets Bar:\n   - Horizontal pill selectors: \"Default (2 alerts)\", \"Travel Heavy (3 alerts)\", \"Day-of Only\", \"Custom\" (Default active with cyan glow border).\n3. Configured Reminder Rows (Up to 3 Interactive Cards):\n   - Reminder 1 (First Warning):\n     - Offset: \"1 day before at 9:00 AM\"\n     - Delivery Channel Chip: \"Apple Reminders\" with checklist icon.\n     - Type: Preparation alert.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 2 (Departure / Travel Alert):\n     - Offset: \"2 hours before (5:00 PM)\"\n     - Delivery Channel Chip: \"Calendar Alert\" with bell icon.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 3 (Final Call):\n     - Offset: \"30 minutes before (6:30 PM)\"\n     - Delivery Channel Chip: \"DateSnap Push Notification\" with glowing brand spark.\n     - Controls: Edit offset dropdown / delete icon.\n4. \"Add Reminder\" Button:\n   - \"+ Add Alert (3 of 3 max)\" state or disabled with helpful hint.\n5. All-Day vs Timed Event Behavior Toggle / Info:\n   - Card explaining: \"Timed events trigger at exact offsets. All-day events trigger at 9:00 AM local time.\"\n6. Sticky Bottom Action Bar:\n   - Primary Button: \"Save Reminder Schedule\" (Luminous cyan `#7CFFEA` capsule CTA).\n   - Secondary cancel / reset action.\n\nVisual Style:\n- Deep navy background `#050816`, glass cards `rgba(18, 24, 52, 0.72)` with luminous cyan and magenta micro-accents.\n- Sora headers, clean badges, native iOS picker aesthetics. Touch targets 48px+.",
+  "title": "Pencild - Reminder Schedule Editor",
+  "prompt": "Design Screen 13: Pencild - Reminder Schedule Editor.\nGoal: Allow users to configure up to 3 smart tiered reminders for an event with effortless precision.\n\nDetailed Structure & Layout:\n1. Header / Intro:\n   - Subtitle: \"Event: Neon Sunset Rooftop Session \u00b7 Jul 18, 7:00 PM\"\n   - Title: \"Reminder Schedule\"\n   - Reassuring helper text: \"Configure multi-stage alerts so you never miss ticket sales, preparation, or departure.\"\n2. Quick Presets Bar:\n   - Horizontal pill selectors: \"Default (2 alerts)\", \"Travel Heavy (3 alerts)\", \"Day-of Only\", \"Custom\" (Default active with cyan glow border).\n3. Configured Reminder Rows (Up to 3 Interactive Cards):\n   - Reminder 1 (First Warning):\n     - Offset: \"1 day before at 9:00 AM\"\n     - Delivery Channel Chip: \"Apple Reminders\" with checklist icon.\n     - Type: Preparation alert.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 2 (Departure / Travel Alert):\n     - Offset: \"2 hours before (5:00 PM)\"\n     - Delivery Channel Chip: \"Calendar Alert\" with bell icon.\n     - Controls: Edit offset dropdown / delete icon.\n   - Reminder 3 (Final Call):\n     - Offset: \"30 minutes before (6:30 PM)\"\n     - Delivery Channel Chip: \"Pencild Push Notification\" with glowing brand spark.\n     - Controls: Edit offset dropdown / delete icon.\n4. \"Add Reminder\" Button:\n   - \"+ Add Alert (3 of 3 max)\" state or disabled with helpful hint.\n5. All-Day vs Timed Event Behavior Toggle / Info:\n   - Card explaining: \"Timed events trigger at exact offsets. All-day events trigger at 9:00 AM local time.\"\n6. Sticky Bottom Action Bar:\n   - Primary Button: \"Save Reminder Schedule\" (Luminous cyan `#7CFFEA` capsule CTA).\n   - Secondary cancel / reset action.\n\nVisual Style:\n- Deep navy background `#050816`, glass cards `rgba(18, 24, 52, 0.72)` with luminous cyan and magenta micro-accents.\n- Sora headers, clean badges, native iOS picker aesthetics. Touch targets 48px+.",
   "name": "projects/454854512779783540/screens/fc49f1067442461dbf28c683626a3b70",
   "theme": {
     "colorMode": "DARK",
@@ -40427,7 +40427,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "6c145dff8ec540b9a51f806629e55c70",
     "slug": "01_premium_paywall",
-    "title": "DateSnap - Premium Paywall",
+    "title": "Pencild - Premium Paywall",
     "htmlFile": "01_premium_paywall.html",
     "imageFile": "01_premium_paywall.png",
     "deviceType": "MOBILE",
@@ -40437,7 +40437,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "df7a78364bd54941ad1d7bb6ca34d449",
     "slug": "02_plus_paywall",
-    "title": "DateSnap - Plus Paywall",
+    "title": "Pencild - Plus Paywall",
     "htmlFile": "02_plus_paywall.html",
     "imageFile": "02_plus_paywall.png",
     "deviceType": "MOBILE",
@@ -40447,7 +40447,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "e5fc50914c2f4a788389e8aa94806f45",
     "slug": "03_history_and_archive",
-    "title": "DateSnap - History & Archive",
+    "title": "Pencild - History & Archive",
     "htmlFile": "03_history_and_archive.html",
     "imageFile": "03_history_and_archive.png",
     "deviceType": "MOBILE",
@@ -40457,7 +40457,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "7d2a6476acc841b7be7374273debbf8b",
     "slug": "04_calendar_permission_denied",
-    "title": "DateSnap - Calendar Permission Denied",
+    "title": "Pencild - Calendar Permission Denied",
     "htmlFile": "04_calendar_permission_denied.html",
     "imageFile": "04_calendar_permission_denied.png",
     "deviceType": "MOBILE",
@@ -40467,7 +40467,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "1a0a6dacd22344d797031c2746da9b37",
     "slug": "05_notification_permission_denied",
-    "title": "DateSnap - Notification Permission Denied",
+    "title": "Pencild - Notification Permission Denied",
     "htmlFile": "05_notification_permission_denied.html",
     "imageFile": "05_notification_permission_denied.png",
     "deviceType": "MOBILE",
@@ -40477,7 +40477,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "d973f4ad48f2487ea6be61abce9b19ae",
     "slug": "06_no_dates_found",
-    "title": "DateSnap - No Dates Found",
+    "title": "Pencild - No Dates Found",
     "htmlFile": "06_no_dates_found.html",
     "imageFile": "06_no_dates_found.png",
     "deviceType": "MOBILE",
@@ -40487,7 +40487,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "b04278172768466ead0f77aec1e7fefe",
     "slug": "07_home_empty_state",
-    "title": "DateSnap - Home Empty State",
+    "title": "Pencild - Home Empty State",
     "htmlFile": "07_home_empty_state.html",
     "imageFile": "07_home_empty_state.png",
     "deviceType": "MOBILE",
@@ -40497,7 +40497,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "79edd80432f24128889607dee9d678f4",
     "slug": "08_saved_event_detail",
-    "title": "DateSnap - Saved Event Detail",
+    "title": "Pencild - Saved Event Detail",
     "htmlFile": "08_saved_event_detail.html",
     "imageFile": "08_saved_event_detail.png",
     "deviceType": "MOBILE",
@@ -40507,7 +40507,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "50e76e9e2a6743a98d1f320729a3738a",
     "slug": "09_event_review_and_edit",
-    "title": "DateSnap - Event Review and Edit",
+    "title": "Pencild - Event Review and Edit",
     "htmlFile": "09_event_review_and_edit.html",
     "imageFile": "09_event_review_and_edit.png",
     "deviceType": "MOBILE",
@@ -40517,7 +40517,7 @@ FILE: .stitch/screens/index.json
   {
     "id": "fc49f1067442461dbf28c683626a3b70",
     "slug": "10_reminder_schedule_editor",
-    "title": "DateSnap - Reminder Schedule Editor",
+    "title": "Pencild - Reminder Schedule Editor",
     "htmlFile": "10_reminder_schedule_editor.html",
     "imageFile": "10_reminder_schedule_editor.png",
     "deviceType": "MOBILE",

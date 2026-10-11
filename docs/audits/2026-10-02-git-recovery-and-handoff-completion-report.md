@@ -1,7 +1,7 @@
-# Git Recovery & HANDOFF Completion Report — DateSnap-iOS
+# Git Recovery & HANDOFF Completion Report — Pencild-iOS
 
 **Date:** 2026-10-02 (executed 2026-10-03)
-**Repository:** `/Users/conscious/apps/DateSnap-iOS` → `github.com/aaronroberson/DateSnap`
+**Repository:** `/Users/conscious/apps/Pencild-iOS` → `github.com/aaronroberson/Pencild`
 **Companion documents:** [recovery inventory](2026-10-02-git-recovery-inventory.md) · [implementation plan](../plans/2026-10-02-handoff-completion-plan.md)
 
 ## 1. Recovery summary
@@ -41,8 +41,8 @@ Branch: **`feat/handoff-completion-20261002`** (renamed from `feat/recovery-comp
 |---|---|---|
 | `3f5b9f8` | test(recovery): port rescue regressions lost in codex sweep | 3 tests + `RescueRegressionRestorationTests` suite in `MockDataCleanupTests.swift` |
 | `77040ad` | fix(persistence): roll back failed deletes so records survive | `SavedEventActions.delete` catch now calls `modelContext.rollback()` — the port exercise exposed a real bug (the old re-insert path could not resurrect deleted SwiftData objects) |
-| `efa4a11` | fix(ux): restore human-readable notification denial message | Denial surfaces "Notifications are denied. Enable them in iOS Settings > Notifications > DateSnap." instead of injected fixture strings |
-| `592eb88` | chore(project): lower minimum deployment target to iOS 17 | `project.yml` (options + both targets), `Config/DateSnap-Base.xcconfig`, `Package.swift` (`.iOS(.v17)`); `DateSnap.xcodeproj` regenerated with xcodegen 2.46.0 |
+| `efa4a11` | fix(ux): restore human-readable notification denial message | Denial surfaces "Notifications are denied. Enable them in iOS Settings > Notifications > Pencild." instead of injected fixture strings |
+| `592eb88` | chore(project): lower minimum deployment target to iOS 17 | `project.yml` (options + both targets), `Config/Pencild-Base.xcconfig`, `Package.swift` (`.iOS(.v17)`); `Pencild.xcodeproj` regenerated with xcodegen 2.46.0 |
 | `d26b899` | docs(recovery): add git recovery inventory | 18-row classification table with evidence |
 | `b2e0941` | docs(plans): add handoff completion plan | Priority/classification/test matrix for all work items |
 | `951a3c8` | docs(recovery): correct inventory after re-verification | `f7c66af` resolves again (both twins tagged); graphify disposition corrected; dangling draft `231f7e0` added |
@@ -64,10 +64,10 @@ Branch: **`feat/handoff-completion-20261002`** (renamed from `feat/recovery-comp
 
 ## 4. Proof packet
 
-**Test suite (post-iOS-17-bump run, `Test-DateSnap-2026.10.03_04-48-22--0700.xcresult`):**
+**Test suite (post-iOS-17-bump run, `Test-Pencild-2026.10.03_04-48-22--0700.xcresult`):**
 
 ```
-xcodebuild test -project DateSnap.xcodeproj -scheme DateSnap \
+xcodebuild test -project Pencild.xcodeproj -scheme Pencild \
   -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
   -derivedDataPath .build/DerivedData
 # DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer exported
@@ -76,7 +76,7 @@ result: Passed | totalTestCount: 66 | passed: 64 | failed: 0 | skipped: 2 | suit
 ```
 
 - Skips are the 2 **Apple Intelligence live-route probes** (require the on-device model; skip in the simulator). Pre-existing and environmental.
-- Pre-bump run `Test-DateSnap-2026.10.03_01-44-24--0700.xcresult` on identical code at the iOS 18 floor: **identical 66/64/0/2** — the bump introduced no delta.
+- Pre-bump run `Test-Pencild-2026.10.03_01-44-24--0700.xcresult` on identical code at the iOS 18 floor: **identical 66/64/0/2** — the bump introduced no delta.
 - Net for this engagement: **63 tests / 18 suites** (per HANDOFF, at `1156fc3`) → **66 tests / 19 suites** (+3 restoration tests, +1 suite), 0 failures.
 
 **iOS 17 floor verification:**

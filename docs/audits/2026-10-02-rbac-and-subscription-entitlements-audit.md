@@ -1,10 +1,10 @@
-# DateSnap RBAC and Subscription Entitlements Audit
+# Pencild RBAC and Subscription Entitlements Audit
 
 Date: 2026-10-02
 
 ## Scope and terminology
 
-This audit reviews repository-visible authorization, subscription-tier mapping, premium feature gating, StoreKit entitlement resolution, and related tests. DateSnap currently has no user accounts, shared resources, server API, ownership model, or multi-user roles. It therefore does **not** currently implement role-based access control (RBAC) in the conventional sense. Its present authorization model is local subscription-based feature entitlement control.
+This audit reviews repository-visible authorization, subscription-tier mapping, premium feature gating, StoreKit entitlement resolution, and related tests. Pencild currently has no user accounts, shared resources, server API, ownership model, or multi-user roles. It therefore does **not** currently implement role-based access control (RBAC) in the conventional sense. Its present authorization model is local subscription-based feature entitlement control.
 
 The future possibilities of hosted events, invitations, RSVPs, comments, planning, group messaging, social graphs, and third-party integrations inform the modularity recommendations, but are explicitly out of scope for immediate implementation. The immediate plan protects the existing Starter/Plus/Premium feature set without inventing a backend, account system, or social-role schema.
 
@@ -18,37 +18,37 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 
 ### Entitlements and purchasing
 
-- `Sources/DateSnap/Services/Advisors/FeatureEntitlements.swift`
-- `Sources/DateSnap/Services/SubscriptionService.swift`
-- `Sources/DateSnap/Services/Intelligence/IntelligenceUsagePolicy.swift`
-- `Sources/DateSnap/ViewModels/PurchaseViewModel.swift`
-- `Sources/DateSnap/Views/ManagePlanView.swift` (search-based review of entitlement handling)
-- `DateSnap.storekit`
+- `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift`
+- `Sources/Pencild/Services/SubscriptionService.swift`
+- `Sources/Pencild/Services/Intelligence/IntelligenceUsagePolicy.swift`
+- `Sources/Pencild/ViewModels/PurchaseViewModel.swift`
+- `Sources/Pencild/Views/ManagePlanView.swift` (search-based review of entitlement handling)
+- `Pencild.storekit`
 
 ### State and dependency wiring
 
-- `Sources/DateSnap/DateSnap.swift`
-- `Sources/DateSnap/ContentView.swift`
-- `Sources/DateSnap/Models/AppState.swift`
-- `Sources/DateSnap/Models/SettingsState.swift`
-- `Sources/DateSnap/Services/ServiceContainer.swift`
-- `Sources/DateSnap/ViewModels/HomeViewModel.swift`
+- `Sources/Pencild/Pencild.swift`
+- `Sources/Pencild/ContentView.swift`
+- `Sources/Pencild/Models/AppState.swift`
+- `Sources/Pencild/Models/SettingsState.swift`
+- `Sources/Pencild/Services/ServiceContainer.swift`
+- `Sources/Pencild/ViewModels/HomeViewModel.swift`
 
 ### Gated feature paths
 
-- `Sources/DateSnap/Views/HomeEmptyStateView.swift`
-- `Sources/DateSnap/ViewModels/ScanViewModel.swift`
-- `Sources/DateSnap/Views/HistoryArchiveView.swift`
-- `Sources/DateSnap/Views/EventReviewEditView.swift`
-- `Sources/DateSnap/Views/InterpretationReviewViews.swift`
-- `Sources/DateSnap/ViewModels/EventReviewViewModel.swift`
-- `Sources/DateSnap/ViewModels/EventReviewViewModel+Interpretation.swift`
-- `Sources/DateSnap/Services/Advisors/ReminderStrategyService.swift`
-- `Sources/DateSnap/Services/Advisors/EventSimilarityService.swift` (usage/search review)
+- `Sources/Pencild/Views/HomeEmptyStateView.swift`
+- `Sources/Pencild/ViewModels/ScanViewModel.swift`
+- `Sources/Pencild/Views/HistoryArchiveView.swift`
+- `Sources/Pencild/Views/EventReviewEditView.swift`
+- `Sources/Pencild/Views/InterpretationReviewViews.swift`
+- `Sources/Pencild/ViewModels/EventReviewViewModel.swift`
+- `Sources/Pencild/ViewModels/EventReviewViewModel+Interpretation.swift`
+- `Sources/Pencild/Services/Advisors/ReminderStrategyService.swift`
+- `Sources/Pencild/Services/Advisors/EventSimilarityService.swift` (usage/search review)
 
 ### Tests
 
-- `Tests/DateSnapTests/AdvisorTests.swift`
+- `Tests/PencildTests/AdvisorTests.swift`
 - Repository-wide test search for subscription tiers, premium features, and entitlement behavior
 
 ### Supporting searches
@@ -142,7 +142,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 
 **Severity:** Medium
 
-**Evidence:** Product IDs and tier inference appear in `SubscriptionService`, `PurchaseViewModel.Plan`, `ManagePlanView`, `DateSnap.storekit`, and release documentation.
+**Evidence:** Product IDs and tier inference appear in `SubscriptionService`, `PurchaseViewModel.Plan`, `ManagePlanView`, `Pencild.storekit`, and release documentation.
 
 **Impact:** Adding or renaming a product can cause purchasing, display, and entitlement resolution to disagree. A string-contains inference such as `productID.contains("premium")` is not an authorization-grade mapping.
 
@@ -228,7 +228,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 4. Refresh on launch, transactions, purchase/restore, and foreground activation.
 5. Keep unknown/unverified/revoked/expired products fail-closed.
 
-**Files likely involved:** `SubscriptionService.swift`, `PurchaseViewModel.swift`, `ManagePlanView.swift`, `ContentView.swift`, `DateSnap.storekit`, tests.
+**Files likely involved:** `SubscriptionService.swift`, `PurchaseViewModel.swift`, `ManagePlanView.swift`, `ContentView.swift`, `Pencild.storekit`, tests.
 
 ### Phase 4 — Add authorization regression tests
 
@@ -238,7 +238,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 4. Make mocks injectable and deny by default.
 5. Add UI tests only for paywall routing and visible state; keep authorization assertions in unit/integration tests.
 
-**Files likely involved:** `Tests/DateSnapTests/AdvisorTests.swift`, new focused entitlement/action tests, mock services.
+**Files likely involved:** `Tests/PencildTests/AdvisorTests.swift`, new focused entitlement/action tests, mock services.
 
 ## Recommended immediate design constraints
 
@@ -253,7 +253,7 @@ This is primarily a revenue-entitlement correctness risk in the current single-u
 
 ## Future extensibility guardrails (not immediate implementation work)
 
-When DateSnap gains shared events or social features, add a separate authentication and resource-authorization subsystem rather than expanding `SubscriptionTier`.
+When Pencild gains shared events or social features, add a separate authentication and resource-authorization subsystem rather than expanding `SubscriptionTier`.
 
 The future model should separate four dimensions:
 

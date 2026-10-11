@@ -1,4 +1,4 @@
-# DateSnap: Brand & Marketing Research Spike
+# Pencild: Brand & Marketing Research Spike
 **Prepared:** October 7, 2026 | **For:** TinyByte Labs / Aaron | **Status:** Pre-launch
 
 ---
@@ -7,13 +7,13 @@
 
 **Launch-conditional: Needs targeted refinement before paid acquisition, but organic/TestFlight launch is viable now.**
 
-The single most important recommendation: **rename or reposition the App Store subtitle away from "Screenshot to Event" and own the PDF + document use case explicitly.** Six to eight direct competitors have launched in the same calendar-scan category, most using near-identical messaging ("snap to calendar," "picture to calendar," "scan events"). DateSnap currently blends into this noise. Its genuine differentiator — review/edit workflow before saving, plus multi-page PDF and document import beyond just photos — is buried. Lead with that, and DateSnap has a defensible, high-trust category position.
+The single most important recommendation: **rename or reposition the App Store subtitle away from "Screenshot to Event" and own the PDF + document use case explicitly.** Six to eight direct competitors have launched in the same calendar-scan category, most using near-identical messaging ("snap to calendar," "picture to calendar," "scan events"). Pencild currently blends into this noise. Its genuine differentiator — review/edit workflow before saving, plus multi-page PDF and document import beyond just photos — is buried. Lead with that, and Pencild has a defensible, high-trust category position.
 
 ---
 
 # Product Truth
 
-**What DateSnap actually does:** DateSnap is a capture-and-confirm workflow that turns any date-bearing content — flyers, screenshots, tickets, PDFs, forms, texts, bills — into a reviewed calendar event or reminder. Unlike basic scan-to-calendar tools, the review step is first-class: nothing reaches your calendar without your confirmation.
+**What Pencild actually does:** Pencild is a capture-and-confirm workflow that turns any date-bearing content — flyers, screenshots, tickets, PDFs, forms, texts, bills — into a reviewed calendar event or reminder. Unlike basic scan-to-calendar tools, the review step is first-class: nothing reaches your calendar without your confirmation.
 
 **Who it helps most:** Parents managing school and sports schedules; small-business owners and freelancers tracking deadlines, appointments, and invoices; event-oriented urban professionals who encounter event flyers and tickets daily; students managing class schedules and assignment deadlines.
 
@@ -25,15 +25,15 @@ The single most important recommendation: **rename or reposition the App Store s
 
 ## Direct Competitors (Scan-to-Calendar, OCR-to-Calendar)
 
-| App | Category | Core Promise | Pricing | Privacy Label | Positioning Takeaway for DateSnap | Source |
+| App | Category | Core Promise | Pricing | Privacy Label | Positioning Takeaway for Pencild | Source |
 |---|---|---|---|---|---|---|
 | **Lumical** | Productivity | "Scan events, flyers & rosters" — AI extraction from paper schedules, team rosters, class timetables | Free + Pro: $2.99/wk, $29.99/yr, $49.99 lifetime | Data Not Collected | Strongest direct comp; has schedule/roster scanning, iCloud/Google/Outlook; lacks PDF focus | [App Store](https://apps.apple.com/us/app/lumical-scan-to-calendar/id6753274309) |
 | **EventScan** | Productivity | "Turn any flyer, screenshot, or schedule into a calendar event" | Free (5/mo) + Pro: $4.99/mo, $29.99/yr | Data Not Collected | Weak ratings (3.8★, 13 reviews), known bugs; multi-event detection | [App Store](https://apps.apple.com/us/app/eventscan-picture-to-calendar/id6737088852) |
 | **SnapCal** | Productivity | "Scan Photos to Calendar" — widget + share extension | Free + credits or $2.99/mo | Not stated | Credit model is friction-heavy; targets students, parents, professionals generically | [App Store](https://apps.apple.com/us/app/snapcal/id6748755640) |
-| **Calendarco (AI Calendar Scanner)** | Productivity | "Flyer to event, batch QR share" — poster/flyer/screenshot → .ics export | Free + $1.99/mo, $19.99/yr | Some analytics/ad data | QR share and .ics export are interesting but analytics data = privacy weakness DateSnap can exploit | [App Store](https://apps.apple.com/app/calendarco-event-scanner/id6504715509) |
+| **Calendarco (AI Calendar Scanner)** | Productivity | "Flyer to event, batch QR share" — poster/flyer/screenshot → .ics export | Free + $1.99/mo, $19.99/yr | Some analytics/ad data | QR share and .ics export are interesting but analytics data = privacy weakness Pencild can exploit | [App Store](https://apps.apple.com/app/calendarco-event-scanner/id6504715509) |
 | **Add to Calendar: AI Events** | Productivity | Text + screenshot + photo → calendar | Free (50/mo from text); Unlimited with own OpenAI key | No ads/tracking (self-reported) | Requires OpenAI API key for images — fragmented for non-technical users | [App Store](https://apps.apple.com/us/app/add-to-calendar-ai-events/id6772644308) |
 | **Photo2Calendar** | Productivity | Photo scan, planner focus | Not confirmed | Unknown | Low visibility; weak differentiation | [App Store](https://apps.apple.com/us/app/photo2calendar-scanner-planner/id6736373394) |
-| **DateSnap** (current) | Productivity | "Screenshot to Event" (current subtitle) — broader than most: also PDFs, forms, bills, texts | Free + IAP | Not yet confirmed; target: Data Not Collected | **Own app** — currently indistinguishable in messaging from competitors | [AppGoblin](https://appgoblin.info/apps/6770022796) |
+| **Pencild** (current) | Productivity | "Screenshot to Event" (current subtitle) — broader than most: also PDFs, forms, bills, texts | Free + IAP | Not yet confirmed; target: Data Not Collected | **Own app** — currently indistinguishable in messaging from competitors | [AppGoblin](https://appgoblin.info/apps/6770022796) |
 
 ## Adjacent Competitors (Platform Threat)
 
@@ -41,16 +41,16 @@ The single most important recommendation: **rename or reposition the App Store s
 |---|---|---|---|
 | **Apple Visual Intelligence (iOS 27)** | **High** | Native schedule-from-photo scanning into Apple Calendar; works on iPhone 15 Pro+ | Own the "any document, any file" angle Apple can't match; emphasize non-photo inputs (PDF, Files, batch) |
 | **Siri + Apple Intelligence** | Medium | Natural language event creation from Mail, Messages, clipboard | Differentiate on import breadth and review workflow; Siri doesn't OCR arbitrary PDFs or multi-page docs |
-| **Fantastical** | Low-Medium | Premium calendar UX ($4.75–$6.99/mo); natural language; no scan feature | Different job-to-be-done; Fantastical users would use DateSnap as a companion, not instead of it |
+| **Fantastical** | Low-Medium | Premium calendar UX ($4.75–$6.99/mo); natural language; no scan feature | Different job-to-be-done; Fantastical users would use Pencild as a companion, not instead of it |
 | **Google Calendar AI** | Low | Android-first; limited iOS intelligence features | Not a direct iOS competitive threat in this category |
 
-**Key market insight:** The scan-to-calendar category has 6–8 active apps, all with fewer than 20 App Store ratings. The category is early-stage, fragmented, and undifferentiated in messaging. DateSnap launched May 2026 and has 1 rating. This is a land-grab window — the brand that moves fastest to own a clear position will define the category on App Store search.
+**Key market insight:** The scan-to-calendar category has 6–8 active apps, all with fewer than 20 App Store ratings. The category is early-stage, fragmented, and undifferentiated in messaging. Pencild launched May 2026 and has 1 rating. This is a land-grab window — the brand that moves fastest to own a clear position will define the category on App Store search.
 
 ---
 
 # Customer Priorities
 
-| Rank | Persona | Job To Be Done | Trigger Moment | Current Workaround | DateSnap Message | Priority |
+| Rank | Persona | Job To Be Done | Trigger Moment | Current Workaround | Pencild Message | Priority |
 |---|---|---|---|---|---|---|
 | 1 | **Parent / Family Manager** | Get school schedule, sports schedule, and community event dates into the family calendar without manual entry | Receives a school newsletter PDF or sports schedule image; can't manually type 30 dates | Manually add 2–3 events, ignore the rest, miss things | "Your kids' schedules, captured in one scan." | **Launch now** |
 | 2 | **Busy Professional / Freelancer** | Capture event and appointment dates from emails, confirmations, PDFs without losing them | Sees an event confirmation, saves it to read later, forgets | Screenshots that pile up in camera roll | "Your next appointment is already in your calendar." | **Launch now** |
@@ -73,7 +73,7 @@ The single most important recommendation: **rename or reposition the App Store s
 | "The calendar capture layer for your iPhone" | 5 | 9 | 6 | 4 | 3 | 8 | 9 | Too abstract for App Store; "layer" is product-architecture language | **6.3** |
 | "Scan anything. Save every date." | 8 | 7 | 7 | 6 | 7 | 7 | 8 | Clean, direct, covers breadth; low differentiation risk | **7.1** |
 | "Your screenshot-to-calendar assistant" | 6 | 5 | 7 | 5 | 8 | 6 | 5 | High ASO value but narrows to screenshots, ignores PDF strength | **6.0** |
-| **"Capture dates. Review them. Never miss one."** | 8 | 9 | 8 | 7 | 6 | 8 | 8 | Review workflow is DateSnap's real differentiator; credible and specific | **7.8** |
+| **"Capture dates. Review them. Never miss one."** | 8 | 9 | 8 | 7 | 6 | 8 | 8 | Review workflow is Pencild's real differentiator; credible and specific | **7.8** |
 | "The smart inbox for your calendar" | 5 | 8 | 5 | 6 | 4 | 8 | 9 | "Inbox" metaphor is evocative but abstract; risks confusion | **6.4** |
 
 ## Recommended Positioning
@@ -81,13 +81,13 @@ The single most important recommendation: **rename or reposition the App Store s
 **Primary positioning statement:** "Capture dates from anything. Review them. Never miss one."
 *(Shortened version: "Capture. Review. Never miss.")*
 
-**Why:** It's the only statement in the category that claims the review step as a feature, not friction. Every competitor presents scanning as the endpoint. DateSnap's review-before-save is a trust differentiator — it signals accuracy, control, and intelligence. It also allows DateSnap to span photos, screenshots, PDFs, and documents without narrowing.
+**Why:** It's the only statement in the category that claims the review step as a feature, not friction. Every competitor presents scanning as the endpoint. Pencild's review-before-save is a trust differentiator — it signals accuracy, control, and intelligence. It also allows Pencild to span photos, screenshots, PDFs, and documents without narrowing.
 
 **Secondary supporting message:** "From flyers, PDFs, screenshots, and documents — your dates, confirmed before they're saved."
 
 **Emotional benefit statement:** "The relief of knowing nothing slipped through."
 
-**Functional proof statement:** "Scan any image or document. DateSnap extracts every date and event. You review and edit. One tap saves to Apple Calendar."
+**Functional proof statement:** "Scan any image or document. Pencild extracts every date and event. You review and edit. One tap saves to Apple Calendar."
 
 **Concise category description:** "Calendar capture with a review step."
 
@@ -100,7 +100,7 @@ The single most important recommendation: **rename or reposition the App Store s
 ## Brand Personality
 1. **Confident and calm** — doesn't shout about AI; quietly competent
 2. **Precise** — accuracy is a feature, not a side effect; every word earns its place
-3. **Trustworthy** — your calendar is personal; DateSnap handles it carefully
+3. **Trustworthy** — your calendar is personal; Pencild handles it carefully
 4. **Swift without being flashy** — fast to use, not loud about it
 5. **Practical optimism** — it makes your life actually easier, not theoretically smarter
 
@@ -134,7 +134,7 @@ The single most important recommendation: **rename or reposition the App Store s
 - "Assistant" (implies chatbot; not what this is)
 
 ## Emotional Territory to Own
-**Relief and control.** Not excitement or delight — relief. The feeling that you won't miss your kid's game, won't forget that invoice deadline, won't lose the date on the flyer you photographed. DateSnap is the app you run and feel better immediately.
+**Relief and control.** Not excitement or delight — relief. The feeling that you won't miss your kid's game, won't forget that invoice deadline, won't lose the date on the flyer you photographed. Pencild is the app you run and feel better immediately.
 
 ## Brand Proof Points
 - Review step before any event touches Apple Calendar (accuracy + control)
@@ -146,7 +146,7 @@ The single most important recommendation: **rename or reposition the App Store s
 ## Risks to Mitigate
 - **Looking like a thin AI wrapper:** Emphasize the review workflow, the PDF depth, and the history/archive — these are substantive features, not just AI output.
 - **Looking like yet another scan app:** Lead with breadth (not just flyers) and the review step in all creative.
-- **iOS 17/18/19 Visual Intelligence encroachment:** Position DateSnap as "any document" and "review before save" — Apple Intelligence requires a photo; DateSnap accepts anything.
+- **iOS 17/18/19 Visual Intelligence encroachment:** Position Pencild as "any document" and "review before save" — Apple Intelligence requires a photo; Pencild accepts anything.
 - **Over-claiming privacy:** Until the App Store privacy label is set to "Data Not Collected," do not make that claim in marketing. Lead with "no account required" and "on-device processing where available" as the honest signals.
 
 ---
@@ -156,10 +156,10 @@ The single most important recommendation: **rename or reposition the App Store s
 *All copy tied to existing or clearly planned capabilities. Items dependent on unshipped features are labeled (PROPOSED).*
 
 ## App Name
-**DateSnap: Scan Dates & Events**
+**Pencild: Scan Dates & Events**
 *(30 chars; includes primary search keywords: scan, dates, events; retains brand name)*
 
-Alternative if shorter is preferred: **DateSnap: Calendar Scanner**
+Alternative if shorter is preferred: **Pencild: Calendar Scanner**
 
 ## Subtitle
 **Scan, Review & Save Any Date**
@@ -176,7 +176,7 @@ Default:
 ## Description Structure
 
 **Opening hook (first 255 chars shown before "more"):**
-> DateSnap turns any flyer, screenshot, PDF, or document into a reviewed calendar event — in seconds. You see every extracted date before anything saves. No surprises. No missed events.
+> Pencild turns any flyer, screenshot, PDF, or document into a reviewed calendar event — in seconds. You see every extracted date before anything saves. No surprises. No missed events.
 
 **Feature block:**
 - Scan photos, screenshots, flyers, tickets, and images
@@ -192,10 +192,10 @@ Default:
 > Works for school schedules and newsletters, sports rosters, event flyers and tickets, appointment confirmations, travel itineraries, invoice due dates, and anything else with a date.
 
 **Trust paragraph:**
-> No account required. *(Confirm before publishing.)* Your images are processed on your device where supported. DateSnap is built to capture your calendar, not your data.
+> No account required. *(Confirm before publishing.)* Your images are processed on your device where supported. Pencild is built to capture your calendar, not your data.
 
 **Closing CTA:**
-> Never lose a date that matters. Download DateSnap free.
+> Never lose a date that matters. Download Pencild free.
 
 ## Screenshot Narrative (6 screens)
 
@@ -228,7 +228,7 @@ Long-tail: `scan schedule iOS, event flyer calendar, PDF event scanner, photo ca
 ## Preview Video Concept
 *(Optional but recommended if screen recording is feasible)*
 
-15-second format: Real user hands. Photograph a printed school newsletter. DateSnap opens. Events appear, user reviews, taps Save. Calendar shows all dates added. End card: "DateSnap. Scan, review, save." No voiceover. Upbeat minimal sound design. Avoids showing AI processing animation — instead shows speed of the result.
+15-second format: Real user hands. Photograph a printed school newsletter. Pencild opens. Events appear, user reviews, taps Save. Calendar shows all dates added. End card: "Pencild. Scan, review, save." No voiceover. Upbeat minimal sound design. Avoids showing AI processing animation — instead shows speed of the result.
 
 ## Review Request Timing
 - First request: After 3rd successful scan saved to Apple Calendar
@@ -263,7 +263,7 @@ Long-tail: `scan schedule iOS, event flyer calendar, PDF event scanner, photo ca
 1. **"The scan"** — Product demos showing real-world captures (school schedules, gig posters, ticket stubs)
 2. **"The miss"** — Pain-state content about dates lost in screenshots, camera rolls, photo libraries
 3. **"The use case"** — Specific persona content: parent version, student version, freelancer version
-4. **"Privacy"** — Why on-device matters; how DateSnap handles your photos differently *(only once privacy posture is confirmed)*
+4. **"Privacy"** — Why on-device matters; how Pencild handles your photos differently *(only once privacy posture is confirmed)*
 
 ## 30/60/90-Day Plan
 
@@ -309,7 +309,7 @@ Long-tail: `scan schedule iOS, event flyer calendar, PDF event scanner, photo ca
 
 ## Tier Structure Assessment
 
-Based on comparable apps and Adapty benchmarks for productivity utilities, the current pricing concept ($8.99/month, $49.99/year) is **at the high end** of the direct competitive set. Calendarco charges $1.99/month, EventScan $4.99/month, Lumical $29.99/year. DateSnap's PDF depth justifies a premium, but $8.99/month will face price objection before users understand the value.
+Based on comparable apps and Adapty benchmarks for productivity utilities, the current pricing concept ($8.99/month, $49.99/year) is **at the high end** of the direct competitive set. Calendarco charges $1.99/month, EventScan $4.99/month, Lumical $29.99/year. Pencild's PDF depth justifies a premium, but $8.99/month will face price objection before users understand the value.
 
 **Recommended pricing:**
 
@@ -335,7 +335,7 @@ Based on comparable apps and Adapty benchmarks for productivity utilities, the c
 
 ## Rename Premium?
 
-"Premium" is fine for App Store clarity but bland. Consider **"DateSnap Pro"** for the top tier — it's consistent with the category (Lumical Pro, EventScan Pro), more brandable in marketing, and doesn't set expectations of price escalation the way "Premium" can.
+"Premium" is fine for App Store clarity but bland. Consider **"Pencild Pro"** for the top tier — it's consistent with the category (Lumical Pro, EventScan Pro), more brandable in marketing, and doesn't set expectations of price escalation the way "Premium" can.
 
 ## What to Avoid in Monetization Marketing
 
@@ -350,12 +350,12 @@ Based on comparable apps and Adapty benchmarks for productivity utilities, the c
 
 ## Permission Friction Points and Recommended Language
 
-| Permission | User Concern | DateSnap Onboarding Copy |
+| Permission | User Concern | Pencild Onboarding Copy |
 |---|---|---|
-| **Photo Library** | "Why does a calendar app need my photos?" | "DateSnap reads photos you choose to scan. We don't browse or index your library." |
-| **Calendar Access** | "Will it mess up my existing calendar?" | "DateSnap adds events only after you review and confirm them — nothing saves automatically." |
+| **Photo Library** | "Why does a calendar app need my photos?" | "Pencild reads photos you choose to scan. We don't browse or index your library." |
+| **Calendar Access** | "Will it mess up my existing calendar?" | "Pencild adds events only after you review and confirm them — nothing saves automatically." |
 | **Notifications** | "Is this going to spam me?" | "Reminders you set, sent when you want them. You control the schedule." |
-| **Files Access** | "Can it read all my files?" | "DateSnap can only access files you open yourself from Files." |
+| **Files Access** | "Can it read all my files?" | "Pencild can only access files you open yourself from Files." |
 
 ## Claims Requiring Verification Before Publishing
 
@@ -369,9 +369,9 @@ Based on comparable apps and Adapty benchmarks for productivity utilities, the c
 
 ## OCR Accuracy Positioning
 
-The biggest trust risk for any scan-to-calendar app is inaccurate extraction saving a wrong date without the user noticing. DateSnap's review step is the insurance policy. **Lead with this in all trust-sensitive copy:**
+The biggest trust risk for any scan-to-calendar app is inaccurate extraction saving a wrong date without the user noticing. Pencild's review step is the insurance policy. **Lead with this in all trust-sensitive copy:**
 
-> "DateSnap extracts dates — you confirm them. Nothing goes to your calendar until you say so."
+> "Pencild extracts dates — you confirm them. Nothing goes to your calendar until you say so."
 
 This framing sets accurate expectations, differentiates from auto-save competitors, and pre-handles the most common 1-star review in the category ("It extracted the wrong date and I missed the event").
 
@@ -398,7 +398,7 @@ This framing sets accurate expectations, differentiates from auto-save competito
 | **Free tier too restrictive (5 scans/month)** | Medium | Monitor conversion-to-paid data; if >40% users hit limit in week 1, free tier may feel punishing before value is established |
 | **"No account required" claim** | Medium | Verify with actual subscription entitlement implementation |
 | **On-device vs. cloud processing disclosure** | Medium | If any OCR or AI model calls an external API, this must be disclosed in privacy policy and App Store label |
-| **Name confusion: "DateSnap" vs. dating apps** | Low | Name is unique enough; no meaningful risk from dating app confusion in Productivity category context |
+| **Name confusion: "Pencild" vs. dating apps** | Low | Name is unique enough; no meaningful risk from dating app confusion in Productivity category context |
 | **PDF import depth** | Low-Medium | Confirm multi-page PDF scanning is shipped, not proposed, before featuring in App Store copy |
 
 ---
@@ -416,11 +416,11 @@ Lead every marketing touchpoint with the review-before-save differentiator. No c
 Parents and family managers with school-age children. Back-to-school framing. High pain, easy to demo, strong word-of-mouth vector, minimal paid budget required.
 
 **3. Recommended App Store Message**
-- **App name:** DateSnap: Scan Dates & Events
+- **App name:** Pencild: Scan Dates & Events
 - **Subtitle:** Scan, Review & Save Any Date
 - **First screenshot caption:** "Scan a flyer. Get a calendar event."
 - **Second screenshot caption:** "Review before you save. Always."
-- **Opening description:** "DateSnap turns any flyer, screenshot, PDF, or document into a reviewed calendar event — in seconds."
+- **Opening description:** "Pencild turns any flyer, screenshot, PDF, or document into a reviewed calendar event — in seconds."
 
 **4. Recommended Launch Channels**
 Priority order: App Store ASO → Short-form video (TikTok/Reels) → Reddit → Product Hunt → Parent community seeding. Defer all paid acquisition until organic cohort data is available (Day 60 minimum).
@@ -441,4 +441,4 @@ Priority order: App Store ASO → Short-form video (TikTok/Reels) → Reddit →
 
 ---
 
-*This document reflects market conditions as of October 2026. Competitor pricing and App Store listings are subject to change. All claims about DateSnap capabilities should be verified against the shipped build before publishing.*
+*This document reflects market conditions as of October 2026. Competitor pricing and App Store listings are subject to change. All claims about Pencild capabilities should be verified against the shipped build before publishing.*

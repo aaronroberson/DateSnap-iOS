@@ -1,6 +1,6 @@
 # TestFlight QA Verification Plan
 
-This checklist outlines the manual and automated validation procedures for TestFlight builds of DateSnap on physical iOS 18+ hardware.
+This checklist outlines the manual and automated validation procedures for TestFlight builds of Pencild on physical iOS 18+ hardware.
 
 ---
 
@@ -10,12 +10,12 @@ This checklist outlines the manual and automated validation procedures for TestF
 - [ ] **Clean Install:** Launch app on fresh device. Verify `AppState` initializes cleanly without corrupted state.
 - [ ] **Photo Library Authorization:**
   - Select "Scan Recent Screenshots" or "Choose from Photo Library".
-  - Verify native system modal displays custom description: *"DateSnap analyzes screenshots and event flyers directly on your iPhone..."*.
+  - Verify native system modal displays custom description: *"Pencild analyzes screenshots and event flyers directly on your iPhone..."*.
   - Test "Limited Access": Select 2 screenshots. Confirm app processes only selected assets without crashing.
   - Test "Deny Access": Confirm the app shows the **Allow Photo Access** guidance, offers **Open Settings**, and still allows **Choose a Photo Instead** through the system picker without freezing.
 - [ ] **Apple Calendar Authorization:**
   - Save an extracted candidate to Calendar.
-  - Verify system modal requests full access with custom description: *"DateSnap requires full calendar access to schedule extracted events..."*.
+  - Verify system modal requests full access with custom description: *"Pencild requires full calendar access to schedule extracted events..."*.
   - Verify event is inserted into the user's default calendar with correct title, start time, end time, and alarm offsets.
 - [ ] **Apple Reminders Authorization:**
   - Toggle reminder alert schedule.

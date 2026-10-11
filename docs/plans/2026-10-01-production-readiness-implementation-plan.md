@@ -1,10 +1,10 @@
-# DateSnap Production Readiness Implementation Plan
+# Pencild Production Readiness Implementation Plan
 
 > **Historical plan — 2026-10-01.** This plan records release preparation tasks as understood on that date. Revalidate configuration, commands, and approval status before acting on it.
 
 ## 1. Objective
 
-Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release candidate for TestFlight and App Store submission, with every approval artifact tied to one immutable commit and build number. The current audit outcome is **no-go** until all blockers below are resolved and every blocking verification in this plan passes.
+Prepare a reproducible, signed, tested, privacy-compliant Pencild 1.0.0 release candidate for TestFlight and App Store submission, with every approval artifact tied to one immutable commit and build number. The current audit outcome is **no-go** until all blockers below are resolved and every blocking verification in this plan passes.
 
 ## 2. Inputs Reviewed
 
@@ -12,25 +12,25 @@ Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release
 
 - `project.yml`
 - `Package.swift`
-- `Config/DateSnap-Base.xcconfig`
-- `Config/DateSnap-Debug.xcconfig`
-- `Config/DateSnap-Release.xcconfig`
+- `Config/Pencild-Base.xcconfig`
+- `Config/Pencild-Debug.xcconfig`
+- `Config/Pencild-Release.xcconfig`
 - `Info.plist`
-- `DateSnap.entitlements`
+- `Pencild.entitlements`
 - `ExportOptions-AppStore.plist`
-- `DateSnap.storekit`
-- Generated project presence and tracked files under `DateSnap.xcodeproj/` via git
+- `Pencild.storekit`
+- Generated project presence and tracked files under `Pencild.xcodeproj/` via git
 - Current branch, working-tree status, and `project.yml` diff via git
 
 ### Privacy/compliance
 
 - `PrivacyInfo.xcprivacy`
-- `Sources/DateSnap/Services/PhotoLibraryService.swift`
-- `Sources/DateSnap/Services/CalendarService.swift`
-- `Sources/DateSnap/Services/ReminderService.swift`
-- `Sources/DateSnap/Services/NotificationService.swift`
-- `Sources/DateSnap/Services/SubscriptionService.swift`
-- `Sources/DateSnap/ViewModels/HomeViewModel.swift`
+- `Sources/Pencild/Services/PhotoLibraryService.swift`
+- `Sources/Pencild/Services/CalendarService.swift`
+- `Sources/Pencild/Services/ReminderService.swift`
+- `Sources/Pencild/Services/NotificationService.swift`
+- `Sources/Pencild/Services/SubscriptionService.swift`
+- `Sources/Pencild/ViewModels/HomeViewModel.swift`
 - Repository searches for network APIs/URLs, required-reason APIs, permission requests, and StoreKit product identifiers
 
 ### Release process
@@ -42,15 +42,15 @@ Prepare a reproducible, signed, tested, privacy-compliant DateSnap 1.0.0 release
 
 ### Tests
 
-- Test inventory under `Tests/DateSnapTests/`
-- `Tests/DateSnapTests/DateSnapTests.swift`
-- `Tests/DateSnapTests/AppleIntelligenceLiveTests.swift`
+- Test inventory under `Tests/PencildTests/`
+- `Tests/PencildTests/PencildTests.swift`
+- `Tests/PencildTests/AppleIntelligenceLiveTests.swift`
 
-The discovered test inventory also includes `AdvisorTests.swift`, `ExtractionEvaluationTests.swift`, `DateSnapInferenceTests.swift`, `InterpretationRecordTests.swift`, `EventUnderstandingTests.swift`, `EvidenceValidationTests.swift`, and `EventUnderstandingPipelineTests.swift`. These files were inventoried but not individually content-reviewed for this planning pass.
+The discovered test inventory also includes `AdvisorTests.swift`, `ExtractionEvaluationTests.swift`, `PencildInferenceTests.swift`, `InterpretationRecordTests.swift`, `EventUnderstandingTests.swift`, `EvidenceValidationTests.swift`, and `EventUnderstandingPipelineTests.swift`. These files were inventoried but not individually content-reviewed for this planning pass.
 
 ## 3. Executive Summary
 
-DateSnap is structurally close to a releasable candidate, but it cannot ship from the current repository state. The working tree is dirty on `main`; the Release xcconfig and App Store export plist still contain `YOUR_TEAM_ID`; and no passing test, archive, export, or TestFlight QA evidence is tied to a frozen commit. The shortest path is to decide the intended source changes, establish real Release signing/version values, regenerate and validate the Xcode project, reconcile privacy/capabilities and submission claims against the built archive, then freeze, tag, archive, export, upload, and run the existing physical-device QA checklist.
+Pencild is structurally close to a releasable candidate, but it cannot ship from the current repository state. The working tree is dirty on `main`; the Release xcconfig and App Store export plist still contain `YOUR_TEAM_ID`; and no passing test, archive, export, or TestFlight QA evidence is tied to a frozen commit. The shortest path is to decide the intended source changes, establish real Release signing/version values, regenerate and validate the Xcode project, reconcile privacy/capabilities and submission claims against the built archive, then freeze, tag, archive, export, upload, and run the existing physical-device QA checklist.
 
 The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_PROJECT_VERSION = 1`; the remaining requirement is to confirm those are the effective Release values and are acceptable/unused in App Store Connect. The app declares no tracking or collected data, uses only the UserDefaults required-reason category, and has an empty app entitlements file. Those declarations are plausible from the reviewed source, but remain **verification required** against the final archive and App Store Connect. Local notifications do not require the remote push notification entitlement.
 
@@ -59,8 +59,8 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 ### Blocker 1 — Release candidate is not frozen or reproducible
 
 - **Why it blocks release:** The shipped source cannot map to a reviewed immutable commit while intended and accidental changes are mixed together.
-- **Evidence:** Current `main` status shows modified `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png` and `project.yml`, plus untracked `.freebuff/`, `HANDOFF.md`, and `docs/audits/`. The `project.yml` diff changes assets and the privacy manifest to explicit resource build phases, affecting the shipped bundle.
-- **Exact files involved:** The paths above, generated `DateSnap.xcodeproj/`, this plan, and any approved ignore rules. `lancedb/` must remain untouched.
+- **Evidence:** Current `main` status shows modified `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png` and `project.yml`, plus untracked `.freebuff/`, `HANDOFF.md`, and `docs/audits/`. The `project.yml` diff changes assets and the privacy manifest to explicit resource build phases, affecting the shipped bundle.
+- **Exact files involved:** The paths above, generated `Pencild.xcodeproj/`, this plan, and any approved ignore rules. `lancedb/` must remain untouched.
 - **Required remediation:** Classify every dirty item as ship, documentation/tooling, ignore, or remove; do not delete untracked content without owner approval; determine the repository's XcodeGen command/version (**verification required**); regenerate and review the project; commit and review the candidate; tag only after all pre-tag gates pass.
 - **Verification method:** `git status --short --branch`, `git diff --check`, staged-diff review, `git rev-parse HEAD`, and annotated-tag verification.
 - **Exit criteria:** Reviewed commit, empty `git status --porcelain`, synchronized generated project, and annotated `v1.0.0-b<build>` tag resolving to the candidate SHA.
@@ -69,7 +69,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 - **Why it blocks release:** A trustworthy generic-device archive and App Store export cannot use `YOUR_TEAM_ID`.
 - **Evidence:** The placeholder exists in both xcconfigs, `ExportOptions-AppStore.plist`, and the archive command in `docs/runbooks/RELEASE.md`.
-- **Exact files involved:** `Config/DateSnap-Release.xcconfig`, `Config/DateSnap-Debug.xcconfig`, `ExportOptions-AppStore.plist`, `docs/runbooks/RELEASE.md`, and the Apple account record for `com.datesnap.app`.
+- **Exact files involved:** `Config/Pencild-Release.xcconfig`, `Config/Pencild-Debug.xcconfig`, `ExportOptions-AppStore.plist`, `docs/runbooks/RELEASE.md`, and the Apple account record for `com.pencild.app`.
 - **Required remediation:** Confirm the authorized Team ID and registered App ID (**verification required**); select one documented source of truth; replace/remove all placeholder release paths; never commit credentials or private keys; ensure automatic signing resolves an Apple Distribution identity and App Store profile.
 - **Verification method:** Inspect Release `xcodebuild -showBuildSettings`, archive codesign entitlements, and decoded embedded provisioning profile.
 - **Exit criteria:** No release placeholder remains; team, bundle ID, archive signature, profile, and export Team ID agree.
@@ -77,8 +77,8 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 ### Blocker 3 — No release-candidate build, test, archive, or export evidence
 
 - **Why it blocks release:** Test inventory and runbooks are not proof that the exact candidate is distributable.
-- **Evidence:** No passing result was supplied; the smoke test only expects `true`; the live Foundation Models test is disabled unless `DATESNAP_EVAL_LIVE=1`; no archive/export/TestFlight signoff is tied to a SHA.
-- **Exact files involved:** `DateSnap.xcodeproj`, `project.yml`, `Tests/DateSnapTests/`, all three release runbooks, and generated release evidence.
+- **Evidence:** No passing result was supplied; the smoke test only expects `true`; the live Foundation Models test is disabled unless `PENCILD_EVAL_LIVE=1`; no archive/export/TestFlight signoff is tied to a SHA.
+- **Exact files involved:** `Pencild.xcodeproj`, `project.yml`, `Tests/PencildTests/`, all three release runbooks, and generated release evidence.
 - **Required remediation:** Run all automated tests; execute or disposition the opt-in live route; archive and export Release; upload that build; complete critical/high physical-device QA; retain logs, xcresult, metadata, and signoff. Evidence storage location is **verification required** because none is defined.
 - **Verification method:** Successful test/archive/export exits, retained artifacts, App Store processing success, and QA checklist mapped to SHA/version/build.
 - **Exit criteria:** Tests pass, archive/export succeeds, exact build processes in TestFlight, critical/high QA passes, and release approval is recorded.
@@ -89,7 +89,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 - **Goal:** Create one reviewed, reproducible release input.
 - **Tasks:** Triage dirty files; protect `lancedb/` and credentials; define XcodeGen ownership; synchronize generated output; commit, review, and tag; record SHA, version, build, Xcode, and Swift versions.
-- **Files:** `project.yml`, `DateSnap.xcodeproj/`, app icon, `.gitignore` if approved, audit, plan, and runbooks.
+- **Files:** `project.yml`, `Pencild.xcodeproj/`, app icon, `.gitignore` if approved, audit, plan, and runbooks.
 - **Dependencies:** Configuration/compliance work and automated tests must finish before final tagging.
 - **Output artifacts:** Clean status, reviewed commit, annotated tag, release manifest.
 
@@ -121,7 +121,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 - **Goal:** Prove the empty app entitlements file is intentional.
 - **Tasks:** Inventory protected capabilities; confirm notifications are local-only; compare Xcode capabilities, source entitlements, profile, and signed entitlements; add nothing without a proven feature requirement.
-- **Files:** `DateSnap.entitlements`, `project.yml`, generated project, notification/calendar/reminder/photo services.
+- **Files:** `Pencild.entitlements`, `project.yml`, generated project, notification/calendar/reminder/photo services.
 - **Dependencies:** Final feature scope and signed archive.
 - **Output artifacts:** Capability matrix and entitlement dumps.
 
@@ -156,7 +156,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
    - **Files to inspect:** Both xcconfigs, export plist, release runbook.
    - **Files to edit:** Release xcconfig, optionally Debug xcconfig, export plist, release runbook.
    - **Commands or checks to run:** Search `YOUR_TEAM_ID`; verify Certificates, Identifiers & Profiles and App Store Connect.
-   - **Expected output:** Approved Team ID and confirmed `com.datesnap.app` registration.
+   - **Expected output:** Approved Team ID and confirmed `com.pencild.app` registration.
    - **Owner role suggestion:** Apple account holder + release engineer.
 
 3. **Priority: blocker — Establish version/build.**
@@ -184,7 +184,7 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 6. **Priority: blocker — Validate effective Release settings.**
    - **Rationale:** Project/target values may override source config.
    - **Files to inspect/edit:** xcconfigs, project.yml, generated project, Info.plist; edit only incorrect sources.
-   - **Commands or checks to run:** `xcodebuild -showBuildSettings -project DateSnap.xcodeproj -scheme DateSnap -configuration Release`.
+   - **Commands or checks to run:** `xcodebuild -showBuildSettings -project Pencild.xcodeproj -scheme Pencild -configuration Release`.
    - **Expected output:** Correct bundle ID, versions, target, plist, entitlements, signing, optimization, testability, validation.
    - **Owner role suggestion:** Release/build engineer.
 
@@ -218,8 +218,8 @@ The shared base config already defines `MARKETING_VERSION = 1.0.0` and `CURRENT_
 
 11. **Priority: blocker — Run automated candidate tests.**
     - **Rationale:** No passing result currently supports release.
-    - **Files to inspect/edit:** All `Tests/DateSnapTests/`; fix real failures without weakening assertions.
-    - **Commands or checks to run:** `xcodebuild test ... -destination 'platform=iOS Simulator,name=<available iOS 18 device>' -resultBundlePath <evidence>/DateSnapTests.xcresult`; run `DATESNAP_EVAL_LIVE=1` where compatible.
+    - **Files to inspect/edit:** All `Tests/PencildTests/`; fix real failures without weakening assertions.
+    - **Commands or checks to run:** `xcodebuild test ... -destination 'platform=iOS Simulator,name=<available iOS 18 device>' -resultBundlePath <evidence>/PencildTests.xcresult`; run `PENCILD_EVAL_LIVE=1` where compatible.
     - **Expected output:** Zero unexplained failures, documented skips, retained xcresult.
     - **Owner role suggestion:** iOS engineer + QA automation.
 
@@ -307,27 +307,27 @@ Gate rules: no tag with dirty state or placeholders; no upload without passing t
 | File path | Why it matters | Likely action | Risk if incorrect |
 |---|---|---|---|
 | `project.yml` | Target/resource/config authority | Accept resource change; regenerate/review | Manifest/assets missing or project drift |
-| `DateSnap.xcodeproj/` | Actual documented build input | Regenerate per convention | Built settings differ from reviewed source |
+| `Pencild.xcodeproj/` | Actual documented build input | Regenerate per convention | Built settings differ from reviewed source |
 | `Package.swift` | Platform and package graph | Retain/change iOS 18 only by decision | Project/package mismatch |
-| `Config/DateSnap-Base.xcconfig` | ID, version/build, target | Confirm or increment | Rejected/wrong version |
-| `Config/DateSnap-Debug.xcconfig` | Developer signing | Replace placeholder if policy requires | Local builds fail |
-| `Config/DateSnap-Release.xcconfig` | Distribution behavior/signing | Replace placeholder; validate | Archive/sign failure |
+| `Config/Pencild-Base.xcconfig` | ID, version/build, target | Confirm or increment | Rejected/wrong version |
+| `Config/Pencild-Debug.xcconfig` | Developer signing | Replace placeholder if policy requires | Local builds fail |
+| `Config/Pencild-Release.xcconfig` | Distribution behavior/signing | Replace placeholder; validate | Archive/sign failure |
 | `Info.plist` | Metadata, prompts, encryption | Edit only for verified mismatch | Runtime crash/review rejection |
 | `PrivacyInfo.xcprivacy` | Privacy declarations | Update only from inventory | Validation failure/misrepresentation |
-| `DateSnap.entitlements` | Signed capabilities | Keep empty if verified | Missing or excessive privilege |
+| `Pencild.entitlements` | Signed capabilities | Keep empty if verified | Missing or excessive privilege |
 | `ExportOptions-AppStore.plist` | App Store export/team | Replace placeholder; validate options | Export/wrong-team failure |
-| `DateSnap.storekit` | Local subscription model | Reconcile production parity | Local-only success, production failure |
-| `Sources/DateSnap/Services/PhotoLibraryService.swift` | Photos/offline behavior | Verify scope and states | Privacy or scan defect |
-| `Sources/DateSnap/Services/CalendarService.swift` | Calendar full access | Verify prompt and CRUD | Permission/write failure |
-| `Sources/DateSnap/Services/ReminderService.swift` | Reminder full access | Verify prompt/create | Permission/review mismatch |
-| `Sources/DateSnap/Services/NotificationService.swift` | Local alerts/deep link | Verify local-only and denial | Broken alerts/capability confusion |
-| `Sources/DateSnap/Services/SubscriptionService.swift` | Product IDs/entitlements | Verify lifecycle/parity | Revenue/access defect |
-| `Sources/DateSnap/ViewModels/HomeViewModel.swift` | Permission orchestration | Verify transitions/errors | First-run/denial failure |
-| `Tests/DateSnapTests/` | Automated evidence | Run all; strengthen proven gaps | Regression or false confidence |
+| `Pencild.storekit` | Local subscription model | Reconcile production parity | Local-only success, production failure |
+| `Sources/Pencild/Services/PhotoLibraryService.swift` | Photos/offline behavior | Verify scope and states | Privacy or scan defect |
+| `Sources/Pencild/Services/CalendarService.swift` | Calendar full access | Verify prompt and CRUD | Permission/write failure |
+| `Sources/Pencild/Services/ReminderService.swift` | Reminder full access | Verify prompt/create | Permission/review mismatch |
+| `Sources/Pencild/Services/NotificationService.swift` | Local alerts/deep link | Verify local-only and denial | Broken alerts/capability confusion |
+| `Sources/Pencild/Services/SubscriptionService.swift` | Product IDs/entitlements | Verify lifecycle/parity | Revenue/access defect |
+| `Sources/Pencild/ViewModels/HomeViewModel.swift` | Permission orchestration | Verify transitions/errors | First-run/denial failure |
+| `Tests/PencildTests/` | Automated evidence | Run all; strengthen proven gaps | Regression or false confidence |
 | `docs/runbooks/RELEASE.md` | Operator procedure | Remove placeholders; prove commands | Failed/non-reproducible release |
 | `docs/runbooks/TESTFLIGHT-QA.md` | QA gate | Correct denial/network wording; record build | False pass/fail |
 | `docs/runbooks/APP-REVIEW-NOTES.md` | Review claims | Verify claims, links, IAPs, contact | Delay/rejection |
-| `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png` | Store asset/dirty item | Review and intentionally commit/revert | Validation/branding defect |
+| `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png` | Store asset/dirty item | Review and intentionally commit/revert | Validation/branding defect |
 | `.gitignore` | Tree hygiene | Add only approved exclusions | Hidden required input |
 | `lancedb/` | Protected runtime data | Do not delete or stage | Data loss/repository bloat |
 

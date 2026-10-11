@@ -1,10 +1,10 @@
-# HANDOFF: DateSnap-iOS mock-marker closure (finale of rounds 34g-34j)
+# HANDOFF: Pencild-iOS mock-marker closure (finale of rounds 34g-34j)
 
 > Historical record only (closed 2026-10-04). Do not execute these instructions.
 > Current remediation status and verification evidence are maintained in
 > `docs/HANDOFF.md` and `docs/audits/2026-10-04-mock-remediation-closure.md`.
 
-You are taking over the final closure of ~/apps/DateSnap-iOS (branch main) after a
+You are taking over the final closure of ~/apps/Pencild-iOS (branch main) after a
 multi-generational recovery effort. The recovery line (Gens A-D) is verified as
 presence-equivalent on main via a cherry-pick train; a weekend PR train sits on top.
 The only remaining blocker is scanner scope in scripts/verify-no-mock.sh, which is
@@ -17,7 +17,7 @@ verdict, STOP and report - do not improvise.
 
 ## State on main (verified 2026-10-04 01:33 PDT)
 - 9c91b6a chore(verify): exclude .stitch design mockups from mock-marker scan
-- e949da8 chore(verify): scope mock-marker scan to production source (5 globs: design-assets/**, .opencode/**, HANDOFF.md, DateSnap.xcodeproj/**, scripts/verify-release-content.sh self-match; + 8 allowlist rows for Tests/* fixtures and DEBUG-gated SampleFlyer.swift)
+- e949da8 chore(verify): scope mock-marker scan to production source (5 globs: design-assets/**, .opencode/**, HANDOFF.md, Pencild.xcodeproj/**, scripts/verify-release-content.sh self-match; + 8 allowlist rows for Tests/* fixtures and DEBUG-gated SampleFlyer.swift)
 - 066c83f chore(verify): adjudicate remaining markers (PurchaseViewModel.swift hard-coded-price = doc-comment example; scripts/download_screens.py stitch-id = intrinsic tooling)
 - main is ~2-3 commits ahead of origin/main (unpushed). git status showed 1 dirty entry - identify it first with `git status --porcelain`; if it is the mock-allowlist.txt edit, commit it.
 - NOT yet done: README archive, tags, push, cleanup (an earlier summary wrongly claimed these ran).
@@ -59,8 +59,8 @@ git push origin recovery-integrated-20261002
 DO NOT push archive/preview-recovery-line. Pushing it would publish the burned key's root commit (32207c9) to origin - the owner explicitly decided the key never left this machine and rotation was skipped on that basis. Keep the archive tag local-only as a tombstone. If anyone asks to push it, escalate to Aaron first.
 
 ## Step 7 - cleanup (idempotent)
-git worktree remove --force /private/tmp/datesnap-main 2>/dev/null
-git worktree remove --force /private/tmp/datesnap-pr1 2>/dev/null
+git worktree remove --force /private/tmp/pencild-main 2>/dev/null
+git worktree remove --force /private/tmp/pencild-pr1 2>/dev/null
 git branch -D preview 2>/dev/null   # only AFTER the archive tag points at its tip (step 5)
 git worktree prune
 

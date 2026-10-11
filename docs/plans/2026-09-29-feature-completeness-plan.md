@@ -1,4 +1,4 @@
-# DateSnap: Feature-Complete Product Engineering Plan & Runtime Audit
+# Pencild: Feature-Complete Product Engineering Plan & Runtime Audit
 
 **Date:** 2026-09-29  
 **Status:** Implemented — pending on-device verification (see §8)  
@@ -8,13 +8,13 @@
 
 ## 1. Executive Summary
 
-DateSnap possesses an advanced on-device algorithmic foundation: a spatial Vision OCR engine (`OCRService.swift`), a multi-detector chronological inference pipeline (`EventExtractionService.swift`), SwiftData entity models (`SwiftDataEntities.swift`), and protocol-driven EventKit, PhotoKit, UserNotifications, and StoreKit 2 services.
+Pencild possesses an advanced on-device algorithmic foundation: a spatial Vision OCR engine (`OCRService.swift`), a multi-detector chronological inference pipeline (`EventExtractionService.swift`), SwiftData entity models (`SwiftDataEntities.swift`), and protocol-driven EventKit, PhotoKit, UserNotifications, and StoreKit 2 services.
 
 However, from an end-to-end product and runtime perspective, **the app is currently operating as a disconnected prototype**. The polished SwiftUI views (`HomeEmptyStateView.swift`, `EventReviewEditView.swift`, `PlusPaywallView.swift`, `HistoryArchiveView.swift`) are almost entirely unwired from the underlying production services. User interactions rely on hardcoded `Task.sleep` simulations, mutating in-memory volatile arrays in `AppState.swift`, and cycling through pre-baked mock flyer objects (`sampleNeonSunset`, `sampleDentalCheckup`).
 
 ### The Three Fundamental Product Gaps:
 1. **Orphaned Service & ViewModel Layer:** `ScanViewModel`, `HomeViewModel`, and `EventReviewViewModel` contain full production logic for scanning, OCR, calendar/reminder creation, and SwiftData persistence, but **zero views in the app instantiate or call them**.
-2. **Cold-Launch Amnesia:** SwiftData container initialization in `DateSnap.swift` is never queried by the UI. `HistoryArchiveView.swift` displays only in-memory mock events from `AppState.events`, wiping all user-saved events on app relaunch.
+2. **Cold-Launch Amnesia:** SwiftData container initialization in `Pencild.swift` is never queried by the UI. `HistoryArchiveView.swift` displays only in-memory mock events from `AppState.events`, wiping all user-saved events on app relaunch.
 3. **Simulated Paywalls & Feature Gating:** Subscriptions in `PlusPaywallView.swift` and `PremiumPaywallView.swift` simulate purchases with dummy 1-second timers and set local booleans, completely disconnected from `SubscriptionService.swift`. The premium features promised in copy (document/PDF import, automatic background photo scanning) do not exist in code.
 
 ---
@@ -32,7 +32,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 | **Ambiguous Date Swap** | Detect `DD/MM` vs `MM/DD` ambiguity and offer 1-tap swap in review UI. | `EventExtractionService.swift:650`, `EventReviewEditView.swift:108` | **Partial** | Detection logic and UI card exist, but swapping is not bound to a live view model or persisted entity. | **P0** |
 | **Calendar Event Commit** | Write reviewed event to Apple Calendar with alarms upon explicit save. | `CalendarService.swift:57`, `EventReviewEditView.swift:544` | **Mock** | Button sleeps 700ms and updates `appState.events`. `EKEventStore` is never invoked from UI. | **P0** |
 | **Reminders Commit** | Write reminders with staggered offsets to Apple Reminders upon explicit save. | `ReminderService.swift:69`, `EventReviewEditView.swift:544` | **Mock** | `EKEventStore` reminders API is never called from `EventReviewEditView` or `ReminderScheduleEditorView`. | **P0** |
-| **Local Notification Alerts** | Schedule UNNotificationRequest for pre-event alerts with deep-links. | `NotificationService.swift:74` | **Partial** | Scheduling code works, but notification deep-link `DateSnapDeepLinkEvent` has no listener in `AppState`. | **P1** |
+| **Local Notification Alerts** | Schedule UNNotificationRequest for pre-event alerts with deep-links. | `NotificationService.swift:74` | **Partial** | Scheduling code works, but notification deep-link `PencildDeepLinkEvent` has no listener in `AppState`. | **P1** |
 | **Persistent History & Triage** | Retain saved events in SwiftData; support search, filter, and triage across launches. | `SwiftDataEntities.swift:131`, `HistoryArchiveView.swift:9` | **Mock** | `HistoryArchiveView` reads volatile `appState.events`. Cold launch wipes history and reverts to sample events. | **P0** |
 | **StoreKit 2 Subscriptions** | Purchase Plus/Premium, restore transactions, listen to status updates. | `SubscriptionService.swift:42`, `PlusPaywallView.swift:242` | **Mock** | Paywalls use dummy `Task.sleep` and toggle mock booleans. Real StoreKit 2 calls are bypassed. | **P0** |
 | **Files & PDF Import (Premium)** | Import multi-page event PDFs and flyers from iOS Files / iCloud Drive. | `PremiumPaywallView.swift:60`, `ManagePlanView.swift:170` | **Missing** | Heavily advertised in UI copy and paywalls, but zero code exists for `UIDocumentPicker` or `PDFKit`. | **P1** |
@@ -60,7 +60,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ```
 
 ### Flow 1: Home Entry Points & Ingestion
-- **Current Breakdown:** In `HomeEmptyStateView.swift:248-280`, tapping "Scan Recent Screenshots" sets `isScanning = true`, sleeps 600ms, sets `isScanning = false`, and assigns `appState.activeModal = .eventReviewEdit(DateSnapEvent.sampleNeonSunset)`. Tapping "Choose from Photo Library" sets `activeModal = .eventReviewEdit(DateSnapEvent.sampleDentalCheckup)`.
+- **Current Breakdown:** In `HomeEmptyStateView.swift:248-280`, tapping "Scan Recent Screenshots" sets `isScanning = true`, sleeps 600ms, sets `isScanning = false`, and assigns `appState.activeModal = .eventReviewEdit(PencildEvent.sampleNeonSunset)`. Tapping "Choose from Photo Library" sets `activeModal = .eventReviewEdit(PencildEvent.sampleDentalCheckup)`.
 - **Failure:** The user never actually chooses an image, nor are recent screenshots retrieved from the photo library.
 
 ### Flow 2: OCR Extraction & Temporal Inference
@@ -68,7 +68,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 - **Failure:** Because `ScanViewModel` is never instantiated by `HomeEmptyStateView`, real OCR and extraction are completely dead code at runtime.
 
 ### Flow 3: Candidate Review, Ambiguity Resolution & Editing
-- **Current Breakdown:** `EventReviewEditView.swift:24-35` initializes its form from the passed `DateSnapEvent`. It contains UI for editing dates, time windows, and locations.
+- **Current Breakdown:** `EventReviewEditView.swift:24-35` initializes its form from the passed `PencildEvent`. It contains UI for editing dates, time windows, and locations.
 - **Failure:** It does not use `EventReviewViewModel`. The ambiguous date banner toggles internal `@State` variables without recalculating parsed `Date` components or updating calendar targets.
 
 ### Flow 4: Save to Calendar & Reminders
@@ -76,7 +76,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 - **Failure:** `CalendarService.createEvent` and `ReminderService.createReminder` are never called. Nothing is written to the user's iOS Calendar or Reminders apps.
 
 ### Flow 5: Notification Scheduling & Deep-Linking
-- **Current Breakdown:** `NotificationService.swift:143-156` catches notification taps and posts `NSNotification.Name("DateSnapDeepLinkEvent")`.
+- **Current Breakdown:** `NotificationService.swift:143-156` catches notification taps and posts `NSNotification.Name("PencildDeepLinkEvent")`.
 - **Failure:** `AppState` and `ContentView` have no subscriber for this notification. Tapping an alert launches the app to the default tab without opening the saved event detail.
 
 ### Flow 6: History & Archive Persistence
@@ -111,7 +111,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 
 ### 5. Notifications & Follow-Up Alerts
 - **Notification Rescheduling in Schedule Editor:** In `ReminderScheduleEditorView.swift:295-305`, replace `appState.updateAlerts` with real calls to `notificationService.scheduleLocalNotifications` and `reminderService`.
-- **Deep-Link Event Routing:** Add `.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DateSnapDeepLinkEvent")))` in `ContentView.swift` to navigate directly to `.savedEventDetail(event)`.
+- **Deep-Link Event Routing:** Add `.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("PencildDeepLinkEvent")))` in `ContentView.swift` to navigate directly to `.savedEventDetail(event)`.
 
 ### 6. Subscription-Gated Functionality
 - **Real StoreKit 2 Purchasing:** Wire `PlusPaywallView` and `PremiumPaywallView` to `subscriptionService.purchase(product:)` and `subscriptionService.restorePurchases()`.
@@ -159,27 +159,27 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ### P0 — Core Feature Completion (Must be done for usable beta)
 
 #### Task 1: Wire Real Photo Library Ingestion & PhotosPicker
-- **Files:** `Sources/DateSnap/Views/HomeEmptyStateView.swift`, `Sources/DateSnap/ViewModels/ScanViewModel.swift`
+- **Files:** `Sources/Pencild/Views/HomeEmptyStateView.swift`, `Sources/Pencild/ViewModels/ScanViewModel.swift`
 - **Behavior:** Add SwiftUI `PhotosPicker` to "Choose from Photo Library". When an image is picked or "Scan Recent Screenshots" is tapped, load the `UIImage` and pass it to `ScanViewModel.scanImage(_:modelContext:)`.
 - **Dependencies:** `PhotoLibraryService`, `ScanViewModel`.
 - **Acceptance Criteria:** Selecting a screenshot from the simulator/device library triggers real Vision OCR and displays the scanned candidate in `EventReviewEditView`.
 
 #### Task 2: Connect Review Flow to Calendar & Reminders Execution
-- **Files:** `Sources/DateSnap/Views/EventReviewEditView.swift`, `Sources/DateSnap/ViewModels/EventReviewViewModel.swift`
+- **Files:** `Sources/Pencild/Views/EventReviewEditView.swift`, `Sources/Pencild/ViewModels/EventReviewViewModel.swift`
 - **Behavior:** Refactor `EventReviewEditView` to take `EventReviewViewModel`. Tapping "Save Event to Calendar" invokes `await viewModel.commitEvent(modelContext:)`.
 - **Dependencies:** `CalendarService`, `ReminderService`, `NotificationService`, `SwiftData`.
 - **Acceptance Criteria:** Tapping Save creates an event in the native Apple Calendar app and alerts in Apple Reminders with matching titles, locations, and times.
 
 #### Task 3: SwiftData Persistence & Cold-Launch Continuity
-- **Files:** `Sources/DateSnap/Views/HistoryArchiveView.swift`, `Sources/DateSnap/Models/AppState.swift`
+- **Files:** `Sources/Pencild/Views/HistoryArchiveView.swift`, `Sources/Pencild/Models/AppState.swift`
 - **Behavior:** Remove seeded sample events from `AppState`. In `HistoryArchiveView`, use `@Query(sort: \SavedEvent.createdAt, order: .reverse) private var savedEvents: [SavedEvent]`.
 - **Dependencies:** `SwiftDataEntities.swift`.
 - **Acceptance Criteria:** Events saved during a session remain visible, searchable, and filterable in History after force-quitting and relaunching the app.
 
 #### Task 4: StoreKit 2 Purchase & Entitlement Wiring
-- **Files:** `Sources/DateSnap/Views/PlusPaywallView.swift`, `Sources/DateSnap/Views/PremiumPaywallView.swift`, `Sources/DateSnap/Services/SubscriptionService.swift`
+- **Files:** `Sources/Pencild/Views/PlusPaywallView.swift`, `Sources/Pencild/Views/PremiumPaywallView.swift`, `Sources/Pencild/Services/SubscriptionService.swift`
 - **Behavior:** Replace `Task.sleep` in paywalls with `try await subscriptionService.purchase(product:)` and `try await subscriptionService.restorePurchases()`. Bind tier display to `subscriptionService.currentTier`.
-- **Dependencies:** StoreKit 2, `DateSnap.storekit`.
+- **Dependencies:** StoreKit 2, `Pencild.storekit`.
 - **Acceptance Criteria:** Purchasing in the StoreKit testing environment unlocks the corresponding tier badge and capabilities without errors.
 
 ---
@@ -187,41 +187,41 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 ### P1 — Product Completeness (Before calling app feature complete)
 
 #### Task 5: Fix "Doors vs Show" Priority & Note Preservation
-- **Files:** `Sources/DateSnap/Services/EventExtractionService.swift:894-912`
+- **Files:** `Sources/Pencild/Services/EventExtractionService.swift:894-912`
 - **Behavior:** In `DateInference.extractTimeWindow`, check for `isShow`. If present, assign the show time as the primary start time. Store the door time in the event notes snippet (`Doors open at X`).
 - **Dependencies:** `EventExtractionService`.
 - **Acceptance Criteria:** A flyer stating "Doors 7:00 PM / Show 8:30 PM" produces a candidate with `startDate` at 8:30 PM and notes stating "Doors open at 7:00 PM".
 
 #### Task 6: Actionable Notification Deep-Linking
-- **Files:** `Sources/DateSnap/ContentView.swift`, `Sources/DateSnap/Models/AppState.swift`, `Sources/DateSnap/Services/NotificationService.swift`
-- **Behavior:** Listen for `NotificationCenter.default.publisher(for: NSNotification.Name("DateSnapDeepLinkEvent"))` in `ContentView` and route `appState.activeModal` to `.savedEventDetail(event)`.
+- **Files:** `Sources/Pencild/ContentView.swift`, `Sources/Pencild/Models/AppState.swift`, `Sources/Pencild/Services/NotificationService.swift`
+- **Behavior:** Listen for `NotificationCenter.default.publisher(for: NSNotification.Name("PencildDeepLinkEvent"))` in `ContentView` and route `appState.activeModal` to `.savedEventDetail(event)`.
 - **Dependencies:** `NotificationService`, `SwiftData`.
-- **Acceptance Criteria:** Tapping a scheduled local notification banner opens DateSnap directly into the saved event detail screen.
+- **Acceptance Criteria:** Tapping a scheduled local notification banner opens Pencild directly into the saved event detail screen.
 
 #### Task 7: Interactive "Try Sample Flyer" Flow
-- **Files:** `Sources/DateSnap/Views/HomeEmptyStateView.swift`, bundled asset or generated test flyer UIImage.
+- **Files:** `Sources/Pencild/Views/HomeEmptyStateView.swift`, bundled asset or generated test flyer UIImage.
 - **Behavior:** Tapping "Try Sample Flyer" passes a sample concert flyer image into `ScanViewModel.scanImage(_:)` and launches `EventReviewEditView` with real parsed candidates.
 - **Dependencies:** `ScanViewModel`, `HomeEmptyStateView`.
 - **Acceptance Criteria:** Users can experience the end-to-end extraction and review flow on first launch without granting photo permissions.
 
 #### Task 8: Settings Deep-Link Recovery
-- **Files:** `Sources/DateSnap/Views/CalendarPermissionDeniedView.swift`, `Sources/DateSnap/Views/NotificationPermissionDeniedView.swift`
+- **Files:** `Sources/Pencild/Views/CalendarPermissionDeniedView.swift`, `Sources/Pencild/Views/NotificationPermissionDeniedView.swift`
 - **Behavior:** Replace toast placeholders with `UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)`.
 - **Dependencies:** UIKit.
-- **Acceptance Criteria:** Tapping "Open iPhone Settings" launches the iOS Settings page for DateSnap.
+- **Acceptance Criteria:** Tapping "Open iPhone Settings" launches the iOS Settings page for Pencild.
 
 ---
 
 ### P2 — Polish & Advanced Features (Post-Beta)
 
 #### Task 9: Multi-Page PDF & iOS Files Import (Premium)
-- **Files:** New `DocumentPickerService.swift`, `Sources/DateSnap/Views/HomeEmptyStateView.swift`
+- **Files:** New `DocumentPickerService.swift`, `Sources/Pencild/Views/HomeEmptyStateView.swift`
 - **Behavior:** Add `.fileImporter` supporting PDF and render each PDF page into a `UIImage` using `PDFKit` (`PDFPage.draw`) for batch OCR. Gate behind `SubscriptionTier.premium`.
 - **Dependencies:** `PDFKit`, `SubscriptionService`.
 - **Acceptance Criteria:** Premium users can import a multi-page event itinerary PDF and extract all dates into review candidates.
 
 #### Task 10: History Triage & Batch Cleanup
-- **Files:** `Sources/DateSnap/Views/HistoryArchiveView.swift`
+- **Files:** `Sources/Pencild/Views/HistoryArchiveView.swift`
 - **Behavior:** Add swipe-to-archive, swipe-to-delete, and batch triage actions on persisted `SavedEvent` items.
 - **Dependencies:** SwiftData `ModelContext`.
 - **Acceptance Criteria:** Swiping an item in History transitions its status between Saved, Archived, and Deleted with immediate persistence.
@@ -257,7 +257,7 @@ However, from an end-to-end product and runtime perspective, **the app is curren
 
 ## 8. Definition of Feature Complete
 
-DateSnap is considered **feature complete** when all of the following conditions are verified at runtime on an iOS 18 device/simulator:
+Pencild is considered **feature complete** when all of the following conditions are verified at runtime on an iOS 18 device/simulator:
 
 1. **Working Ingestion Paths:**
    - User can select any photo or flyer via `PhotosPicker` and initiate scanning.
@@ -272,7 +272,7 @@ DateSnap is considered **feature complete** when all of the following conditions
    - Saves happen **only** after explicit user confirmation in `EventReviewEditView`.
 4. **Actionable Notifications:**
    - Pre-event alert notifications are scheduled with `UNUserNotificationCenter`.
-   - Tapping an alert banner deep-links the user into DateSnap and displays the saved event details.
+   - Tapping an alert banner deep-links the user into Pencild and displays the saved event details.
 5. **Persistent History Across Cold Launches:**
    - Saved events persist in SwiftData.
    - Force-quitting and reopening the app loads saved events in History.

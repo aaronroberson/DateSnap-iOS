@@ -1,4 +1,4 @@
-# DateSnap Mock Data, Mock Features, Non-Production Code, and TODO Audit
+# Pencild Mock Data, Mock Features, Non-Production Code, and TODO Audit
 
 Date: 2026-10-02
 
@@ -19,59 +19,59 @@ The most serious issues are:
 5. Reminder settings include static simulation data and controls that do not drive event/reminder scheduling.
 6. Paywalls display hard-coded fallback prices when StoreKit products are unavailable.
 
-No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or source-code placeholder markers were found under `Sources/DateSnap`. Absence of markers does not mean the features are complete; the largest gaps are polished UI states with no runtime integration.
+No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or source-code placeholder markers were found under `Sources/Pencild`. Absence of markers does not mean the features are complete; the largest gaps are polished UI states with no runtime integration.
 
 ## Inputs reviewed
 
 ### Dependency and mock infrastructure
 
-- `Sources/DateSnap/DateSnap.swift`
-- `Sources/DateSnap/ContentView.swift`
-- `Sources/DateSnap/Services/ServiceContainer.swift`
+- `Sources/Pencild/Pencild.swift`
+- `Sources/Pencild/ContentView.swift`
+- `Sources/Pencild/Services/ServiceContainer.swift`
 - `Package.swift`
 - `project.yml`
 
 ### Sample and debug infrastructure
 
-- `Sources/DateSnap/Services/SampleFlyer.swift`
-- `Sources/DateSnap/ViewModels/ScanViewModel.swift`
-- `Sources/DateSnap/Models/EventModels.swift`
-- `Sources/DateSnap/Views/ScreenGalleryView.swift`
-- `Sources/DateSnap/Views/HomeEmptyStateView.swift`
-- `Sources/DateSnap/Views/ScanFlowViews.swift`
-- `Sources/DateSnap/Views/InterpretationDiagnosticsView.swift`
-- `Sources/DateSnap/Views/EventReviewEditView.swift`
+- `Sources/Pencild/Services/SampleFlyer.swift`
+- `Sources/Pencild/ViewModels/ScanViewModel.swift`
+- `Sources/Pencild/Models/EventModels.swift`
+- `Sources/Pencild/Views/ScreenGalleryView.swift`
+- `Sources/Pencild/Views/HomeEmptyStateView.swift`
+- `Sources/Pencild/Views/ScanFlowViews.swift`
+- `Sources/Pencild/Views/InterpretationDiagnosticsView.swift`
+- `Sources/Pencild/Views/EventReviewEditView.swift`
 
 ### Production-visible settings and claims
 
-- `Sources/DateSnap/Models/SettingsState.swift`
-- `Sources/DateSnap/Views/AutomationSettingsView.swift`
-- `Sources/DateSnap/Views/ReminderSettingsView.swift`
-- `Sources/DateSnap/Views/PrivacyCenterView.swift`
-- `Sources/DateSnap/Views/SettingsHubView.swift`
-- `Sources/DateSnap/Views/ManagePlanView.swift`
-- `Sources/DateSnap/ViewModels/PurchaseViewModel.swift`
-- `Sources/DateSnap/Views/PlusPaywallView.swift`
-- `Sources/DateSnap/Views/PremiumPaywallView.swift`
-- `Sources/DateSnap/Views/HelpFeedbackView.swift` (search-based claim review)
+- `Sources/Pencild/Models/SettingsState.swift`
+- `Sources/Pencild/Views/AutomationSettingsView.swift`
+- `Sources/Pencild/Views/ReminderSettingsView.swift`
+- `Sources/Pencild/Views/PrivacyCenterView.swift`
+- `Sources/Pencild/Views/SettingsHubView.swift`
+- `Sources/Pencild/Views/ManagePlanView.swift`
+- `Sources/Pencild/ViewModels/PurchaseViewModel.swift`
+- `Sources/Pencild/Views/PlusPaywallView.swift`
+- `Sources/Pencild/Views/PremiumPaywallView.swift`
+- `Sources/Pencild/Views/HelpFeedbackView.swift` (search-based claim review)
 
 ### Production service/error behavior
 
-- `Sources/DateSnap/Services/SubscriptionService.swift`
-- `Sources/DateSnap/Services/PhotoLibraryService.swift`
-- `Sources/DateSnap/Services/CalendarService.swift`
-- `Sources/DateSnap/Services/ReminderService.swift`
-- `Sources/DateSnap/Services/NotificationService.swift`
-- `Sources/DateSnap/Services/SavedEventActions.swift`
-- `Sources/DateSnap/Services/Intelligence/EventUnderstandingPipeline.swift`
-- `Sources/DateSnap/Services/EventExtractionService.swift` (fallback/search review)
+- `Sources/Pencild/Services/SubscriptionService.swift`
+- `Sources/Pencild/Services/PhotoLibraryService.swift`
+- `Sources/Pencild/Services/CalendarService.swift`
+- `Sources/Pencild/Services/ReminderService.swift`
+- `Sources/Pencild/Services/NotificationService.swift`
+- `Sources/Pencild/Services/SavedEventActions.swift`
+- `Sources/Pencild/Services/Intelligence/EventUnderstandingPipeline.swift`
+- `Sources/Pencild/Services/EventExtractionService.swift` (fallback/search review)
 
 ### Configuration and release evidence
 
-- `Config/DateSnap-Debug.xcconfig`
-- `Config/DateSnap-Release.xcconfig`
+- `Config/Pencild-Debug.xcconfig`
+- `Config/Pencild-Release.xcconfig`
 - `ExportOptions-AppStore.plist`
-- `DateSnap.storekit`
+- `Pencild.storekit`
 - `docs/runbooks/RELEASE.md`
 - `docs/runbooks/TESTFLIGHT-QA.md`
 - Existing audit and implementation-plan documents under `docs/audits/` and `docs/plans/`
@@ -101,11 +101,11 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 
 **Severity:** Blocker
 
-**Evidence:** `ServiceContainer.swift` declares `ServiceContainer.mock()` plus mock implementations for Photos, OCR, extraction, Calendar, Reminders, notifications, and subscriptions in `Sources/DateSnap`. Those implementations grant permissions, return successful synthetic identifiers, return fabricated OCR/event data, and grant Plus. `ServiceContainerKey.defaultValue` is `ServiceContainer.mock()`.
+**Evidence:** `ServiceContainer.swift` declares `ServiceContainer.mock()` plus mock implementations for Photos, OCR, extraction, Calendar, Reminders, notifications, and subscriptions in `Sources/Pencild`. Those implementations grant permissions, return successful synthetic identifiers, return fabricated OCR/event data, and grant Plus. `ServiceContainerKey.defaultValue` is `ServiceContainer.mock()`.
 
-**Risk:** A missing environment injection silently changes the app from real services to always-successful fake behavior. Because the mocks live in the product target, Release contains non-production implementations even though `DateSnapApp` currently injects `.live()` explicitly.
+**Risk:** A missing environment injection silently changes the app from real services to always-successful fake behavior. Because the mocks live in the product target, Release contains non-production implementations even though `PencildApp` currently injects `.live()` explicitly.
 
-**Required treatment:** **Isolate and replace the fallback.** Move test doubles to `Tests/DateSnapTests/` and preview-only fixtures to Debug-only support. Make the production environment default fail fast during development or use a deliberately unavailable/deny-by-default implementation that cannot report success. Never default subscription access above Starter.
+**Required treatment:** **Isolate and replace the fallback.** Move test doubles to `Tests/PencildTests/` and preview-only fixtures to Debug-only support. Make the production environment default fail fast during development or use a deliberately unavailable/deny-by-default implementation that cannot report success. Never default subscription access above Starter.
 
 **Exit criteria:** Release source/binary contains no `Mock*Service`, mock event identifiers, fabricated OCR output, or permissive mock container; every production screen receives `.live()` explicitly; tests/previews inject named fixtures.
 
@@ -197,7 +197,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 
 **Severity:** Medium
 
-**Evidence:** `ScreenGalleryView` and `DateSnapEvent` sample fixtures are wrapped in `#if DEBUG`; ContentView presents `EmptyView` for `.screenGallery` in Release; Home simulation controls are Debug-only. The modal enum case remains compiled in Release.
+**Evidence:** `ScreenGalleryView` and `PencildEvent` sample fixtures are wrapped in `#if DEBUG`; ContentView presents `EmptyView` for `.screenGallery` in Release; Home simulation controls are Debug-only. The modal enum case remains compiled in Release.
 
 **Risk:** Current guards are reasonable, but future references can accidentally leak debug navigation. Debug descriptions also contain feature claims that may drift.
 
@@ -233,7 +233,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 
 **Severity:** Medium
 
-**Evidence:** No TODO-family markers were found under `Sources/DateSnap`. Older plans still describe prototype mocks/dummy timers and outdated repository structure. `AGENTS.md` describes a placeholder skeleton/pure package despite the current generated project and substantial app.
+**Evidence:** No TODO-family markers were found under `Sources/Pencild`. Older plans still describe prototype mocks/dummy timers and outdated repository structure. `AGENTS.md` describes a placeholder skeleton/pure package despite the current generated project and substantial app.
 
 **Risk:** Agents and release operators may follow stale context, redo completed work, or miss current gaps.
 
@@ -256,7 +256,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 | Default mock environment container | Product target | Replace | Fail fast or unavailable production default |
 | `SampleFlyer` | Product target | Retain | Verify real-pipeline behavior and labeling |
 | DEBUG screen gallery | Product target, conditional | Retain/isolate | Binary verification; stronger compile isolation |
-| DEBUG sample `DateSnapEvent`s | Product target, conditional | Retain/isolate | Binary verification |
+| DEBUG sample `PencildEvent`s | Product target, conditional | Retain/isolate | Binary verification |
 | Home simulation hub | DEBUG conditional | Retain/isolate | Binary verification |
 | `SettingsState` plan fields | Product UI state | Remove | Use StoreKit state only |
 | Automation mode/scope/digest controls | Product UI | Remove or replace | Immediate removal/reword unless implemented |
@@ -275,7 +275,7 @@ No `TODO`, `FIXME`, `HACK`, `XXX`, `TBD`, `WIP`, “not implemented,” or sourc
 ### Phase 1 — Stop fake code from entering Release
 
 1. Split production dependency wiring from test/preview fixtures.
-2. Move mock service implementations out of `Sources/DateSnap` or compile them only in Debug where previews require them.
+2. Move mock service implementations out of `Sources/Pencild` or compile them only in Debug where previews require them.
 3. Replace the environment’s permissive default with a non-successful production-safe dependency strategy.
 4. Add a Release-source/binary scan for `Mock`, known sample titles, Stitch IDs, “Simulation Hub,” and mock identifier prefixes.
 

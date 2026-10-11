@@ -1,4 +1,4 @@
-# DateSnap iOS Pre-Release Production Readiness Audit
+# Pencild iOS Pre-Release Production Readiness Audit
 
 > **Historical snapshot — 2026-10-01.** The repository and branch observations below describe the checkout reviewed on that date. Revalidate every finding against the current checkout before using it for a release decision.
 
@@ -6,7 +6,7 @@ Date: 2026-10-01
 
 ## Scope
 
-This audit is based only on repository-visible release artifacts and configuration files available in the DateSnap iOS repo at the time of review, plus the current git working tree state.[cite:1][cite:3][cite:5][cite:6][cite:7][cite:8]
+This audit is based only on repository-visible release artifacts and configuration files available in the Pencild iOS repo at the time of review, plus the current git working tree state.[cite:1][cite:3][cite:5][cite:6][cite:7][cite:8]
 
 ## Release decision
 
@@ -16,7 +16,7 @@ Current recommendation: **No-go for production release** until release hygiene, 
 
 The repository contains core release assets expected for an iOS app: an Xcode project, package manifest, entitlements file, privacy manifest, StoreKit configuration, App Store export options plist, source tree, tests, and release-related runbooks under `docs/runbooks/`.[cite:1]
 
-The current branch is `main`, and the working tree is not clean: `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png` and `project.yml` are modified, while `.freebuff/` and `HANDOFF.md` are untracked.[cite:1]
+The current branch is `main`, and the working tree is not clean: `Assets.xcassets/AppIcon.appiconset/Pencild-AppIcon-1024.png` and `project.yml` are modified, while `.freebuff/` and `HANDOFF.md` are untracked.[cite:1]
 
 ## Findings
 
@@ -94,6 +94,6 @@ This is a positive signal for feature-level rigor, but the audit did not include
 
 ## Final assessment
 
-DateSnap shows several strong production-readiness signals in repo structure, privacy positioning, and test inventory, but the current evidence set does not support a production go-live yet.[cite:1][cite:5][cite:6][cite:7][cite:8]
+Pencild shows several strong production-readiness signals in repo structure, privacy positioning, and test inventory, but the current evidence set does not support a production go-live yet.[cite:1][cite:5][cite:6][cite:7][cite:8]
 
 The biggest blockers are procedural rather than architectural: the release candidate is not frozen, resolved release values were not verified, and there is no audited proof in this review of a passing release build and QA signoff tied to a specific commit.[cite:1][cite:5][cite:6]

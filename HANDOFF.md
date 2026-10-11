@@ -1,90 +1,51 @@
-# DateSnap Wave 2 Handoff
+# Pencil'd Project Handoff
 
-Updated: 2026-09-29
+Updated: 2026-10-10
 
-## Implemented in the repository
+## Current project map
 
-- Created `DateSnap.xcodeproj` with:
-  - `DateSnap` iOS application target (`com.apple.product-type.application`).
-  - `DateSnapTests` unit-test target.
-  - iOS 18.0 deployment target and Swift 6 settings.
-  - Debug and Release configurations backed by `Config/DateSnap-Debug.xcconfig` and `Config/DateSnap-Release.xcconfig`.
-  - Shared `DateSnap` scheme with `DateSnap.storekit` attached to the Run action.
-  - `Info.plist`, `DateSnap.entitlements`, `PrivacyInfo.xcprivacy`, and the asset catalog bound to the app target.
-- Added `project.yml` as the reproducible XcodeGen source for the project. Regenerate with `xcodegen generate --spec project.yml` after changing target membership or build configuration.
-- Added `Assets.xcassets` with:
-  - A 1024×1024 `AppIcon` master PNG.
-  - A Display-P3 `AccentColor` matching DateSnap primary cyan (`#7CFFEA`).
-- Verified the existing Wave 2 application wiring already includes:
-  - `PhotosPicker` import in `HomeEmptyStateView` and scan routing through `ScanViewModel`.
-  - `EventReviewEditView` backed by `EventReviewViewModel` for Calendar, Reminders, local-notification, and SwiftData writes.
-  - StoreKit product loading, purchase, entitlement refresh, and restore calls through `PurchaseViewModel` and `SubscriptionService` in both paywalls.
-  - On-device archive copy (`TEMPORAL LOG • ON-DEVICE`) with no cloud-sync claim.
+- XcodeGen input: [`project.yml`](project.yml)
+- Generated project and shared scheme: [`Pencild.xcodeproj`](Pencild.xcodeproj/), scheme `Pencild`
+- SwiftPM/Xcode package manifest: [`Package.swift`](Package.swift)
+- App sources: [`Sources/Pencild/`](Sources/Pencild/)
+- Tests: [`Tests/PencildTests/`](Tests/PencildTests/)
+- Build settings: [`Config/Pencild-Base.xcconfig`](Config/Pencild-Base.xcconfig), [`Config/Pencild-Debug.xcconfig`](Config/Pencild-Debug.xcconfig), [`Config/Pencild-Release.xcconfig`](Config/Pencild-Release.xcconfig)
+- Signing entitlements: [`Pencild.entitlements`](Pencild.entitlements)
+- Local StoreKit configuration: [`Pencild.storekit`](Pencild.storekit)
+- App icon catalog: [`Assets.xcassets/AppIcon.appiconset/Contents.json`](Assets.xcassets/AppIcon.appiconset/Contents.json); Icon Composer source: [`Pencild.icon/`](Pencild.icon/)
 
-## Validation completed
+## Local identity and subscription configuration
 
-- `xcodebuild -project DateSnap.xcodeproj -list` identifies:
-  - Targets: `DateSnap`, `DateSnapTests`.
-  - Configurations: `Debug`, `Release`.
-  - Shared scheme: `DateSnap`.
-- All release plists pass `plutil -lint`:
-  - `Info.plist`
-  - `DateSnap.entitlements`
-  - `PrivacyInfo.xcprivacy`
-  - `ExportOptions-AppStore.plist`
-- App icon dimensions verified as exactly 1024×1024.
-- A no-signing device build created `DateSnap.app`, processed `Info.plist`, and began compiling the complete iOS source set. Full compilation could not finish in the coding-assistant sandbox because Apple SwiftUI/SwiftData macro plugins were denied by `sandbox-exec` (`swift-plugin-server produced malformed response`). This is an environment restriction; rerun the build normally in Xcode as the first manual check below.
+- Display name: `Pencil'd`
+- App bundle ID: `com.pencild.app`; test bundle ID: `com.pencild.app.tests`
+- Local subscription IDs: `com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, and `com.pencild.premium.annual`
+- Local StoreKit prices: Plus $3.99/month or $24.99/year; Premium $6.99/month or $39.99/year. The local file configures a seven-day introductory offer for all four products.
+- These are repository-local values only. App Store Connect registration, live product/price/trial parity, legal name, domain ownership, and publication approval have not been verified.
+- The customer-facing tier labels are `Pencil'd Free`, `Pencil'd Plus`, and `Pencil'd Premium`.
 
-## Outstanding tasks requiring owner access or manual execution
+## Generate, build, and test
 
-### Before Internal TestFlight
+```sh
+xcodegen generate --spec project.yml
+xcodebuild -list -project Pencild.xcodeproj
+xcodebuild -project Pencild.xcodeproj -scheme Pencild \
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
+xcodebuild test -project Pencild.xcodeproj -scheme Pencild \
+  -destination 'platform=iOS Simulator,name=iPhone 17'
+```
 
-- [ ] Open `DateSnap.xcodeproj` (not `Package.swift`) in Xcode and select the shared `DateSnap` scheme.
-- [ ] Replace `YOUR_TEAM_ID` in both `Config/DateSnap-Debug.xcconfig` and `Config/DateSnap-Release.xcconfig` with the Apple Developer Team ID.
-- [ ] Register the explicit App ID `com.datesnap.app` in Apple Developer Certificates, Identifiers & Profiles and enable In-App Purchase.
-- [ ] Confirm an Apple Distribution certificate is available and let Xcode manage signing automatically.
-- [ ] Create the App Store Connect app record:
-  - Name: `DateSnap: Screenshot to Calendar`
-  - Bundle ID: `com.datesnap.app`
-  - SKU: `DATESNAP-IOS-01`
-  - Primary language: English (U.S.), unless a different launch locale is desired.
-- [ ] Build and run the app in an iOS 18+ simulator from Xcode. Then run the `DateSnapTests` test plan/scheme action.
-- [ ] Archive a signed Release build and verify the archive contains `Products/Applications/DateSnap.app`.
-- [ ] Replace `YOUR_TEAM_ID` in `ExportOptions-AppStore.plist`, export the IPA, validate it, and upload Build 1 using Xcode Organizer or App Store Connect API credentials.
+Use `xcrun simctl list devices available` to choose an installed simulator. Update `project.yml` first when changing target membership, paths, configurations, or scheme StoreKit attachment; then regenerate and review the generated project diff.
 
-### Before External TestFlight
+## Rename verification recorded for this handoff
 
-- [ ] In App Store Connect, create subscription group `DateSnap Memberships` and these products exactly:
-  - `com.datesnap.plus.monthly` — $4.99/month, 7-day free trial.
-  - `com.datesnap.plus.annual` — $39.99/year, 7-day free trial.
-  - `com.datesnap.premium.monthly` — $8.99/month, no trial.
-  - `com.datesnap.premium.annual` — $69.99/year, no trial.
-- [ ] Enable the 16-day Billing Grace Period.
-- [ ] Create a sandbox tester and verify product loading, purchase, cancellation/expiration downgrade, and restore on a physical iOS 18+ device.
-- [ ] Execute every case in `TESTFLIGHT-QA.md` on physical hardware, including denied/limited permissions, ambiguous dates, doors/show times, offline operation, and repetitive OCR memory behavior.
-- [ ] Enter the beta review information from `APP-REVIEW-NOTES.md` and submit for Beta App Review.
+- `xcodebuild -list -project Pencild.xcodeproj` reports app/test targets `Pencild` / `PencildTests` and shared scheme `Pencild`.
+- `xcodebuild test -project Pencild.xcodeproj -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 17' -quiet` completed successfully on 2026-10-10.
+- A simulator build completed successfully immediately before the project rename was checked. Re-run the explicit build command above after any generated-project or source changes.
+- Asset catalog filenames resolve in `Contents.json`. Check icon rendering across supported iOS versions/appearances before release; a successful build alone does not establish visual correctness.
 
-### Before App Store submission
+## Remaining owner/account checks
 
-- [ ] Deploy public HTTPS pages returning HTTP 200:
-  - `https://datesnap.app/privacy`
-  - `https://datesnap.app/support`
-  - `https://datesnap.app`
-- [ ] Verify the Terms and Privacy links shown by both paywalls open the final live URLs.
-- [ ] Capture and upload 4–6 polished screenshots for:
-  - 6.9-inch iPhone: 1320×2868.
-  - 6.3-inch iPhone: 1206×2622.
-- [ ] Complete the App Privacy questionnaire as `Data Not Collected`.
-- [ ] Complete the 4+ age-rating questionnaire and select Utilities as primary category and Productivity as secondary category.
-- [ ] Attach all four subscription products, including their review screenshots, to version 1.0.0.
-- [ ] Paste the final notes from `APP-REVIEW-NOTES.md` into App Review Information and submit the version for review.
-
-### Before production launch
-
-- [ ] Enable the 7-day automatic phased release after approval.
-- [ ] Establish a privacy-compatible production health process. The current product promise is zero telemetry, so do not add a third-party crash or analytics SDK without revisiting the privacy manifest, nutrition label, review copy, and on-device claims. Apple-provided App Store Connect/Xcode Organizer diagnostics are the safest initial option.
-- [ ] Brief support personnel and monitor subscription status, reviews, and Apple-provided crash diagnostics during rollout.
-
-## App icon provenance
-
-The master icon was generated with the built-in image-generation tool using the DateSnap design-system palette and a calendar-plus-scan-frame concept. It contains no text, transparency, or external rounded-corner mask. Final asset: `Assets.xcassets/AppIcon.appiconset/DateSnap-AppIcon-1024.png`.
+- Confirm App Store Connect has the intended app record, bundle ID, subscription IDs, group, prices, and trials before release.
+- Confirm legal/support URLs and mailbox ownership; the current app still points to the existing `pencild.app` endpoints.
+- Review resolved icon assets in the built app and test actual permission/review/purchase flows on supported simulator/device configurations.
+- Do not upload, deploy, or submit without separate explicit authorization.

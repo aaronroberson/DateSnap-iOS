@@ -24,11 +24,11 @@ Read in this order to resume:
 - Entitlement/role checks go through **one authoritative layer**; UI does not duplicate them.
   No hardcoded unlocks, debug bypasses, or secrets.
 - StoreKit transactions verified; expiration, revocation, refund, restore handled; free/paid behavior
-  tested against `DateSnap.storekit` (wired into the app scheme).
+  tested against `Pencild.storekit` (wired into the app scheme).
 - All existing + new tests pass. New tests cover: free user, active subscriber, expired subscriber,
   revoked subscriber, restored purchase, denied permission.
 - `PrivacyInfo.xcprivacy` re-checked (no data collection + only `UserDefaults` required-reason API);
-  `Info.plist` permission strings match behavior; `DateSnap.entitlements` matches used capabilities.
+  `Info.plist` permission strings match behavior; `Pencild.entitlements` matches used capabilities.
 - Working tree clean, all commits on the feature branch; docs/runbooks reflect behavior changes;
   completion report at `docs/audits/2026-10-02-rbac-entitlements-completion-report.md` with a
   findings-to-commit table, test results, deviations, and remaining risks.
@@ -54,27 +54,27 @@ The build-infra fix in "Blocker" is required by the DoD — keep it as its own c
   `0c6d14b`, `38491f2`, `5b047a0`, `5866c78`, `b800ddb`.
 
 - **DIRTY TREE — concurrent work in progress, do NOT stage or revert these:**
-  - staged: `Sources/DateSnap/Models/SettingsState.swift`,
-    `Sources/DateSnap/Views/AutomationSettingsView.swift`,
-    `Sources/DateSnap/Views/ReminderSettingsView.swift`,
+  - staged: `Sources/Pencild/Models/SettingsState.swift`,
+    `Sources/Pencild/Views/AutomationSettingsView.swift`,
+    `Sources/Pencild/Views/ReminderSettingsView.swift`,
     new `docs/plans/2026-10-02-rbac-entitlements-implementation-plan.md`
-  - unstaged modified: `Sources/DateSnap/Services/SavedEventActions.swift`,
-    `Sources/DateSnap/Views/HelpFeedbackView.swift`, `Sources/DateSnap/Views/PrivacyCenterView.swift`,
-    `Sources/DateSnap/Views/SettingsHubView.swift`
+  - unstaged modified: `Sources/Pencild/Services/SavedEventActions.swift`,
+    `Sources/Pencild/Views/HelpFeedbackView.swift`, `Sources/Pencild/Views/PrivacyCenterView.swift`,
+    `Sources/Pencild/Views/SettingsHubView.swift`
   - new untracked: `.opencode/skills/*` (installed this session), this handoff file.
 
-- Layout: `Sources/DateSnap/{Models,Services,Views,ViewModels,Theme,Persistence}`; tests in
-  `Tests/DateSnapTests/*.swift` (9 files); pure SwiftPM `Package.swift` **and** `DateSnap.xcodeproj`
+- Layout: `Sources/Pencild/{Models,Services,Views,ViewModels,Theme,Persistence}`; tests in
+  `Tests/PencildTests/*.swift` (9 files); pure SwiftPM `Package.swift` **and** `Pencild.xcodeproj`
   generated from `project.yml` (XcodeGen 2.46.0 at `/opt/homebrew/bin/xcodegen`); `Config/*.xcconfig`;
-  `Info.plist`, `PrivacyInfo.xcprivacy`, `DateSnap.entitlements`, `DateSnap.storekit`;
+  `Info.plist`, `PrivacyInfo.xcprivacy`, `Pencild.entitlements`, `Pencild.storekit`;
   `docs/{audits,plans,prompts,runbooks}`; `HANDOFF.md` (Wave 2 release checklist — do not overwrite);
   `AGENTS.md`.
 - `project.yml`: SWIFT_VERSION 6.0, `SWIFT_APPROACHABLE_CONCURRENCY YES`,
-  `SWIFT_STRICT_CONCURRENCY complete`; app target `DateSnap` (INFOPLIST_FILE Info.plist,
-  CODE_SIGN_ENTITLEMENTS DateSnap.entitlements, scheme `storeKitConfiguration DateSnap.storekit`,
-  testTargets DateSnapTests); test target `DateSnapTests` (bundle.unit-test, deps target DateSnap,
-  PRODUCT_BUNDLE_IDENTIFIER com.datesnap.app.tests, GENERATE_INFOPLIST_FILE YES).
-  `configFiles` Debug/Release → `Config/DateSnap-{Debug,Release}.xcconfig` applied at **PROJECT** level.
+  `SWIFT_STRICT_CONCURRENCY complete`; app target `Pencild` (INFOPLIST_FILE Info.plist,
+  CODE_SIGN_ENTITLEMENTS Pencild.entitlements, scheme `storeKitConfiguration Pencild.storekit`,
+  testTargets PencildTests); test target `PencildTests` (bundle.unit-test, deps target Pencild,
+  PRODUCT_BUNDLE_IDENTIFIER com.pencild.app.tests, GENERATE_INFOPLIST_FILE YES).
+  `configFiles` Debug/Release → `Config/Pencild-{Debug,Release}.xcconfig` applied at **PROJECT** level.
 
 ## BLOCKER — baseline build fails (root cause found, fix not yet applied)
 
@@ -82,7 +82,7 @@ Command used (background):
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
-  -project DateSnap.xcodeproj -scheme DateSnap \
+  -project Pencild.xcodeproj -scheme Pencild \
   -destination 'platform=iOS Simulator,name=iPhone 17' \
   -derivedDataPath /var/folders/z3/s3tm6rdx1kzdddzgh_2d6dpm0000gn/T/opencode/rbac/dd \
   build-for-testing
@@ -91,23 +91,23 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
 Log: `/var/folders/z3/s3tm6rdx1kzdddzgh_2d6dpm0000gn/T/opencode/rbac/baseline-build.log`
 Evidence dir: `/var/folders/z3/s3tm6rdx1kzdddzgh_2d6dpm0000gn/T/opencode/rbac`
 
-Result: 4 errors — `Multiple commands produce '.../Debug-iphonesimulator/DateSnap.swiftmodule/*'`
-(`.swiftsourceinfo`, `.abi.json`, `.swiftdoc`, `.swiftmodule`). Both `Target 'DateSnap'` and
-`Target 'DateSnapTests'` emit a copy command for `DateSnap.abi.json` etc.
+Result: 4 errors — `Multiple commands produce '.../Debug-iphonesimulator/Pencild.swiftmodule/*'`
+(`.swiftsourceinfo`, `.abi.json`, `.swiftdoc`, `.swiftmodule`). Both `Target 'Pencild'` and
+`Target 'PencildTests'` emit a copy command for `Pencild.abi.json` etc.
 
-**Root cause:** `Config/DateSnap-Base.xcconfig` sets `PRODUCT_NAME = DateSnap`, and because
-`project.yml` applies those xcconfigs at the project level, the `DateSnapTests` target inherits
-`PRODUCT_NAME = DateSnap` → module name collides with the app module. Verified:
-- `DateSnap.xcodeproj/project.pbxproj` `DateSnapTests` XCBuildConfiguration blocks (~lines 546–574)
+**Root cause:** `Config/Pencild-Base.xcconfig` sets `PRODUCT_NAME = Pencild`, and because
+`project.yml` applies those xcconfigs at the project level, the `PencildTests` target inherits
+`PRODUCT_NAME = Pencild` → module name collides with the app module. Verified:
+- `Pencild.xcodeproj/project.pbxproj` `PencildTests` XCBuildConfiguration blocks (~lines 546–574)
   set only `BUNDLE_LOADER`, `GENERATE_INFOPLIST_FILE YES`,
-  `PRODUCT_BUNDLE_IDENTIFIER com.datesnap.app.tests`, `SDKROOT = iphoneos`,
-  `TEST_HOST = $(BUILT_PRODUCTS_DIR)/DateSnap.app/DateSnap` — **no PRODUCT_NAME override**.
+  `PRODUCT_BUNDLE_IDENTIFIER com.pencild.app.tests`, `SDKROOT = iphoneos`,
+  `TEST_HOST = $(BUILT_PRODUCTS_DIR)/Pencild.app/Pencild` — **no PRODUCT_NAME override**.
 - pbxproj Sources phases are correct (app phase has all app files incl. `ScanViewModel.swift:511`;
   test phase has only the 9 test files incl. `AdvisorTests.swift:531`).
 
-**Fix:** add `PRODUCT_NAME: "$(TARGET_NAME)"` (or `DateSnapTests`) to the `DateSnapTests`
+**Fix:** add `PRODUCT_NAME: "$(TARGET_NAME)"` (or `PencildTests`) to the `PencildTests`
 target `settings.base` in `project.yml`, run `xcodegen generate --spec project.yml`, then confirm with
-`xcodebuild -showBuildSettings -project DateSnap.xcodeproj -target DateSnapTests -configuration Debug | grep PRODUCT_NAME`.
+`xcodebuild -showBuildSettings -project Pencild.xcodeproj -target PencildTests -configuration Debug | grep PRODUCT_NAME`.
 
 ## Toolchain / environment
 
@@ -116,16 +116,16 @@ target `settings.base` in `project.yml`, run `xcodegen generate --spec project.y
 - Xcode 27.0 (27A266a), Apple Swift 6.4 (`swift --version` confirms). `swift build` will fail for
   iOS-only APIs — use `xcodebuild`.
 - Simulators: `iPhone 17` (Booted, iOS 27.0), iPhone 18 Pro, iPad Pro 13-inch (M5).
-- `xcodebuild -list -project DateSnap.xcodeproj` → targets `DateSnap`, `DateSnapTests`; configs
-  `Debug`, `Release`; scheme `DateSnap`.
+- `xcodebuild -list -project Pencild.xcodeproj` → targets `Pencild`, `PencildTests`; configs
+  `Debug`, `Release`; scheme `Pencild`.
 - Prior verification (`docs/audits/2026-10-02-production-readiness-verification.md`): 43 tests
-  (41 passed, 0 failed, 2 skipped = opt-in `DATESNAP_EVAL_LIVE=1`); XcodeGen no-diff regeneration;
-  four StoreKit IDs match between `SubscriptionService` and `DateSnap.storekit`; no URLSession/
+  (41 passed, 0 failed, 2 skipped = opt-in `PENCILD_EVAL_LIVE=1`); XcodeGen no-diff regeneration;
+  four StoreKit IDs match between `SubscriptionService` and `Pencild.storekit`; no URLSession/
   telemetry; UserDefaults CA92.1; empty entitlements dict.
 - Release runbook: `docs/runbooks/RELEASE.md`.
-- StoreKit product IDs (also at `DateSnap.storekit` lines 97/127/152/177):
-  `com.datesnap.plus.monthly`, `com.datesnap.plus.annual`, `com.datesnap.premium.monthly`,
-  `com.datesnap.premium.annual`.
+- StoreKit product IDs (also at `Pencild.storekit` lines 97/127/152/177):
+  `com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`,
+  `com.pencild.premium.annual`.
 
 ## Skills installed this session (`.opencode/skills/`, from twostraws/Swift-Agent-Skills)
 
@@ -143,7 +143,7 @@ Figma, simulator, architecture, and duplicate SwiftUI/SwiftData/Testing skills f
 ## Task list
 
 1. ~~Read audit doc and explore codebase structure~~ (done — see below).
-2. Fix the build blocker (`PRODUCT_NAME` on `DateSnapTests`) and get a green baseline build+test.
+2. Fix the build blocker (`PRODUCT_NAME` on `PencildTests`) and get a green baseline build+test.
 3. Task 1: `FeatureAccessPolicy`, product catalog, entitlement resolver + tests.
 4. Task 2: StoreKit service + lifecycle snapshot propagation (launch / transaction update /
    purchase / restore / scene-active).
@@ -201,15 +201,15 @@ force-enabled per tier (Premium only); automatic screenshot detection as a **gat
 gated; cold-launch "checking" denies paid; purchase/restore update snapshot; expiration/revocation
 denies without relaunch; unknown product grants nothing; verification failure denied + safe
 diagnostic; missing dependency = build failure or deny-by-default; product catalog parity across
-code / `DateSnap.storekit` / App Store Connect; no social roles in `SubscriptionTier`.
+code / `Pencild.storekit` / App Store Connect; no social roles in `SubscriptionTier`.
 
 ## Key source knowledge (paths + line anchors)
 
-- `Sources/DateSnap/Services/Advisors/FeatureEntitlements.swift` (51 lines) —
+- `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift` (51 lines) —
   `public enum PremiumFeature: String, CaseIterable, Sendable` (5 cases) with `requiredTier`
   (autoDetection+triage→plus; documentImport+duplicateClusters+advancedReminderPlans→premium) and
   `upgradeReason`; `extension SubscriptionTier { private var rank; func includes(_:) -> Bool }`.
-- `Sources/DateSnap/Services/SubscriptionService.swift` (185 lines) —
+- `Sources/Pencild/Services/SubscriptionService.swift` (185 lines) —
   `SubscriptionTier: String, CaseIterable, Identifiable, Sendable` (starter/plus/premium).
   `@MainActor public protocol SubscriptionServiceProtocol: Sendable { currentTier; isSubscribed;
   fetchProducts() async throws -> [Product]; purchase(product:) async throws -> SubscriptionTier;
@@ -226,8 +226,8 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   `updateCustomerProductStatus()` loops `Transaction.currentEntitlements`, `checkVerified`,
   skips `revocationDate != nil`, `catch { continue }`, then hardcodes premium IDs → `.premium`,
   plus IDs → `.plus`, else `.starter` (**F-05**). `nonisolated static checkVerified` throws
-  `DateSnapError.subscription(.verificationFailed)` on `.unverified`.
-- `Sources/DateSnap/Models/AppState.swift` (113 lines) — `@MainActor final class AppState:
+  `PencildError.subscription(.verificationFailed)` on `.unverified`.
+- `Sources/Pencild/Models/AppState.swift` (113 lines) — `@MainActor final class AppState:
   ObservableObject`; `@Published var selectedTab`, `activeModal: AppModalScreen?`
   (premiumPaywall, plusPaywall, calendarPermissionDenied, notificationPermissionDenied,
   noDatesFound, savedEventDetail, eventReviewEdit, reminderScheduleEditor, recentScreenshots,
@@ -235,14 +235,14 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   (= != .starter), `isPremiumMember` (= == .premium), `isEntitled(to:)` (= `tier.includes`);
   `tierSubscription: AnyCancellable?`; `bind(subscription:)` sets tier then, if
   `as? SubscriptionService`, sinks `live.$currentTier` on main; `showToast`.
-- `Sources/DateSnap/Services/ServiceContainer.swift` (78 lines) — `public final class
+- `Sources/Pencild/Services/ServiceContainer.swift` (78 lines) — `public final class
   ServiceContainer: ObservableObject, @unchecked Sendable` with photoLibrary/ocr/eventExtraction/
   calendar/reminders/notifications/subscription/understanding; `@MainActor static func live()`
   uses `SubscriptionService.shared` + `IntelligenceComposition.liveUnderstanding()`;
   **`ServiceContainer.mock()` no longer exists** (removed in `a625097`). Env key
   `defaultValue: ServiceContainer? = nil`; `EnvironmentValues.services` getter does
   `preconditionFailure("ServiceContainer must be injected at the application or preview root.")`.
-- `Sources/DateSnap/ViewModels/ScanViewModel.swift` (313 lines) — `@MainActor public final class
+- `Sources/Pencild/ViewModels/ScanViewModel.swift` (313 lines) — `@MainActor public final class
   ScanViewModel: ObservableObject`; `init(services: ServiceContainer)`; `ScanStage` enum
   (idle, fetchingImage, processingOCR, extractingEvents, interpreting, complete(candidates:),
   noDatesFound(rawText:), alreadySaved(count:), failed(String)) with custom `==`; @Published
@@ -252,13 +252,13 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   (sets `isProcessing`, `stage = .fetchingImage`, `startAccessingSecurityScopedResource`, PDF →
   `scanPages` else `Data(contentsOf:)` → `scanImageData`). Private `scanPages`,
   `recognizeWithRetry`, `skipInterpretation`, `combine`, `reset`. **No entitlement dependency (F-01).**
-- `Sources/DateSnap/ViewModels/HomeViewModel.swift` (168 lines) — `init(services:)` calls
+- `Sources/Pencild/ViewModels/HomeViewModel.swift` (168 lines) — `init(services:)` calls
   `refreshStatus()` + `startObservingPhotoLibrary()`; `refreshStatus()` sets
   `currentSubscriptionTier = subscriptionService.currentTier`; `ensurePhotoAccess`,
   `loadRecentScreenshots(limit:)`; **`triageLikelyEvents(scannedIDs: Set<String>, tier: SubscriptionTier)`**
   (line ~139) uses `IntelligenceUsagePolicy().consume(.likelyEventTriage, count:tier:)` then
   `PhotoCandidateRanker.isLikelyEvent` — **caller-supplied tier = F-03**.
-- `Sources/DateSnap/ViewModels/EventReviewViewModel.swift` (379 lines) — `init(candidate:services:
+- `Sources/Pencild/ViewModels/EventReviewViewModel.swift` (379 lines) — `init(candidate:services:
   sourceImage:)`; **`commitEvent(modelContext:) async -> Bool`** sequence: `applyEdits` →
   calendar create/update (catch `.accessDenied` → `calendarAccessDenied = true`, return false) →
   reminders create/update (catch → `print("Notice: Reminder creation skipped or denied: …")`) →
@@ -274,12 +274,12 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   (sets `notificationsSkipped` on throw) → persist record incl. `record.deadlineReminderId`,
   status `.saved`. `EventReviewViewModel+Interpretation.swift` exposes
   `deadlineReminderDate: Date? { reminderPlan.deadlineReminder }`.
-- `Sources/DateSnap/ViewModels/PurchaseViewModel.swift` (114 lines) — `enum Plan: Sendable { case
+- `Sources/Pencild/ViewModels/PurchaseViewModel.swift` (114 lines) — `enum Plan: Sendable { case
   plus, premium; monthlyID/annualID/tier }` (**hardcoded IDs = F-05**); optional
   `subscription: SubscriptionServiceProtocol?`; `attach(_:) async` loads products;
   `currentTier = subscription?.currentTier ?? .starter`; `purchase(_:annual:) async -> SubscriptionTier?`;
-  `restore() async -> SubscriptionTier?`. Also `enum DateSnapLinks` (privacy/support/terms URLs).
-- `Sources/DateSnap/Views/ManagePlanView.swift` — **nested `struct EntitlementSnapshot
+  `restore() async -> SubscriptionTier?`. Also `enum PencildLinks` (privacy/support/terms URLs).
+- `Sources/Pencild/Views/ManagePlanView.swift` — **nested `struct EntitlementSnapshot
   { productID, expirationDate, willAutoRenew, isAnnual }` — NAME COLLISION with the new model;
   rename or namespace it.** `tier = appState.subscriptionTier`;
   `refreshEntitlement()` loops `Transaction.currentEntitlements` (verified, no revocation,
@@ -289,7 +289,7 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   purchases.attach(services.subscription); await refreshEntitlement() }`;
   onChange of `appState.subscriptionTier`; restore ~line 322
   (`restored == .starter ? "No active subscription found to restore" : "✓ … restored"`).
-- `Sources/DateSnap/Views/HomeEmptyStateView.swift` (693 lines) —
+- `Sources/Pencild/Views/HomeEmptyStateView.swift` (693 lines) —
   - `newScreenshots` computed (line ~25): `guard appState.isEntitled(to: .likelyEventTriage) else
     { return unscanned }` else `PhotoCandidateRanker.rank(...)`.
   - Membership pill (lines ~55–75): `isPremiumMember/isPlusMember` → paywall/toast; label
@@ -306,22 +306,22 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   - `scanRecentScreenshots()` (line ~520) is the **user-initiated free flow** →
     `homeViewModel.ensurePhotoAccess()` then `loadRecentScreenshots(limit: 30)` + modal
     `.recentScreenshots`. Do **not** gate this — gate automatic detection separately.
-- `Sources/DateSnap/Views/HistoryArchiveView.swift` (432 lines) — `duplicateIDs` computed property
+- `Sources/Pencild/Views/HistoryArchiveView.swift` (432 lines) — `duplicateIDs` computed property
   `guard appState.isEntitled(to: .duplicateClusters) else { return [] }` then builds
   `EventSimilarityService.Entry` list → `EventSimilarityService.clusters(entries)` (gated only in the
   view today — centralize behind a gated operation). Has `SmartFilter` enum (upcoming, rsvpDue,
   repeating, duplicates), `filteredEvents`, `actions = SavedEventActions(services:modelContext:)`.
-- `Sources/DateSnap/Services/Intelligence/IntelligenceUsagePolicy.swift` (43 lines) —
+- `Sources/Pencild/Services/Intelligence/IntelligenceUsagePolicy.swift` (43 lines) —
   `public struct IntelligenceUsagePolicy: Sendable`; `init(defaultsSuiteName: String? = nil)`;
   `static func dailyLimit(for feature:tier:) -> Int` (0 when `!tier.includes(feature)`;
   likelyEventTriage → 120 premium / 30 else; default `.max`); `consume(_:count:tier:now:)`.
-- `Sources/DateSnap/ContentView.swift` (204 lines) — `@StateObject appState/settingsState/
+- `Sources/Pencild/ContentView.swift` (204 lines) — `@StateObject appState/settingsState/
   scanViewModel/homeViewModel` (`init(services:)` creates the two VMs); sheet on
   `appState.activeModal` re-injecting `.environmentObject(...)` and `\.services`;
   `.onAppear { appState.bind(subscription: services.subscription); openPendingDeepLink() }`;
   **`.onChange(of: scenePhase) { if phase == .active { homeViewModel.refreshStatus() } }` —
   no StoreKit refresh yet (F-04).**
-- `Sources/DateSnap/DateSnap.swift` (21 lines) — `@main struct DateSnapApp: App {
+- `Sources/Pencild/Pencild.swift` (21 lines) — `@main struct PencildApp: App {
   @StateObject private var services = ServiceContainer.live() }`;
   `.modelContainer(for: [UserSettings, ScannedAsset, EventCandidate, SavedEvent, InterpretationRecord])`.
 - Other views — `PlusPaywallView`/`PremiumPaywallView` `restore()` at ~336/~334 calling
@@ -334,26 +334,26 @@ code / `DateSnap.storekit` / App Store Connect; no social roles in `Subscription
   `isEntitledToDeadlineReminders: appState.isEntitled(to: .advancedReminderPlans)`;
   `SettingsHubView.swift` lines 52/96/215–216 switch on `appState.subscriptionTier` /
   `displayName` / `== .starter ? "Upgrade for automatic detection & PDF import" : "View renewal & billing"`.
-- `Sources/DateSnap/Services/ReminderService.swift` — protocol line 84 and impl line 179:
+- `Sources/Pencild/Services/ReminderService.swift` — protocol line 84 and impl line 179:
   `func createDeadlineReminder(title:due:url:list:) async throws -> String`
   (`list: EKCalendar? = nil`). `SavedEventActions.swift:82` iterates
   `saved.externalReminderIds + [saved.deadlineReminderId].compactMap { $0 }` for deletion.
-- Tests — `Tests/DateSnapTests/AdvisorTests.swift` has `@Suite("Cross-service advisors")` with an
+- Tests — `Tests/PencildTests/AdvisorTests.swift` has `@Suite("Cross-service advisors")` with an
   `entitlements()` test over `SubscriptionTier.*.includes(PremiumFeature)`, plus
   `IntelligenceUsagePolicyTests` using
-  `defaultsSuiteName: "datesnap.tests.usage.\(UUID().uuidString)"`. **No
+  `defaultsSuiteName: "pencild.tests.usage.\(UUID().uuidString)"`. **No
   `MockSubscriptionService` and no `ServiceContainer.mock()` anywhere in `Tests/`** (greps are
   empty) — F-08's permissive mocks are gone, but deny-by-default test doubles still must be added.
   There are currently **no stubs for `PhotoLibraryServiceProtocol`/`OCRServiceProtocol`/etc. in the
   test target**, so building `ServiceContainer` for view-model tests needs new doubles.
-- UI change rule: read `datesnap-design-system-updated.md` before any UI edit; map the CSS-variable
+- UI change rule: read `pencild-design-system-updated.md` before any UI edit; map the CSS-variable
   tokens to SwiftUI (dark navy glassmorphism, bg `#050816`, primary `#7CFFEA`, accent `#FF4FB3`);
   min 44pt touch targets; confidence states need icon + label + color, never color alone;
   no external dependencies; Swift 6.4 + `ApproachableConcurrency`.
 
 ## Design decided for the implementation (not yet written)
 
-- New pure types in `Sources/DateSnap/Services/Advisors/FeatureEntitlements.swift` (or a sibling file):
+- New pure types in `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift` (or a sibling file):
   - `EntitlementResolutionState`: `.checking`, `.verified`, `.unverified`, `.unavailable`.
   - `EntitlementProvenance`: `.launch`, `.transactionUpdate`, `.purchase`, `.restore`,
     `.sceneActivation`.

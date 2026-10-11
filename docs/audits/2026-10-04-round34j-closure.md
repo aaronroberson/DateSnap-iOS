@@ -1,8 +1,8 @@
-# DateSnap-iOS — Round 34j Closure & Gate Hardening
+# Pencild-iOS — Round 34j Closure & Gate Hardening
 
 **Work performed:** 2026-10-04 01:39 – 02:20 PDT
 **Document regenerated:** 2026-10-05 11:36 PDT (clipboard was lost; nothing else was)
-**Repo:** `/Users/conscious/apps/DateSnap-iOS` · branch `main`
+**Repo:** `/Users/conscious/apps/Pencild-iOS` · branch `main`
 
 ---
 
@@ -29,7 +29,7 @@ The same bug existed in `verify-release-content.sh` and was fixed there too:
 
 - rg error vs. no-match conflation in both the source and binary scans — an error is now fatal instead of printing "scan passed"
 - `strings` failure or empty output is now fatal rather than a silent pass
-- new `--require-app` flag (or `DATESNAP_REQUIRE_APP=1`) stops the release path from exiting 0 on source-only verification
+- new `--require-app` flag (or `PENCILD_REQUIRE_APP=1`) stops the release path from exiting 0 on source-only verification
 
 ### Your Mac confirms it without any shim (Supported)
 
@@ -89,8 +89,8 @@ Three **pre-existing** allowlist rows claim `SampleFlyer.swift` is `DEBUG-gated 
 - `SampleFlyer.swift` contains **zero** `#if` directives in 59 lines
 - `HomeEmptyStateView.swift:392-395` — the "Try Sample Flyer" button, under "Curious how it works?" — sits **outside** the `#if DEBUG` block that opens at line 420, so it ships
 - `ScanViewModel.swift:97` `scanSampleFlyer()` is public, not gated, doc-commented *"needs no photo permissions"*
-- the Release binary carries `SKYBAR PENTHOUSE`, `8440 SUNSET BLVD, WEST HOLLYWOOD, CA`, `Try Sample Flyer`, and asset id `datesnap-sample-flyer` (×2)
-- `release_forbidden` **deliberately omits** `datesnap-sample`, so the release gate was authored expecting this to ship
+- the Release binary carries `SKYBAR PENTHOUSE`, `8440 SUNSET BLVD, WEST HOLLYWOOD, CA`, `Try Sample Flyer`, and asset id `pencild-sample-flyer` (×2)
+- `release_forbidden` **deliberately omits** `pencild-sample`, so the release gate was authored expecting this to ship
 
 **Reading:** an intentional onboarding feature with a false audit reason — not a leak. The round-34j handoff inherited the same false claim.
 
@@ -98,7 +98,7 @@ Correcting another round's adjudication, and characterising a product decision, 
 
 ```
 intentional shipped onboarding sample (Try Sample Flyer, HomeEmptyStateView:392);
-NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
+NOT DEBUG-gated; pencild-sample-* deliberately absent from release_forbidden
 ```
 
 **Status as of 2026-10-05 11:36 — still unchanged** (`scripts/mock-allowlist.txt` lines 11-13).
@@ -129,12 +129,12 @@ NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
 2. **Close the ≤15-byte blind spot** *(Actionable, highest durable value)* — add a symbol-table assertion to `verify-release-content.sh` via `nm`, so short markers like `Stitch ID:` are checked by symbol rather than by `strings`. Without it, one of the gate's own 14 forbidden patterns silently cannot fire.
 3. **Wire `--require-app` into the archive step** *(Actionable)* — `docs/runbooks/RELEASE.md:57` describes the binary scan as blocking but cannot enforce it. Now that signing is configured, a real `xcodebuild archive` would also exercise signing and stripping, which the simulator build does not.
 4. **Sweep for the same bug class** *(Actionable, cheap insurance)* — grep `scripts/` for `|| true` and bare `if rg`; the error-as-pass pattern appeared in two of three scripts, so a third is plausible.
-5. **Tidy** *(Low priority)* — `docs/prompts/datesnap-round34j-handoff.md` is untracked; commit it as the round's record or gitignore it. Clear `/tmp/ds-rel-dd`.
+5. **Tidy** *(Low priority)* — `docs/prompts/2026-10-04-pencild-round34j-handoff.md` is untracked; commit it as the round's record or gitignore it. Clear `/tmp/ds-rel-dd`.
 
 ### Overlooked / suggested follow-ups
 
 - How long was the mock gate failing open? `git log -p scripts/verify-no-mock.sh` dates when `-P` was introduced and bounds how many rounds certified nothing.
-- The new AppIcon assets are modified/untracked (`DateSnap-AppIcon-1024*.png`, plus `.swiftpm/`) — worth a deliberate commit or ignore before the next release pass.
+- The new AppIcon assets are modified/untracked (`Pencild-AppIcon-1024*.png`, plus `.swiftpm/`) — worth a deliberate commit or ignore before the next release pass.
 - `SUMMIT_2025.PDF` remains the one sample-title token that reaches users. Defensible as paywall illustration, but a reviewer scanning for placeholder content could flag it.
 
 ---
@@ -144,8 +144,8 @@ NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
 This is the content that was on the clipboard.
 
 ```text
-# DATESNAP-iOS CLOSURE REPORT - 2026-10-04 02:18:40 PDT
-# repo: /Users/conscious/apps/DateSnap-iOS  branch: main
+# PENCILD-iOS CLOSURE REPORT - 2026-10-04 02:18:40 PDT
+# repo: /Users/conscious/apps/Pencild-iOS  branch: main
 
 ## COMMITS (full hashes)
 d6f6fd4758cc9e79c5e36a42b4d7b883c030918c  d6f6fd4  2026-10-04  fix(verify): close fail-open in mock-marker and release-content gates
@@ -167,7 +167,7 @@ archive/preview-recovery-line    4d7e90332a8c1b4693e6ed796953d08306bf42be -> 243
 recovery-integrated-20261002     9b8f0aa62f4bf59e43cc4e88ee39b343ae1ff79d -> 02596df74a5ad1fcfc2bd1443290c20647baf163  docs(audits): archive 2026-10-04 generated full audit report (40,528 lines)
 
 ## WORKTREES
-/Users/conscious/apps/DateSnap-iOS d6f6fd4 [main]
+/Users/conscious/apps/Pencild-iOS d6f6fd4 [main]
 
 ## GAUNTLET (native, Homebrew rg 15.2.0 with PCRE2)
 verify-no-mock.sh          EXIT=0 | No unallowlisted mock or stale-state markers found (31 allowlisted hits).
@@ -209,13 +209,13 @@ Evidence says it is NOT DEBUG-gated and ships intentionally:
   - ScanViewModel.swift:97 scanSampleFlyer() is public, not DEBUG-gated,
     doc-comment: 'needs no photo permissions'
   - Release binary contains 'SKYBAR PENTHOUSE', '8440 SUNSET BLVD...',
-    'Try Sample Flyer', and asset id 'datesnap-sample-flyer' (x2)
-  - release_forbidden deliberately does NOT list datesnap-sample, so the
+    'Try Sample Flyer', and asset id 'pencild-sample-flyer' (x2)
+  - release_forbidden deliberately does NOT list pencild-sample, so the
     release gate was authored expecting this to ship
 Read: an intentional onboarding feature with a FALSE allowlist reason.
 Proposed reason (replacing 'DEBUG-gated sample content' on all three rows):
   intentional shipped onboarding sample (Try Sample Flyer, HomeEmptyStateView:392);
-  NOT DEBUG-gated; datesnap-sample-* deliberately absent from release_forbidden
+  NOT DEBUG-gated; pencild-sample-* deliberately absent from release_forbidden
 ```
 
 ---
@@ -232,13 +232,13 @@ The generator survived at `/tmp/ds-closure-report.sh` on the Mac and is re-runna
 Rebuilding the Release `.app` from scratch:
 
 ```sh
-cd /Users/conscious/apps/DateSnap-iOS
-xcodebuild -project DateSnap.xcodeproj -scheme DateSnap \
+cd /Users/conscious/apps/Pencild-iOS
+xcodebuild -project Pencild.xcodeproj -scheme Pencild \
   -configuration Release -sdk iphonesimulator \
   -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath /tmp/ds-rel-dd \
   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
 
 bash scripts/verify-release-content.sh --require-app \
-  /tmp/ds-rel-dd/Build/Products/Release-iphonesimulator/DateSnap.app
+  /tmp/ds-rel-dd/Build/Products/Release-iphonesimulator/Pencild.app
 ```

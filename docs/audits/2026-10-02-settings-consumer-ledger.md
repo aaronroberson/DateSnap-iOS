@@ -1,4 +1,4 @@
-# DateSnap Settings-to-Consumer Ledger
+# Pencild Settings-to-Consumer Ledger
 
 This ledger records every retained Settings control in the production UI after the non-production-code remediation. A control is retained only when a production runtime consumer exists. Presentation-only navigation state is listed separately because it does not claim to configure app behavior.
 

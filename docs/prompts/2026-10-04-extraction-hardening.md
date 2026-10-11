@@ -1,6 +1,6 @@
 # Prompt: OCR + Event Extraction Hardening
 
-You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI, Vision/NaturalLanguage/EventKit, and on-device ML pipelines. Your task is to **evolve the existing protocol-driven service layer of "DateSnap"** — a privacy-first iOS app that scans screenshots/photos locally and creates Apple Calendar events, Reminders, and local notifications — by hardening `OCRService` and rebuilding `EventExtractionService` into a production-grade date-inference engine.
+You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI, Vision/NaturalLanguage/EventKit, and on-device ML pipelines. Your task is to **evolve the existing protocol-driven service layer of "Pencild"** — a privacy-first iOS app that scans screenshots/photos locally and creates Apple Calendar events, Reminders, and local notifications — by hardening `OCRService` and rebuilding `EventExtractionService` into a production-grade date-inference engine.
 
 **This code already exists. Do not rewrite from scratch — extend, refactor, and complete it.**
 
@@ -10,19 +10,19 @@ You are a Principal iOS Architect specializing in Swift 6 language mode, SwiftUI
 |---|---|
 | `Package.swift` | swift-tools **6.4**, platform **`.iOS(.v18)`**, upcoming feature `ApproachableConcurrency`. Your concurrency style must match this, not Swift 5.9. |
 | `AGENTS.md` | Build commands, design-doc mandate, layout rules. |
-| `datesnap-design-system-updated.md` | Mandatory for any UI you touch. Confidence tiers must use `--color-success #46E39A` / `--color-warning #FFBE55` / `--color-error #FF6B7A`, and the Accessibility section requires **icon + label + color**, never color alone. |
-| `Sources/DateSnap/Services/OCRService.swift` | `OCRServiceProtocol` (:6-8) + `OCRService` (:11-65). Runs `VNRecognizeTextRequest` in `Task.detached`. **Discards `boundingBox` metadata** — this blocks visual-hierarchy title inference. |
-| `Sources/DateSnap/Services/EventExtractionService.swift` | `EventExtractionServiceProtocol` (:62-64), DTO→model bridging (:5-59, :112-113), single-date parse engine (:124-318), naive confidence sum (:85-93), title/location/URL extractors (:321-397). Returns **at most 1 candidate** (:109). |
-| `Sources/DateSnap/Services/ServiceContainer.swift` | Production DI hub and environment integration. The app target intentionally contains no mock service implementations; add protocol-specific test doubles only under `Tests/DateSnapTests` when tests require them. |
-| `Sources/DateSnap/Services/DateSnapError.swift` | Domain errors already defined. `ExtractionError.ambiguousDateResolutionFailed` (:120) and `OCRError.insufficientConfidence` (:90) exist but are **never thrown** — wire them up. |
-| `Sources/DateSnap/Persistence/SwiftDataEntities.swift` | `ScannedAsset.candidates` cascade relationship (:57-58), `EventCandidate` (:81-128) — note **no dedupe key, no per-field confidences, no ambiguity flag, no timezone field yet**. `SavedEvent` (:131-165). |
-| `Sources/DateSnap/ViewModels/ScanViewModel.swift` | The 3-stage pipeline `fetchingImage → processingOCR → extractingEvents → complete/noDatesFound/failed` (:13-36) and persistence step (:96-112). |
-| `Sources/DateSnap/ViewModels/EventReviewViewModel.swift` | Review/commit flow; already surfaces `yearAssumed` (:54) and caps reminders at 3 offsets (:102-110). |
-| `Sources/DateSnap/Models/SettingsState.swift` | Settings navigation state only. Production extraction behavior must not depend on removed prototype confidence or draft toggles. |
-| `Sources/DateSnap/Views/HelpFeedbackView.swift` | Product promises to the user: relative dates ("Tomorrow 10am"), ambiguous dates are **prompted, not guessed** (:32), confidence threshold gating (:45). |
-| `Sources/DateSnap/Views/EventReviewEditView.swift`, `NoDatesFoundView.swift` | Where ambiguity review and empty states render. |
+| `pencild-design-system-updated.md` | Mandatory for any UI you touch. Confidence tiers must use `--color-success #46E39A` / `--color-warning #FFBE55` / `--color-error #FF6B7A`, and the Accessibility section requires **icon + label + color**, never color alone. |
+| `Sources/Pencild/Services/OCRService.swift` | `OCRServiceProtocol` (:6-8) + `OCRService` (:11-65). Runs `VNRecognizeTextRequest` in `Task.detached`. **Discards `boundingBox` metadata** — this blocks visual-hierarchy title inference. |
+| `Sources/Pencild/Services/EventExtractionService.swift` | `EventExtractionServiceProtocol` (:62-64), DTO→model bridging (:5-59, :112-113), single-date parse engine (:124-318), naive confidence sum (:85-93), title/location/URL extractors (:321-397). Returns **at most 1 candidate** (:109). |
+| `Sources/Pencild/Services/ServiceContainer.swift` | Production DI hub and environment integration. The app target intentionally contains no mock service implementations; add protocol-specific test doubles only under `Tests/PencildTests` when tests require them. |
+| `Sources/Pencild/Services/PencildError.swift` | Domain errors already defined. `ExtractionError.ambiguousDateResolutionFailed` (:120) and `OCRError.insufficientConfidence` (:90) exist but are **never thrown** — wire them up. |
+| `Sources/Pencild/Persistence/SwiftDataEntities.swift` | `ScannedAsset.candidates` cascade relationship (:57-58), `EventCandidate` (:81-128) — note **no dedupe key, no per-field confidences, no ambiguity flag, no timezone field yet**. `SavedEvent` (:131-165). |
+| `Sources/Pencild/ViewModels/ScanViewModel.swift` | The 3-stage pipeline `fetchingImage → processingOCR → extractingEvents → complete/noDatesFound/failed` (:13-36) and persistence step (:96-112). |
+| `Sources/Pencild/ViewModels/EventReviewViewModel.swift` | Review/commit flow; already surfaces `yearAssumed` (:54) and caps reminders at 3 offsets (:102-110). |
+| `Sources/Pencild/Models/SettingsState.swift` | Settings navigation state only. Production extraction behavior must not depend on removed prototype confidence or draft toggles. |
+| `Sources/Pencild/Views/HelpFeedbackView.swift` | Product promises to the user: relative dates ("Tomorrow 10am"), ambiguous dates are **prompted, not guessed** (:32), confidence threshold gating (:45). |
+| `Sources/Pencild/Views/EventReviewEditView.swift`, `NoDatesFoundView.swift` | Where ambiguity review and empty states render. |
 
-Verify with: `xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16' build`
+Verify with: `xcodebuild -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 16' build`
 
 ## 1. HARD CONSTRAINTS
 
@@ -31,9 +31,9 @@ Verify with: `xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,n
 - **Protocol stability:** keep the signatures at `OCRServiceProtocol` (`OCRService.swift:7`) and `EventExtractionServiceProtocol` (`EventExtractionService.swift:63`) source-compatible for existing production callers. Add new capabilities via **protocol extensions with default implementations** or additive protocol requirements, then update any test-target doubles that exist.
 - **SwiftData safety:** `@Model` instances (`EventCandidate`, `ScannedAsset`) must only be constructed/inserted on the MainActor caller's context. Keep the existing DTO pattern (`ExtractedCandidateData`, `EventExtractionService.swift:5-59`) — run heavy parsing in `Task.detached`, map to models after.
 - **Schema changes are additive-only** (new fields with defaults) so existing stores migrate.
-- **Errors:** throw `DateSnapError` / `OCRError` / `ExtractionError` — never raw strings.
+- **Errors:** throw `PencildError` / `OCRError` / `ExtractionError` — never raw strings.
 - **Comment style:** `// MARK: -` section headers and doc comments only; no line-by-line narration.
-- **UI:** any new view/banner must follow `datesnap-design-system-updated.md` (glass surfaces, semantic tokens, 44pt targets).
+- **UI:** any new view/banner must follow `pencild-design-system-updated.md` (glass surfaces, semantic tokens, 44pt targets).
 
 ## 2. WORKSTREAM A — OCRService: structured OCR with layout metadata
 
@@ -137,8 +137,8 @@ Rejected blocks must not appear in `extractedCandidates`; if **everything** is r
 
 ## 5. ACCEPTANCE CRITERIA
 
-- `xcodebuild -scheme DateSnap -destination 'platform=iOS Simulator,name=iPhone 16' build` passes with zero warnings introduced by your changes.
+- `xcodebuild -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 16' build` passes with zero warnings introduced by your changes.
 - Production sources contain no mock service implementations or `ServiceContainer.mock()` factory. Any test-target doubles and previews explicitly inject all required dependencies and compile.
-- New parsing logic is pure and deterministic (anchor date injected) and covered by a new `DateSnapTests` test target in `Package.swift` with fixtures for: relative dates, ambiguous numerics in `en_US`/`en_GB`/`de_DE`, assumed-year rollover incl. Feb 29, date ranges, doors/show windows, receipt false-positives, and dedupe key stability.
+- New parsing logic is pure and deterministic (anchor date injected) and covered by a new `PencildTests` test target in `Package.swift` with fixtures for: relative dates, ambiguous numerics in `en_US`/`en_GB`/`de_DE`, assumed-year rollover incl. Feb 29, date ranges, doors/show windows, receipt false-positives, and dedupe key stability.
 - Grep-verified: no `URLSession`, `http`, or third-party imports added under `Sources/`.
 - Every new user-visible state has icon + label + color (design doc, Accessibility section).

@@ -1,6 +1,6 @@
-# DateSnap Release Runbook
+# Pencild Release Runbook
 
-This runbook outlines the step-by-step procedures for building, archiving, validating, and submitting **DateSnap** to TestFlight and the Apple App Store.
+This runbook outlines the step-by-step procedures for building, archiving, validating, and submitting **Pencild** to TestFlight and the Apple App Store.
 
 ---
 
@@ -40,15 +40,15 @@ Before archiving:
 ## 4. Archive, Export & Upload Commands
 
 ### Step A: Clean & Archive
-Sign in to the authorized Apple Developer account in **Xcode → Settings → Accounts**, then select the intended team for the DateSnap target in **Signing & Capabilities**. The Debug and Release xcconfig files intentionally omit `DEVELOPMENT_TEAM`; keep automatic signing enabled and let Xcode resolve the team from the selected account. Do not add a Team ID to the xcconfig files.
+Sign in to the authorized Apple Developer account in **Xcode → Settings → Accounts**, then select the intended team for the Pencild target in **Signing & Capabilities**. The Debug and Release xcconfig files intentionally omit `DEVELOPMENT_TEAM`; keep automatic signing enabled and let Xcode resolve the team from the selected account. Do not add a Team ID to the xcconfig files.
 
 ```bash
 xcodebuild clean archive \
-  -project DateSnap.xcodeproj \
-  -scheme DateSnap \
+  -project Pencild.xcodeproj \
+  -scheme Pencild \
   -configuration Release \
   -destination "generic/platform=iOS" \
-  -archivePath "./build/DateSnap.xcarchive" \
+  -archivePath "./build/Pencild.xcarchive" \
   CODE_SIGN_STYLE="Automatic"
 ```
 
@@ -58,13 +58,13 @@ Before export, scan the archived Release application. This is a blocking check: 
 
 ```bash
 scripts/verify-release-content.sh \
-  "./build/DateSnap.xcarchive/Products/Applications/DateSnap.app"
+  "./build/Pencild.xcarchive/Products/Applications/Pencild.app"
 ```
 
 ### Step B: Validate & Export IPA
 ```bash
 xcodebuild -exportArchive \
-  -archivePath "./build/DateSnap.xcarchive" \
+  -archivePath "./build/Pencild.xcarchive" \
   -exportPath "./build/Exported" \
   -exportOptionsPlist "./ExportOptions-AppStore.plist"
 ```
@@ -77,7 +77,7 @@ For automation, Xcode 27 includes `altool`. Confirm it is available with `xcrun 
 
 ```bash
 xcrun altool --upload-app \
-  -f "./build/Exported/DateSnap.ipa" \
+  -f "./build/Exported/Pencild.ipa" \
   -t ios \
   --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
   --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
@@ -87,7 +87,7 @@ Do not commit the `.p8` private key or API credentials. For a manual fallback, u
 
 ```bash
 xcrun altool --upload-app \
-  -f "./build/Exported/DateSnap.ipa" \
+  -f "./build/Exported/Pencild.ipa" \
   -t ios \
   -u "$APPLE_ID" \
   -p "@keychain:ALTOOL_APP_SPECIFIC_PASSWORD"
@@ -113,6 +113,6 @@ xcrun altool --upload-app \
    - Promotional text, description, keywords, support URL, and marketing URL.
    - Privacy Nutrition Label: Select "Data Not Collected" across all categories.
 2. **In-App Purchases:**
-   - Attach the 4 subscription products (`com.datesnap.plus.monthly`, `com.datesnap.plus.annual`, `com.datesnap.premium.monthly`, `com.datesnap.premium.annual`) to the version submission.
+   - Attach the 4 subscription products (`com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, `com.pencild.premium.annual`) to the version submission.
 3. **Phased Release:**
    - Enable 7-day automatic phased release to minimize blast radius for unanticipated edge-case issues.

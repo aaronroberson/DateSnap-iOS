@@ -1,13 +1,13 @@
-# DateSnap On-Device Intelligence Architecture Plan
+# Pencild On-Device Intelligence Architecture Plan
 
 **Date:** 2026-09-29  
 **Status:** Implemented (Phases 0–4) — on-device verification pending; live-route latency 10–20 s per model pass  
-**Scope:** On-device Apple Intelligence for event understanding, plus reusable intelligence augmentation across DateSnap services.  
+**Scope:** On-device Apple Intelligence for event understanding, plus reusable intelligence augmentation across Pencild services.  
 **Deployment baseline:** iOS 18.0, as declared by `Package.swift` and `project.yml`.
 
 ## 1. Executive summary
 
-DateSnap already has a strong local-processing foundation: Vision OCR retains text geometry and confidence, `EventExtractionService` applies deterministic temporal and semantic heuristics, `ScanViewModel` coordinates OCR, extraction, deduplication and SwiftData persistence, and the service protocols are composed through `ServiceContainer`. `ContentView` constructs and injects `ScanViewModel`; the home and scan flows consume it. This proposal extends those seams and keeps EventKit, PhotoKit, StoreKit and notification side effects under their existing services.
+Pencild already has a strong local-processing foundation: Vision OCR retains text geometry and confidence, `EventExtractionService` applies deterministic temporal and semantic heuristics, `ScanViewModel` coordinates OCR, extraction, deduplication and SwiftData persistence, and the service protocols are composed through `ServiceContainer`. `ContentView` constructs and injects `ScanViewModel`; the home and scan flows consume it. This proposal extends those seams and keeps EventKit, PhotoKit, StoreKit and notification side effects under their existing services.
 
 Add an optional `EventUnderstandingPipeline` around the deterministic extractor. On eligible devices running the Foundation Models API, the pipeline interprets OCR evidence into typed, ranked event hypotheses. A deterministic validator checks every proposed value against the OCR evidence and current parser output. The pipeline returns a review bundle containing the preferred interpretation, material alternatives, field provenance, concise evidence explanations, action suggestions and confidence/ambiguity metadata. The baseline parser remains available on every supported iOS 18 device and runs when Apple’s on-device model cannot be used.
 
@@ -166,7 +166,7 @@ Compatible Apple Intelligence hardware examples include iPhone 15 Pro/Pro Max an
 - **Subscriptions:** Keep baseline extraction, evidence and manual review available to Starter users. Use Plus for enhanced screenshot/photo triage consistent with its current tier positioning. Use Premium for batch scan automation, larger archive clustering and advanced reminder plans. Show runtime availability separately from plan entitlement; an unsupported device should not be sold a model capability it cannot run.
 - **Trust and privacy:** State when interpretation ran locally, when a field is inferred and which values came from visible text. Preserve user edits as the source of truth. Do not auto-commit Calendar, Reminders, external links or RSVP actions.
 
-Follow the design tokens and component patterns in [`datesnap-design-system-updated.md`](../../datesnap-design-system-updated.md).
+Follow the design tokens and component patterns in [`pencild-design-system-updated.md`](../../pencild-design-system-updated.md).
 
 ## 9. Phased implementation roadmap
 
@@ -203,7 +203,7 @@ Follow the design tokens and component patterns in [`datesnap-design-system-upda
 ### Phase 4 — Evaluation, tuning and premiumization
 
 - **Goals:** Calibrate scores and question thresholds, evaluate model quality across supported languages/devices, tune latency and introduce transparent feature entitlements for automation.
-- **Likely files:** `Tests/DateSnapTests/`, `SubscriptionService.swift`, `ServiceContainer.swift`, `SettingsState.swift`, paywall and archive views; add a local evaluation harness and sanitized fixtures.
+- **Likely files:** `Tests/PencildTests/`, `SubscriptionService.swift`, `ServiceContainer.swift`, `SettingsState.swift`, paywall and archive views; add a local evaluation harness and sanitized fixtures.
 - **New files:** Extraction evaluation fixtures/reporting, `IntelligenceUsagePolicy.swift`, optional debug diagnostics view.
 - **Risks:** Overfitting to English concert posters, Apple API changes, premium gating perceived as blocking correctness and accidental content logging. Fallback: ship core interpretation behind a runtime/remote-free local feature flag; keep tier-based automation disabled until evaluation gates pass.
 - **Acceptance:** Report field-level precision/recall, doors/show accuracy, question precision, duplicate false-merge rate, latency and fallback rate by capability route. Set release thresholds from the hand-labeled baseline before rollout. Verify no OCR text or event PII enters telemetry. Keep single-scan review available across tiers and gate only clearly explained convenience/automation.

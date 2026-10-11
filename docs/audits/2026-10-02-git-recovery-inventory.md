@@ -1,7 +1,7 @@
-# Git Recovery Inventory — DateSnap-iOS
+# Git Recovery Inventory — Pencild-iOS
 
 **Date:** 2026-10-02 (completed 2026-10-03)
-**Scope:** Full inventory and disposition of every branch, dangling commit, untracked artifact, and worktree/stash state discovered during recovery of `/Users/conscious/apps/DateSnap-iOS` (remote `github.com/aaronroberson/DateSnap`).
+**Scope:** Full inventory and disposition of every branch, dangling commit, untracked artifact, and worktree/stash state discovered during recovery of `/Users/conscious/apps/Pencild-iOS` (remote `github.com/aaronroberson/Pencild`).
 **Companion documents:** [implementation plan](../plans/2026-10-02-handoff-completion-plan.md) · [completion report](2026-10-02-git-recovery-and-handoff-completion-report.md)
 
 ## Method
@@ -35,7 +35,7 @@ All five local branches are **ancestors of recovery head `1156fc3`** — there i
 | 14 | Stashes | — | — | none existed | n/a | none to preserve | `git stash list` → empty |
 | 15 | Worktrees | — | — | none registered | n/a | none to preserve | `git worktree list` → single entry |
 | 16 | Tags | — | — | none existed pre-recovery | n/a | 8 preservation tags created (items 8–12) | `git tag -l` |
-| 17 | `EntitlementProviding` / `EntitlementProvenance.sceneActivation` scaffolding | `Sources/DateSnap/Services/Advisors/FeatureEntitlements.swift` (protocol :166, provenance :62) | current tree | Orphaned: zero production conformers or callers; only tests reference the policy. The dropped WIP wired `SubscriptionServiceProtocol.refreshEntitlements(.sceneActivation)`, a method that does not exist on today's protocol (WIP predates the protocol split) | Blocked for human review | Deferred with restoration recipe in report; not deleted (compiles, and `@MainActor` policy makes misuse a compile error) | grep: no production conformers of `EntitlementProviding`; no `refreshEntitlements` on `SubscriptionServiceProtocol` |
+| 17 | `EntitlementProviding` / `EntitlementProvenance.sceneActivation` scaffolding | `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift` (protocol :166, provenance :62) | current tree | Orphaned: zero production conformers or callers; only tests reference the policy. The dropped WIP wired `SubscriptionServiceProtocol.refreshEntitlements(.sceneActivation)`, a method that does not exist on today's protocol (WIP predates the protocol split) | Blocked for human review | Deferred with restoration recipe in report; not deleted (compiles, and `@MainActor` policy makes misuse a compile error) | grep: no production conformers of `EntitlementProviding`; no `refreshEntitlements` on `SubscriptionServiceProtocol` |
 | 18 | Dangling draft `231f7e0` (test-port draft) | `git fsck` | — | Near-duplicate of tracked `3f5b9f8`; differs by 2 insertions / 19 deletions in `MockDataCleanupTests.swift` | Exclude but preserve | Tagged `superseded/test-port-draft` | `git diff --stat 3f5b9f8 231f7e0` |
 
 ## Preserved-work register (why nothing was purged)
