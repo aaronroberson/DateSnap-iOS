@@ -1,0 +1,498 @@
+import Foundation
+import SwiftUI
+import EventKit
+import SwiftData
+import OSLog
+
+@MainActor
+public final class EventReviewViewModel: ObservableObject {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "com.pencild.app",
+        category: "EventReviewViewModel"
+    )
+
+    private let calendarService: CalendarServiceProtocol
+    private let reminderService: ReminderServiceProtocol
+    private let notificationService: NotificationServiceProtocol
+    private let entitlements: any EntitlementProviding
+
+    // MARK: - Editable State
+    @Published public var title: String
+    @Published public var startDate: Date
+    @Published public var endDate: Date
+    @Published public var isAllDay: Bool
+    @Published public var location: String
+    @Published public var venueName: String
+    @Published public var rsvpUrl: String
+    @Published public var notes: String
+    @Published public var confidenceScore: Float
+    @Published public var yearAssumed: Bool
+
+    // MARK: - Ambiguity & Tiers
+    @Published public var isAmbiguousDate: Bool = false
+    @Published public var ambiguousFragment: String? = nil
+    @Published public var timeZoneIdentifier: String = Calendar.current.timeZone.identifier
+    @Published public var confidenceTier: ConfidenceTier = .high
+    @Published public var isDraftOnly: Bool = false
+
+    // MARK: - Destination Configurations
+    @Published public var availableCalendars: [EKCalendar] = []
+    @Published public var availableReminderLists: [EKCalendar] = []
+    @Published public var selectedCalendar: EKCalendar? = nil
+    @Published public var selectedReminderList: EKCalendar? = nil
+    @Published public var selectedOffsets: [ReminderOffset] = ReminderOffset.defaultStaggered
+
+    // MARK: - Status
+    @Published public var isSaving: Bool = false
+    @Published public var isSavedSuccessfully: Bool = false
+    @Published public var errorMessage: String? = nil
+    /// Set when the save failed because Calendar access is denied, so the view can route to recovery.
+    @Published public var calendarAccessDenied: Bool = false
+    /// Set when the event saved but local alerts could not be scheduled (notifications denied).
+    @Published public var notificationsSkipped: Bool = false
+    /// Typed denial from the most recent protected action, suitable for paywall or retry UI.
+    @Published public private(set) var featureAccessDenial: FeatureAccessDenyReason? = nil
+
+    // MARK: - Interpretation (best, alternatives, evidence, suggestions)
+    /// Review bundle from the scan: best interpretation, alternatives, questions, actions, evidence.
+    @Published public var understanding: EventUnderstanding? = nil
+    @Published public var engineRoute: EngineRoute? = nil
+    @Published public var evidenceLines: [EvidenceLine] = []
+    /// Which interpretation the editable fields were last filled from.
+    @Published public var appliedInterpretationID: String? = nil
+    /// Questions the user has not answered yet.
+    @Published public var openQuestions: [AmbiguityQuestion] = []
+    @Published public var category: EventCategory = .other
+    @Published public var rsvpDeadline: Date? = nil
+    /// Accepted RSVP-deadline reminder (created on save).
+    @Published public var deadlineReminderEnabled: Bool = false
+    /// Recurrence the user chose to write to Calendar; nil saves a single event.
+    @Published public var repeatSelection: RecurrenceSignal.Kind? = nil
+    /// Saved or pending events that may be the same event from another screenshot.
+    @Published public var duplicateMatches: [EventSimilarityService.Match] = []
+    let calendarRecommender = CalendarRecommendationService()
+    /// Reads the user's Pencil'd-wide default calendar choice (Settings → Destinations).
+    let defaultCalendarStore = DefaultCalendarStore()
+
+    /// The candidate being reviewed. Edits are written back to it on save.
+    public let candidate: EventCandidate
+    public let sourceImage: UIImage?
+    /// Raw OCR text from the scan, shown in the source-text drawer.
+    public let rawText: String
+
+    /// True when this candidate was already committed to Calendar; saving updates instead of creating.
+    public var isEditingSavedEvent: Bool {
+        candidate.savedEvent?.status == .saved && candidate.savedEvent?.externalCalendarEventId != nil
+    }
+
+    // MARK: - Initializer
+    public init(candidate: EventCandidate, services: ServiceContainer, sourceImage: UIImage? = nil) {
+        self.candidate = candidate
+        self.sourceImage = sourceImage
+        self.rawText = candidate.rawTextSnippet
+        self.calendarService = services.calendar
+        self.reminderService = services.reminders
+        self.notificationService = services.notifications
+        self.entitlements = services.subscription
+
+        self.title = candidate.title
+        self.startDate = candidate.startDate
+        self.endDate = candidate.endDate ?? EventDurationPolicy.fallbackEnd(for: candidate.startDate)
+        self.isAllDay = candidate.isAllDay
+        self.location = candidate.location ?? ""
+        self.venueName = candidate.venueName ?? ""
+        self.rsvpUrl = candidate.rsvpUrl ?? ""
+        self.notes = candidate.notes
+        self.confidenceScore = candidate.confidenceScore
+        self.yearAssumed = candidate.yearAssumed
+        self.isAmbiguousDate = candidate.isAmbiguousDate
+        self.ambiguousFragment = candidate.ambiguousFragment
+        self.timeZoneIdentifier = candidate.timeZoneIdentifier ?? Calendar.current.timeZone.identifier
+        self.confidenceTier = candidate.confidenceTier
+        self.category = EventCategory(rawValue: candidate.categoryRaw) ?? .other
+        self.rsvpDeadline = candidate.rsvpDeadline
+        self.repeatSelection = candidate.recurrenceRaw.flatMap(RecurrenceSignal.Kind.init(rawValue:))
+        if let stored = candidate.interpretation?.stored {
+            self.understanding = stored.understanding
+            self.engineRoute = stored.route
+            self.evidenceLines = stored.evidence
+            self.appliedInterpretationID = candidate.interpretation?.selectedInterpretationID ?? stored.understanding.best.id
+            // Questions stay open until answered, and only for events not yet saved.
+            self.openQuestions = candidate.savedEvent == nil ? stored.understanding.questions : []
+        }
+        if let saved = candidate.savedEvent, !saved.alertOffsets.isEmpty {
+            self.selectedOffsets = saved.alertOffsets.map { ReminderOffset.forInterval($0) }
+        }
+
+        loadCalendarData()
+    }
+
+    // MARK: - Month and Day Swap for Ambiguous Dates
+    public func swapMonthAndDay() {
+        let calendar = Calendar.current
+        var comps = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: startDate)
+        let oldMonth = comps.month ?? 1
+        let oldDay = comps.day ?? 1
+        guard oldDay <= 12 else { return }
+        comps.month = oldDay
+        comps.day = oldMonth
+
+        if let newStart = calendar.date(from: comps) {
+            let duration = endDate.timeIntervalSince(startDate)
+            self.startDate = newStart
+            self.endDate = newStart.addingTimeInterval(duration)
+            self.isAmbiguousDate = false
+            self.ambiguousFragment = nil
+        }
+    }
+
+    /// Accepts the parsed date order as-is and clears the ambiguity prompt.
+    public func confirmDateOrder() {
+        isAmbiguousDate = false
+        ambiguousFragment = nil
+    }
+
+    /// Keeps the end after the start when the start moves.
+    public func startDateChanged(from oldValue: Date) {
+        let duration = max(endDate.timeIntervalSince(oldValue), 0)
+        endDate = startDate.addingTimeInterval(duration == 0 ? EventDurationPolicy.fallback : duration)
+    }
+
+    // MARK: - Load Available Calendars & Lists
+    public func loadCalendarData() {
+        self.availableCalendars = calendarService.fetchWritableCalendars()
+        let savedTitle = candidate.savedEvent?.targetCalendar
+        let recommendedID = calendarRecommender.suggestedCalendarIdentifier(
+            for: category, available: availableCalendars.map(\.calendarIdentifier)
+        )
+        self.selectedCalendar = DestinationCalendarResolver.select(
+            availableCalendars,
+            savedTitle: savedTitle,
+            userDefaultIdentifier: defaultCalendarStore.defaultCalendarIdentifier(),
+            recommendedIdentifier: recommendedID,
+            systemDefault: calendarService.defaultCalendar()
+        )
+
+        self.availableReminderLists = reminderService.fetchReminderLists()
+        let savedList = candidate.savedEvent?.targetRemindersList
+        self.selectedReminderList = availableReminderLists.first(where: { $0.title == savedList })
+            ?? reminderService.defaultReminderList()
+            ?? availableReminderLists.first
+    }
+
+    /// Requests Calendar access if it has never been asked, then refreshes the destination pickers.
+    public func prepareDestinations() async {
+        errorMessage = nil
+        if calendarService.authorizationStatus() == .notDetermined {
+            do {
+                _ = try await calendarService.requestEventAccess()
+            } catch {
+                errorMessage = error.localizedDescription
+                return
+            }
+        }
+        if reminderService.authorizationStatus() == .notDetermined {
+            do {
+                _ = try await reminderService.requestReminderAccess()
+            } catch {
+                errorMessage = error.localizedDescription
+                return
+            }
+        }
+        loadCalendarData()
+    }
+
+    // MARK: - Alert Offset Management (Max 3)
+    public func addOffset(_ offset: ReminderOffset) {
+        guard selectedOffsets.count < 3 else {
+            errorMessage = "A maximum of 3 reminder alerts can be scheduled per event."
+            return
+        }
+        if !selectedOffsets.contains(where: { $0.timeInterval == offset.timeInterval }) {
+            selectedOffsets.append(offset)
+        }
+    }
+
+    public func removeOffset(at index: Int) {
+        guard index < selectedOffsets.count else { return }
+        selectedOffsets.remove(at: index)
+    }
+
+    // MARK: - Apply Edits
+    private func applyEdits() {
+        candidate.title = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled Event" : title
+        candidate.startDate = startDate
+        candidate.endDate = isAllDay ? nil : max(endDate, startDate)
+        candidate.isAllDay = isAllDay
+        candidate.location = location.isEmpty ? nil : location
+        candidate.venueName = venueName.isEmpty ? nil : venueName
+        candidate.rsvpUrl = rsvpUrl.isEmpty ? nil : rsvpUrl
+        candidate.notes = notes
+        candidate.isAmbiguousDate = isAmbiguousDate
+        candidate.ambiguousFragment = ambiguousFragment
+        candidate.timeZoneIdentifier = timeZoneIdentifier
+        candidate.categoryRaw = category.rawValue
+        candidate.recurrenceRaw = repeatSelection == .series ? nil : repeatSelection?.rawValue
+        recordCorrections()
+    }
+
+    private func savedEventRecord(in context: ModelContext) -> SavedEvent {
+        if let existing = candidate.savedEvent {
+            return existing
+        }
+        let record = SavedEvent(candidate: candidate)
+        context.insert(candidate)
+        context.insert(record)
+        candidate.savedEvent = record
+        return record
+    }
+
+    private func persist(_ context: ModelContext, using saveOperation: (() throws -> Void)?) throws {
+        if let saveOperation {
+            try saveOperation()
+        } else {
+            try context.save()
+        }
+    }
+
+    // MARK: - Save Draft (no Calendar / Reminders writes)
+    public func saveDraft(
+        modelContext: ModelContext?,
+        saveOperation: (() throws -> Void)? = nil
+    ) -> MutationResult {
+        guard let modelContext else {
+            let message = "Local event storage is unavailable."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
+        applyEdits()
+        let record = savedEventRecord(in: modelContext)
+        if record.status != .saved {
+            record.status = .draft
+        }
+        record.alertOffsets = selectedOffsets.map(\.timeInterval)
+        record.targetCalendar = selectedCalendar?.title ?? record.targetCalendar
+        record.targetRemindersList = selectedReminderList?.title ?? record.targetRemindersList
+        do {
+            try persist(modelContext, using: saveOperation)
+        } catch {
+            errorMessage = error.localizedDescription
+            isSavedSuccessfully = false
+            return .failure(MutationFailure(error))
+        }
+        isDraftOnly = true
+        isSavedSuccessfully = true
+        errorMessage = nil
+        return .success
+    }
+
+    /// Removes an unsaved candidate from the review queue.
+    public func discard(
+        modelContext: ModelContext?,
+        saveOperation: (() throws -> Void)? = nil
+    ) -> MutationResult {
+        guard candidate.savedEvent == nil, let context = modelContext else {
+            let message = modelContext == nil
+                ? "Local event storage is unavailable."
+                : "This event has already been saved and cannot be discarded from the review queue."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
+        context.delete(candidate)
+        do {
+            try persist(context, using: saveOperation)
+            errorMessage = nil
+            return .success
+        } catch {
+            context.rollback()
+            errorMessage = error.localizedDescription
+            return .failure(MutationFailure(error))
+        }
+    }
+
+    // MARK: - Commit to Apple Calendar & Reminders
+    /// Writes the reviewed event to Calendar, Reminders and local alerts. Only called on explicit user confirmation.
+    public func commitEvent(
+        modelContext: ModelContext? = nil,
+        saveOperation: (() throws -> Void)? = nil
+    ) async -> MutationResult {
+        isSaving = true
+        errorMessage = nil
+        calendarAccessDenied = false
+        notificationsSkipped = false
+        featureAccessDenial = nil
+        isSavedSuccessfully = false
+        defer { isSaving = false }
+
+        guard let modelContext else {
+            let message = "Local event storage is unavailable."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
+        applyEdits()
+        let offsets = selectedOffsets
+        let alarmIntervals = offsets.map { $0.alarmOffset(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay) }
+        let existing = candidate.savedEvent
+
+        // 1. Apple Calendar (create, or update the event this candidate already wrote)
+        let externalCalendarId: String
+        do {
+            if let existingId = existing?.externalCalendarEventId {
+                externalCalendarId = try await calendarService.updateEvent(
+                    externalIdentifier: existingId,
+                    candidate: candidate,
+                    calendar: selectedCalendar,
+                    alarms: alarmIntervals
+                )
+            } else {
+                externalCalendarId = try await calendarService.createEvent(
+                    candidate: candidate,
+                    calendar: selectedCalendar,
+                    alarms: alarmIntervals
+                )
+            }
+        } catch PencildError.calendar(.accessDenied) {
+            calendarAccessDenied = true
+            errorMessage = PencildError.calendar(.accessDenied).localizedDescription
+            return .failure(MutationFailure(message: errorMessage ?? "Calendar access was denied."))
+        } catch {
+            errorMessage = error.localizedDescription
+            return .failure(MutationFailure(error))
+        }
+
+        var issues: [String] = []
+
+        // 2. Apple Reminders (non-fatal if the user denied Reminders)
+        var reminderIds = existing?.externalReminderIds ?? []
+        do {
+            if let existingReminder = reminderIds.first {
+                let id = try await reminderService.updateReminder(
+                    externalIdentifier: existingReminder,
+                    candidate: candidate,
+                    list: selectedReminderList,
+                    offsets: offsets
+                )
+                reminderIds = [id]
+            } else {
+                let id = try await reminderService.createReminder(
+                    candidate: candidate,
+                    list: selectedReminderList,
+                    offsets: offsets
+                )
+                reminderIds = [id]
+            }
+        } catch {
+            Self.logger.warning("Notice: Reminder creation skipped or denied: \(error.localizedDescription, privacy: .public)")
+            issues.append("Reminders: \(error.localizedDescription)")
+        }
+
+        // 2b. Accepted RSVP-deadline reminder (created once)
+        var deadlineReminderId = existing?.deadlineReminderId
+        if deadlineReminderEnabled, deadlineReminderId == nil, let due = deadlineReminderDate {
+            switch FeatureAccessPolicy.decision(
+                for: .advancedReminderPlans,
+                snapshot: entitlements.entitlementSnapshot
+            ) {
+            case .allowed:
+                do {
+                    deadlineReminderId = try await reminderService.createDeadlineReminder(
+                        title: "RSVP: \(candidate.title)", due: due, url: candidate.rsvpUrl, list: selectedReminderList
+                    )
+                } catch {
+                    issues.append("RSVP deadline reminder: \(error.localizedDescription)")
+                }
+            case .denied(let reason):
+                featureAccessDenial = reason
+                issues.append("RSVP deadline reminder was not created because Premium access could not be verified.")
+            }
+        }
+
+        // 3. Local push alerts, replacing any previously scheduled for this event
+        notificationService.removePendingNotifications(identifiers: existing?.scheduledNotificationIds ?? [])
+        let scheduledNotifIds: [String]
+        switch await scheduleAlerts(offsets: offsets) {
+        case .success(let identifiers):
+            scheduledNotifIds = identifiers
+        case .failure(let error):
+            scheduledNotifIds = []
+            issues.append("Local notifications: \(error.localizedDescription)")
+        }
+
+        // 4. Persist to SwiftData
+        let record = savedEventRecord(in: modelContext)
+        record.externalCalendarEventId = externalCalendarId
+        record.externalReminderIds = reminderIds
+        record.scheduledNotificationIds = scheduledNotifIds
+        record.alertOffsets = offsets.map(\.timeInterval)
+        record.targetCalendar = selectedCalendar?.title ?? calendarService.defaultCalendar()?.title ?? "Default Calendar"
+        record.targetRemindersList = selectedReminderList?.title ?? reminderService.defaultReminderList()?.title ?? "Reminders"
+        record.status = .saved
+        record.deadlineReminderId = deadlineReminderId
+        do {
+            try persist(modelContext, using: saveOperation)
+        } catch {
+            errorMessage = "Calendar and reminder changes were made, but Pencil'd could not save the event: \(error.localizedDescription)"
+            isSavedSuccessfully = false
+            return .failure(MutationFailure(message: errorMessage ?? "Pencil'd could not save the event."))
+        }
+
+        isDraftOnly = false
+        isSavedSuccessfully = issues.isEmpty
+        if let calendar = selectedCalendar {
+            calendarRecommender.recordChoice(calendarIdentifier: calendar.calendarIdentifier, for: category)
+        }
+        if !issues.isEmpty {
+            errorMessage = "Event saved with incomplete reminders: \(issues.joined(separator: "; "))"
+            return .partial(issues)
+        }
+        errorMessage = nil
+        return .success
+    }
+
+    private func scheduleAlerts(offsets: [ReminderOffset]) async -> Result<[String], MutationFailure> {
+        let triggerDates = offsets.map { $0.triggerDate(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay) }
+        do {
+            return .success(try await notificationService.scheduleLocalNotifications(
+                title: candidate.title,
+                body: EventAlertText.body(for: candidate),
+                triggerDates: triggerDates,
+                eventId: candidate.id,
+                actionURL: candidate.rsvpUrl
+            ))
+        } catch PencildError.notifications(.accessDenied) {
+            // Handoff 2026-10-02 open loop 2: a denied permission is an expected,
+            // recoverable state, so the review surface shows the human-readable
+            // outcome and where to fix it instead of echoing an infra error.
+            notificationsSkipped = true
+            return .failure(MutationFailure(
+                message: "Notifications are denied. Enable them in iOS Settings > Notifications > Pencil'd."
+            ))
+        } catch {
+            notificationsSkipped = true
+            return .failure(MutationFailure(error))
+        }
+    }
+}
+
+// MARK: - Shared Alert Copy
+enum EventAlertText {
+    /// Concise, category-aware alert copy built from app templates and the candidate's own fields.
+    @MainActor
+    static func body(for candidate: EventCandidate) -> String {
+        let when = candidate.isAllDay
+            ? candidate.startDate.formatted(date: .abbreviated, time: .omitted)
+            : candidate.startDate.formatted(date: .abbreviated, time: .shortened)
+        let place = candidate.venueName ?? candidate.location
+        switch EventCategory(rawValue: candidate.categoryRaw) ?? .other {
+        case .deadline:
+            return "Due \(when)"
+        case .appointment:
+            return ["Appointment \(when)", place].compactMap { $0 }.joined(separator: " · ")
+        case .concert, .nightlife:
+            let doors = candidate.notes.range(of: "Doors open at [0-9:]+ ?[AP]M", options: .regularExpression).map { String(candidate.notes[$0]) }
+            return [when, doors, place].compactMap { $0 }.joined(separator: " · ")
+        default:
+            return [when, place].compactMap { $0 }.joined(separator: " · ")
+        }
+    }
+}

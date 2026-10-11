@@ -4,22 +4,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "DateSnap",
+    name: "Pencild",
     platforms: [
         .iOS(.v17),
     ],
     targets: [
         .executableTarget(
-            name: "DateSnap",
-            path: "Sources/DateSnap",
+            name: "Pencild",
+            path: "Sources/Pencild",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ]
         ),
         .testTarget(
-            name: "DateSnapTests",
-            dependencies: ["DateSnap"],
-            path: "Tests/DateSnapTests",
+            name: "PencildTests",
+            dependencies: ["Pencild"],
+            path: "Tests/PencildTests",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ]
