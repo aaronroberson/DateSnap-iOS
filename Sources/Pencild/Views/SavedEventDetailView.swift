@@ -123,7 +123,7 @@ struct SavedEventDetailView: View {
                     PDDateBadge(month: event.month, day: event.day, highlighted: true)
                     VStack(alignment: .leading, spacing: PDSpacing.sm) {
                         if candidate != nil {
-                            DSConfidencePill(score: event.confidenceScore, label: event.confidenceLabel)
+                            PDStatusBadge(text: "\(event.confidenceScore)% · \(event.confidenceLabel)", icon: "sparkles", tone: event.confidenceScore >= 80 ? .success : .warning)
                         }
                         Text(event.title)
                             .font(PDFont.headlineLG)

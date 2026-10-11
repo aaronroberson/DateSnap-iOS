@@ -339,7 +339,7 @@ struct AgendaView: View {
             } else {
                 Label("Not in Calendar", systemImage: "exclamationmark.circle")
                     .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
-                    .foregroundStyle(Color.dsWarning)
+                    .foregroundStyle(Color.pdWarning)
             }
         case .draft:
             Label("Draft", systemImage: "bookmark.fill")

@@ -28,19 +28,19 @@ struct DefaultCalendarSection: View {
         VStack(alignment: .leading, spacing: 10) {
             SettingsSectionHeader(icon: "calendar.badge.checkmark", title: "Destinations", tint: .dsSecondary)
 
-            VStack(alignment: .leading, spacing: 14) {
-                VStack(alignment: .leading, spacing: 6) {
+            PDCard {
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
                     HStack {
                         Text("DEFAULT CALENDAR FOR NEW EVENTS")
-                            .font(DSTypography.overlineConfidence())
-                            .foregroundStyle(Color.dsMutedForeground)
+                            .font(PDFont.labelSM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
                         Spacer()
                         if savedIdentifier != nil {
                             Button("Reset") {
                                 store.reset()
                             }
-                            .font(DSTypography.labelChip())
-                            .foregroundStyle(Color.dsSecondary)
+                            .font(PDFont.labelMD)
+                            .foregroundStyle(Color.pdSecondary)
                             .frame(minHeight: 44)
                             .accessibilityLabel("Reset default calendar to the iOS default")
                         }
@@ -49,12 +49,10 @@ struct DefaultCalendarSection: View {
                     picker
 
                     Text(statusText)
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
             }
-            .padding(16)
-            .dsGlassCard()
         }
         .task { await refresh() }
     }
@@ -62,14 +60,14 @@ struct DefaultCalendarSection: View {
     @ViewBuilder
     private var picker: some View {
         if writableCalendars.isEmpty {
-            HStack(spacing: 8) {
+            HStack(spacing: PDSpacing.sm) {
                 Image(systemName: loadFailed ? "exclamationmark.triangle" : "calendar")
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                 Text(loadFailed
                      ? "Could not load calendars — try again after granting Calendar access."
                      : "No writable calendars found. Check Calendar access in iOS Settings.")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
             }
             .frame(minHeight: 44)
         } else {
@@ -87,23 +85,20 @@ struct DefaultCalendarSection: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: "calendar")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color.dsPrimary)
+                    PDIconTile(systemName: "calendar", tint: .pdPrimary)
                     Text(selectedTitle ?? "Follow the iOS default calendar")
-                        .font(DSTypography.bodyStrong())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdOnSurface)
                         .lineLimit(1)
                     Spacer()
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 11))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
-                .padding(14)
+                .padding(PDSpacing.md)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.dsCard)
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.dsBorder, lineWidth: 1))
+                    RoundedRectangle(cornerRadius: PDRadius.tile)
+                        .fill(Color.pdSurfaceLowest)
                 )
                 .frame(minHeight: 44)
             }

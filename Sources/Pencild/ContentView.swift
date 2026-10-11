@@ -224,19 +224,20 @@ struct ContentView: View {
     }
 
     private func toastBanner(_ toast: String) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "sparkles").foregroundStyle(Color.dsPrimary)
+        HStack(spacing: PDSpacing.sm) {
+            Image(systemName: "sparkles")
+                .foregroundStyle(Color.pdPrimary)
             Text(toast)
-                .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.bodyMD)
+                .foregroundStyle(Color.pdOnSurface)
                 .lineLimit(2)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PDSpacing.md)
         .padding(.vertical, 10)
         .background(
             Capsule()
-                .fill(Color.dsCardElevated)
-                .overlay(Capsule().stroke(Color.dsPrimary.opacity(0.6), lineWidth: 1))
+                .fill(Color.pdSurfaceContainerHigh.opacity(0.92))
+                .overlay(Capsule().stroke(Color.pdPrimary.opacity(0.4), lineWidth: 1))
                 .shadow(color: Color.black.opacity(0.4), radius: 12, y: 4)
         )
         .transition(.move(edge: .bottom).combined(with: .opacity))

@@ -775,13 +775,13 @@ struct EventReviewForm: View {
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                 .foregroundStyle(Color.pdSecondary.opacity(0.85))
                 .textSelection(.enabled)
-                .padding(12)
+                .padding(PDSpacing.md)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.pdSurfaceLowest)
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
             }
         }
-        .padding(14)
+        .padding(PDSpacing.md)
         .dsGlassCard(cornerRadius: PDRadius.card)
     }
 

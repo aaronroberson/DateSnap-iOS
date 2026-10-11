@@ -201,7 +201,7 @@ struct HistoryArchiveView: View {
                                     .font(PDFont.bodySM).foregroundStyle(Color.pdPrimary)
                                 Label(event.locationName, systemImage: "mappin.and.ellipse")
                                     .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant).lineLimit(1)
-                                DSConfidencePill(score: event.confidenceScore, label: event.confidenceLabel)
+                                PDStatusBadge(text: "\(event.confidenceScore)% · \(event.confidenceLabel)", icon: "sparkles", tone: event.confidenceScore >= 80 ? .success : .warning)
                             }
                             Image(systemName: "chevron.right").font(PDFont.labelMD).foregroundStyle(Color.pdOutline)
                                 .padding(.top, PDSpacing.sm)

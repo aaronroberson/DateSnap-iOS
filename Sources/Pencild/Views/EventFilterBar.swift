@@ -61,17 +61,17 @@ struct EventFilterPalette {
     let showsCheckmark: Bool
 
     static let legacy = EventFilterPalette(
-        text: .dsForeground,
-        muted: .dsMutedForeground,
-        accent: .dsPrimary,
-        fieldFill: .dsCard,
-        chipFill: .dsCard,
-        border: .dsBorder,
-        selectedFill: AnyShapeStyle(Color.dsSecondary.opacity(0.2)),
-        selectedBorder: .dsPrimary,
-        selectedText: .dsPrimary,
+        text: .pdOnSurface,
+        muted: .pdOnSurfaceVariant,
+        accent: .pdPrimary,
+        fieldFill: .pdSurfaceContainer,
+        chipFill: .pdSurfaceContainer,
+        border: Color.pdSurfaceHighest.opacity(0.6),
+        selectedFill: AnyShapeStyle(Color.pdSecondary.opacity(0.2)),
+        selectedBorder: .pdPrimary,
+        selectedText: .pdPrimary,
         countFill: Color.white.opacity(0.1),
-        selectedCountFill: Color.dsPrimary.opacity(0.3),
+        selectedCountFill: Color.pdPrimary.opacity(0.3),
         showsCheckmark: false
     )
 

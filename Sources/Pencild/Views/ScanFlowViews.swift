@@ -207,23 +207,23 @@ struct RecentScreenshotsView: View {
                          ? "Tap screenshots to add them to the batch. Each event keeps its own calendar and reminders."
                          : "Pick a screenshot of a flyer, invite, or ticket. Text is read on this device only.")
                         .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
 
                     if homeViewModel.isRefreshing && homeViewModel.recentScreenshots.isEmpty {
-                        ProgressView().tint(Color.dsPrimary).frame(maxWidth: .infinity).padding(.top, 40)
+                        ProgressView().tint(Color.pdPrimary).frame(maxWidth: .infinity).padding(.top, 40)
                     } else if visibleAssets.isEmpty {
                         VStack(spacing: 10) {
                             Image(systemName: "photo.on.rectangle.angled")
                                 .font(.system(size: 36))
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                             Text(likelyOnly ? "No likely events found" : "No screenshots found")
                                 .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
+                                .foregroundStyle(Color.pdOnSurface)
                             Text(likelyOnly ? "Open All to choose another screenshot for review." : homeViewModel.photoAuthorizationStatus == .limited
                                  ? "Pencil'd can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
                                  : "Take a screenshot of an event, then come back.")
                                 .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .multilineTextAlignment(.center)
                         }
                         .frame(maxWidth: .infinity)
@@ -298,14 +298,14 @@ struct RecentScreenshotsView: View {
         if isSelecting {
             Image(systemName: selectedAssetIDs.contains(asset.localIdentifier) ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: 20))
-                .foregroundStyle(selectedAssetIDs.contains(asset.localIdentifier) ? Color.dsPrimary : Color.white)
+                .foregroundStyle(selectedAssetIDs.contains(asset.localIdentifier) ? Color.pdPrimary : Color.white)
                 .shadow(color: .black.opacity(0.6), radius: 3)
                 .padding(6)
         } else if scannedIds.contains(asset.localIdentifier) {
             Label("Scanned", systemImage: "checkmark.circle.fill")
                 .labelStyle(.iconOnly)
                 .font(.system(size: 18))
-                .foregroundStyle(Color.dsSuccess)
+                .foregroundStyle(Color.pdSuccess)
                 .padding(6)
                 .accessibilityLabel("Already scanned")
         }
@@ -315,14 +315,14 @@ struct RecentScreenshotsView: View {
         HStack(spacing: 12) {
             Text("\(selectedAssetIDs.count) selected")
                 .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsForeground)
+                .foregroundStyle(Color.pdOnSurface)
             Spacer()
             Button {
                 startBatchScan()
             } label: {
                 HStack(spacing: 8) {
                     if appState.isBatchScanning {
-                        ProgressView().tint(Color.dsPrimaryForeground)
+                        ProgressView().tint(Color.pdOnPrimaryFixed)
                         Text("Scanning…")
                     } else {
                         Image(systemName: "square.stack.3d.up.fill")
@@ -338,7 +338,7 @@ struct RecentScreenshotsView: View {
         .padding(.vertical, 12)
         .background(
             Rectangle()
-                .fill(Color.dsBackground.opacity(0.95))
+                .fill(Color.pdSurface.opacity(0.95))
                 .ignoresSafeArea(edges: .bottom)
         )
     }
@@ -469,19 +469,19 @@ struct AssetThumbnail: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 12).fill(Color.dsCard)
+            RoundedRectangle(cornerRadius: PDRadius.card).fill(Color.pdSurfaceContainer.opacity(0.85))
             if let image {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
             } else {
-                ProgressView().tint(Color.dsMutedForeground)
+                ProgressView().tint(Color.pdOnSurfaceVariant)
             }
         }
         .frame(maxWidth: .infinity)
         .frame(height: height)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.dsBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
+        .overlay(RoundedRectangle(cornerRadius: PDRadius.card).stroke(Color.pdSurfaceHighest.opacity(0.6), lineWidth: 1))
         .task(id: asset.localIdentifier) {
             image = try? await services.photoLibrary.fetchImage(for: asset, targetSize: CGSize(width: 360, height: 640))
         }
