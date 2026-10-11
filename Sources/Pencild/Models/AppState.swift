@@ -69,6 +69,8 @@ enum AppModalScreen: Identifiable, Sendable {
     case reminderScheduleEditor(PencildEvent)
     case recentScreenshots
     case screenGallery
+    case userProfile
+    case defaultCalendar
     
     var id: String {
         switch self {
@@ -82,6 +84,8 @@ enum AppModalScreen: Identifiable, Sendable {
         case .reminderScheduleEditor(let event): return "reminderScheduleEditor-\(event.id)"
         case .recentScreenshots: return "recentScreenshots"
         case .screenGallery: return "screenGallery"
+        case .userProfile: return "userProfile"
+        case .defaultCalendar: return "defaultCalendar"
         }
     }
 }

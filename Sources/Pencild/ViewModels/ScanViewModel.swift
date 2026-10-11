@@ -50,6 +50,7 @@ public final class ScanViewModel: ObservableObject {
     @Published public var extractedCandidates: [EventCandidate] = []
     @Published public var currentProcessingImage: UIImage? = nil
     @Published public var isProcessing: Bool = false
+    @Published public private(set) var isCancelling: Bool = false
     /// Page progress for multi-page documents ("Page 2 of 5").
     @Published public var progressDetail: String? = nil
     /// Review bundle (best interpretation, alternatives, evidence) per candidate ID from the last scan.
@@ -68,15 +69,21 @@ public final class ScanViewModel: ObservableObject {
 
     // MARK: - Scan PHAsset Pipeline
     public func scanAsset(_ asset: PHAsset, modelContext: ModelContext? = nil) async {
+        isCancelling = false
         isProcessing = true
         stage = .fetchingImage
 
         do {
             let image = try await photoLibraryService.fetchImage(for: asset, targetSize: CGSize(width: 1440, height: 2560))
+            guard !isCancelling else {
+                stage = .idle
+                isProcessing = false
+                return
+            }
             self.currentProcessingImage = image
             await scanImage(image, assetIdentifier: asset.localIdentifier, modelContext: modelContext)
         } catch {
-            stage = .failed(error.localizedDescription)
+            stage = isCancelling ? .idle : .failed(error.localizedDescription)
             isProcessing = false
         }
     }
@@ -150,11 +157,13 @@ public final class ScanViewModel: ObservableObject {
 
     // MARK: - Shared OCR → Extraction → Dedupe Pipeline
     private func scanPages(_ pages: [UIImage], assetIdentifier: String, modelContext: ModelContext?) async {
+        isCancelling = false
         isProcessing = true
         currentProcessingImage = pages.first
         defer {
             isProcessing = false
             progressDetail = nil
+            if isCancelling { stage = .idle }
         }
 
         // Let the on-device model load while Vision reads the text.
@@ -176,14 +185,17 @@ public final class ScanViewModel: ObservableObject {
             do {
                 ocrResult = try await recognizeWithRetry(page)
             } catch PencildError.ocr(.noTextRecognized) {
+                guard !isCancelling else { return }
                 continue
             } catch {
+                guard !isCancelling else { return }
                 if pages.count == 1 {
                     stage = .failed(error.localizedDescription)
                     return
                 }
                 continue
             }
+            guard !isCancelling else { return }
             texts.append(ocrResult.fullText)
             confidences.append(ocrResult.meanConfidence)
 
@@ -191,11 +203,13 @@ public final class ScanViewModel: ObservableObject {
             // Step 2: Deterministic extraction, then (when useful and available) on-device interpretation
             stage = .extractingEvents
             let prepared = await understanding.analyze(ocrResult, locale: .current, anchor: Date(), assetIdentifier: assetIdentifier)
+            guard !isCancelling else { return }
             if prepared.willInterpret { stage = .interpreting }
             let completion = Task { await understanding.complete(prepared) }
             interpretationTask = completion
             let result = await completion.value
             interpretationTask = nil
+            guard !isCancelling else { return }
             pageResults.append(result)
             for event in result.events {
                 let candidate = event.best.toExtractedData().toModel()
@@ -322,6 +336,14 @@ public final class ScanViewModel: ObservableObject {
         interpretationTask?.cancel()
     }
 
+    /// Keeps the current operation in flight until it reaches a cancellation point.
+    /// No candidates are persisted and no review sheet is routed after cancellation.
+    public func cancelScan() {
+        guard isProcessing else { return }
+        isCancelling = true
+        interpretationTask?.cancel()
+    }
+
     /// Merges per-page results of a multi-page document into one scan result.
     private static func combine(_ results: [EventUnderstandingResult]) -> EventUnderstandingResult? {
         guard let first = results.first else { return nil }
@@ -341,6 +363,7 @@ public final class ScanViewModel: ObservableObject {
         extractedCandidates = []
         currentProcessingImage = nil
         isProcessing = false
+        isCancelling = false
         progressDetail = nil
         understandingByCandidateID = [:]
         lastResult = nil

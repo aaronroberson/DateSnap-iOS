@@ -98,10 +98,13 @@ final class PurchaseViewModel: ObservableObject {
     /// Restores purchases via `AppStore.sync()`. Returns the restored tier, or nil on failure.
     func restore() async -> SubscriptionTier? {
         guard let subscription else { return nil }
+        errorMessage = nil
         isPurchasing = true
         defer { isPurchasing = false }
         do {
             return try await subscription.restorePurchases()
+        } catch PencildError.subscription(.purchaseCancelled) {
+            return nil
         } catch {
             errorMessage = error.localizedDescription
             return nil

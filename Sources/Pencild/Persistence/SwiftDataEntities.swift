@@ -10,7 +10,7 @@ public enum ConfidenceTier: String, CaseIterable, Sendable {
 
     public var label: String {
         switch self {
-        case .high: return "High AI Accuracy"
+        case .high: return "High confidence"
         case .medium: return "Review Suggested"
         case .low: return "Low Confidence"
         }

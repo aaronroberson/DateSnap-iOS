@@ -237,6 +237,7 @@ public enum SubscriptionError: LocalizedError, Sendable {
     case purchaseFailed(String)
     case purchaseCancelled
     case purchasePending
+    case restoreFailed
     case verificationFailed
     case networkUnavailable
 
@@ -250,6 +251,8 @@ public enum SubscriptionError: LocalizedError, Sendable {
             return "The purchase was cancelled."
         case .purchasePending:
             return "The transaction is pending approval (e.g. Ask to Buy)."
+        case .restoreFailed:
+            return "Couldn't restore purchases. Check your connection and sign in with the Apple Account used to subscribe, then try again."
         case .verificationFailed:
             return "StoreKit transaction verification failed cryptographic validation."
         case .networkUnavailable:

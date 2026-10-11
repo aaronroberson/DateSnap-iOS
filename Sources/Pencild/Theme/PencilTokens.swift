@@ -36,7 +36,8 @@ extension Color {
     /// Dark text for use on the orange/coral gradient (on-primary-fixed); white fails contrast there.
     static let pdOnPrimaryFixed = Color(hex: "321200")
 
-    // Status (always paired with an icon and label)
+    // Status (always paired with an icon and label). Success/info are lifted
+    // from the source palette so small labels retain contrast on tonal cards.
     static let pdSuccess = Color(hex: "34D399")
     static let pdWarning = Color(hex: "FFB800")
     static let pdInfo = Color(hex: "7FB2FF")
@@ -90,8 +91,15 @@ enum PDFont {
 }
 
 extension LinearGradient {
-    /// Signature Pencil'd gradient: orange to coral to lavender.
+    /// Signature filled action gradient from the Stitch screens.
     static let pdSignature = LinearGradient(
+        colors: [.pdOrange, .pdTertiaryContainer, .pdLavender],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
+
+    /// The warmer orange/coral/lavender treatment used for brand headlines.
+    static let pdHeadline = LinearGradient(
         colors: [.pdOrange, .pdCoral, .pdLavender],
         startPoint: .leading,
         endPoint: .trailing
@@ -99,12 +107,7 @@ extension LinearGradient {
 }
 
 extension LinearGradient {
-    /// Filled call-to-action gradient: orange to coral.
-    static let pdAction = LinearGradient(
-        colors: [.pdOrange, .pdCoral],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
+    static let pdAction = pdSignature
 
     /// Soft warm wash for selected chips, selected date badges and highlighted cards.
     static let pdSelected = LinearGradient(
@@ -123,6 +126,8 @@ extension LinearGradient {
 
 /// Full-width gradient call-to-action with a warm glow.
 struct PDGradientButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.isEnabled) private var isEnabled
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(PDFont.jakarta(16, .bold))
@@ -130,8 +135,8 @@ struct PDGradientButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: 52)
             .background(Capsule().fill(LinearGradient.pdAction))
             .shadow(color: Color.pdOrange.opacity(0.45), radius: 16, y: 6)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
-            .opacity(configuration.isPressed ? 0.92 : 1)
+            .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.98 : 1))
+            .opacity(isEnabled ? (configuration.isPressed ? 0.92 : 1) : 0.45)
     }
 }
 

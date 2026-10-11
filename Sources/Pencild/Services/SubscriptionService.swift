@@ -151,8 +151,11 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             try await AppStore.sync()
             await refreshEntitlements(.restore)
             return currentTier
+        } catch StoreKitError.userCancelled {
+            throw PencildError.subscription(.purchaseCancelled)
         } catch {
-            throw PencildError.subscription(.verificationFailed)
+            Self.logger.error("Restore purchases failed: \(error.localizedDescription)")
+            throw PencildError.subscription(.restoreFailed)
         }
     }
 

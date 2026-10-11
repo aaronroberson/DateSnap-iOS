@@ -112,6 +112,8 @@ struct DSDateBadge: View {
 // MARK: - Primary CTA
 /// Full-width gradient pill, the Stitch primary action.
 struct DSPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.isEnabled) private var isEnabled
     var minHeight: CGFloat = 52
 
     func makeBody(configuration: Configuration) -> some View {
@@ -125,14 +127,17 @@ struct DSPrimaryButtonStyle: ButtonStyle {
                     .fill(LinearGradient.pdAction)
                     .shadow(color: Color.pdPrimaryContainer.opacity(configuration.isPressed ? 0.15 : 0.3), radius: 14, y: 6)
             )
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
+            .opacity(isEnabled ? 1 : 0.45)
+            .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.98 : 1.0))
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.16), value: configuration.isPressed)
     }
 }
 
 // MARK: - Secondary CTA
 /// Tonal pill on surface-container-high, the Stitch secondary action.
 struct DSSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.isEnabled) private var isEnabled
     var minHeight: CGFloat = 50
 
     func makeBody(configuration: Configuration) -> some View {
@@ -142,8 +147,8 @@ struct DSSecondaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .frame(minHeight: minHeight)
             .background(Capsule().fill(Color.pdSurfaceContainerHigh))
-            .opacity(configuration.isPressed ? 0.8 : 1)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
+            .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.45)
+            .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.98 : 1.0))
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.16), value: configuration.isPressed)
     }
 }
