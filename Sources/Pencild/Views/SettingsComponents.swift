@@ -1,7 +1,8 @@
 import SwiftUI
 
-// Shared building blocks for the Settings cluster screens
-// (Settings Hub, Privacy Center, Automation, Reminder Defaults, Manage Plan).
+// Shared building blocks for the Settings cluster screens.
+// Wraps the canonical Pencil'd design system components in `PencilComponents.swift`
+// while keeping existing call sites working.
 
 // MARK: - Screen header with optional custom back button (pushed screens)
 struct SettingsScreenHeader: View {
@@ -9,22 +10,13 @@ struct SettingsScreenHeader: View {
     var showBack: Bool = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            if showBack {
-                SettingsBackButton()
-            }
-            Text(title)
-                .font(DSTypography.headlineSection())
-                .foregroundStyle(Color.dsForeground)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            Spacer()
-            Image(systemName: "person.crop.circle")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color.dsMutedForeground)
+        PDTopBar(title: title, showsBack: showBack) {
+            Image(systemName: "person.fill")
+                .font(.system(size: 15))
+                .foregroundStyle(Color.pdOnPrimary)
                 .frame(width: 32, height: 32)
-                .background(Circle().fill(Color.dsMuted))
-                .overlay(Circle().stroke(Color.dsBorder, lineWidth: 1))
+                .background(Circle().fill(Color.pdPrimary))
+                .accessibilityHidden(true)
         }
     }
 }
@@ -37,12 +29,14 @@ struct SettingsBackButton: View {
             dismiss()
         } label: {
             Image(systemName: "chevron.left")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Color.dsForeground)
-                .frame(width: 30, height: 30)
-                .background(Circle().fill(Color.dsMuted))
-                .overlay(Circle().stroke(Color.dsBorder, lineWidth: 1))
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color.pdOnSurface)
+                .frame(width: 44, height: 44)
+                .background(Circle().fill(Color.pdSurfaceContainer))
+                .contentShape(Circle())
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Back")
     }
 }
 
@@ -50,134 +44,88 @@ struct SettingsBackButton: View {
 struct SettingsSectionHeader: View {
     let icon: String
     let title: String
-    var tint: Color = .dsMutedForeground
+    var tint: Color = .pdPrimary
     var trailing: String? = nil
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: PDSpacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(tint)
                 .frame(width: 24, height: 24)
-                .background(Capsule().fill(tint.opacity(0.12)))
-                .overlay(Capsule().stroke(tint.opacity(0.25), lineWidth: 1))
+                .background(Capsule().fill(tint.opacity(0.15)))
             Text(title)
-                .font(DSTypography.overlineConfidence())
-                .tracking(1.3)
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.labelSM)
+                .tracking(0.6)
+                .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
                 .textCase(.uppercase)
             Spacer()
             if let trailing {
                 Text(trailing)
-                    .font(DSTypography.overlineConfidence())
-                    .foregroundStyle(Color.dsMutedForeground)
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.dsMuted))
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
             }
         }
+        .padding(.horizontal, PDSpacing.xxs)
     }
 }
 
 // MARK: - Small tinted value chip
 struct ValueChip: View {
     let text: String
-    var tint: Color = .dsPrimary
+    var tint: Color = .pdPrimary
     var filled: Bool = false
     var systemImage: String? = nil
 
     var body: some View {
-        HStack(spacing: 4) {
-            if let systemImage {
-                Image(systemName: systemImage)
-                    .font(.system(size: 9, weight: .bold))
-            }
-            Text(text)
-                .font(DSTypography.overlineConfidence())
-        }
-        .foregroundStyle(filled ? Color.dsPrimaryForeground : tint)
-        .padding(.horizontal, 9)
-        .padding(.vertical, 5)
-        .background(
-            Capsule()
-                .fill(filled ? tint : tint.opacity(0.14))
-                .overlay(Capsule().stroke(tint.opacity(filled ? 1 : 0.3), lineWidth: 1))
+        PDStatusBadge(
+            text: text,
+            icon: systemImage,
+            tone: tint == .pdSuccess || tint == .dsSuccess ? .success :
+                  tint == .pdWarning || tint == .dsWarning ? .warning :
+                  tint == .pdInfo || tint == .dsInfo ? .info :
+                  tint == .pdError || tint == .dsError ? .error : .neutral
         )
-        .fixedSize()
     }
 }
 
 struct SettingsChevron: View {
     var body: some View {
         Image(systemName: "chevron.right")
-            .font(.system(size: 11, weight: .semibold))
-            .foregroundStyle(Color.dsMutedForeground.opacity(0.7))
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(Color.pdOutline)
     }
 }
 
 // MARK: - Standard settings row
 struct SettingRow<Trailing: View>: View {
     let icon: String
-    var iconTint: Color = .dsSecondary
+    var iconTint: Color = .pdPrimary
     let title: String
     var subtitle: String? = nil
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(iconTint)
-                .frame(width: 34, height: 34)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(iconTint.opacity(0.14))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(iconTint.opacity(0.25), lineWidth: 1)
-                        )
-                )
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(DSTypography.bodyCompact())
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.dsForeground)
-                if let subtitle {
-                    Text(subtitle)
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                }
-            }
-            Spacer(minLength: 8)
-            trailing()
-        }
-        .padding(.vertical, 2)
+        PDListRow(icon: icon, tint: iconTint, title: title, subtitle: subtitle, trailing: trailing)
     }
 }
 
 extension SettingRow where Trailing == SettingsChevron {
-    init(icon: String, iconTint: Color = .dsSecondary, title: String, subtitle: String? = nil) {
+    init(icon: String, iconTint: Color = .pdPrimary, title: String, subtitle: String? = nil) {
         self.init(icon: icon, iconTint: iconTint, title: title, subtitle: subtitle) { SettingsChevron() }
     }
 }
 
-// MARK: - Toggle row with the design system's success-green switch
+// MARK: - Toggle row
 struct SettingToggleRow: View {
     let icon: String
-    var iconTint: Color = .dsSecondary
+    var iconTint: Color = .pdPrimary
     let title: String
     var subtitle: String? = nil
     @Binding var isOn: Bool
 
     var body: some View {
-        SettingRow(icon: icon, iconTint: iconTint, title: title, subtitle: subtitle) {
-            Toggle("", isOn: $isOn)
-                .labelsHidden()
-                .tint(Color.dsSuccess)
-                .fixedSize()
-        }
+        PDToggleRow(icon: icon, tint: iconTint, title: title, subtitle: subtitle, isOn: $isOn)
     }
 }
 
@@ -187,20 +135,20 @@ struct SettingsFooterNote: View {
     var systemImage: String? = nil
 
     var body: some View {
-        VStack(spacing: 5) {
+        VStack(spacing: PDSpacing.xxs) {
             if let systemImage {
                 Image(systemName: systemImage)
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(Color.dsPrimary)
+                    .foregroundStyle(Color.pdPrimary)
             }
             ForEach(lines, id: \.self) { line in
                 Text(line)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground.opacity(0.8))
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
                     .multilineTextAlignment(.center)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 4)
+        .padding(.top, PDSpacing.xxs)
     }
 }
