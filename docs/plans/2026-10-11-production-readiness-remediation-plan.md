@@ -163,3 +163,23 @@ Extracted large views and monolithic cards into focused subviews:
 - `EventInterpretationDetailCard` to `Sources/Pencild/Views/EventInterpretationDetailCard.swift` (reduced `SavedEventDetailView` from 375 to 315 lines).
 - `BatchDestinationsEditor` and `BatchTitledField` to `Sources/Pencild/Views/BatchDestinationsEditor.swift` (reduced `BatchReviewView` from 685 to 560 lines).
 All 119 unit tests across 29 test suites passed on iPad Pro 11-inch (M5) simulator, brand gate passed, zero compiler errors or warnings. Ready for Phase 3.
+
+The post-extraction iPhone 17 run also passed: 119 tests total, 117 passed,
+2 skipped, 0 failed, with no runtime warnings (`/private/tmp/pencild-scan-extract-tests4.xcresult`).
+The matching iPad Pro 11-inch Debug build passed after XcodeGen regeneration.
+
+The post-extraction Release build passed for iPhone 17, and
+`scripts/verify-release-content.sh --require-app` passed for the resulting
+artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
+
+2026-10-11: Phase 3 Tablet Workspace & Accessibility Verification completed.
+- Verified iPad Pro 11-inch (M5) regular-size dual-pane Event Review workspace:
+  - Left pane displays `EventReviewSourceInspector` with interactive 44pt zoom in, zoom out, scale indicator, and reset controls (clamped within 0.8x-2.5x bounds) and pan gesture.
+  - Right pane hosts `EventReviewFieldsCard`, ambiguity banners, destination pickers, and Save pipeline.
+- Verified Saved Event Detail regular dual-column workspace:
+  - Left column displays hero card, status, and `EventInterpretationDetailCard`.
+  - Right column displays destinations, alert offsets, and actions (Open in Calendar, Edit, Alerts, Share, Archive).
+- Verified touch targets across all interactive buttons, chips, and top bars satisfy the >= 44pt accessibility rule.
+- Added and executed `TabletWorkspaceTests.swift` testing zoom limits, reset behavior, single-column vs regular-column model requirements, and touch target accessibility metadata.
+- All 122 tests across 30 test suites passed on iPad Pro 11-inch simulator with 0 failures and 0 warnings.
+- Brand identity gate passed. Ready for Phase 4.

@@ -304,10 +304,10 @@ struct EventReviewForm: View {
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: PDRadius.card)
                 .fill(Color.pdWarning.opacity(0.12))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: PDRadius.card)
                         .stroke(Color.pdWarning.opacity(0.35), lineWidth: 1)
                 )
         )
@@ -462,7 +462,7 @@ struct EventReviewForm: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 48)
                         .background(
-                            RoundedRectangle(cornerRadius: 24)
+                            Capsule()
                                 .fill(Color.pdSurfaceHighest)
                         )
                     }
@@ -484,8 +484,8 @@ struct EventReviewForm: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 48)
                         .background(
-                            RoundedRectangle(cornerRadius: 24)
-                                .fill(Color.pdError.opacity(0.12))
+                                Capsule()
+                                    .fill(Color.pdError.opacity(0.12))
                         )
                     }
                 }

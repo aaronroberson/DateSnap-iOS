@@ -147,7 +147,7 @@ struct AlternativeInterpretationsCard: View {
                     }
                     .padding(10)
                     .frame(minHeight: 44)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.pdSurfaceLow))
+                            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(Color.pdSurfaceLow))
                 }
                 .accessibilityHint("Fills the form with this reading")
             }
