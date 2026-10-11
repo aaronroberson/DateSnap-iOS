@@ -30,6 +30,7 @@ enum EventSmartFilter: String, CaseIterable, Identifiable {
     }
 
     /// IDs of saved records that belong to a likely-duplicate cluster (Premium).
+    @MainActor
     static func duplicateIDs(in savedEvents: [SavedEvent], services: ServiceContainer) -> Set<String> {
         let entries = savedEvents.compactMap { saved -> EventSimilarityService.Entry? in
             guard let candidate = saved.candidate else { return nil }
@@ -43,6 +44,53 @@ enum EventSmartFilter: String, CaseIterable, Identifiable {
     }
 }
 
+/// Colors for `EventSearchFilterBar`. `legacy` keeps History & Archive on the
+/// current app palette; `pencild` is the Stitch "Luminous Precision" look.
+struct EventFilterPalette {
+    let text: Color
+    let muted: Color
+    let accent: Color
+    let fieldFill: Color
+    let chipFill: Color
+    let border: Color
+    let selectedFill: AnyShapeStyle
+    let selectedBorder: Color
+    let selectedText: Color
+    let countFill: Color
+    let selectedCountFill: Color
+    let showsCheckmark: Bool
+
+    static let legacy = EventFilterPalette(
+        text: .dsForeground,
+        muted: .dsMutedForeground,
+        accent: .dsPrimary,
+        fieldFill: .dsCard,
+        chipFill: .dsCard,
+        border: .dsBorder,
+        selectedFill: AnyShapeStyle(Color.dsSecondary.opacity(0.2)),
+        selectedBorder: .dsPrimary,
+        selectedText: .dsPrimary,
+        countFill: Color.white.opacity(0.1),
+        selectedCountFill: Color.dsPrimary.opacity(0.3),
+        showsCheckmark: false
+    )
+
+    static let pencild = EventFilterPalette(
+        text: .pdOnSurface,
+        muted: .pdOnSurfaceVariant,
+        accent: .pdPrimary,
+        fieldFill: .pdSurfaceContainer,
+        chipFill: .pdSurfaceContainer,
+        border: Color.pdOutlineVariant.opacity(0.5),
+        selectedFill: AnyShapeStyle(LinearGradient.pdSelected),
+        selectedBorder: Color.pdPrimary.opacity(0.7),
+        selectedText: .pdPrimary,
+        countFill: Color.pdSurfaceHighest,
+        selectedCountFill: Color.pdOrange.opacity(0.28),
+        showsCheckmark: true
+    )
+}
+
 /// Search field, status chips (with counts) and smart triage chips. Used at the
 /// top of both History & Archive and Agenda so the two stay identical.
 struct EventSearchFilterBar: View {
@@ -54,6 +102,7 @@ struct EventSearchFilterBar: View {
     let counts: [SavedEventStatus: Int]
     var excludedSmartFilters: Set<EventSmartFilter> = []
     var idPrefix: String = "events"
+    var palette: EventFilterPalette = .legacy
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -82,17 +131,17 @@ struct EventSearchFilterBar: View {
     private var searchField: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(Color.dsMutedForeground)
+                .foregroundStyle(palette.muted)
             TextField("Search events, venues, dates...", text: $searchText)
                 .font(DSTypography.bodyCompact())
-                .foregroundStyle(Color.dsForeground)
+                .foregroundStyle(palette.text)
                 .accessibilityIdentifier("\(idPrefix).search")
             if !searchText.isEmpty {
                 Button {
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(palette.muted)
                         .frame(minWidth: 44, minHeight: 44)
                 }
                 .accessibilityLabel("Clear search")
@@ -102,8 +151,8 @@ struct EventSearchFilterBar: View {
         .padding(.vertical, 4)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color.dsCard)
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.dsBorder, lineWidth: 1))
+                .fill(palette.fieldFill)
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(palette.border, lineWidth: 1))
         )
     }
 
@@ -113,6 +162,9 @@ struct EventSearchFilterBar: View {
             status = option
         } label: {
             HStack(spacing: 6) {
+                if isSelected && palette.showsCheckmark {
+                    PDCheckmark(size: 16)
+                }
                 Text(option.eventStatus.rawValue)
                     .font(DSTypography.labelChip())
                 Text("\(counts[option] ?? 0)")
@@ -120,16 +172,17 @@ struct EventSearchFilterBar: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(
-                        Capsule().fill(isSelected ? Color.dsPrimary.opacity(0.3) : Color.white.opacity(0.1))
+                        Capsule().fill(isSelected ? palette.selectedCountFill : palette.countFill)
                     )
             }
-            .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
+            .foregroundStyle(isSelected ? palette.selectedText : palette.muted)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
+            .frame(minHeight: 44)
             .background(
                 Capsule()
-                    .fill(isSelected ? Color.dsSecondary.opacity(0.2) : Color.dsCard)
-                    .overlay(Capsule().stroke(isSelected ? Color.dsPrimary : Color.dsBorder, lineWidth: 1))
+                    .fill(isSelected ? palette.selectedFill : AnyShapeStyle(palette.chipFill))
+                    .overlay(Capsule().stroke(isSelected ? palette.selectedBorder : palette.border, lineWidth: 1))
             )
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -152,13 +205,13 @@ struct EventSearchFilterBar: View {
                 Text(filter.rawValue)
                     .font(DSTypography.caption())
             }
-            .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
+            .foregroundStyle(isSelected ? palette.selectedText : palette.muted)
             .padding(.horizontal, 12)
             .frame(minHeight: 44)
             .background(
                 Capsule()
-                    .fill(isSelected ? Color.dsPrimary.opacity(0.14) : Color.clear)
-                    .overlay(Capsule().stroke(isSelected ? Color.dsPrimary : Color.dsBorder, lineWidth: 1))
+                    .fill(isSelected ? palette.selectedFill : AnyShapeStyle(Color.clear))
+                    .overlay(Capsule().stroke(isSelected ? palette.selectedBorder : palette.border, lineWidth: 1))
             )
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])

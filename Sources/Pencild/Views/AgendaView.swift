@@ -67,7 +67,8 @@ struct AgendaView: View {
                     smartFilter: $smartFilter,
                     counts: statusCounts,
                     excludedSmartFilters: [.upcoming],
-                    idPrefix: "agenda"
+                    idPrefix: "agenda",
+                    palette: .pencild
                 )
                 dateFilters
 
@@ -75,22 +76,26 @@ struct AgendaView: View {
                     emptyState
                 } else {
                     if !todayEvents.isEmpty {
-                        eventSection("Today’s events", events: todayEvents)
+                        eventSection("Today\u{2019}s events", events: todayEvents, highlighted: true)
                     }
                     if !upcomingEvents.isEmpty {
-                        eventSection("Upcoming events", events: upcomingEvents)
+                        eventSection("Upcoming events", events: upcomingEvents, highlighted: false)
                     }
                     if !pastEvents.isEmpty {
-                        eventSection("Past events", events: pastEvents)
+                        eventSection("Past events", events: pastEvents, highlighted: false)
                     }
                     if selectedFilter == .past || selectedFilter == .all {
                         Button {
                             appState.selectedTab = .history
                         } label: {
-                            Label("View full history", systemImage: "arrow.right")
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsSecondary)
-                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .center)
+                            HStack(spacing: 6) {
+                                Text("View full history")
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .bold))
+                            }
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.pdLavender)
+                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .center)
                         }
                         .buttonStyle(.plain)
                     }
@@ -98,22 +103,63 @@ struct AgendaView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-            .padding(.bottom, 120)
+            .padding(.bottom, 24)
         }
-        .dsScreenBackground()
+        .background(agendaBackground)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            captureCTA
+        }
+    }
+
+    // MARK: - Chrome
+
+    private var agendaBackground: some View {
+        ZStack {
+            Color.pdSurface
+            RadialGradient(
+                colors: [Color.pdOrange.opacity(0.12), .clear],
+                center: .top,
+                startRadius: 10,
+                endRadius: 420
+            )
+        }
+        .ignoresSafeArea()
+    }
+
+    /// Docked primary action; sits above the custom tab bar.
+    private var captureCTA: some View {
+        Button {
+            appState.selectedTab = .home
+        } label: {
+            Label("Capture new events", systemImage: "plus")
+        }
+        .buttonStyle(PDGradientButtonStyle())
+        .accessibilityIdentifier("agenda.capture")
+        .padding(.horizontal, 16)
+        .padding(.top, 10)
+        .padding(.bottom, 84)
+        .background(
+            LinearGradient(colors: [Color.pdSurface.opacity(0), Color.pdSurface], startPoint: .top, endPoint: .center)
+        )
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Text("PENCIL’D • AGENDA")
-                .font(DSTypography.overlineConfidence())
-                .foregroundStyle(Color.dsPrimary)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(Color.pdOrange)
+                    .frame(width: 6, height: 6)
+                Text("AGENDA")
+                    .font(.system(size: 11, weight: .bold))
+                    .tracking(1.4)
+                    .foregroundStyle(Color.pdPrimary)
+            }
             Text("Agenda")
-                .font(DSTypography.displayTitle())
-                .foregroundStyle(Color.dsForeground)
-            Text("Review today’s and upcoming saved events.")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(.system(size: 34, weight: .heavy))
+                .foregroundStyle(Color.pdOnSurface)
+            Text("Review today\u{2019}s and upcoming saved events captured with Pencil\u{2019}d.")
+                .font(.system(size: 14))
+                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -127,14 +173,14 @@ struct AgendaView: View {
                         selectedFilter = filter
                     } label: {
                         Text(filter.rawValue)
-                            .font(DSTypography.labelChip())
-                            .foregroundStyle(selected ? Color.dsPrimary : Color.dsMutedForeground)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(selected ? Color.pdPrimary : Color.pdOnSurfaceVariant)
                             .padding(.horizontal, 14)
                             .frame(minHeight: 44)
                             .background(
                                 Capsule()
-                                    .fill(selected ? Color.dsPrimary.opacity(0.14) : Color.dsCard)
-                                    .overlay(Capsule().stroke(selected ? Color.dsPrimary : Color.dsBorder, lineWidth: 1))
+                                    .fill(selected ? AnyShapeStyle(LinearGradient.pdSelected) : AnyShapeStyle(Color.pdSurfaceContainer))
+                                    .overlay(Capsule().stroke(selected ? Color.pdPrimary.opacity(0.7) : Color.pdOutlineVariant.opacity(0.5), lineWidth: 1))
                             )
                     }
                     .buttonStyle(.plain)
@@ -145,32 +191,28 @@ struct AgendaView: View {
         }
     }
 
+    // MARK: - Empty state
+
     private var emptyState: some View {
         VStack(spacing: 12) {
             Image(systemName: hasActiveFilters ? "magnifyingglass" : "calendar.badge.plus")
                 .font(.system(size: 34))
-                .foregroundStyle(Color.dsSecondary)
+                .foregroundStyle(Color.pdLavender)
             Text(hasActiveFilters ? "No matching events" : emptyTitle)
-                .font(DSTypography.headlineCard())
-                .foregroundStyle(Color.dsForeground)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(Color.pdOnSurface)
             Text(hasActiveFilters ? "Try another event, venue, date, or filter." : emptyMessage)
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(.system(size: 14))
+                .foregroundStyle(Color.pdOnSurfaceVariant)
                 .multilineTextAlignment(.center)
-            if !hasActiveFilters && selectedStatus == .saved {
-                Button {
-                    appState.selectedTab = .home
-                } label: {
-                    Label("Capture new events", systemImage: "plus")
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                }
-                .buttonStyle(DSPrimaryButtonStyle())
-                .padding(.top, 4)
-            }
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .dsGlassCard()
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(Color.pdSurfaceContainer)
+                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.pdOutlineVariant.opacity(0.4), lineWidth: 1))
+        )
     }
 
     private var emptyTitle: String {
@@ -192,81 +234,137 @@ struct AgendaView: View {
         }
     }
 
-    private func eventSection(_ title: String, events: [SavedEvent]) -> some View {
+    // MARK: - Sections and cards
+
+    private func eventSection(_ title: String, events: [SavedEvent], highlighted: Bool) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(title)
-                    .font(DSTypography.headlineCard())
-                    .foregroundStyle(Color.dsForeground)
+                Text(title.uppercased())
+                    .font(.system(size: 12, weight: .bold))
+                    .tracking(1.2)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                 Spacer()
                 Text("\(events.count)")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.7))
             }
             ForEach(events) { saved in
-                eventRow(saved)
+                eventRow(saved, highlighted: highlighted)
             }
         }
     }
 
-    private func eventRow(_ saved: SavedEvent) -> some View {
+    private func eventRow(_ saved: SavedEvent, highlighted: Bool) -> some View {
         let candidate = saved.candidate
-        return HStack(spacing: 10) {
+        return VStack(alignment: .leading, spacing: 10) {
             Button {
                 guard let event = candidate?.toPencildEvent() else { return }
                 appState.activeModal = saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)
             } label: {
-                HStack(spacing: 12) {
-                    DSDateBadge(
+                HStack(alignment: .top, spacing: 12) {
+                    PDDateBadge(
                         month: candidate?.startDate.formatted(.dateTime.month(.abbreviated)) ?? "",
                         day: candidate?.startDate.formatted(.dateTime.day()) ?? "",
-                        isSelected: true
+                        highlighted: highlighted
                     )
                     VStack(alignment: .leading, spacing: 4) {
                         Text(candidate?.title ?? "Saved event")
-                            .font(DSTypography.bodyStrong())
-                            .foregroundStyle(Color.dsForeground)
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(Color.pdOnSurface)
+                            .multilineTextAlignment(.leading)
                             .lineLimit(2)
                         Text(eventSubtitle(candidate))
-                            .font(DSTypography.caption())
-                            .foregroundStyle(Color.dsMutedForeground)
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                            .multilineTextAlignment(.leading)
                             .lineLimit(2)
                     }
                     Spacer(minLength: 0)
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Color.pdOnSurface)
+                        .frame(width: 32, height: 32)
+                        .background(Circle().fill(Color.pdSurfaceHighest.opacity(0.8)))
                 }
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("agenda.event.\(saved.id)")
 
-            Button {
-                let isArchived = saved.status == .archived
-                let target: SavedEventStatus = isArchived ? (saved.externalCalendarEventId != nil ? .saved : .draft) : .archived
-                let result = SavedEventActions(services: services, modelContext: modelContext)
-                    .setStatus(target, for: saved)
-                let done = isArchived ? "Event restored" : "Event archived"
-                switch result {
-                case .success:
-                    appState.showToast(done)
-                case .partial(let issues):
-                    appState.showToast("Completed with issues: \(issues.joined(separator: "; "))")
-                case .failure(let error):
-                    appState.showToast(error.localizedDescription)
-                }
-            } label: {
-                Image(systemName: saved.status == .archived ? "arrow.uturn.backward" : "archivebox")
-                    .foregroundStyle(Color.dsMutedForeground)
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
+            HStack(spacing: 8) {
+                statusBadge(saved)
+                Spacer(minLength: 0)
+                archiveButton(saved)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("\(saved.status == .archived ? "Restore" : "Archive") \(candidate?.title ?? "event")")
         }
-        .padding(12)
-        .dsGlassCard(cornerRadius: 16)
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(highlighted ? AnyShapeStyle(LinearGradient.pdHighlightCard) : AnyShapeStyle(Color.pdSurfaceContainer))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(highlighted ? Color.pdPrimary.opacity(0.35) : Color.pdOutlineVariant.opacity(0.4), lineWidth: 1)
+                )
+        )
+    }
+
+    @ViewBuilder
+    private func statusBadge(_ saved: SavedEvent) -> some View {
+        switch saved.status {
+        case .saved:
+            if saved.externalCalendarEventId != nil {
+                HStack(spacing: 6) {
+                    PDCheckmark(size: 16)
+                    Text("In Calendar")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color.pdOnSurface)
+                }
+            } else {
+                Label("Not in Calendar", systemImage: "exclamationmark.circle")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.dsWarning)
+            }
+        case .draft:
+            Label("Draft", systemImage: "bookmark.fill")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color.pdPrimary)
+        case .archived:
+            Label("Archived", systemImage: "archivebox.fill")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+        }
+    }
+
+    private func archiveButton(_ saved: SavedEvent) -> some View {
+        let isArchived = saved.status == .archived
+        let title = saved.candidate?.title ?? "event"
+        return Button {
+            let target: SavedEventStatus = isArchived ? (saved.externalCalendarEventId != nil ? .saved : .draft) : .archived
+            let result = SavedEventActions(services: services, modelContext: modelContext)
+                .setStatus(target, for: saved)
+            let done = isArchived ? "Event restored" : "Event archived"
+            switch result {
+            case .success:
+                appState.showToast(done)
+            case .partial(let issues):
+                appState.showToast("Completed with issues: \(issues.joined(separator: "; "))")
+            case .failure(let error):
+                appState.showToast(error.localizedDescription)
+            }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: isArchived ? "arrow.uturn.backward" : "archivebox")
+                    .font(.system(size: 12, weight: .semibold))
+                Text(isArchived ? "Restore" : "Archive")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            .foregroundStyle(Color.pdOnSurface)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 44)
+            .background(Capsule().fill(Color.pdSurfaceHighest.opacity(0.7)))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(isArchived ? "Restore" : "Archive") \(title)")
     }
 
     private func eventSubtitle(_ candidate: EventCandidate?) -> String {
