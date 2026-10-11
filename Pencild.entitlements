@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Pencil'd uses on-device local execution. No push notifications or iCloud entitlements required. -->
+	<!-- Pencil'd runs locally. Sign in with Apple is the only account capability; no push or iCloud entitlements. -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
 </dict>
 </plist>
