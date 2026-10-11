@@ -26,8 +26,8 @@ struct PencildSmokeTests {
     @Test("Home uses the Pencil'd brand in safe copy")
     @MainActor
     func testHomeBrandCopy() {
-        #expect(HomeBrandCopy.captureHeading == "Capture Events")
-        #expect(HomeBrandCopy.captureSubtitle == "Select a source and all the details will be Pencil'd in for you automatically once you confirm.")
+        #expect(HomeBrandCopy.captureHeading == "Turn Schedules Into Events")
+        #expect(HomeBrandCopy.captureSubtitle == "Scan flyers, import syllabi, or let Pencil'd Plus spot events in your new screenshots.")
         #expect(HomeBrandCopy.photoLibraryPermissionMessage == "Pencil'd needs Photo Library access to find your recent screenshots. You can still pick individual photos without it.")
         #expect(HomeBrandCopy.premiumFileImportAccessibilityHint == "Requires Pencil'd Premium")
         #expect(HomeBrandCopy.plusScreenshotExplanation == "Pencil'd Plus checks new screenshots on your device and highlights likely events. Nothing is saved until you review it.")
