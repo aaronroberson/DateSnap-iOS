@@ -62,6 +62,7 @@ struct EventReviewForm: View {
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var zoomScale: CGFloat = 1.0
+    @State private var panOffset: CGSize = .zero
 
     init(viewModel: @autoclosure @escaping () -> EventReviewViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())
@@ -238,13 +239,17 @@ struct EventReviewForm: View {
                                     .resizable()
                                     .scaledToFit()
                                     .scaleEffect(zoomScale)
+                                    .offset(panOffset)
                                     .frame(maxHeight: 460)
                                     .clipped()
+                                    .gesture(sourcePanGesture)
                                     .accessibilityLabel("Original scanned document")
                             } else {
                                 PDScanSourceThumbnail(candidate: viewModel.candidate, width: nil, height: 460, contentMode: .fit)
                                     .scaleEffect(zoomScale)
+                                    .offset(panOffset)
                                     .clipped()
+                                    .gesture(sourcePanGesture)
                             }
                         }
                         .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
@@ -259,6 +264,7 @@ struct EventReviewForm: View {
                                     .foregroundStyle(Color.pdOnSurface)
                             }
                             .frame(minWidth: 44, minHeight: 44)
+                            .accessibilityLabel("Zoom out")
 
                             Text("\(Int(zoomScale * 100))%")
                                 .font(PDFont.labelSM)
@@ -273,19 +279,24 @@ struct EventReviewForm: View {
                                     .foregroundStyle(Color.pdOnSurface)
                             }
                             .frame(minWidth: 44, minHeight: 44)
+                            .accessibilityLabel("Zoom in")
 
                             Divider()
                                 .frame(height: 16)
                                 .background(Color.pdOutlineVariant)
 
                             Button {
-                                withAnimation(.spring(response: 0.25)) { zoomScale = 1.0 }
+                                withAnimation(.spring(response: 0.25)) {
+                                    zoomScale = 1.0
+                                    panOffset = .zero
+                                }
                             } label: {
                                 Image(systemName: "arrow.counterclockwise")
                                     .font(.system(size: 14))
                                     .foregroundStyle(Color.pdOnSurfaceVariant)
                             }
                             .frame(minWidth: 44, minHeight: 44)
+                            .accessibilityLabel("Reset document view")
                         }
                         .padding(.horizontal, 14)
                         .background(
@@ -310,6 +321,17 @@ struct EventReviewForm: View {
                 }
             }
         }
+    }
+
+    private var sourcePanGesture: some Gesture {
+        DragGesture(minimumDistance: 4)
+            .onChanged { value in
+                guard zoomScale > 1 else { return }
+                panOffset = value.translation
+            }
+            .onEnded { _ in
+                if zoomScale <= 1 { panOffset = .zero }
+            }
     }
 
     // MARK: - Header

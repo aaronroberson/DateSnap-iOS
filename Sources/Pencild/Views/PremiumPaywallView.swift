@@ -9,6 +9,7 @@ struct PremiumPaywallView: View {
     
     @State private var selectedPlanIsAnnual: Bool = true
     @State private var trialEligibleProductIDs: Set<String> = []
+    @State private var restoreMessage: String?
     
     var body: some View {
         NavigationView {
@@ -286,6 +287,14 @@ struct PremiumPaywallView: View {
             } message: {
                 Text(purchases.errorMessage ?? "")
             }
+            .alert("Restore Purchases", isPresented: Binding(
+                get: { restoreMessage != nil },
+                set: { if !$0 { restoreMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(restoreMessage ?? "")
+            }
         }
     }
 
@@ -335,7 +344,7 @@ struct PremiumPaywallView: View {
         let yearlyAtMonthly = monthly.price * 12
         let saving = (yearlyAtMonthly - annual.price) / yearlyAtMonthly * 100
         guard saving > 0 else { return nil }
-        return "Save \(NSDecimalNumber(decimal: saving).intValue)%"
+        return "Save \(Int(NSDecimalNumber(decimal: saving).doubleValue.rounded()))%"
     }
 
     private func purchase() async {
@@ -347,7 +356,7 @@ struct PremiumPaywallView: View {
     private func restore() async {
         guard let tier = await purchases.restore() else { return }
         if tier == .starter {
-            appState.showToast("No active subscription found to restore")
+            restoreMessage = "No active subscription found to restore."
         } else {
             appState.showToast("✓ \(tier.displayName) restored")
             dismiss()

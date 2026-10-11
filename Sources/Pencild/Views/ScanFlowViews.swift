@@ -651,7 +651,7 @@ private struct ReviewQueueRow: View {
                     Spacer(minLength: 0)
                 }
                 HStack {
-                    DSConfidencePill(score: Int((candidate.confidenceScore * 100).rounded()), label: candidate.confidenceTier.label)
+                    PDStatusBadge(text: "\(Int((candidate.confidenceScore * 100).rounded()))% · \(candidate.confidenceTier.label)", icon: candidate.confidenceTier.iconName, tone: candidate.confidenceTier == .high ? .success : .warning)
                     if candidate.savedEvent?.status == .draft {
                         PDStatusBadge(text: "Draft", icon: "bookmark.fill", tone: .neutral)
                     }
