@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import SwiftUI
 import Photos
 import EventKit
@@ -27,6 +28,7 @@ public final class HomeViewModel: ObservableObject {
     private var triageTask: Task<Void, Never>? = nil
 
     private var observationTask: Task<Void, Never>? = nil
+    private var entitlementObserver: AnyCancellable?
 
     public init(services: ServiceContainer) {
         self.photoLibraryService = services.photoLibrary
@@ -37,10 +39,22 @@ public final class HomeViewModel: ObservableObject {
 
         refreshStatus()
         startObservingPhotoLibrary()
+        observeEntitlementResolution(services.subscription)
     }
 
     deinit {
         observationTask?.cancel()
+    }
+
+    /// Entitlements start in `.checking`, which the access policy treats as denied, so the launch-time
+    /// refresh cannot start automatic screenshot detection. Re-run it whenever the snapshot resolves
+    /// or changes (verified Plus after launch, a purchase, a restore, an expiry).
+    private func observeEntitlementResolution(_ subscription: SubscriptionServiceProtocol) {
+        guard let live = subscription as? SubscriptionService else { return }
+        entitlementObserver = live.$entitlementSnapshot
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.refreshStatus() }
     }
 
     // MARK: - Permissions & Status Refresh

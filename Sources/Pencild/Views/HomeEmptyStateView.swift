@@ -206,6 +206,12 @@ struct HomeEmptyStateView: View {
                 }
             }
 
+            if autoDetect && !photosAuthorized {
+                Text("Allow Photos access and Pencil\u{2019}d will surface new event screenshots here.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+
             HStack(spacing: 10) {
                 if needingReviewCount > 0 {
                     Button {
