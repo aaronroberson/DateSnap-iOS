@@ -1,29 +1,30 @@
 import SwiftUI
 import SwiftData
+import Photos
+import UIKit
 
 struct SavedEventDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.services) private var services
     @EnvironmentObject private var appState: AppState
-    
-    /// Snapshot used to open the screen; the live record is re-read so edits show immediately.
+
+    /// Opening snapshot; persisted details remain the source of truth after edits.
     let snapshot: PencildEvent
 
-    init(event: PencildEvent) {
-        self.snapshot = event
-    }
+    init(event: PencildEvent) { snapshot = event }
 
     private var candidate: EventCandidate? { SavedEventActions.candidate(id: snapshot.id, in: modelContext) }
     private var saved: SavedEvent? { candidate?.savedEvent }
     private var event: PencildEvent { candidate?.toPencildEvent() ?? snapshot }
-    private var isInCalendar: Bool { saved?.externalCalendarEventId != nil && saved?.status == .saved }
-    private var hasReminder: Bool { !(saved?.externalReminderIds.isEmpty ?? true) }
+    private var hasCalendarRecord: Bool { saved?.externalCalendarEventId != nil }
+    private var hasReminder: Bool { !(saved?.externalReminderIds.isEmpty ?? true) || saved?.deadlineReminderId != nil }
+    private var offsets: [ReminderOffset] { (saved?.alertOffsets ?? []).map(ReminderOffset.forInterval).sorted { $0.timeInterval < $1.timeInterval } }
 
     private var mapsURL: URL? {
         let query = [event.locationName, event.locationAddress]
-            .filter { !$0.isEmpty && $0 != "Location TBA" }
-            .joined(separator: ", ")
+            .filter { !$0.isEmpty && $0 != "Location TBA" }.joined(separator: ", ")
         guard !query.isEmpty, let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
         return URL(string: "https://maps.apple.com/?q=\(encoded)")
     }
@@ -35,464 +36,340 @@ struct SavedEventDetailView: View {
         if !event.notes.isEmpty { lines.append(event.notes) }
         return lines.joined(separator: "\n")
     }
-    
+
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     var body: some View {
-        NavigationView {
-            ZStack(alignment: .bottom) {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 18) {
-                        // Top Bar
-                        HStack {
-                            Button {
-                                dismiss()
-                            } label: {
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(Color.dsSecondary)
-                                    .frame(width: 44, height: 44)
-                            }
-                            
-                            HStack(spacing: 8) {
-                                Image(systemName: "calendar.badge.clock")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(Color.dsPrimary)
-                                Text("Pencil'd")
-                                    .font(DSTypography.headlineCard())
-                                    .foregroundStyle(Color.dsForeground)
-                            }
-                            
-                            Spacer()
-                            
-                            Text("Extraction Success Summary")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                        
-                        // Reassuring Confirmed Toast Badge
-                        HStack(spacing: 8) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.dsSuccess)
-                                    .frame(width: 20, height: 20)
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundStyle(Color(red: 4/255, green: 27/255, blue: 16/255))
-                            }
-                            Text(isInCalendar ? (hasReminder ? "SAVED TO APPLE CALENDAR & REMINDERS" : "SAVED TO APPLE CALENDAR") : (saved?.status == .archived ? "ARCHIVED IN PENCIL'D" : "NOT YET IN CALENDAR"))
-                                .font(DSTypography.overlineConfidence())
-                                .foregroundStyle(Color.dsSuccess)
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(
-                            Capsule()
-                                .fill(Color.dsSuccess.opacity(0.12))
-                                .overlay(Capsule().stroke(Color.dsSuccess.opacity(0.3), lineWidth: 1))
-                        )
-                        
-                        // Event Hero Card: Luminous Glass Showcase
-                        VStack(alignment: .leading, spacing: 14) {
-                            HStack(alignment: .top, spacing: 14) {
-                                // Dimensional Date Badge
-                                VStack(spacing: 0) {
-                                    Text(event.month.uppercased())
-                                        .font(.system(size: 11, weight: .bold))
-                                        .foregroundStyle(Color.dsMutedForeground)
-                                        .padding(.top, 6)
-                                    Text("\(event.day)")
-                                        .font(DSTypography.displayTitle())
-                                        .foregroundStyle(Color.dsForeground)
-                                        .padding(.bottom, 6)
-                                }
-                                .frame(width: 58, height: 68)
-                                .background(Color.white.opacity(0.08))
-                                .cornerRadius(14)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
-                                )
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "checkmark.seal.fill")
-                                            .font(.system(size: 11))
-                                            .foregroundStyle(Color.dsSuccess)
-                                        Text("\(event.confidenceScore)% \(event.confidenceLabel.uppercased())")
-                                            .font(DSTypography.overlineConfidence())
-                                            .foregroundStyle(Color.dsSuccess)
-                                    }
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Capsule().fill(Color.dsSuccess.opacity(0.15)))
-                                    
-                                    Text(event.title)
-                                        .font(DSTypography.headlineSection())
-                                        .foregroundStyle(Color.dsForeground)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                            }
-                            
-                            // Time & Recurrence Info
-                            HStack(spacing: 10) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.white.opacity(0.08))
-                                        .frame(width: 32, height: 32)
-                                    Image(systemName: "clock")
-                                        .font(.system(size: 14))
-                                        .foregroundStyle(Color.dsSecondary)
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("\(event.dayOfWeek), \(event.month) \(event.day), \(event.year)")
-                                        .font(DSTypography.bodyCompact())
-                                        .foregroundStyle(Color.dsForeground)
-                                    Text(event.timeWindow)
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsMutedForeground)
-                                }
-                            }
-                            
-                            // Location Pill with Direction Link
-                            HStack {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color(red: 255/255, green: 138/255, blue: 61/255).opacity(0.15))
-                                        .frame(width: 32, height: 32)
-                                    Image(systemName: "mappin.and.ellipse")
-                                        .font(.system(size: 14))
-                                        .foregroundStyle(Color(red: 255/255, green: 138/255, blue: 61/255))
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(event.locationName)
-                                        .font(DSTypography.bodyCompact())
-                                        .foregroundStyle(Color.dsForeground)
-                                    if !event.locationAddress.isEmpty && event.locationAddress != event.locationName {
-                                        Text(event.locationAddress)
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                    }
-                                }
-                                
-                                Spacer()
-                                
-                                if let mapsURL {
-                                Button {
-                                    openURL(mapsURL)
-                                } label: {
-                                    HStack(spacing: 4) {
-                                        Text("Directions")
-                                        Image(systemName: "arrow.up.right")
-                                    }
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsSecondary)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 6)
-                                    .frame(minHeight: 44)
-                                    .background(Capsule().fill(Color.white.opacity(0.08)))
-                                }
-                                }
-                            }
-                        }
-                        .padding(18)
-                        .dsGlassCard(cornerRadius: 24, elevated: true, borderColor: Color.dsPrimary.opacity(0.2))
-                        .padding(.horizontal)
-                        
-                        // Saved Sync Targets (Apple Ecosystem Destination Matrix)
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("ECOSYSTEM DESTINATION")
-                                    .font(DSTypography.overlineConfidence())
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                Spacer()
-                                HStack(spacing: 4) {
-                                    Image(systemName: isInCalendar ? "checkmark.circle.fill" : "exclamationmark.circle")
-                                        .font(.system(size: 10))
-                                    Text(isInCalendar ? "Saved" : "Not saved")
-                                        .font(DSTypography.caption())
-                                }
-                                .foregroundStyle(isInCalendar ? Color.dsSuccess : Color.dsWarning)
-                            }
-                            
-                            VStack(spacing: 10) {
-                                // Apple Calendar Target
-                                HStack(spacing: 12) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.dsError.opacity(0.15))
-                                            .frame(width: 36, height: 36)
-                                        Image(systemName: "calendar")
-                                            .font(.system(size: 18))
-                                            .foregroundStyle(Color.dsError)
-                                    }
-                                    
-                                    VStack(alignment: .leading, spacing: 1) {
-                                        Text("Apple Calendar")
-                                            .font(DSTypography.bodyCompact())
-                                            .foregroundStyle(Color.dsForeground)
-                                        Text("Calendar: \(event.targetCalendar)")
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: isInCalendar ? "checkmark.circle.fill" : "minus.circle")
-                                        .foregroundStyle(isInCalendar ? Color.dsSuccess : Color.dsMutedForeground)
-                                        .font(.system(size: 18))
-                                        .accessibilityLabel(isInCalendar ? "Saved" : "Not saved")
-                                }
-                                .padding(12)
-                                .background(Color.white.opacity(0.04))
-                                .cornerRadius(14)
-                                
-                                // Apple Reminders Target
-                                HStack(spacing: 12) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.dsInfo.opacity(0.15))
-                                            .frame(width: 36, height: 36)
-                                        Image(systemName: "checklist")
-                                            .font(.system(size: 18))
-                                            .foregroundStyle(Color.dsInfo)
-                                    }
-                                    
-                                    VStack(alignment: .leading, spacing: 1) {
-                                        Text("Apple Reminders")
-                                            .font(DSTypography.bodyCompact())
-                                            .foregroundStyle(Color.dsForeground)
-                                        Text("List: \(event.targetRemindersList)")
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: hasReminder ? "checkmark.circle.fill" : "minus.circle")
-                                        .foregroundStyle(hasReminder ? Color.dsSuccess : Color.dsMutedForeground)
-                                        .font(.system(size: 18))
-                                        .accessibilityLabel(hasReminder ? "Saved" : "Not saved")
-                                }
-                                .padding(12)
-                                .background(Color.white.opacity(0.04))
-                                .cornerRadius(14)
-                            }
-                        }
-                        .padding(16)
-                        .dsGlassCard(cornerRadius: 20)
-                        .padding(.horizontal)
-                        
-                        // Configured Reminders Timeline Card with Vertical Guide Line
-                        VStack(alignment: .leading, spacing: 14) {
-                            HStack {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "bell.badge.fill")
-                                        .foregroundStyle(Color.dsSecondary)
-                                    Text("Scheduled Alerts")
-                                        .font(DSTypography.bodyStrong())
-                                        .foregroundStyle(Color.dsForeground)
-                                }
-                                Spacer()
-                                Text("\(event.scheduledAlerts.count) Active")
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsSecondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Capsule().fill(Color.white.opacity(0.08)))
-                            }
-                            
-                            // Vertical Timeline
-                            ZStack(alignment: .leading) {
-                                // Guide line
-                                Rectangle()
-                                    .fill(Color.white.opacity(0.12))
-                                    .frame(width: 2)
-                                    .padding(.leading, 15)
-                                    .padding(.vertical, 10)
-                                
-                                VStack(spacing: 12) {
-                                    if event.scheduledAlerts.isEmpty {
-                                        Text("No alerts scheduled. Tap Alerts below to add up to 3.")
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                            .padding(.leading, 42)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    }
-                                    ForEach(Array(event.scheduledAlerts.enumerated()), id: \.element.id) { index, alert in
-                                        let tint = [Color.dsInfo, Color(red: 255/255, green: 138/255, blue: 61/255), Color.dsSuccess][index % 3]
-                                        HStack(spacing: 12) {
-                                            ZStack {
-                                                Circle()
-                                                    .fill(tint.opacity(0.2))
-                                                    .frame(width: 30, height: 30)
-                                                Circle()
-                                                    .fill(tint)
-                                                    .frame(width: 10, height: 10)
-                                            }
-                                            
-                                            HStack {
-                                                VStack(alignment: .leading, spacing: 2) {
-                                                    Text(alert.offsetText)
-                                                        .font(DSTypography.bodyCompact())
-                                                        .foregroundStyle(Color.dsForeground)
-                                                    Text("\(alert.scheduledTimeText) · Calendar, Reminders & alert")
-                                                        .font(DSTypography.caption())
-                                                        .foregroundStyle(Color.dsMutedForeground)
-                                                }
-                                                Spacer()
-                                                Image(systemName: "alarm")
-                                                    .font(.system(size: 14))
-                                                    .foregroundStyle(Color.dsMutedForeground)
-                                            }
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 8)
-                                            .background(Color.white.opacity(0.04))
-                                            .cornerRadius(12)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .padding(16)
-                        .dsGlassCard(cornerRadius: 20)
-                        .padding(.horizontal)
-                        
-                        // Extracted Source Screenshot & Intelligence Notes Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("EXTRACTED INTELLIGENCE & CONTEXT")
-                                    .font(DSTypography.overlineConfidence())
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                Spacer()
-                                Text(event.sourceFlyerName)
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsSecondary)
-                            }
-                            
-                            HStack(alignment: .top, spacing: 12) {
-                                ZStack(alignment: .bottom) {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [Color(red: 255/255, green: 79/255, blue: 179/255), Color(red: 91/255, green: 124/255, blue: 255/255)],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                        )
-                                        .frame(width: 60, height: 74)
-                                    
-                                    Image(systemName: "magnifyingglass")
-                                        .font(.system(size: 11, weight: .bold))
-                                        .foregroundStyle(Color.white)
-                                        .padding(.bottom, 4)
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("SCANNED DETAILS")
-                                        .font(DSTypography.overlineConfidence())
-                                        .foregroundStyle(Color.dsSecondary)
-                                    
-                                    Text(event.notes.isEmpty ? (event.rawOcrFragments.prefix(4).joined(separator: " · ").isEmpty ? "No extra details captured." : event.rawOcrFragments.prefix(4).joined(separator: " · ")) : event.notes)
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsForeground)
-                                        .lineSpacing(3)
-                                    
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "sparkles")
-                                            .font(.system(size: 10))
-                                            .foregroundStyle(Color.dsPrimary)
-                                        Text("Extracted by Pencil'd OCR")
-                                            .font(.system(size: 10))
-                                            .foregroundStyle(Color.dsMutedForeground)
-                                    }
-                                    .padding(.top, 2)
-                                }
-                            }
-                            .padding(12)
-                            .background(Color.white.opacity(0.04))
-                            .cornerRadius(14)
-                        }
-                        .padding(16)
-                        .dsGlassCard(cornerRadius: 20)
-                        .padding(.horizontal)
-                        
-                        // Floating Sticky Action Buttons Cluster
-                        VStack(spacing: 12) {
-                            // Primary Glowing Capsule CTA
-                            Button {
-                                if let start = candidate?.startDate,
-                                   let url = URL(string: "calshow:\(start.timeIntervalSinceReferenceDate)") {
-                                    openURL(url)
-                                }
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "calendar")
-                                    Text("Open in Apple Calendar")
-                                    Image(systemName: "arrow.up.right")
-                                }
-                            }
-                            .buttonStyle(DSPrimaryButtonStyle())
-                            .disabled(!isInCalendar)
-                            
-                            // Secondary Action Row (3 Glass Pills)
-                            HStack(spacing: 10) {
-                                Button {
-                                    Task { await appState.present(.eventReviewEdit(event)) }
-                                } label: {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "pencil")
-                                            .foregroundStyle(Color.dsSecondary)
-                                        Text("Edit Event")
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsForeground)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 48)
-                                    .background(Color.white.opacity(0.08))
-                                    .cornerRadius(14)
-                                }
-                                
-                                Button {
-                                    Task { await appState.present(.reminderScheduleEditor(event)) }
-                                } label: {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "bell")
-                                            .foregroundStyle(Color.dsSecondary)
-                                        Text("Alerts")
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsForeground)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 48)
-                                    .background(Color.white.opacity(0.08))
-                                    .cornerRadius(14)
-                                }
-                                
-                                ShareLink(item: shareText, subject: Text(event.title)) {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "square.and.arrow.up")
-                                            .foregroundStyle(Color.dsSecondary)
-                                        Text("Share")
-                                            .font(DSTypography.caption())
-                                            .foregroundStyle(Color.dsForeground)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 48)
-                                    .background(Color.white.opacity(0.08))
-                                    .cornerRadius(14)
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 24)
-                    }
+        NavigationStack {
+            Group {
+                if horizontalSizeClass == .regular {
+                    iPadLayout
+                } else {
+                    iPhoneLayout
                 }
             }
             .dsScreenBackground()
+            .toolbar(.hidden, for: .navigationBar)
+        }
+    }
+
+    private var iPhoneLayout: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                PDTopBar(title: "Event details")
+                saveStatus
+                hero
+                destinations
+                source
+                reminders
+                actions
+            }
+            .padding(PDSpacing.md)
+            .padding(.bottom, PDSpacing.lg)
+        }
+    }
+
+    private var iPadLayout: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PDTopBar(title: "Event details")
+                .padding(.horizontal, PDSpacing.lg)
+                .padding(.top, PDSpacing.md)
+                .padding(.bottom, PDSpacing.sm)
+
+            HStack(alignment: .top, spacing: PDSpacing.lg) {
+                // Left Column: Hero Overview, Status & Source Artifact
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                        saveStatus
+                        hero
+                        source
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.bottom, PDSpacing.xl)
+                }
+                .frame(maxWidth: .infinity)
+
+                // Right Column: Destinations, Alerts/Reminders & Primary Actions
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                        destinations
+                        reminders
+                        actions
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.bottom, PDSpacing.xl)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(.horizontal, PDSpacing.lg)
+        }
+    }
+
+    @ViewBuilder
+    private var saveStatus: some View {
+        if saved?.status == .archived {
+            PDStatusBadge(text: "Archived in Pencil'd", icon: "archivebox.fill")
+        } else if hasCalendarRecord {
+            PDStatusBadge(text: "Saved to Apple Calendar", icon: "checkmark.circle.fill", tone: .success)
+        } else {
+            PDStatusBadge(text: saved?.status == .draft ? "Draft · not in Calendar" : "Not saved to Calendar", icon: "bookmark", tone: .warning)
+        }
+    }
+
+    private var hero: some View {
+        PDCard(highlighted: true) {
+            VStack(alignment: .leading, spacing: PDSpacing.md) {
+                HStack(alignment: .top, spacing: PDSpacing.md) {
+                    PDDateBadge(month: event.month, day: event.day, highlighted: true)
+                    VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                        if candidate != nil {
+                            DSConfidencePill(score: event.confidenceScore, label: event.confidenceLabel)
+                        }
+                        Text(event.title)
+                            .font(PDFont.headlineLG)
+                            .foregroundStyle(Color.pdOnSurface)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Label("\(event.dayOfWeek), \(event.month) \(event.day), \(event.year)", systemImage: "calendar")
+                    .font(PDFont.bodyMD)
+                    .foregroundStyle(Color.pdOnSurface)
+                Label(event.timeWindow, systemImage: "clock")
+                    .font(PDFont.bodyMD)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                if let timeZone = event.timeZoneIdentifier {
+                    Text(timeZone).font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+                HStack(alignment: .top, spacing: PDSpacing.sm) {
+                    PDIconTile(systemName: "mappin.and.ellipse", tint: .pdTertiary)
+                    VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                        Text(event.locationName).font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
+                        if !event.locationAddress.isEmpty && event.locationAddress != event.locationName {
+                            Text(event.locationAddress).font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                        }
+                    }
+                    Spacer(minLength: 0)
+                    if let mapsURL {
+                        Button { openURL(mapsURL) } label: {
+                            Label("Directions", systemImage: "arrow.up.right")
+                                .font(PDFont.labelMD).foregroundStyle(Color.pdPrimary).frame(minHeight: 44)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var destinations: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Saved destinations")
+            PDGroupedList {
+                PDListRow(icon: "calendar", title: "Apple Calendar", subtitle: saved?.targetCalendar) {
+                    PDStatusBadge(text: hasCalendarRecord ? "Saved" : "Not saved", icon: hasCalendarRecord ? "checkmark.circle" : "minus.circle", tone: hasCalendarRecord ? .success : .neutral)
+                }
+                PDRowDivider()
+                PDListRow(icon: "checklist", tint: .pdSecondary, title: "Apple Reminders", subtitle: hasReminder ? saved?.targetRemindersList : "No reminder saved") {
+                    PDStatusBadge(text: hasReminder ? "Saved" : "Not saved", icon: hasReminder ? "checkmark.circle" : "minus.circle", tone: hasReminder ? .success : .neutral)
+                }
+            }
+        }
+    }
+
+    private var source: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Source artifact")
+            PDCard {
+                VStack(alignment: .leading, spacing: PDSpacing.md) {
+                    if let candidate {
+                        PDScanSourceThumbnail(candidate: candidate, width: nil, height: 180, contentMode: .fit)
+                        Text(event.sourceFlyerMetadata).font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                    } else {
+                        Label("Source details are no longer available", systemImage: "photo")
+                            .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
+                    Text("Why Pencil'd chose this date")
+                        .font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
+                    interpretationExplanation
+                    if !event.notes.isEmpty {
+                        Text(event.notes).font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
+                    if let asset = candidate?.scannedAsset, !asset.rawOcrText.isEmpty {
+                        DisclosureGroup("Recognized scan text") {
+                            Text(asset.rawOcrText)
+                                .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                                .textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.top, PDSpacing.sm)
+                        }
+                        .font(PDFont.labelLG).tint(.pdPrimary)
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var interpretationExplanation: some View {
+        if let record = candidate?.interpretation, let stored = record.stored {
+            let selected = stored.understanding.allCandidates.first { $0.id == record.selectedInterpretationID } ?? stored.understanding.best
+            EngineRouteBadge(route: stored.route)
+            if record.correctedFields.contains("date") {
+                Label("You edited the date during review.", systemImage: "pencil")
+                    .font(PDFont.bodyMD).foregroundStyle(Color.pdSecondary)
+            } else if let reason = selected.start.reason, !reason.isEmpty {
+                Text(reason).font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+            } else if !selected.explanations.isEmpty {
+                ForEach(Array(selected.explanations.enumerated()), id: \.offset) { _, explanation in
+                    Text(explanation).font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+            } else {
+                Text("No date explanation was stored for this scan.")
+                    .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+            if !record.correctedFields.contains("date") {
+                ProvenanceChip(provenance: selected.start.provenance, needsCheck: selected.start.isAmbiguous || selected.yearAssumed)
+                ForEach(selected.start.evidence, id: \.lineID) { reference in
+                    if let evidence = stored.evidence.first(where: { $0.id == reference.lineID }) {
+                        Text("“\(evidence.text)”").font(PDFont.bodySM).foregroundStyle(Color.pdPrimary).textSelection(.enabled)
+                    }
+                }
+            }
+        } else {
+            Text("No interpretation explanation was stored for this event.")
+                .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+        }
+    }
+
+    private var reminders: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Configured alerts", trailing: "\(offsets.count) alert\(offsets.count == 1 ? "" : "s")")
+            PDCard {
+                VStack(alignment: .leading, spacing: PDSpacing.md) {
+                    if offsets.isEmpty {
+                        Text("No alerts configured. Open Alerts to add a reminder.")
+                            .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
+                    if let candidate {
+                        ForEach(offsets) { offset in
+                            let fireDate = offset.triggerDate(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay)
+                            HStack(spacing: PDSpacing.sm) {
+                                PDIconTile(systemName: "bell", tint: .pdSecondary)
+                                VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                                    Text(offset.label).font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
+                                    Text(fireDate.formatted(date: .abbreviated, time: .shortened))
+                                        .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                                }
+                                Spacer()
+                                if fireDate < Date() {
+                                    PDStatusBadge(text: "Passed", icon: "clock")
+                                }
+                            }
+                        }
+                    }
+                    if let saved {
+                        Text(saved.status == .archived ? "Pencil'd notifications were cancelled when this event was archived. Calendar and Reminders entries remain." : "\(saved.scheduledNotificationIds.count) Pencil'd notification\(saved.scheduledNotificationIds.count == 1 ? "" : "s") scheduled when this event was saved.")
+                            .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
+                }
+            }
+        }
+    }
+
+    private var actions: some View {
+        VStack(spacing: PDSpacing.sm) {
+            Button {
+                if let start = candidate?.startDate, let url = URL(string: "calshow:\(start.timeIntervalSinceReferenceDate)") { openURL(url) }
+            } label: {
+                Label("Open in Apple Calendar", systemImage: "calendar")
+            }
+            .buttonStyle(DSPrimaryButtonStyle())
+            .disabled(!hasCalendarRecord)
+            HStack(spacing: PDSpacing.sm) {
+                Button { Task { await appState.present(.eventReviewEdit(event)) } } label: {
+                    Label("Edit", systemImage: "pencil").frame(maxWidth: .infinity, minHeight: 48)
+                }
+                Button { Task { await appState.present(.reminderScheduleEditor(event)) } } label: {
+                    Label("Alerts", systemImage: "bell").frame(maxWidth: .infinity, minHeight: 48)
+                }
+                ShareLink(item: shareText, subject: Text(event.title)) {
+                    Label("Share", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity, minHeight: 48)
+                }
+            }
+            .font(PDFont.labelMD).foregroundStyle(Color.pdSecondary)
+            .buttonStyle(.plain)
+            .background(Color.pdSurfaceLow, in: RoundedRectangle(cornerRadius: PDRadius.card))
+            if let saved {
+                Button {
+                    let restoring = saved.status == .archived
+                    let status: SavedEventStatus = restoring ? (saved.externalCalendarEventId != nil ? .saved : .draft) : .archived
+                    let result = SavedEventActions(services: services, modelContext: modelContext).setStatus(status, for: saved)
+                    switch result {
+                    case .success: appState.showToast(restoring ? "Event restored" : "Event archived"); dismiss()
+                    case .partial(let issues): appState.showToast(issues.joined(separator: "; "))
+                    case .failure(let error): appState.showToast(error.localizedDescription)
+                    }
+                } label: {
+                    Label(saved.status == .archived ? "Restore event" : "Archive event", systemImage: saved.status == .archived ? "arrow.uturn.backward" : "archivebox")
+                        .font(PDFont.labelLG).foregroundStyle(Color.pdOnSurfaceVariant).frame(minHeight: 44)
+                }
+            }
+        }
+    }
+}
+
+/// Displays a real scan image from the in-session cache or an already-authorized local Photos asset.
+/// Imported images without a retained local artifact show an honest absence state after the cache expires.
+struct PDScanSourceThumbnail: View {
+    @Environment(\.services) private var services
+    @EnvironmentObject private var appState: AppState
+    let candidate: EventCandidate
+    var width: CGFloat? = 64
+    var height: CGFloat = 76
+    var contentMode: ContentMode = .fill
+    @State private var fetchedImage: UIImage?
+    @State private var loading = false
+
+    private var image: UIImage? { appState.sourceImages[candidate.id] ?? fetchedImage }
+
+    var body: some View {
+        ZStack {
+            Color.pdSurfaceHighest
+            if let image {
+                Image(uiImage: image).resizable().aspectRatio(contentMode: contentMode)
+            } else {
+                VStack(spacing: PDSpacing.xxs) {
+                    if loading { ProgressView().tint(.pdPrimary) }
+                    else { Image(systemName: candidate.scannedAsset == nil ? "calendar.badge.plus" : "photo").font(.system(size: 20)) }
+                    if width == nil {
+                        Text(candidate.scannedAsset == nil ? "Manually entered event" : "Original image unavailable")
+                            .font(PDFont.bodySM)
+                    }
+                }
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+        }
+        .frame(width: width, height: height)
+        .frame(maxWidth: width == nil ? .infinity : nil)
+        .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
+        .accessibilityLabel(image != nil ? "Original scan image" : (candidate.scannedAsset == nil ? "Manually entered event" : "Original image unavailable"))
+        .task(id: candidate.scannedAsset?.assetIdentifier) { await loadImage() }
+    }
+
+    @MainActor
+    private func loadImage() async {
+        fetchedImage = nil
+        guard appState.sourceImages[candidate.id] == nil,
+              let identifier = candidate.scannedAsset?.assetIdentifier else { return }
+        let authorization = services.photoLibrary.authorizationStatus(for: .readWrite)
+        guard authorization == .authorized || authorization == .limited,
+              let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else { return }
+        loading = true
+        defer { loading = false }
+        do {
+            let result = try await services.photoLibrary.fetchImage(for: asset, targetSize: CGSize(width: 720, height: 960))
+            guard !Task.isCancelled else { return }
+            fetchedImage = result
+        } catch {
+            fetchedImage = nil
         }
     }
 }

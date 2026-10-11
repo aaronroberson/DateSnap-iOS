@@ -150,9 +150,8 @@ struct EventSearchFilterBar: View {
         .padding(.leading, 14)
         .padding(.vertical, 4)
         .background(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: PDRadius.card)
                 .fill(palette.fieldFill)
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(palette.border, lineWidth: 1))
         )
     }
 
@@ -168,7 +167,7 @@ struct EventSearchFilterBar: View {
                 Text(option.eventStatus.rawValue)
                     .font(DSTypography.labelChip())
                 Text("\(counts[option] ?? 0)")
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .font(PDFont.labelSM)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(
@@ -182,7 +181,6 @@ struct EventSearchFilterBar: View {
             .background(
                 Capsule()
                     .fill(isSelected ? palette.selectedFill : AnyShapeStyle(palette.chipFill))
-                    .overlay(Capsule().stroke(isSelected ? palette.selectedBorder : palette.border, lineWidth: 1))
             )
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -210,8 +208,7 @@ struct EventSearchFilterBar: View {
             .frame(minHeight: 44)
             .background(
                 Capsule()
-                    .fill(isSelected ? palette.selectedFill : AnyShapeStyle(Color.clear))
-                    .overlay(Capsule().stroke(isSelected ? palette.selectedBorder : palette.border, lineWidth: 1))
+                    .fill(isSelected ? palette.selectedFill : AnyShapeStyle(palette.chipFill))
             )
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])

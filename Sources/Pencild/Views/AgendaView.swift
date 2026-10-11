@@ -5,6 +5,7 @@ struct AgendaView: View {
     @Environment(\.services) private var services
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var appState: AppState
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \SavedEvent.createdAt, order: .reverse) private var savedEvents: [SavedEvent]
 
     @State private var searchText = ""
@@ -57,6 +58,11 @@ struct AgendaView: View {
         }
     }
 
+    private func groupedDays(_ events: [SavedEvent]) -> [(date: Date, events: [SavedEvent])] {
+        let groups = Dictionary(grouping: events) { Calendar.current.startOfDay(for: $0.candidate!.startDate) }
+        return groups.keys.sorted().map { (date: $0, events: groups[$0] ?? []) }
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
@@ -79,10 +85,14 @@ struct AgendaView: View {
                         eventSection("Today\u{2019}s events", events: todayEvents, highlighted: true)
                     }
                     if !upcomingEvents.isEmpty {
-                        eventSection("Upcoming events", events: upcomingEvents, highlighted: false)
+                        ForEach(groupedDays(upcomingEvents), id: \.date) { day in
+                            eventSection(day.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), events: day.events, highlighted: false)
+                        }
                     }
                     if !pastEvents.isEmpty {
-                        eventSection("Past events", events: pastEvents, highlighted: false)
+                        ForEach(groupedDays(pastEvents), id: \.date) { day in
+                            eventSection(day.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), events: day.events, highlighted: false)
+                        }
                     }
                     if selectedFilter == .past || selectedFilter == .all {
                         Button {
@@ -91,9 +101,9 @@ struct AgendaView: View {
                             HStack(spacing: 6) {
                                 Text("View full history")
                                 Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(PDFont.jakarta(12, .bold, relativeTo: .footnote))
                             }
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(PDFont.jakarta(15, .semibold, relativeTo: .subheadline))
                             .foregroundStyle(Color.pdLavender)
                             .frame(maxWidth: .infinity, minHeight: 44, alignment: .center)
                         }
@@ -101,9 +111,11 @@ struct AgendaView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .frame(maxWidth: horizontalSizeClass == .regular ? 1080 : .infinity)
+            .padding(.horizontal, horizontalSizeClass == .regular ? 28 : 16)
             .padding(.top, 12)
             .padding(.bottom, 24)
+            .frame(maxWidth: .infinity)
         }
         .background(agendaBackground)
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -137,7 +149,7 @@ struct AgendaView: View {
         .accessibilityIdentifier("agenda.capture")
         .padding(.horizontal, 16)
         .padding(.top, 10)
-        .padding(.bottom, 84)
+            .padding(.bottom, horizontalSizeClass == .regular ? 0 : 84)
         .background(
             LinearGradient(colors: [Color.pdSurface.opacity(0), Color.pdSurface], startPoint: .top, endPoint: .center)
         )
@@ -145,20 +157,30 @@ struct AgendaView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Spacer()
+                Button { appState.openHistory() } label: {
+                    Label("History", systemImage: "clock.arrow.circlepath")
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdPrimary)
+                        .frame(minHeight: 44)
+                }
+                .accessibilityIdentifier("agenda.history")
+            }
             HStack(spacing: 6) {
                 Circle()
                     .fill(Color.pdOrange)
                     .frame(width: 6, height: 6)
                 Text("AGENDA")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(PDFont.jakarta(11, .bold, relativeTo: .caption2))
                     .tracking(1.4)
                     .foregroundStyle(Color.pdPrimary)
             }
             Text("Agenda")
-                .font(.system(size: 34, weight: .heavy))
+                .font(PDFont.jakarta(34, .heavy, relativeTo: .largeTitle))
                 .foregroundStyle(Color.pdOnSurface)
             Text("Review today\u{2019}s and upcoming saved events captured with Pencil\u{2019}d.")
-                .font(.system(size: 14))
+                .font(PDFont.jakarta(14, .regular, relativeTo: .subheadline))
                 .foregroundStyle(Color.pdOnSurfaceVariant)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -173,7 +195,7 @@ struct AgendaView: View {
                         selectedFilter = filter
                     } label: {
                         Text(filter.rawValue)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(PDFont.jakarta(13, .semibold, relativeTo: .footnote))
                             .foregroundStyle(selected ? Color.pdPrimary : Color.pdOnSurfaceVariant)
                             .padding(.horizontal, 14)
                             .frame(minHeight: 44)
@@ -196,22 +218,21 @@ struct AgendaView: View {
     private var emptyState: some View {
         VStack(spacing: 12) {
             Image(systemName: hasActiveFilters ? "magnifyingglass" : "calendar.badge.plus")
-                .font(.system(size: 34))
+                .font(PDFont.jakarta(34, .regular, relativeTo: .largeTitle))
                 .foregroundStyle(Color.pdLavender)
             Text(hasActiveFilters ? "No matching events" : emptyTitle)
-                .font(.system(size: 18, weight: .bold))
+                .font(PDFont.jakarta(18, .bold, relativeTo: .title3))
                 .foregroundStyle(Color.pdOnSurface)
             Text(hasActiveFilters ? "Try another event, venue, date, or filter." : emptyMessage)
-                .font(.system(size: 14))
+                .font(PDFont.jakarta(14, .regular, relativeTo: .subheadline))
                 .foregroundStyle(Color.pdOnSurfaceVariant)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(24)
         .background(
-            RoundedRectangle(cornerRadius: 24)
+            RoundedRectangle(cornerRadius: PDRadius.card)
                 .fill(Color.pdSurfaceContainer)
-                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.pdOutlineVariant.opacity(0.4), lineWidth: 1))
         )
     }
 
@@ -240,12 +261,12 @@ struct AgendaView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(title.uppercased())
-                    .font(.system(size: 12, weight: .bold))
+                    .font(PDFont.jakarta(12, .bold, relativeTo: .footnote))
                     .tracking(1.2)
                     .foregroundStyle(Color.pdOnSurfaceVariant)
                 Spacer()
                 Text("\(events.count)")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                     .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.7))
             }
             ForEach(events) { saved in
@@ -269,19 +290,19 @@ struct AgendaView: View {
                     )
                     VStack(alignment: .leading, spacing: 4) {
                         Text(candidate?.title ?? "Saved event")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(PDFont.jakarta(16, .bold, relativeTo: .body))
                             .foregroundStyle(Color.pdOnSurface)
                             .multilineTextAlignment(.leading)
                             .lineLimit(2)
                         Text(eventSubtitle(candidate))
-                            .font(.system(size: 13))
+                            .font(PDFont.jakarta(13, .regular, relativeTo: .footnote))
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                             .multilineTextAlignment(.leading)
                             .lineLimit(2)
                     }
                     Spacer(minLength: 0)
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(PDFont.jakarta(12, .bold, relativeTo: .footnote))
                         .foregroundStyle(Color.pdOnSurface)
                         .frame(width: 32, height: 32)
                         .background(Circle().fill(Color.pdSurfaceHighest.opacity(0.8)))
@@ -299,12 +320,8 @@ struct AgendaView: View {
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: PDRadius.card)
                 .fill(highlighted ? AnyShapeStyle(LinearGradient.pdHighlightCard) : AnyShapeStyle(Color.pdSurfaceContainer))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(highlighted ? Color.pdPrimary.opacity(0.35) : Color.pdOutlineVariant.opacity(0.4), lineWidth: 1)
-                )
         )
     }
 
@@ -316,21 +333,21 @@ struct AgendaView: View {
                 HStack(spacing: 6) {
                     PDCheckmark(size: 16)
                     Text("In Calendar")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                         .foregroundStyle(Color.pdOnSurface)
                 }
             } else {
                 Label("Not in Calendar", systemImage: "exclamationmark.circle")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                     .foregroundStyle(Color.dsWarning)
             }
         case .draft:
             Label("Draft", systemImage: "bookmark.fill")
-                .font(.system(size: 12, weight: .semibold))
+                .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                 .foregroundStyle(Color.pdPrimary)
         case .archived:
             Label("Archived", systemImage: "archivebox.fill")
-                .font(.system(size: 12, weight: .semibold))
+                .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                 .foregroundStyle(Color.pdOnSurfaceVariant)
         }
     }
@@ -354,9 +371,9 @@ struct AgendaView: View {
         } label: {
             HStack(spacing: 5) {
                 Image(systemName: isArchived ? "arrow.uturn.backward" : "archivebox")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                 Text(isArchived ? "Restore" : "Archive")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
             }
             .foregroundStyle(Color.pdOnSurface)
             .padding(.horizontal, 12)

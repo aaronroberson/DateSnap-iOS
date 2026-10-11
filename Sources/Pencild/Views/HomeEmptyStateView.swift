@@ -3,6 +3,7 @@ import SwiftData
 import Photos
 import PhotosUI
 import UniformTypeIdentifiers
+import VisionKit
 
 enum HomeBrandCopy {
     static let captureHeading = "Turn Schedules Into Events"
@@ -11,7 +12,7 @@ enum HomeBrandCopy {
     static let premiumFileImportAccessibilityHint = "Requires Pencil'd Premium"
     static let plusScreenshotExplanation = "Pencil'd Plus checks new screenshots on your device and highlights likely events. Nothing is saved until you review it."
     static let privacyHeading = "Private & On-Device Intelligence"
-    static let privacyBody = "Your photos, screenshots, and documents never leave this device. Neural parsing happens locally in secure memory."
+    static let privacyBody = "Your photos, screenshots, and documents are processed on this device. Review every detected event before saving."
 }
 
 /// Capture home (Stitch "Home Screen"): pick where the next event comes from.
@@ -24,6 +25,7 @@ struct HomeEmptyStateView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var scanViewModel: ScanViewModel
     @EnvironmentObject private var homeViewModel: HomeViewModel
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query private var scannedAssets: [ScannedAsset]
     @Query(sort: \EventCandidate.createdAt, order: .reverse) private var candidates: [EventCandidate]
 
@@ -31,6 +33,7 @@ struct HomeEmptyStateView: View {
     @State private var showPhotoPicker: Bool = false
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
+    @State private var showDocumentCamera: Bool = false
 
     /// Screenshots the library observer has seen that Pencil'd has not scanned yet.
     private var newScreenshots: [PHAsset] {
@@ -52,24 +55,30 @@ struct HomeEmptyStateView: View {
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 16) {
-                    topBar
-                    titleBlock
-                    recentScreenshotsCard
-                    photoLibraryCard
-                    fileImportCard
-                    createEventCard
-                    sampleFlyerCard
-                    privacyFooter
-                    Color.clear.frame(height: 90)
-                }
-                .padding(.horizontal, 20)
+                captureContent
             }
             .background(Color.pdSurface.ignoresSafeArea())
-            .overlay { ScanProgressOverlay(scan: scanViewModel) }
-            .overlay { BatchScanProgressOverlay() }
             .animation(.easeInOut(duration: 0.2), value: scanViewModel.isProcessing)
             .photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItems, matching: .images, photoLibrary: .shared())
+            .sheet(isPresented: $showDocumentCamera) {
+                DocumentCameraScanner(
+                    onScan: { images in
+                        showDocumentCamera = false
+                        let sources = images.enumerated().map { index, image in
+                            BatchScanSource.loaded(id: "camera-page-\(index + 1)-\(UUID().uuidString)", image: image)
+                        }
+                        Task {
+                            await appState.startBatchScan(sources: sources, services: services, modelContext: modelContext)
+                        }
+                    },
+                    onCancel: { showDocumentCamera = false },
+                    onError: { error in
+                        showDocumentCamera = false
+                        appState.showToast("Could not scan document: \(error.localizedDescription)")
+                    }
+                )
+                .ignoresSafeArea()
+            }
             .onChange(of: selectedPhotoItems) { _, items in
                 guard !items.isEmpty else { return }
                 selectedPhotoItems = []
@@ -95,7 +104,7 @@ struct HomeEmptyStateView: View {
                 switch result {
                 case .success(let urls):
                     guard let url = urls.first else { return }
-                    runScan { await scanViewModel.scanDocument(at: url, modelContext: modelContext) }
+                    runDocumentScan(at: url)
                 case .failure(let error):
                     appState.showToast(error.localizedDescription)
                 }
@@ -111,6 +120,45 @@ struct HomeEmptyStateView: View {
             } message: {
                 Text(HomeBrandCopy.photoLibraryPermissionMessage)
             }
+            .navigationViewStyle(.stack)
+        }
+    }
+
+    @ViewBuilder
+    private var captureContent: some View {
+        if horizontalSizeClass == .regular {
+            VStack(alignment: .leading, spacing: 18) {
+                topBar
+                titleBlock
+                recentScreenshotsCard
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], alignment: .leading, spacing: 16) {
+                    photoLibraryCard
+                    fileImportCard
+                    documentCameraCard
+                    createEventCard
+                    sampleFlyerCard
+                }
+                privacyFooter
+                Color.clear.frame(height: 90)
+            }
+            .frame(maxWidth: 1120)
+            .padding(.horizontal, 28)
+            .padding(.top, 8)
+            .frame(maxWidth: .infinity)
+        } else {
+            VStack(alignment: .leading, spacing: 16) {
+                topBar
+                titleBlock
+                recentScreenshotsCard
+                photoLibraryCard
+                fileImportCard
+                createEventCard
+                sampleFlyerCard
+                privacyFooter
+                Color.clear.frame(height: 90)
+            }
+            .padding(.horizontal, 20)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -171,7 +219,7 @@ struct HomeEmptyStateView: View {
                         Text("Recent screenshots")
                             .font(PDFont.headlineSM)
                             .foregroundStyle(Color.pdOnSurface)
-                        Text("Auto-detect event flyers, ticket bookings, and tour announcements.")
+                        Text("Find event flyers, tickets, and invitations in the screenshots you choose.")
                             .font(PDFont.bodyMD)
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                             .multilineTextAlignment(.leading)
@@ -230,7 +278,7 @@ struct HomeEmptyStateView: View {
                 }
                 Spacer(minLength: 0)
                 if autoDetect {
-                    Label("Auto-scanned", systemImage: "arrow.forward")
+                    Label("Screenshot detection enabled", systemImage: "checkmark")
                         .labelStyle(TrailingIconLabelStyle())
                         .font(PDFont.labelMD)
                         .foregroundStyle(Color.pdPrimary)
@@ -288,6 +336,23 @@ struct HomeEmptyStateView: View {
         }
     }
 
+    private var documentCameraCard: some View {
+        sourceRow(
+            icon: "doc.viewfinder",
+            tint: .pdSecondary,
+            title: "Scan a paper flyer",
+            detail: "Capture and straighten multi-page paper documents, then review detected events before saving.",
+            chips: ["Camera", "Multi-page", "On-device"],
+            hint: "Opens the document camera"
+        ) {
+            guard VNDocumentCameraViewController.isSupported else {
+                appState.showToast("Document scanning needs a device with a camera.")
+                return
+            }
+            showDocumentCamera = true
+        }
+    }
+
     private var createEventCard: some View {
         Button {
             if let url = URL(string: "calshow://") { openURL(url) }
@@ -328,7 +393,7 @@ struct HomeEmptyStateView: View {
                         Text("Try sample flyer")
                             .font(PDFont.headlineSM)
                             .foregroundStyle(Color.pdOnSurface)
-                        Text("See how Pencil'd automatically extracts complex dates, recurring slots, and reminders in real-time.")
+                        Text("Run the on-device scanner on a clearly labeled sample, then review what it finds.")
                             .font(PDFont.bodyMD)
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                             .multilineTextAlignment(.leading)
@@ -490,6 +555,30 @@ struct HomeEmptyStateView: View {
         }
     }
 
+    /// Multi-page documents can yield multiple events; present them together for review
+    /// rather than opening only the first event and leaving the rest in the queue.
+    private func runDocumentScan(at url: URL) {
+        Task {
+            _ = await scanViewModel.scanDocument(at: url, modelContext: modelContext)
+            guard case .complete(let candidates) = scanViewModel.stage, candidates.count > 1 else {
+                await appState.handleScanOutcome(scanViewModel)
+                return
+            }
+
+            appState.rememberSourceImage(scanViewModel.currentProcessingImage, for: candidates)
+            let events = candidates.map { candidate in
+                BatchEventItem(
+                    candidate: candidate,
+                    screenshotID: UUID(),
+                    screenshotLabel: "Imported document",
+                    screenshotImage: scanViewModel.currentProcessingImage,
+                    services: services
+                )
+            }
+            await appState.presentBatchReview(BatchReviewSession(events: events))
+        }
+    }
+
     /// Single-photo pick keeps the classic full-review flow.
     private func runSinglePhotoScan(_ item: PhotosPickerItem) {
         runScan {
@@ -536,10 +625,11 @@ private extension View {
 
 /// Stitch's `active:scale-[0.985]` press feedback for source cards.
 struct PressScaleButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.985 : 1)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.985 : 1))
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
@@ -575,44 +665,5 @@ private struct SignatureRibbons: View {
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
-    }
-}
-
-// MARK: - Custom Corner Bracket Shape
-enum CornerBracketPosition {
-    case topLeft, topRight, bottomLeft, bottomRight
-}
-
-struct RoundedCornerBracket: Shape {
-    var corner: CornerBracketPosition
-    
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let radius: CGFloat = 8
-        
-        switch corner {
-        case .topLeft:
-            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + radius))
-            path.addQuadCurve(to: CGPoint(x: rect.minX + radius, y: rect.minY), control: CGPoint(x: rect.minX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        case .topRight:
-            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX - radius, y: rect.minY))
-            path.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY + radius), control: CGPoint(x: rect.maxX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        case .bottomLeft:
-            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - radius))
-            path.addQuadCurve(to: CGPoint(x: rect.minX + radius, y: rect.maxY), control: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        case .bottomRight:
-            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.maxX - radius, y: rect.maxY))
-            path.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.maxY - radius), control: CGPoint(x: rect.maxX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        }
-        
-        return path
     }
 }

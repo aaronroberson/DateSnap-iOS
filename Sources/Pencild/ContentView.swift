@@ -6,6 +6,8 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @StateObject private var appState = AppState()
     @StateObject private var settingsState = SettingsState()
@@ -21,58 +23,45 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Main Tab Content
-            Group {
-                switch appState.selectedTab {
-                case .home:
-                    HomeEmptyStateView()
-                case .agenda:
-                    NavigationStack {
-                        AgendaView()
-                            .toolbar(.hidden, for: .navigationBar)
-                            .navigationDestination(isPresented: $appState.showHistory) {
-                                HistoryArchiveView()
-                                    .toolbar(.hidden, for: .navigationBar)
-                            }
+            if horizontalSizeClass == .regular {
+                HStack(spacing: 0) {
+                    iPadNavigationRail
+                    Rectangle()
+                        .fill(Color.pdOutlineVariant.opacity(0.45))
+                        .frame(width: 1)
+                    selectedScreen
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .background(Color.pdSurface.ignoresSafeArea())
+                .overlay(alignment: .bottomTrailing) {
+                    if let toast = appState.toastMessage {
+                        toastBanner(toast)
+                            .padding(.trailing, 24)
+                            .padding(.bottom, 18)
                     }
-                case .review:
-                    ReviewQueueView()
-                case .settings:
-                    SettingsClusterView()
+                }
+            } else {
+                selectedScreen
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                VStack(spacing: 8) {
+                    if let toast = appState.toastMessage {
+                        toastBanner(toast)
+                    }
+                    customTabBar
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // Bottom Glassmorphic Tab Bar & Quick Switcher
-            VStack(spacing: 8) {
-                // Toast notification banner if active
-                if let toast = appState.toastMessage {
-                    HStack(spacing: 8) {
-                        Image(systemName: "sparkles")
-                            .foregroundStyle(Color.dsPrimary)
-                        Text(toast)
-                            .font(DSTypography.bodyCompact())
-                            .foregroundStyle(Color.dsForeground)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(
-                        Capsule()
-                            .fill(Color.dsCardElevated)
-                            .overlay(Capsule().stroke(Color.dsPrimary.opacity(0.6), lineWidth: 1))
-                            .shadow(color: Color.black.opacity(0.4), radius: 12, y: 4)
-                    )
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-                
-                // Custom Branded Tab Bar
-                customTabBar
-            }
+        }
+        .disabled(scanViewModel.isProcessing || appState.isBatchScanning)
+        .accessibilityHidden(scanViewModel.isProcessing || appState.isBatchScanning)
+        .overlay {
+            ScanProgressOverlay(scan: scanViewModel)
+            BatchScanProgressOverlay()
         }
         .overlay {
             if showSplash {
                 PencilSplashView(
-                    onFinish: { withAnimation(.easeInOut(duration: 0.4)) { showSplash = false } },
+                    onFinish: { withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.4)) { showSplash = false } },
                     onScan: { appState.requestPhotoPicker = true },
                     onImport: { appState.requestFileImporter = true },
                     onReview: { appState.selectedTab = .review }
@@ -112,6 +101,10 @@ struct ContentView: View {
                     #else
                     EmptyView()
                     #endif
+                case .userProfile:
+                    UserProfileFlowView()
+                case .defaultCalendar:
+                    DefaultCalendarView()
                 }
             }
             .environmentObject(appState)
@@ -143,6 +136,110 @@ struct ContentView: View {
                 Task { await services.subscription.refreshEntitlements(.sceneActivation) }
             }
         }
+    }
+
+    @ViewBuilder
+    private var selectedScreen: some View {
+        switch appState.selectedTab {
+        case .home: HomeEmptyStateView()
+        case .agenda:
+            NavigationStack {
+                AgendaView()
+                    .toolbar(.hidden, for: .navigationBar)
+                    .navigationDestination(isPresented: $appState.showHistory) {
+                        HistoryArchiveView()
+                            .toolbar(.hidden, for: .navigationBar)
+                    }
+            }
+        case .review: ReviewQueueView()
+        case .settings: SettingsClusterView()
+        }
+    }
+
+    private var iPadNavigationRail: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                RoundedRectangle(cornerRadius: 11)
+                    .fill(LinearGradient.pdSignature)
+                    .frame(width: 38, height: 38)
+                    .overlay(Image(systemName: "pencil.and.outline").foregroundStyle(Color.pdSurface))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Pencil'd")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Color.pdOnSurface)
+                    Text("SCANNED. REVIEWED.")
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(0.8)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+            }
+            .padding(.horizontal, 18)
+            .padding(.top, 24)
+            .padding(.bottom, 22)
+
+            ForEach(ActiveTab.allCases) { tab in
+                let isSelected = appState.selectedTab == tab
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { appState.selectedTab = tab }
+                } label: {
+                    HStack(spacing: 14) {
+                        Image(systemName: tab.iconName)
+                            .font(.system(size: 18, weight: isSelected ? .semibold : .regular))
+                            .frame(width: 24)
+                        Text(tab.rawValue)
+                            .font(.system(size: 15, weight: isSelected ? .bold : .medium))
+                        Spacer(minLength: 0)
+                        if isSelected {
+                            Capsule().fill(Color.pdOrange).frame(width: 3, height: 24)
+                        }
+                    }
+                    .foregroundStyle(isSelected ? Color.pdOrange : Color.pdOnSurfaceVariant)
+                    .padding(.leading, 16)
+                    .padding(.trailing, 12)
+                    .frame(height: 52)
+                    .background {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color.pdPrimary.opacity(0.12))
+                                .padding(.horizontal, 8)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+                .accessibilityIdentifier("navigation.\(tab.id.lowercased())")
+            }
+
+            Spacer(minLength: 20)
+            Label("Private, on-device processing", systemImage: "lock.shield.fill")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 24)
+        }
+        .frame(width: 232)
+        .frame(maxHeight: .infinity)
+        .background(Color.pdSurfaceLowest)
+    }
+
+    private func toastBanner(_ toast: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "sparkles").foregroundStyle(Color.dsPrimary)
+            Text(toast)
+                .font(DSTypography.bodyCompact())
+                .foregroundStyle(Color.dsForeground)
+                .lineLimit(2)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(
+            Capsule()
+                .fill(Color.dsCardElevated)
+                .overlay(Capsule().stroke(Color.dsPrimary.opacity(0.6), lineWidth: 1))
+                .shadow(color: Color.black.opacity(0.4), radius: 12, y: 4)
+        )
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     /// Opens the saved event a notification tap pointed at.
@@ -209,6 +306,7 @@ struct ContentView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(tab.rawValue)
+                .accessibilityIdentifier("navigation.\(tab.id.lowercased())")
                 .accessibilityValue(tab == .review && needsReview ? "Items waiting" : "")
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
