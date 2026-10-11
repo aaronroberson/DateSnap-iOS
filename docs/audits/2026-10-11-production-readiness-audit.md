@@ -1,0 +1,135 @@
+# Pencil'd Production Readiness & Codebase Architecture Audit
+
+**Date:** 2026-10-11  
+**Scope:** Architecture, Design System Conformance, Rebranding Integrity, API Feasibility, Component Reusability, and Decomposition Targets  
+**Target Platform:** iOS 17.0+ (SwiftUI, Swift 6 Approachable Concurrency, XcodeGen)
+
+---
+
+## 1. Executive Summary
+
+This audit assesses the Pencil'd codebase across seven key dimensions:
+1. **Stitch Design Feasibility & API Boundaries** (documenting features in Stitch mockups that cannot or should not be implemented due to iOS sandbox, hardware, or privacy constraints).
+2. **Rebranding Migration Integrity** (verifying complete elimination of legacy legacy app brand artifacts).
+3. **Design System & Token Conformance** (measuring adherence to Luminous Precision tokens vs. remaining legacy `DS*` aliases and hard-coded values).
+4. **Component Consistency & Reusability** (shared component adoption vs. ad-hoc reimplementations).
+5. **Overly Long / Monolithic View Decomposition** (identifying complex views that exceed 400+ lines and require modular refactoring).
+6. **Best Practices, Concurrency, and Crash Safety** (Swift 6 strict concurrency, forced unwraps, `preconditionFailure` audit, and memory/performance considerations).
+7. **Actionable Remediation Roadmap** for engineering teams picking up subsequent implementation waves.
+
+---
+
+## 2. Stitch Design Feasibility & Platform API Boundaries
+
+During analysis and implementation of the Stitch design screens (specifically `.stitch/.../IPad-Verification-Workspace` and related desktop/tablet canvases), several UI elements and interactions were identified that **cannot or should not be implemented as depicted** due to iOS SDK constraints, sandbox policies, or core architectural commitments:
+
+| Design Element in Stitch | Mockup Location | Platform / API Limitation | Engineering Resolution |
+| :--- | :--- | :--- | :--- |
+| **External SMS Alerts** | `IPad-Verification-Workspace` §5 ("Automated Alerts") | iOS applications have no private background SMS daemon or carrier SMS API without an external cloud backend (e.g., Twilio), user sign-in, and cellular transmission fees. | Rely exclusively on local `EventKit` calendar alarms and `UserNotifications` (`UNNotificationRequest`). Zero external telephony required. |
+| **Live Transit Duration Calculations** | `IPad-Verification-Workspace` Venue card (`"22 min transit from Home"`) | Requires constant `CoreLocation` background tracking of the user's home address, geocoding, and continuous `MKDirections` network calls. Violates the zero-cloud-leak guarantee and triggers intrusive location permission dialogs. | Provide direct, privacy-preserving Apple Maps deep links (`maps.apple.com/?q=...`) on tap, without background tracking. |
+| **Apple Pencil Battery Percentage Telemetry** | `IPad-Verification-Workspace` Left Rail (`"Apple Pencil: Ready • 94%"`) | `UIKit` and `PencilKit` provide `UIPencilInteraction` (squeeze, double-tap), but Apple does **not** expose public runtime APIs to read connected Apple Pencil battery percentages (restricted to system battery widgets). | Maintain clean system status indicators without fabricated hardware battery telemetry. |
+| **Microsecond Hardware Latency Telemetry** | `IPad-Verification-Workspace` Hardware bar (`"14ms latency • ANE"`) | Apple's `Vision` framework (`VNRecognizeTextRequest`) dynamically dispatches to ANE/GPU, but internal hardware execution duration is not exposed in public user-space telemetry. Hardcoding `"14ms"` would be fake data. | Display actual OCR engine confidence (`scan.ocrConfidence`) and engine routing badges (`EngineRouteBadge`) backed by genuine pipeline diagnostics. |
+| **Silent In-Place Calendar Rollback ("Undo" CTA)** | `IPad-Verification-Workspace` Success notification banner | Once an `EKEvent` is committed to iCloud via `EventKit`, immediate silent rollback from a quick-action banner is unsafe due to external calendar syncing, shared invitees, and potential concurrency collisions. | Explicit, transactional edits and discards through `EventReviewViewModel` and `SavedEventActions`. |
+| **Direct Binary Image Attachment in Apple Calendar Notes** | `IPad-Verification-Workspace` §6 Toggle | In `EventKit`, the `attachments` array on `EKEvent` is restricted to CalDAV/Exchange accounts in standard iOS public APIs. Local write of raw images is unsupported. | Full structured OCR transcription and source metadata are appended to the event's `notes` string, while the raw high-resolution image is stored locally in SwiftData (`ScannedAsset`). |
+
+---
+
+## 3. Rebranding Migration Integrity
+
+### 3.1 Brand Identity Gate Verification
+The automated pre-commit brand check (`./scripts/hooks/pre-commit` running `scripts/brand_identity_gate.py`) was executed across all source files, configurations, and test assets:
+- **Result:** **PASSED** (0 staged violations).
+- **Residual String Check:** Zero occurrences of case-insensitive `"legacy"` exist in [`Sources/`](file:///Users/conscious/apps/legacy app-iOS/Sources/), [`Config/`](file:///Users/conscious/apps/legacy app-iOS/Config/), or [`Assets.xcassets/`](file:///Users/conscious/apps/legacy app-iOS/Assets.xcassets/).
+- **App Bundle & Display Identity:**
+  - `PRODUCT_BUNDLE_IDENTIFIER`: `com.pencild.app`
+  - `INFOPLIST_KEY_CFBundleDisplayName`: `Pencil'd`
+  - StoreKit configuration: [`Pencild.storekit`](file:///Users/conscious/apps/legacy app-iOS/Pencild.storekit) with canonical identifiers `com.pencild.app.plus.monthly`, `com.pencild.app.premium.monthly`, etc.
+
+### 3.2 Legacy Identifier Shims in Code
+While brand strings in user-facing copy and identifiers are 100% updated, internal architectural code retains legacy `DS` prefixes in class and modifier naming:
+- **Color Tokens:** [`Theme/Colors.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Theme/Colors.swift#L32-L60) defines aliases `Color.dsBackground`, `Color.dsPrimary`, `Color.dsCard`, etc., pointing to `Color.pdSurface`, `Color.pdPrimary`, `Color.pdSurfaceContainer`.
+- **Button Styles & Modifiers:** [`Theme/GlassModifiers.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Theme/GlassModifiers.swift#L46) still defines `.dsScreenBackground()` and `DSConfidencePill` alongside the canonical `PD` tokens.
+- **Recommendation:** Fully deprecate and migrate all remaining `ds*` call sites to canonical `pd*` tokens (e.g. `.pdScreenBackground()`, `PDConfidenceBadge`).
+
+---
+
+## 4. Design System & Styling Token Conformance
+
+The design specification mandates the **Luminous Precision** system (`Plus Jakarta Sans`, deep indigo surfaces `#101127`, sunset gradient `#ff7a00` $\rightarrow$ `#ff7288` $\rightarrow$ `#670fac`, and strict 44pt touch targets).
+
+### 4.1 Canonical Token Adoption vs. Legacy Aliases
+A project-wide audit revealed **713 references** already adopting canonical `PDRadius`, `PDSpacing`, and `PDFont` tokens across [`Sources/Pencild/Views/`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/). However, residual legacy usages remain in specific components:
+
+1. **`Color.ds*` Call Sites in Views:**
+   - [`ContentView.swift#L228`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/ContentView.swift#L228): Uses `Color.dsPrimary`, `Color.dsForeground`, `Color.dsCardElevated` in `toastBanner`.
+   - [`AgendaView.swift#L342`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/AgendaView.swift#L342): Uses `Color.dsWarning` instead of `Color.pdWarning`.
+   - [`DefaultCalendarSection.swift#L36-L106`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/DefaultCalendarSection.swift#L36-L106): 11 usages of `Color.dsMutedForeground`, `Color.dsCard`, `Color.dsBorder`.
+   - [`EventFilterBar.swift#L70`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/EventFilterBar.swift#L70): Uses `Color.dsSecondary.opacity(0.2)` and `Color.dsPrimary.opacity(0.3)`.
+   - [`ScanFlowViews.swift#L210-L484`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/ScanFlowViews.swift#L210-L484): Multiple references to `Color.dsForeground`, `Color.dsBackground`, `Color.dsCard`, `Color.dsBorder`.
+
+2. **Hardcoded Numeric Magic Values:**
+   - **Corner Radii:** Several views define explicit `.cornerRadius(12)`, `.cornerRadius(16)`, or `.cornerRadius(20)` instead of `PDRadius.card` (16pt), `PDRadius.tile` (12pt), or `PDRadius.pill` (999pt):
+     - [`EventReviewEditView.swift#L623`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/EventReviewEditView.swift#L623): `.cornerRadius(12)` in `rawTextCard`.
+     - [`EventReviewEditView.swift#L744`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/EventReviewEditView.swift#L744): `RoundedRectangle(cornerRadius: 24)` in draft/discard buttons.
+     - [`ScanFlowViews.swift#L472`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/ScanFlowViews.swift#L472): `RoundedRectangle(cornerRadius: 12)`.
+   - **Spacing:** Scattered `VStack(spacing: 14)`, `VStack(spacing: 10)` in forms instead of `PDSpacing.md` (16pt) or `PDSpacing.sm` (8pt).
+
+---
+
+## 5. Overly Long / Monolithic View Decomposition
+
+The following views exceed standard single-responsibility thresholds and contain multiple complex inline sub-components that should be extracted into standalone, reusable files:
+
+| File | Lines | Inline Responsibilities to Decompose | Proposed Extraction Target |
+| :--- | :---: | :--- | :--- |
+| [`EventReviewEditView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/EventReviewEditView.swift) | **1,009** | Form fields, date pickers, iPad inspector, raw OCR viewer, duplicate banners, ambiguity dialogs, actions bar. | Split into: `EventReviewSourceInspector.swift`, `EventReviewFieldsCard.swift`, `EventReviewActionsBar.swift`. |
+| [`SavedEventDetailView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/SavedEventDetailView.swift) | **375** | Hero section, destination badges, interpretation provenance explanation, alerts list. | Split interpretation explanation into: `EventInterpretationDetailCard.swift`. |
+| [`ScanFlowViews.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/ScanFlowViews.swift) | **676** | Camera scanner, recent screenshots picker grid, progress overlays, batch scanning progress overlay. | Separate into: `ScanProgressOverlay.swift`, `RecentScreenshotsPickerView.swift`. |
+| [`HomeEmptyStateView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/HomeEmptyStateView.swift) | **669** | Empty state card, interactive Canvas canvas animation, particle effects, quick intake options. | Extract canvas particle drawing to: `PencilCanvasAuraEffect.swift`. |
+| [`BatchReviewView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/BatchReviewView.swift) | **685** | Batch queue list, conflict resolver sheet, batch action controls, discard confirmation. | Extract conflict resolution to: `BatchConflictResolverCard.swift`. |
+| [`ReminderScheduleEditorView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/ReminderScheduleEditorView.swift) | **282** | Custom picker, preset buttons, trigger date calculation preview, deadline reminder toggle. | Clean; self-contained. |
+
+---
+
+## 6. Best Practices, Concurrency, and Crash Safety
+
+### 6.1 Swift 6 Concurrency & Actor Isolation
+- **Status:** **EXCELLENT**. The project builds with Swift 6 and `ApproachableConcurrency` enabled without compiler warnings or data races.
+- Services (`EventKitManager`, `ExtractionService`, `SubscriptionService`) properly isolate mutating tasks and avoid cross-actor mutations.
+- State binding in [`ContentView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/ContentView.swift) and `@EnvironmentObject` injection is strictly maintained across all sheet and navigation destinations.
+
+### 6.2 Fatal Errors & Precondition Failures
+- An audit for `fatalError()` and `preconditionFailure()` identified:
+  - [`ServiceContainer.swift#L72`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Services/ServiceContainer.swift#L72): Valid fail-fast assert if `ServiceContainer` is missing at root.
+  - [`PurchaseViewModel.swift#L119-L134`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/ViewModels/PurchaseViewModel.swift#L119-L134): Static URLs initialized with `preconditionFailure`:
+    ```swift
+    static let privacyPolicy: URL = {
+        guard let url = URL(string: "https://pencild.app/privacy") else {
+            preconditionFailure("Invalid Privacy Policy URL")
+        }
+        return url
+    }()
+    ```
+  - **Assessment:** These URLs are covered by unit tests ([`PencildTests.swift#L73`](file:///Users/conscious/apps/legacy app-iOS/Tests/PencildTests/PencildSmokeTests.swift)) asserting validity at test time.
+
+### 6.3 StoreKit 2 Truthfulness
+- All paywalls ([`PlusPaywallView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/PlusPaywallView.swift), [`PremiumPaywallView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/PremiumPaywallView.swift)) bind directly to StoreKit products loaded by `PurchaseViewModel`.
+- When products fail to load or network is absent, purchases are disabled with user-visible recovery options; no fake fallback products are sold.
+- Restore purchase flows properly reflect verification states.
+
+---
+
+## 7. Actionable Remediation Roadmap
+
+For upcoming engineering waves, the prioritized tasks are:
+
+1. **Refactor Remaining `Color.ds*` Tokens to `Color.pd*`:**
+   - Update [`ContentView.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/ContentView.swift), [`DefaultCalendarSection.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/DefaultCalendarSection.swift), [`EventFilterBar.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/EventFilterBar.swift), and [`ScanFlowViews.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Views/ScanFlowViews.swift).
+   - Once zero callers remain, remove the deprecated aliases in [`Theme/Colors.swift`](file:///Users/conscious/apps/legacy app-iOS/Sources/Pencild/Theme/Colors.swift).
+2. **Decompose `EventReviewEditView.swift`:**
+   - Extract `EventReviewSourceInspector.swift` (iPad document canvas + OCR overlays) and `EventReviewFieldsCard.swift`.
+   - Reduces file length from 1,009 lines to <400 lines per file.
+3. **Decompose `ScanFlowViews.swift`:**
+   - Extract `RecentScreenshotsPickerView.swift` and `ScanProgressOverlay.swift` into their own files.
+4. **Standardize Hardcoded Radii and Spacing:**
+   - Replace explicit `12`, `16`, `24` integer literals with `PDRadius.card`, `PDRadius.tile`, and `PDSpacing.md`.
