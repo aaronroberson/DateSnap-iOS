@@ -56,7 +56,10 @@ struct SettingsHubView: View {
                     .fill(Color.dsPrimary)
                     .frame(width: 34, height: 34)
                     .overlay(Image(systemName: "person.fill").font(.system(size: 15)).foregroundStyle(Color.dsBackground))
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
+            .accessibilityLabel("Profile")
         }
         .padding(.top, 4)
     }
@@ -224,7 +227,7 @@ struct SettingsHubView: View {
                         value: store.defaultCalendarTitle() ?? "iOS default"
                     )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
 
                 Divider().overlay(Color.dsBorder)
 
@@ -238,7 +241,7 @@ struct SettingsHubView: View {
                         value: "2h before, 1d before"
                     )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
 
                 Divider().overlay(Color.dsBorder)
 
@@ -252,7 +255,7 @@ struct SettingsHubView: View {
                         value: "Screenshots, PDFs, Photos"
                     )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
 
                 Divider().overlay(Color.dsBorder)
 
@@ -337,7 +340,7 @@ struct SettingsHubView: View {
                 } label: {
                     supportRow(icon: "questionmark.circle.fill", title: "Help & Support Guide")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
 
                 #if DEBUG
                 Divider().overlay(Color.dsBorder)
@@ -346,7 +349,7 @@ struct SettingsHubView: View {
                 } label: {
                     supportRow(icon: "megaphone.fill", title: "Marketing Kit")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
                 #endif
 
                 Divider().overlay(Color.dsBorder)
@@ -356,7 +359,7 @@ struct SettingsHubView: View {
                 } label: {
                     supportRow(icon: "doc.text.fill", title: "Terms of Service")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
 
                 Divider().overlay(Color.dsBorder)
 
@@ -365,7 +368,7 @@ struct SettingsHubView: View {
                 } label: {
                     supportRow(icon: "shield.fill", title: "Privacy Policy")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsRowButtonStyle())
             }
             .dsGlassCard()
         }
@@ -469,5 +472,18 @@ struct SettingsHubView: View {
         }
         .padding(14)
         .contentShape(Rectangle())
+    }
+}
+
+
+// MARK: - Settings Row Button Style
+/// Makes the whole row (including empty space and padding) tappable, keeps a 52pt minimum
+/// height, and shows press feedback so taps feel acknowledged.
+struct SettingsRowButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+            .contentShape(Rectangle())
+            .background(configuration.isPressed ? Color.dsPrimary.opacity(0.12) : Color.clear)
     }
 }
