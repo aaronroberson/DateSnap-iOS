@@ -13,6 +13,17 @@ struct SettingsHubView: View {
     @AppStorage("settings.automaticCaptureEnabled") private var autoCaptureEnabled = true
     @State private var store = DefaultCalendarStore()
     @State private var restoring = false
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var photosStatus = PermissionLabel(text: "Checking…", granted: false)
+    @State private var calendarStatus = PermissionLabel(text: "Checking…", granted: false)
+    @State private var notificationsStatus = PermissionLabel(text: "Checking…", granted: false)
+
+    private var tier: SubscriptionTier { appState.subscriptionTier }
+
+    struct PermissionLabel: Equatable {
+        var text: String
+        var granted: Bool
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -31,6 +42,36 @@ struct SettingsHubView: View {
         }
         .dsScreenBackground()
         .task { await purchases.attach(services.subscription) }
+        .task(id: scenePhase) { await refreshPermissions() }
+    }
+
+    // MARK: - Live permission state
+    private func refreshPermissions() async {
+        switch services.photoLibrary.authorizationStatus(for: .readWrite) {
+        case .authorized: photosStatus = .init(text: "Full Access", granted: true)
+        case .limited: photosStatus = .init(text: "Limited", granted: true)
+        case .notDetermined: photosStatus = .init(text: "Not Asked", granted: false)
+        default: photosStatus = .init(text: "Off", granted: false)
+        }
+        switch services.calendar.authorizationStatus() {
+        case .fullAccess: calendarStatus = .init(text: "Full Access", granted: true)
+        case .writeOnly: calendarStatus = .init(text: "Add Only", granted: true)
+        case .notDetermined: calendarStatus = .init(text: "Not Asked", granted: false)
+        default: calendarStatus = .init(text: "Off", granted: false)
+        }
+        switch await services.notifications.authorizationStatus() {
+        case .authorized, .provisional, .ephemeral: notificationsStatus = .init(text: "On", granted: true)
+        case .notDetermined: notificationsStatus = .init(text: "Not Asked", granted: false)
+        default: notificationsStatus = .init(text: "Off", granted: false)
+        }
+    }
+
+    private var planSummary: String {
+        switch tier {
+        case .starter: return "Upgrade to Plus for auto-detect and unlimited screenshot scans."
+        case .plus: return "Plus includes unlimited screenshot scans and multi-stage reminders. Renewal details are in Manage Plan."
+        case .premium: return "Premium adds PDF import, multi-page documents and batch scanning. Renewal details are in Manage Plan."
+        }
     }
 
     // MARK: - Subviews
@@ -98,10 +139,10 @@ struct SettingsHubView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Pencil’d Pro")
+                        Text(tier == .starter ? "Pencil’d Free" : "Pencil’d \(tier.displayName)")
                             .font(DSTypography.headlineCard())
                             .foregroundStyle(Color.dsForeground)
-                        Text("Annual Plan • Auto-Renews")
+                        Text(tier == .starter ? "Free plan" : "Subscription active")
                             .font(DSTypography.caption())
                             .foregroundStyle(Color.dsMutedForeground)
                     }
@@ -111,7 +152,7 @@ struct SettingsHubView: View {
 
                 HStack(spacing: 4) {
                     Circle().fill(Color.dsSecondary).frame(width: 5, height: 5)
-                    Text("ACTIVE")
+                    Text(tier == .starter ? "FREE" : "ACTIVE")
                         .font(DSTypography.overlineConfidence())
                         .foregroundStyle(Color.dsSecondary)
                 }
@@ -124,7 +165,7 @@ struct SettingsHubView: View {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 14))
                     .foregroundStyle(Color.dsPrimary)
-                Text("Renews Oct 28, 2027 • Unlimited OCR & Multi-Event Detection")
+                Text(planSummary)
                     .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }
@@ -136,7 +177,7 @@ struct SettingsHubView: View {
                     navigate(.managePlan)
                 } label: {
                     HStack {
-                        Text("Manage Subscription")
+                        Text(tier == .starter ? "See plans" : "Manage Subscription")
                             .font(DSTypography.bodyStrong())
                             .foregroundStyle(Color.dsBackground)
                         Spacer()
@@ -183,8 +224,8 @@ struct SettingsHubView: View {
                     iconColor: .dsPrimary,
                     title: "Photos",
                     subtitle: "Detection & crop bounds",
-                    status: "Full Access",
-                    statusColor: .dsPrimary
+                    status: photosStatus.text,
+                    statusColor: photosStatus.granted ? .dsPrimary : .dsWarning
                 )
                 Divider().overlay(Color.dsBorder)
                 permissionRow(
@@ -192,8 +233,8 @@ struct SettingsHubView: View {
                     iconColor: .dsSecondary,
                     title: "Calendar",
                     subtitle: "Direct schedule writes",
-                    status: "Read & Write",
-                    statusColor: .dsSecondary
+                    status: calendarStatus.text,
+                    statusColor: calendarStatus.granted ? .dsSecondary : .dsWarning
                 )
                 Divider().overlay(Color.dsBorder)
                 permissionRow(
@@ -201,8 +242,8 @@ struct SettingsHubView: View {
                     iconColor: .dsAccent,
                     title: "Notifications",
                     subtitle: "Capture summaries & alerts",
-                    status: "Banners & Sounds",
-                    statusColor: .dsAccent
+                    status: notificationsStatus.text,
+                    statusColor: notificationsStatus.granted ? .dsAccent : .dsWarning
                 )
             }
             .dsGlassCard()
@@ -238,7 +279,7 @@ struct SettingsHubView: View {
                         icon: "alarm.fill",
                         iconColor: .dsSecondary,
                         title: "Default Reminders",
-                        value: "2h before, 1d before"
+                        value: "Smart, by event type"
                     )
                 }
                 .buttonStyle(SettingsRowButtonStyle())
@@ -269,7 +310,7 @@ struct SettingsHubView: View {
                         Text("Automatic Capture")
                             .font(DSTypography.bodyCompact())
                             .foregroundStyle(Color.dsForeground)
-                        Text("Background photo scan enabled")
+                        Text(autoCaptureEnabled ? "Background photo scan on" : "Background photo scan off")
                             .font(DSTypography.caption())
                             .foregroundStyle(Color.dsMutedForeground)
                     }
@@ -376,7 +417,7 @@ struct SettingsHubView: View {
 
     private var versionFooter: some View {
         VStack(spacing: 4) {
-            Text("Pencil’d for iOS v\(appVersion) • Designed for iOS 18")
+            Text("Pencil’d for iOS v\(appVersion)")
                 .font(DSTypography.caption())
                 .foregroundStyle(Color.dsMutedForeground)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -386,8 +427,8 @@ struct SettingsHubView: View {
     }
 
     private var appVersion: String {
-        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "2.4.0"
-        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "412"
+        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—"
         return "\(short) (Build \(build))"
     }
 
