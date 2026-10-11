@@ -205,7 +205,7 @@ struct ScreenGalleryView: View {
                             } else if item.id == 7 {
                                 appState.selectedTab = .home
                             } else if item.id == 3 {
-                                appState.selectedTab = .history
+                                appState.openHistory()
                             } else if let modal = item.modal {
                                 appState.activeModal = modal
                             }

@@ -21,17 +21,15 @@ enum ActiveTab: String, CaseIterable, Identifiable, Sendable {
     case home = "Home"
     case agenda = "Agenda"
     case review = "Review"
-    case history = "History"
     case settings = "Settings"
 
     var id: String { rawValue }
 
     var iconName: String {
         switch self {
-        case .home: return "viewfinder"
+        case .home: return "house.fill"
         case .agenda: return "calendar"
-        case .review: return "sparkles"
-        case .history: return "clock.arrow.circlepath"
+        case .review: return "text.bubble.fill"
         case .settings: return "gearshape.fill"
         }
     }
@@ -91,6 +89,8 @@ enum AppModalScreen: Identifiable, Sendable {
 @MainActor
 final class AppState: ObservableObject {
     @Published var selectedTab: ActiveTab = .home
+    /// History & Archive is pushed from Agenda rather than living in the tab bar.
+    @Published var showHistory = false
     @Published var activeModal: AppModalScreen? = nil
 
     // Membership tier, mirrored from StoreKit via SubscriptionService.
@@ -115,6 +115,12 @@ final class AppState: ObservableObject {
     /// In-flight multi-screenshot scan, kept here so progress survives picker dismissal.
     @Published private(set) var activeBatchScan: BatchScanViewModel? = nil
     @Published private(set) var isBatchScanning = false
+
+    /// Opens History & Archive, which lives under the Agenda tab.
+    func openHistory() {
+        selectedTab = .agenda
+        showHistory = true
+    }
 
     /// Scans every source in one sequential batch, then presents the combined review session.
     /// A single-selection batch still uses this path, so progress and routing stay identical.

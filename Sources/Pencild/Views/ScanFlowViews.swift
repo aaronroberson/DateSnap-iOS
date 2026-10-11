@@ -30,7 +30,7 @@ extension AppState {
         case .alreadySaved(let count):
             activeModal = nil
             showToast(count == 1 ? "Already saved — find it in History" : "All \(count) events are already saved")
-            selectedTab = .history
+            openHistory()
         case .failed(let message):
             activeModal = nil
             showToast(message)

@@ -86,7 +86,7 @@ struct AgendaView: View {
                     }
                     if selectedFilter == .past || selectedFilter == .all {
                         Button {
-                            appState.selectedTab = .history
+                            appState.openHistory()
                         } label: {
                             HStack(spacing: 6) {
                                 Text("View full history")

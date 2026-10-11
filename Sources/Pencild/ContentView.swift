@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var settingsState = SettingsState()
     @StateObject private var scanViewModel: ScanViewModel
     @StateObject private var homeViewModel: HomeViewModel
+    @Query private var candidates: [EventCandidate]
     @State private var showSplash = true
 
     init(services: ServiceContainer) {
@@ -26,11 +27,16 @@ struct ContentView: View {
                 case .home:
                     HomeEmptyStateView()
                 case .agenda:
-                    AgendaView()
+                    NavigationStack {
+                        AgendaView()
+                            .toolbar(.hidden, for: .navigationBar)
+                            .navigationDestination(isPresented: $appState.showHistory) {
+                                HistoryArchiveView()
+                                    .toolbar(.hidden, for: .navigationBar)
+                            }
+                    }
                 case .review:
                     ReviewQueueView()
-                case .history:
-                    HistoryArchiveView()
                 case .settings:
                     SettingsClusterView()
                 }
@@ -62,7 +68,6 @@ struct ContentView: View {
                 // Custom Branded Tab Bar
                 customTabBar
             }
-            .padding(.bottom, 6)
         }
         .overlay {
             if showSplash {
@@ -160,9 +165,14 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Custom Glassmorphic Tab Bar
+    /// Candidates waiting on the user, same definition as the Review tab.
+    private var needsReview: Bool {
+        candidates.contains { $0.savedEvent == nil || $0.savedEvent?.status == .draft }
+    }
+
+    // MARK: - Docked Tab Bar (Stitch bottom nav)
     private var customTabBar: some View {
-        HStack {
+        HStack(spacing: 0) {
             ForEach(ActiveTab.allCases) { tab in
                 let isSelected = appState.selectedTab == tab
                 Button {
@@ -172,33 +182,47 @@ struct ContentView: View {
                 } label: {
                     VStack(spacing: 4) {
                         Image(systemName: tab.iconName)
-                            .font(.system(size: 20, weight: isSelected ? .bold : .regular))
+                            .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                            .overlay(alignment: .topTrailing) {
+                                if tab == .review && needsReview {
+                                    Circle()
+                                        .fill(Color.pdTertiaryContainer)
+                                        .frame(width: 8, height: 8)
+                                        .offset(x: 5, y: -2)
+                                }
+                            }
                         Text(tab.rawValue)
-                            .font(DSTypography.caption())
-                            .fontWeight(isSelected ? .bold : .medium)
+                            .font(PDFont.jakarta(11, isSelected ? .bold : .medium, relativeTo: .caption2))
                     }
-                    .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsMutedForeground)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(isSelected ? Color.dsPrimary.opacity(0.12) : Color.clear)
-                    )
+                    .foregroundStyle(isSelected ? Color.pdPrimary : Color.pdOnSurfaceVariant.opacity(0.7))
+                    .frame(maxWidth: .infinity, minHeight: 56)
+                    .overlay(alignment: .top) {
+                        if isSelected {
+                            Capsule()
+                                .fill(Color.pdPrimary)
+                                .frame(width: 32, height: 4)
+                                .shadow(color: Color.pdPrimaryContainer.opacity(0.8), radius: 6)
+                                .offset(y: -6)
+                        }
+                    }
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel(tab.rawValue)
+                .accessibilityValue(tab == .review && needsReview ? "Items waiting" : "")
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
-            
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 8)
+        .padding(.top, 6)
         .background(
-            RoundedRectangle(cornerRadius: 26)
-                .fill(Color(hex: "0A0E1E").opacity(0.85))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 26)
-                        .stroke(Color.dsBorder, lineWidth: 1)
-                )
-                .shadow(color: Color.black.opacity(0.5), radius: 16, y: 8)
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .overlay(Color.pdSurface.opacity(0.9))
+                .overlay(alignment: .top) {
+                    Rectangle().fill(Color.pdSurfaceHighest.opacity(0.6)).frame(height: 1)
+                }
+                .ignoresSafeArea(edges: .bottom)
         )
-        .padding(.horizontal, 16)
     }
 }
