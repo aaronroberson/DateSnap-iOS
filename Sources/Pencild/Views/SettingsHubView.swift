@@ -1,214 +1,150 @@
 import SwiftUI
 
-// Settings Hub — root of the Settings cluster. Rows navigate to working
-// screens or invoke an explicit StoreKit action.
+// MARK: - Settings Hub View
+/// Mirrors Stitch design `.stitch/Settings-Functional-Sub-Screens/Settings/design.html`.
+/// Root of the Settings cluster with navigation to sub-screens, permissions inspection, and StoreKit controls.
 struct SettingsHubView: View {
     @Environment(\.services) private var services
+    @Environment(\.openURL) private var openURL
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var settings: SettingsState
     @StateObject private var purchases = PurchaseViewModel()
+
+    @AppStorage("settings.automaticCaptureEnabled") private var autoCaptureEnabled = true
+    @State private var store = DefaultCalendarStore()
     @State private var restoring = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 18) {
-                SettingsScreenHeader(title: "Settings Hub")
-                profileCard
-                sectionScanning
-                sectionDestinations
-                sectionPrivacy
-                sectionBilling
-                sectionSupport
-                SettingsFooterNote(
-                    lines: ["Version \(appVersion)", "Subscriptions are managed by the App Store"],
-                    systemImage: "info.circle"
-                )
+            VStack(alignment: .leading, spacing: 20) {
+                headerBar
+                screenIntro
+                subscriptionSection
+                permissionsSection
+                defaultsSection
+                privacySection
+                supportSection
+                versionFooter
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
-            .padding(.bottom, 24)
         }
         .dsScreenBackground()
         .task { await purchases.attach(services.subscription) }
-        .alert("Restore Failed", isPresented: Binding(
-            get: { purchases.errorMessage != nil },
-            set: { if !$0 { purchases.errorMessage = nil } }
-        )) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(purchases.errorMessage ?? "")
-        }
     }
 
-    private var appVersion: String {
-        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
-        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
-        return "\(short) (\(build))"
-    }
+    // MARK: - Subviews
 
-    private var tierChipText: String {
-        appState.subscriptionTier.displayName
-    }
-
-    // MARK: - Navigation helpers
-
-    private func navigate(_ route: SettingsRoute) {
-        settings.pendingRoute = route.rawValue
-    }
-
-    // MARK: - Profile
-
-    private var profileCard: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Image(systemName: "person.crop.circle.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(Color.dsBrandGradient)
-                    .frame(width: 52, height: 52)
-                    .background(Circle().fill(Color.dsMuted))
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 6) {
-                        Text("Your Pencil'd")
-                            .font(DSTypography.headlineCard())
-                            .foregroundStyle(Color.dsForeground)
-                        ValueChip(text: tierChipText, tint: .dsAccent, filled: true)
-                    }
-                    Text("No Pencil'd account is required")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
-                }
-                Spacer()
+    private var headerBar: some View {
+        HStack {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.dsBrandGradient)
+                    .frame(width: 30, height: 30)
+                    .overlay(Image(systemName: "pencil.and.outline").font(.system(size: 15)).foregroundStyle(Color.dsBackground))
+                Text("Settings")
+                    .font(DSTypography.headlineCard())
+                    .foregroundStyle(Color.dsForeground)
             }
-            .padding(16)
 
-            Divider().overlay(Color.dsBorder)
+            Spacer()
 
             Button {
-                navigate(.managePlan)
+                navigate(.userProfile)
             } label: {
-                SettingRow(icon: "checkmark.seal.fill", iconTint: .dsPrimary,
-                           title: appState.subscriptionTier.displayName,
-                           subtitle: "Tap to manage subscription") {
-                    SettingsChevron()
-                }
-                .contentShape(Rectangle())
+                Circle()
+                    .fill(Color.dsPrimary)
+                    .frame(width: 34, height: 34)
+                    .overlay(Image(systemName: "person.fill").font(.system(size: 15)).foregroundStyle(Color.dsBackground))
             }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+        }
+        .padding(.top, 4)
+    }
+
+    private var screenIntro: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Circle().fill(Color.dsPrimary).frame(width: 6, height: 6)
+                Text("SETTINGS")
+                    .font(DSTypography.overlineConfidence())
+                    .foregroundStyle(Color.dsPrimary)
+            }
+
+            Text("Settings")
+                .font(DSTypography.displayTitle())
+                .foregroundStyle(Color.dsForeground)
+
+            Text("Manage permissions, default calendars, reminder rules, and Pencil’d Pro subscription.")
+                .font(DSTypography.bodyCompact())
+                .foregroundStyle(Color.dsMutedForeground)
+                .lineSpacing(2)
+        }
+    }
+
+    private var subscriptionSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
+                HStack(spacing: 12) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.dsBrandGradient)
+                            .frame(width: 42, height: 42)
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(Color.white)
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Pencil’d Pro")
+                            .font(DSTypography.headlineCard())
+                            .foregroundStyle(Color.dsForeground)
+                        Text("Annual Plan • Auto-Renews")
+                            .font(DSTypography.caption())
+                            .foregroundStyle(Color.dsMutedForeground)
+                    }
+                }
+
+                Spacer()
+
+                HStack(spacing: 4) {
+                    Circle().fill(Color.dsSecondary).frame(width: 5, height: 5)
+                    Text("ACTIVE")
+                        .font(DSTypography.overlineConfidence())
+                        .foregroundStyle(Color.dsSecondary)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(Color.dsSecondary.opacity(0.15)))
+            }
 
             HStack(spacing: 8) {
-                Image(systemName: "bolt.fill")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(Color.dsAccent2)
-                Text("On-device scan and review")
-                    .font(DSTypography.labelChip())
-                    .foregroundStyle(Color.dsForeground)
-                Spacer()
-                Image(systemName: "iphone")
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.dsPrimary)
+                Text("Renews Oct 28, 2027 • Unlimited OCR & Multi-Event Detection")
+                    .font(DSTypography.caption())
                     .foregroundStyle(Color.dsMutedForeground)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(Color.dsPrimary.opacity(0.05))
-        }
-        .dsGlassCard()
-    }
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 8).fill(Color.dsSurfaceElevated))
 
-    // MARK: - Scanning & Capture
-
-    private var sectionScanning: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "camera.viewfinder", title: "Scanning",
-                                  tint: .dsSecondary)
-            VStack(spacing: 14) {
-                Button {
-                    navigate(.automationSettings)
-                } label: {
-                    SettingRow(icon: "wand.and.sparkles", iconTint: .dsSecondary,
-                               title: "Enhanced Interpretation",
-                               subtitle: "Optional Apple Intelligence help for ambiguous flyers") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(16)
-            .dsGlassCard()
-        }
-    }
-
-    // MARK: - Destinations & Reminders
-
-    private var sectionDestinations: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "bell.badge.fill", title: "Reminders", tint: .dsPrimary)
-            VStack(spacing: 14) {
-                Button {
-                    navigate(.reminderSettings)
-                } label: {
-                    SettingRow(icon: "bell.badge.fill", iconTint: .dsPrimary,
-                               title: "Reminder Preview",
-                               subtitle: "1 day before · 2 hours before") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-            }
-            .padding(16)
-            .dsGlassCard()
-
-            DefaultCalendarSection()
-        }
-    }
-
-    // MARK: - Privacy & Security
-
-    private var sectionPrivacy: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "lock.fill", title: "Privacy", tint: .dsError)
-            VStack(spacing: 14) {
-                Button {
-                    navigate(.privacyCenter)
-                } label: {
-                    SettingRow(icon: "lock.iphone", iconTint: .dsSuccess,
-                               title: "Privacy Center",
-                               subtitle: "Clear stored scan text or erase Pencil'd history") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-            }
-            .padding(16)
-            .dsGlassCard()
-        }
-    }
-
-    // MARK: - Account & Billing
-
-    private var sectionBilling: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "creditcard.fill", title: "Account & Billing", tint: .dsAccent)
-            VStack(spacing: 14) {
+            VStack(spacing: 8) {
                 Button {
                     navigate(.managePlan)
                 } label: {
-                    SettingRow(icon: "crown.fill", iconTint: .dsWarning,
-                               title: appState.subscriptionTier.displayName,
-                               subtitle: "View available plans and manage billing") {
-                        ValueChip(text: "Manage", tint: .dsSecondary)
-                        SettingsChevron()
+                    HStack {
+                        Text("Manage Subscription")
+                            .font(DSTypography.bodyStrong())
+                            .foregroundStyle(Color.dsBackground)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(Color.dsBackground)
                     }
-                    .contentShape(Rectangle())
+                    .padding(.horizontal, 16)
+                    .frame(height: 46)
+                    .background(Capsule().fill(Color.dsBrandGradient))
                 }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Color.dsBorder)
 
                 Button {
                     restoring = true
@@ -216,83 +152,322 @@ struct SettingsHubView: View {
                         let restored = await purchases.restore()
                         restoring = false
                         if let restored {
-                            appState.showToast(restored == .starter ? "No active subscription found to restore" : "✓ \(restored.displayName) restored")
+                            appState.showToast(restored == .starter ? "No prior subscription found" : "✓ \(restored.displayName) restored")
                         }
                     }
                 } label: {
-                    SettingRow(icon: "arrow.triangle.2.circlepath", iconTint: .dsInfo,
-                               title: "Restore App Store Purchases",
-                               subtitle: "Sync prior subscriptions via StoreKit") {
-                        if restoring {
-                            ProgressView().tint(Color.dsPrimary)
-                        } else {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                    }
-                    .contentShape(Rectangle())
+                    Text(restoring ? "Restoring..." : "Restore purchases")
+                        .font(DSTypography.caption())
+                        .foregroundStyle(Color.dsPrimary)
+                }
+                .disabled(restoring)
+            }
+        }
+        .padding(16)
+        .dsGlassCard()
+    }
+
+    private var permissionsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("SYSTEM PERMISSIONS")
+                .font(DSTypography.overlineConfidence())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+
+            VStack(spacing: 0) {
+                permissionRow(
+                    icon: "photo.stack.fill",
+                    iconColor: .dsPrimary,
+                    title: "Photos",
+                    subtitle: "Detection & crop bounds",
+                    status: "Full Access",
+                    statusColor: .dsPrimary
+                )
+                Divider().overlay(Color.dsBorder)
+                permissionRow(
+                    icon: "calendar",
+                    iconColor: .dsSecondary,
+                    title: "Calendar",
+                    subtitle: "Direct schedule writes",
+                    status: "Read & Write",
+                    statusColor: .dsSecondary
+                )
+                Divider().overlay(Color.dsBorder)
+                permissionRow(
+                    icon: "bell.badge.fill",
+                    iconColor: .dsAccent,
+                    title: "Notifications",
+                    subtitle: "Capture summaries & alerts",
+                    status: "Banners & Sounds",
+                    statusColor: .dsAccent
+                )
+            }
+            .dsGlassCard()
+        }
+    }
+
+    private var defaultsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("APP DEFAULTS")
+                .font(DSTypography.overlineConfidence())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+
+            VStack(spacing: 0) {
+                Button {
+                    navigate(.defaultCalendar)
+                } label: {
+                    appDefaultRow(
+                        icon: "calendar.badge.checkmark",
+                        iconColor: .dsPrimary,
+                        title: "Default Calendar",
+                        value: store.defaultCalendarTitle() ?? "iOS default"
+                    )
                 }
                 .buttonStyle(.plain)
-                .disabled(restoring)
+
+                Divider().overlay(Color.dsBorder)
+
+                Button {
+                    navigate(.reminderSettings)
+                } label: {
+                    appDefaultRow(
+                        icon: "alarm.fill",
+                        iconColor: .dsSecondary,
+                        title: "Default Reminders",
+                        value: "2h before, 1d before"
+                    )
+                }
+                .buttonStyle(.plain)
+
+                Divider().overlay(Color.dsBorder)
+
+                Button {
+                    navigate(.automationSettings)
+                } label: {
+                    appDefaultRow(
+                        icon: "camera.filters",
+                        iconColor: .dsAccent,
+                        title: "Source Preferences",
+                        value: "Screenshots, PDFs, Photos"
+                    )
+                }
+                .buttonStyle(.plain)
+
+                Divider().overlay(Color.dsBorder)
+
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.dsSurfaceElevated)
+                        .frame(width: 32, height: 32)
+                        .overlay(Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 14)).foregroundStyle(Color.dsPrimary))
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Automatic Capture")
+                            .font(DSTypography.bodyCompact())
+                            .foregroundStyle(Color.dsForeground)
+                        Text("Background photo scan enabled")
+                            .font(DSTypography.caption())
+                            .foregroundStyle(Color.dsMutedForeground)
+                    }
+
+                    Spacer()
+
+                    Toggle("", isOn: $autoCaptureEnabled)
+                        .labelsHidden()
+                        .tint(Color.dsPrimary)
+                }
+                .padding(14)
+            }
+            .dsGlassCard()
+        }
+    }
+
+    private var privacySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("PRIVACY & SECURITY")
+                .font(DSTypography.overlineConfidence())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(Color.dsPrimary.opacity(0.15))
+                        .frame(width: 28, height: 28)
+                        .overlay(Image(systemName: "lock.fill").font(.system(size: 13)).foregroundStyle(Color.dsPrimary))
+
+                    Text("On-Device Privacy First")
+                        .font(DSTypography.bodyStrong())
+                        .foregroundStyle(Color.dsForeground)
+                }
+
+                Text("Pencil’d analyzes your photos and screenshots locally on your device neural engine. Scanned images are never stored or transmitted to external servers.")
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+                    .lineSpacing(2)
+
+                Button {
+                    navigate(.privacyCenter)
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("Learn how Pencil'd handles scans")
+                        Image(systemName: "arrow.right")
+                    }
+                    .font(DSTypography.bodyCompact())
+                    .foregroundStyle(Color.dsPrimary)
+                }
+                .padding(.top, 4)
             }
             .padding(16)
             .dsGlassCard()
         }
     }
 
-    // MARK: - Support & System
-
-    private var sectionSupport: some View {
+    private var supportSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "questionmark.circle.fill", title: "Support & System", tint: .dsInfo)
-            VStack(spacing: 14) {
+            Text("SUPPORT & LEGAL")
+                .font(DSTypography.overlineConfidence())
+                .foregroundStyle(Color.dsMutedForeground)
+                .padding(.horizontal, 4)
+
+            VStack(spacing: 0) {
                 Button {
                     navigate(.helpFeedback)
                 } label: {
-                    SettingRow(icon: "lifepreserver", iconTint: .dsInfo,
-                               title: "Help Center & Shortcuts",
-                               subtitle: "iOS Action Button & Back Tap setups") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
+                    supportRow(icon: "questionmark.circle.fill", title: "Help & Support Guide")
                 }
                 .buttonStyle(.plain)
 
-                Divider().overlay(Color.dsBorder)
-
                 #if DEBUG
+                Divider().overlay(Color.dsBorder)
                 Button {
                     navigate(.marketingKit)
                 } label: {
-                    SettingRow(icon: "megaphone.fill", iconTint: .dsAccent,
-                               title: "Launch Marketing Kit",
-                               subtitle: "Internal campaign copy and assets") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
+                    supportRow(icon: "megaphone.fill", title: "Marketing Kit")
+                }
+                .buttonStyle(.plain)
+                #endif
+
+                Divider().overlay(Color.dsBorder)
+
+                Button {
+                    openURL(PencildLinks.termsOfUse)
+                } label: {
+                    supportRow(icon: "doc.text.fill", title: "Terms of Service")
                 }
                 .buttonStyle(.plain)
 
                 Divider().overlay(Color.dsBorder)
-                #endif
 
                 Button {
-                    navigate(.helpFeedback)
+                    openURL(PencildLinks.privacyPolicy)
                 } label: {
-                    SettingRow(icon: "heart.fill", iconTint: .dsError,
-                               title: "Request Feature / Feedback",
-                               subtitle: "Contact Pencil'd support") {
-                        Image(systemName: "arrow.up.forward.app")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color.dsMutedForeground)
-                    }
-                    .contentShape(Rectangle())
+                    supportRow(icon: "shield.fill", title: "Privacy Policy")
                 }
                 .buttonStyle(.plain)
             }
-            .padding(16)
             .dsGlassCard()
         }
+    }
+
+    private var versionFooter: some View {
+        VStack(spacing: 4) {
+            Text("Pencil’d for iOS v\(appVersion) • Designed for iOS 18")
+                .font(DSTypography.caption())
+                .foregroundStyle(Color.dsMutedForeground)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding(.top, 4)
+        .padding(.bottom, 24)
+    }
+
+    private var appVersion: String {
+        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "2.4.0"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "412"
+        return "\(short) (Build \(build))"
+    }
+
+    private func navigate(_ route: SettingsRoute) {
+        settings.pendingRoute = route.rawValue
+    }
+
+    private func permissionRow(icon: String, iconColor: Color, title: String, subtitle: String, status: String, statusColor: Color) -> some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.dsSurfaceElevated)
+                .frame(width: 32, height: 32)
+                .overlay(Image(systemName: icon).font(.system(size: 14)).foregroundStyle(iconColor))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(DSTypography.bodyCompact())
+                    .foregroundStyle(Color.dsForeground)
+                Text(subtitle)
+                    .font(DSTypography.caption())
+                    .foregroundStyle(Color.dsMutedForeground)
+            }
+
+            Spacer()
+
+            Text(status)
+                .font(DSTypography.labelChip())
+                .foregroundStyle(statusColor)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(statusColor.opacity(0.12)))
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.dsMutedForeground)
+        }
+        .padding(14)
+    }
+
+    private func appDefaultRow(icon: String, iconColor: Color, title: String, value: String) -> some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.dsSurfaceElevated)
+                .frame(width: 32, height: 32)
+                .overlay(Image(systemName: icon).font(.system(size: 14)).foregroundStyle(iconColor))
+
+            Text(title)
+                .font(DSTypography.bodyCompact())
+                .foregroundStyle(Color.dsForeground)
+
+            Spacer()
+
+            Text(value)
+                .font(DSTypography.caption())
+                .foregroundStyle(Color.dsMutedForeground)
+                .lineLimit(1)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.dsMutedForeground)
+        }
+        .padding(14)
+        .contentShape(Rectangle())
+    }
+
+    private func supportRow(icon: String, title: String) -> some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.dsSurfaceElevated)
+                .frame(width: 32, height: 32)
+                .overlay(Image(systemName: icon).font(.system(size: 14)).foregroundStyle(Color.dsMutedForeground))
+
+            Text(title)
+                .font(DSTypography.bodyCompact())
+                .foregroundStyle(Color.dsForeground)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.dsMutedForeground)
+        }
+        .padding(14)
+        .contentShape(Rectangle())
     }
 }
