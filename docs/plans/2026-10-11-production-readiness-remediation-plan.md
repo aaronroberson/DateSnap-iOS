@@ -143,3 +143,12 @@ evidence, all in-scope product callers use canonical tokens or documented
 compatibility aliases, high-risk view extraction preserves behavior, both
 regular-size workspaces pass the runtime matrix, StoreKit states remain
 truthful, and every plan verification gate has a retained result.
+
+## Progress log
+
+2026-10-11: Migrated the in-scope Agenda warning label, EventFilterBar fallback
+palette, screenshot triage selection/status surfaces, batch scan footer, and
+asset thumbnail to canonical `pd*` roles and `PDRadius`. The shared
+`.dsScreenBackground()` compatibility modifier and unrelated Settings/Profile
+callers remain unchanged. Debug builds passed for iPhone 17 and iPad Pro
+11-inch after this batch; the brand gate and `git diff --check` passed.
