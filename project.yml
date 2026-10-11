@@ -32,6 +32,8 @@ targets:
         buildPhase: resources
       - path: PrivacyInfo.xcprivacy
         buildPhase: resources
+      - path: Resources/Fonts
+        buildPhase: resources
     configFiles:
       Debug: Config/Pencild-Debug.xcconfig
       Release: Config/Pencild-Release.xcconfig
