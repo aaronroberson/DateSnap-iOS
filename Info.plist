@@ -28,6 +28,8 @@
 	<string>Pencil'd needs full calendar access to schedule events with alarm offsets in Apple Calendar.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Pencil'd needs calendar access to create events you extract from flyers and screenshots.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Pencil'd uses the camera only when you choose Scan a paper flyer, to capture pages for on-device event detection.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Pencil'd analyzes selected screenshots and event flyers on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>
