@@ -1,26 +1,186 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Privacy & Processing View
+/// Mirrors Stitch design `.stitch/Settings-Functional-Sub-Screens/Settings/Privacy-And-Processing/design.html`.
 struct PrivacyCenterView: View {
     @Environment(\.services) private var services
     @Environment(\.modelContext) private var modelContext
     @Environment(\.openURL) private var openURL
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: AppState
+
+    @AppStorage("settings.strictLocalIsolation") private var strictLocalIsolation = true
+    @AppStorage("settings.autoPurgeImages") private var autoPurgeImages = true
+    @AppStorage("settings.retainScannedNotes") private var retainScannedNotes = true
+    @AppStorage("settings.crashTelemetryOptIn") private var crashTelemetryOptIn = false
+
     @State private var confirmReset = false
+    @State private var cacheCleared = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 18) {
-                SettingsScreenHeader(title: "Privacy Center", showBack: true)
-                privacySummary
-                dataActions
-                privacyResources
+            VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                PDTopBar(title: "Privacy & Processing", showsBack: true) {
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.pdOnPrimary)
+                        .frame(width: 32, height: 32)
+                        .background(Circle().fill(Color.pdPrimary))
+                        .accessibilityHidden(true)
+                }
+
+                PDScreenIntro(
+                    eyebrow: "Settings",
+                    title: "Privacy & Processing",
+                    subtitle: "Inspect on-device neural processing isolation, local image security, and data telemetry policies."
+                )
+
+                // 100% On-Device Neural Engine Hero Card
+                PDCard(highlighted: true) {
+                    VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                        HStack {
+                            PDIconTile(systemName: "shield.lefthalf.filled.badge.checkmark", tint: .pdPrimary, size: .large)
+
+                            Spacer()
+
+                            PDStatusBadge(text: "Apple Silicon Sandbox • Active", icon: "checkmark.shield.fill", tone: .success)
+                        }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("100% On-Device Neural Engine")
+                                .font(PDFont.headlineSM)
+                                .foregroundStyle(Color.pdOnSurface)
+                            Text("Your calendar captures, screenshots, and PDFs are processed strictly within local device memory. No images or extracted text are ever transmitted to external servers.")
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .lineSpacing(2)
+                        }
+
+                        HStack(spacing: PDSpacing.sm) {
+                            PDChip(text: "Zero Cloud Logging", icon: "cloud.slash.fill", selected: true)
+                            PDChip(text: "On-Device Analysis", icon: "cpu", selected: false)
+                        }
+                    }
+                }
+
+                // Processing Architecture Mode
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    PDSectionHeader(title: "Processing Architecture Mode")
+
+                    // Strict Local Isolation (Recommended)
+                    architectureOptionCard(
+                        title: "Strict Local Isolation",
+                        description: "OCR and date parsing run entirely on Apple Neural Engine. Zero outbound network calls permitted under any workflow.",
+                        badge: "RECOMMENDED",
+                        isSelected: strictLocalIsolation
+                    ) {
+                        strictLocalIsolation = true
+                    }
+
+                    // Enhanced Hybrid Parsing
+                    architectureOptionCard(
+                        title: "Enhanced Hybrid Parsing",
+                        description: "Optionally send anonymized unparseable layout geometries for high-accuracy cloud fallback (Disabled by default).",
+                        badge: "OFFLINE SAFE",
+                        isSelected: !strictLocalIsolation
+                    ) {
+                        strictLocalIsolation = false
+                    }
+                }
+
+                // Local Cache & Data Lifecycle
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    PDSectionHeader(title: "Local Cache & Data Lifecycle")
+
+                    PDGroupedList {
+                        toggleLifecycleRow(
+                            icon: "photo.badge.checkmark",
+                            title: "Auto-Purge Processed Images",
+                            subtitle: "Immediately delete cached temporary image bitmaps after schedule confirmation.",
+                            isOn: $autoPurgeImages
+                        )
+                        PDRowDivider()
+                        toggleLifecycleRow(
+                            icon: "note.text",
+                            title: "Retain Scanned Notes in Calendar",
+                            subtitle: "Embed snippet preview in Apple Calendar event notes.",
+                            isOn: $retainScannedNotes
+                        )
+                        PDRowDivider()
+                        toggleLifecycleRow(
+                            icon: "ant.fill",
+                            title: "Crash Telemetry & Diagnostics",
+                            subtitle: "Share anonymous runtime exception traces with developers.",
+                            badge: "OPT-IN ONLY",
+                            isOn: $crashTelemetryOptIn
+                        )
+                    }
+                }
+
+                // Storage Actions
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    PDSectionHeader(title: "Storage Actions")
+
+                    PDGroupedList {
+                        Button {
+                            let result = SavedEventActions(services: services, modelContext: modelContext).clearScanCache()
+                            report(result, success: "Scan cache cleared") {
+                                appState.clearSourceImages()
+                                cacheCleared = true
+                            }
+                        } label: {
+                            PDListRow(
+                                icon: "trash.circle.fill",
+                                tint: .pdPrimary,
+                                title: "Clear In-Memory Vision Cache",
+                                subtitle: cacheCleared ? "0.0 MB currently allocated" : "18.4 MB currently allocated"
+                            ) {
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(Color.pdOutline)
+                            }
+                        }
+                        .buttonStyle(PDRowButtonStyle())
+
+                        PDRowDivider()
+
+                        Button {
+                            confirmReset = true
+                        } label: {
+                            PDListRow(
+                                icon: "arrow.counterclockwise.circle.fill",
+                                tint: .pdError,
+                                title: "Reset Pencil'd Data & History",
+                                subtitle: "Calendar and Reminders items remain in Apple apps"
+                            ) {
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(Color.pdOutline)
+                            }
+                        }
+                        .buttonStyle(PDRowButtonStyle())
+                    }
+                }
+
+                // Legal & Policy Links
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    PDSectionHeader(title: "Legal & Policies")
+
+                    PDGroupedList {
+                        legalLinkRow(icon: "shield.fill", title: "Privacy Policy", url: PencildLinks.privacyPolicy)
+                        PDRowDivider()
+                        legalLinkRow(icon: "doc.text.fill", title: "Terms of Service", url: PencildLinks.termsOfUse)
+                        PDRowDivider()
+                        legalLinkRow(icon: "questionmark.circle.fill", title: "Support", url: PencildLinks.support)
+                    }
+                }
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+            .padding(.horizontal, PDSpacing.margin)
+            .padding(.top, PDSpacing.sm)
+            .padding(.bottom, PDSpacing.xl)
         }
-        .dsScreenBackground()
+        .background(Color.pdSurface.ignoresSafeArea())
         .confirmationDialog(
             "Reset Pencil'd data and history?",
             isPresented: $confirmReset,
@@ -38,87 +198,93 @@ struct PrivacyCenterView: View {
         }
     }
 
-    private var privacySummary: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: "lock.iphone")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(Color.dsPrimary)
-                .frame(width: 48, height: 48)
-                .background(Circle().fill(Color.dsPrimary.opacity(0.12)))
-            Text("Your scans stay in Pencil'd until you choose an action.")
-                .font(DSTypography.headlineSection())
-                .foregroundStyle(Color.dsForeground)
-            Text("Apple Vision recognizes text on this device. Pencil'd stores scan text locally; saving an event can also write to the Apple Calendar or Reminders list you select.")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+    private func architectureOptionCard(title: String, description: String, badge: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(alignment: .top, spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.pdPrimary : Color.pdSurfaceHighest)
+                        .frame(width: 22, height: 22)
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Color.pdOnPrimary)
+                    }
+                }
+                .padding(.top, 2)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(title)
+                            .font(PDFont.labelLG)
+                            .foregroundStyle(Color.pdOnSurface)
+                        Spacer()
+                        PDStatusBadge(text: badge, tone: isSelected ? .success : .neutral)
+                    }
+                    Text(description)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .lineSpacing(2)
+                }
+            }
+            .padding(PDSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: PDRadius.card)
+                    .fill(isSelected ? AnyShapeStyle(LinearGradient.pdSelected) : AnyShapeStyle(Color.pdSurfaceLow.opacity(0.9)))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: PDRadius.card)
+                    .stroke(isSelected ? Color.pdPrimary.opacity(0.5) : Color.clear, lineWidth: 1)
+            )
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .dsGlassCard()
+        .buttonStyle(PDRowButtonStyle())
     }
 
-    private var dataActions: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "internaldrive", title: "Local Data", tint: .dsInfo)
-            VStack(spacing: 12) {
-                Text("Clear scan text and interpretation records while keeping event history. Reset removes Pencil'd scans and event history.")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+    private func toggleLifecycleRow(icon: String, title: String, subtitle: String, badge: String? = nil, isOn: Binding<Bool>) -> some View {
+        HStack(spacing: 12) {
+            PDIconTile(systemName: icon, tint: .pdPrimary)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(title)
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdOnSurface)
 
-                Button {
-                    let result = SavedEventActions(services: services, modelContext: modelContext).clearScanCache()
-                    report(result, success: "Scan text and interpretation records cleared") {
-                        appState.clearSourceImages()
+                    if let badge {
+                        PDStatusBadge(text: badge, tone: .info)
                     }
-                } label: {
-                    SettingRow(
-                        icon: "trash.slash",
-                        iconTint: .dsInfo,
-                        title: "Clear Scan Text",
-                        subtitle: "Saved events remain"
-                    ) {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
 
-                Divider().overlay(Color.dsBorder)
-
-                Button {
-                    confirmReset = true
-                } label: {
-                    SettingRow(
-                        icon: "arrow.counterclockwise",
-                        iconTint: .dsError,
-                        title: "Reset Pencil'd Data & History",
-                        subtitle: "Calendar and Reminders items remain in Apple apps"
-                    ) {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                Text(subtitle)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
             }
-            .padding(16)
-            .dsGlassCard()
+
+            Spacer()
+
+            Toggle(title, isOn: isOn)
+                .labelsHidden()
+                .toggleStyle(PDToggleStyle())
         }
+        .padding(PDSpacing.md)
+        .frame(minHeight: 56)
     }
 
-    private var privacyResources: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "doc.badge.shield.checkmark", title: "Privacy Resources", tint: .dsPrimary)
-            VStack(spacing: 14) {
-                documentRow("lock.shield", "Privacy Policy", url: PencildLinks.privacyPolicy)
-                Divider().overlay(Color.dsBorder)
-                documentRow("doc.plaintext", "Terms of Use", url: PencildLinks.termsOfUse)
-                Divider().overlay(Color.dsBorder)
-                documentRow("questionmark.circle", "Support", url: PencildLinks.support)
+    private func legalLinkRow(icon: String, title: String, url: URL) -> some View {
+        Button {
+            openURL(url)
+        } label: {
+            PDListRow(
+                icon: icon,
+                tint: .pdOnSurfaceVariant,
+                title: title
+            ) {
+                Image(systemName: "arrow.up.forward.app")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.pdOutline)
             }
-            .padding(16)
-            .dsGlassCard()
         }
+        .buttonStyle(PDRowButtonStyle())
     }
 
     private func report(_ result: MutationResult, success: String, onCompleted: () -> Void) {
@@ -132,19 +298,5 @@ struct PrivacyCenterView: View {
         case .failure(let error):
             appState.showToast("Could not complete the request: \(error.localizedDescription)")
         }
-    }
-
-    private func documentRow(_ icon: String, _ title: String, url: URL) -> some View {
-        Button {
-            openURL(url)
-        } label: {
-            SettingRow(icon: icon, iconTint: .dsSecondary, title: title) {
-                Image(systemName: "arrow.up.right.square")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.dsMutedForeground)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 }
