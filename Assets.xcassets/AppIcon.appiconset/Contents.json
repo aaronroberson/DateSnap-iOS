@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "DateSnap-AppIcon-Default-1024.png",
+      "filename" : "Pencild-Default-1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -9,11 +9,11 @@
     {
       "appearances" : [
         {
-          "appearance" : "luminance",
+          "appearance" : "luminosity",
           "value" : "dark"
         }
       ],
-      "filename" : "DateSnap-AppIcon-Dark-1024.png",
+      "filename" : "Pencild-Dark-1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -21,11 +21,11 @@
     {
       "appearances" : [
         {
-          "appearance" : "luminance",
+          "appearance" : "luminosity",
           "value" : "tinted"
         }
       ],
-      "filename" : "DateSnap-AppIcon-Tinted-1024.png",
+      "filename" : "Pencild-Tinted-1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
