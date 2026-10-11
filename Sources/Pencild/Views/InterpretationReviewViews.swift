@@ -10,12 +10,12 @@ struct EngineRouteBadge: View {
             Image(systemName: route == .onDeviceModel ? "wand.and.sparkles" : "cpu")
                 .font(.system(size: 12, weight: .semibold))
             Text(route == .onDeviceModel ? "Interpreted on device with Apple Intelligence" : "Read by Pencil'd's on-device rules")
-                .font(DSTypography.caption())
+                .font(PDFont.bodySM)
         }
-        .foregroundStyle(route == .onDeviceModel ? Color.dsPrimary : Color.dsMutedForeground)
+        .foregroundStyle(route == .onDeviceModel ? Color.pdPrimary : Color.pdOnSurfaceVariant)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(Capsule().fill(Color.white.opacity(0.06)))
+        .background(Capsule().fill(Color.pdSurfaceHighest))
         .accessibilityElement(children: .combine)
     }
 }
@@ -27,12 +27,12 @@ struct ProvenanceChip: View {
     var needsCheck: Bool = false
 
     private var style: (label: String, icon: String, color: Color) {
-        if needsCheck { return ("Please check", "exclamationmark.triangle.fill", .dsWarning) }
+        if needsCheck { return ("Please check", "exclamationmark.triangle.fill", .pdWarning) }
         switch provenance {
-        case .explicitText: return ("Confirmed from flyer", "checkmark.seal.fill", .dsSuccess)
-        case .deterministicRule, .modelInterpretation: return ("Inferred", "sparkles", .dsInfo)
-        case .fallbackDefault: return ("Please check", "exclamationmark.triangle.fill", .dsWarning)
-        case .userEdited: return ("Edited", "pencil", .dsSecondary)
+        case .explicitText: return ("From source text", "checkmark.seal.fill", .pdSuccess)
+        case .deterministicRule, .modelInterpretation: return ("Inferred", "sparkles", .pdInfo)
+        case .fallbackDefault: return ("Please check", "exclamationmark.triangle.fill", .pdWarning)
+        case .userEdited: return ("Edited", "pencil", .pdSecondary)
         }
     }
 
@@ -40,7 +40,7 @@ struct ProvenanceChip: View {
         let style = style
         HStack(spacing: 4) {
             Image(systemName: style.icon).font(.system(size: 10, weight: .bold))
-            Text(style.label).font(DSTypography.caption())
+            Text(style.label).font(PDFont.bodySM)
         }
         .foregroundStyle(style.color)
         .accessibilityElement(children: .combine)
@@ -57,19 +57,19 @@ struct AmbiguityQuestionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label(question.prompt, systemImage: "questionmark.bubble.fill")
-                .font(DSTypography.bodyStrong())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.labelLG)
+                .foregroundStyle(Color.pdOnSurface)
             FlowButtons(options: question.options, onSelect: onSelect)
             Text("You can still edit any field below.")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.dsWarning.opacity(0.12))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.dsWarning.opacity(0.35), lineWidth: 1))
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .fill(Color.pdSurfaceContainerHigh)
+                .overlay(RoundedRectangle(cornerRadius: PDRadius.card).stroke(Color.pdWarning.opacity(0.35), lineWidth: 1))
         )
     }
 
@@ -91,11 +91,11 @@ struct AmbiguityQuestionCard: View {
                     onSelect(option)
                 } label: {
                     Text(option.label)
-                        .font(DSTypography.labelChip())
-                        .foregroundStyle(Color.dsBackground)
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdSurface)
                         .padding(.horizontal, 14)
                         .frame(minHeight: 44)
-                        .background(Capsule().fill(Color.dsWarning))
+                        .background(Capsule().fill(Color.pdWarning))
                 }
             }
         }
@@ -111,60 +111,56 @@ struct AlternativeInterpretationsCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("OTHER READINGS")
-                    .font(DSTypography.overlineConfidence())
-                    .foregroundStyle(Color.dsMutedForeground)
-                Spacer()
-                Text("Best interpretation shown above")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                PDSectionHeader(title: "Other interpretations", trailing: "Choose a reading")
             }
             ForEach(alternatives) { alternative in
                 Button {
                     onUse(alternative)
                 } label: {
                     HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: "arrow.triangle.branch")
-                            .foregroundStyle(Color.dsSecondary)
-                            .frame(width: 20)
+                        PDIconTile(systemName: "arrow.triangle.branch", tint: .pdSecondary)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(alternative.title.value)
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
+                                .font(PDFont.labelLG)
+                                .foregroundStyle(Color.pdOnSurface)
                                 .lineLimit(1)
                             Text(alternative.start.value.formatted(alternative.isAllDay
                                 ? .dateTime.weekday(.abbreviated).month(.abbreviated).day()
                                 : .dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute()))
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                             if let reason = alternative.start.reason ?? alternative.title.reason {
                                 Text(reason)
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsMutedForeground)
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
                                     .lineLimit(2)
                                     .multilineTextAlignment(.leading)
                             }
                         }
                         Spacer()
-                        Text("Use")
-                            .font(DSTypography.labelChip())
-                            .foregroundStyle(Color.dsPrimary)
+                        Label("Switch", systemImage: "arrow.left.arrow.right")
+                            .font(PDFont.labelMD)
+                            .foregroundStyle(Color.pdPrimary)
+                            .padding(.horizontal, 10)
+                            .frame(minHeight: 44)
+                            .background(Capsule().fill(Color.pdSurfaceHighest))
                     }
                     .padding(10)
                     .frame(minHeight: 44)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.05)))
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.pdSurfaceLow))
                 }
                 .accessibilityHint("Fills the form with this reading")
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: 20)
+        .dsGlassCard(cornerRadius: PDRadius.card)
     }
 }
 
 // MARK: - Why This?
 struct WhyThisSection: View {
     let rows: [(field: String, reason: String, source: String?)]
+    var expandOnRequest: Int = 0
     @State private var expanded = false
 
     var body: some View {
@@ -173,13 +169,13 @@ struct WhyThisSection: View {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { expanded.toggle() }
             } label: {
                 HStack {
-                    Image(systemName: "text.magnifyingglass").foregroundStyle(Color.dsSecondary)
-                    Text("Why this?")
-                        .font(DSTypography.labelChip())
-                        .foregroundStyle(Color.dsForeground)
+                    Image(systemName: "text.magnifyingglass").foregroundStyle(Color.pdSecondary)
+                    Text("Why Pencil’d chose these fields")
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdOnSurface)
                     Spacer()
                     Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
                 .frame(minHeight: 44)
             }
@@ -187,25 +183,26 @@ struct WhyThisSection: View {
                 ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                     VStack(alignment: .leading, spacing: 3) {
                         Text(row.field.uppercased())
-                            .font(DSTypography.overlineConfidence())
-                            .foregroundStyle(Color.dsMutedForeground)
+                            .font(PDFont.labelSM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
                         Text(row.reason)
-                            .font(DSTypography.caption())
-                            .foregroundStyle(Color.dsForeground)
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(Color.pdOnSurface)
                         if let source = row.source {
                             Text("“\(source)”")
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(Color.dsSecondary.opacity(0.85))
+                                .foregroundStyle(Color.pdSecondary.opacity(0.85))
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(10)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.black.opacity(0.35)))
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.pdSurfaceLowest))
                 }
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: 20)
+        .dsGlassCard(cornerRadius: PDRadius.card)
+        .onChange(of: expandOnRequest) { _, _ in expanded = true }
     }
 }
 
@@ -218,32 +215,32 @@ struct PossibleDuplicateBanner: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label("This may match an event already saved", systemImage: "square.on.square")
-                .font(DSTypography.bodyStrong())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.labelLG)
+                .foregroundStyle(Color.pdOnSurface)
             ForEach(matches, id: \.entry.id) { match in
                 Text("\(match.entry.title) · \(match.entry.start.formatted(date: .abbreviated, time: .shortened)) — \(match.reason)")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
             }
             HStack(spacing: 10) {
                 if let first = matches.first {
                     Button("Open Saved Event") { onOpen(first.entry.id) }
-                        .font(DSTypography.labelChip())
-                        .foregroundStyle(Color.dsPrimary)
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdPrimary)
                         .frame(minHeight: 44)
                 }
                 Spacer()
                 Button("Keep Separate", action: onKeepSeparate)
-                    .font(DSTypography.labelChip())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.labelMD)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                     .frame(minHeight: 44)
             }
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.dsInfo.opacity(0.12))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.dsInfo.opacity(0.35), lineWidth: 1))
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .fill(Color.pdInfo.opacity(0.12))
+                .overlay(RoundedRectangle(cornerRadius: PDRadius.card).stroke(Color.pdInfo.opacity(0.35), lineWidth: 1))
         )
     }
 }
@@ -261,64 +258,64 @@ struct EventActionsChecklist: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("ON THE FLYER")
-                .font(DSTypography.overlineConfidence())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.labelSM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
             ForEach(actions) { action in
                 HStack(spacing: 10) {
                     Image(systemName: icon(for: action.kind))
-                        .foregroundStyle(Color.dsSecondary)
+                        .foregroundStyle(Color.pdSecondary)
                         .frame(width: 20)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(action.title)
-                            .font(DSTypography.bodyCompact())
-                            .foregroundStyle(Color.dsForeground)
+                            .font(PDFont.bodyMD)
+                            .foregroundStyle(Color.pdOnSurface)
                         if let deadline = action.deadline {
                             Text("By \(deadline.formatted(date: .abbreviated, time: .omitted))")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsWarning)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdWarning)
                         }
                         if !action.target.isEmpty {
                             Text(action.target)
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .lineLimit(1)
                         }
                     }
                     Spacer()
                     if let url = url(for: action) {
                         Button("Open") { openURL(url) }
-                            .font(DSTypography.labelChip())
-                            .foregroundStyle(Color.dsPrimary)
+                            .font(PDFont.labelMD)
+                            .foregroundStyle(Color.pdPrimary)
                             .frame(minWidth: 44, minHeight: 44)
                     }
                 }
             }
             if let deadlineReminderDate {
-                Divider().background(Color.white.opacity(0.08))
+                PDRowDivider()
                 if isEntitledToDeadlineReminders {
                     Toggle(isOn: $deadlineReminderEnabled) {
                         VStack(alignment: .leading, spacing: 1) {
                             Text("Remind me to RSVP")
-                                .font(DSTypography.bodyCompact())
-                                .foregroundStyle(Color.dsForeground)
+                                .font(PDFont.bodyMD)
+                                .foregroundStyle(Color.pdOnSurface)
                             Text(deadlineReminderDate.formatted(date: .abbreviated, time: .shortened))
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                         }
                     }
-                    .tint(Color.dsPrimary)
+                    .toggleStyle(PDToggleStyle())
                 } else {
                     Button(action: onUpgrade) {
                         Label("RSVP-deadline reminders with Premium", systemImage: "lock.fill")
-                            .font(DSTypography.caption())
-                            .foregroundStyle(Color.dsMutedForeground)
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
                             .frame(minHeight: 44)
                     }
                 }
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: 20)
+        .dsGlassCard(cornerRadius: PDRadius.card)
     }
 
     private func icon(for kind: ActionSuggestion.Kind) -> String {
@@ -373,14 +370,14 @@ struct ReviewSuggestionsCard: View {
         if viewModel.suggestedDuration != nil || planDiffers || viewModel.recurrenceSignal != nil {
             VStack(alignment: .leading, spacing: 12) {
                 Text("SUGGESTIONS")
-                    .font(DSTypography.overlineConfidence())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
 
                 if let duration = viewModel.suggestedDuration {
                     suggestionRow(
                         icon: "clock.arrow.circlepath",
-                        title: "\(viewModel.category.displayName) events often run \(Duration.seconds(duration).formatted(.units(allowed: [.hours, .minutes], width: .wide)))",
-                        detail: "No end time on the flyer.",
+                        title: "Suggested duration: \(Duration.seconds(duration).formatted(.units(allowed: [.hours, .minutes], width: .wide)))",
+                        detail: "Based on the \(viewModel.category.displayName.lowercased()) category; please review.",
                         actionTitle: "Use"
                     ) { viewModel.applySuggestedDuration() }
                 }
@@ -396,8 +393,8 @@ struct ReviewSuggestionsCard: View {
                     } else {
                         Button(action: onUpgrade) {
                             Label("Tailored alert plans with Premium", systemImage: "lock.fill")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .frame(minHeight: 44)
                         }
                     }
@@ -410,42 +407,42 @@ struct ReviewSuggestionsCard: View {
                     )) {
                         VStack(alignment: .leading, spacing: 1) {
                             Text("Repeat \(signal.kind == .weekly ? "weekly" : "monthly") in Calendar")
-                                .font(DSTypography.bodyCompact())
-                                .foregroundStyle(Color.dsForeground)
-                            Text("Flyer says “\(signal.phrase)”. Off saves a single event.")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodyMD)
+                                .foregroundStyle(Color.pdOnSurface)
+                            Text("Source says “\(signal.phrase)”. Off saves a single event.")
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                         }
                     }
-                    .tint(Color.dsPrimary)
+                    .toggleStyle(PDToggleStyle())
                 } else if let signal = viewModel.recurrenceSignal {
                     Label("Part of a series (“\(signal.phrase)”). Saved as a single event.", systemImage: "square.stack.3d.up")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
             }
             .padding(14)
-            .dsGlassCard(cornerRadius: 20)
+            .dsGlassCard(cornerRadius: PDRadius.card)
         }
     }
 
     private func suggestionRow(icon: String, title: String, detail: String, actionTitle: String, action: @escaping () -> Void) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: icon)
-                .foregroundStyle(Color.dsSecondary)
+                .foregroundStyle(Color.pdSecondary)
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(DSTypography.bodyCompact())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.bodyMD)
+                    .foregroundStyle(Color.pdOnSurface)
                 Text(detail)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
             }
             Spacer()
             Button(actionTitle, action: action)
-                .font(DSTypography.labelChip())
-                .foregroundStyle(Color.dsPrimary)
+                .font(PDFont.labelMD)
+                .foregroundStyle(Color.pdPrimary)
                 .frame(minWidth: 44, minHeight: 44)
         }
     }

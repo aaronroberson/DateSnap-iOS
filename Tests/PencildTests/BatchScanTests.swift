@@ -15,6 +15,54 @@ private enum BatchInjectedFailure: Error, LocalizedError {
 
 private struct BatchOCRUnavailable: Error {}
 
+/// Suspends OCR at an actual pipeline await so cancellation can be checked before persistence.
+private final class SuspendedScanOCR: OCRServiceProtocol, @unchecked Sendable {
+    private let lock = NSLock()
+    private var request: CheckedContinuation<OCRResult, Never>?
+    private var readingWaiter: CheckedContinuation<Void, Never>?
+
+    func recognizeText(in image: UIImage) async throws -> (fullText: String, confidence: Float) {
+        let result = try await recognizeLines(in: image, confidenceFloor: 0)
+        return (result.fullText, result.meanConfidence)
+    }
+
+    func recognizeLines(in image: UIImage, confidenceFloor: Float) async throws -> OCRResult {
+        await withCheckedContinuation { continuation in
+            let waiter = lock.withLock {
+                request = continuation
+                let waiter = readingWaiter
+                readingWaiter = nil
+                return waiter
+            }
+            waiter?.resume()
+        }
+    }
+
+    func waitUntilReading() async {
+        await withCheckedContinuation { continuation in
+            let hasStarted = lock.withLock {
+                if request != nil { return true }
+                readingWaiter = continuation
+                return false
+            }
+            if hasStarted { continuation.resume() }
+        }
+    }
+
+    func finishReading() {
+        let continuation = lock.withLock {
+            let continuation = request
+            request = nil
+            return continuation
+        }
+        let text = ["Community Planning Meeting", "Tuesday October 22, 2030", "Doors 7:00 PM", "Central Library", "123 Main Street, Los Angeles, CA", "Join the neighborhood for our community planning meeting."]
+        let lines = text.enumerated().map { index, line in
+            OCRLine(text: line, confidence: 0.98, boundingBox: CGRect(x: 0.1, y: 0.9 - Double(index) * 0.1, width: 0.8, height: 0.08))
+        }
+        continuation?.resume(returning: OCRResult(fullText: text.joined(separator: "\n"), lines: lines, meanConfidence: 0.98))
+    }
+}
+
 private final class BatchTestCalendarService: CalendarServiceProtocol, @unchecked Sendable {
     let createError: Error?
     private let lock = NSLock()
@@ -95,11 +143,12 @@ struct BatchScanTests {
 
     private func services(
         calendar: BatchTestCalendarService = BatchTestCalendarService(),
-        reminders: BatchTestReminderService = BatchTestReminderService()
+        reminders: BatchTestReminderService = BatchTestReminderService(),
+        ocr: any OCRServiceProtocol = OCRService()
     ) -> ServiceContainer {
         ServiceContainer(
             photoLibrary: TestBatchPhotoLibrary(),
-            ocr: OCRService(),
+            ocr: ocr,
             eventExtraction: EventExtractionService(),
             calendar: calendar,
             reminders: reminders,
@@ -107,6 +156,29 @@ struct BatchScanTests {
             subscription: BatchTestSubscriptionService(),
             understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
         )
+    }
+
+    @Test("Cancel during OCR stops before scan persistence and review routing")
+    func cancelWhileReadingDoesNotPersist() async throws {
+        let container = try modelContainer()
+        let context = ModelContext(container)
+        let ocr = SuspendedScanOCR()
+        let scan = ScanViewModel(services: services(ocr: ocr))
+        let operation = Task { await scan.scanSampleFlyer(modelContext: context) }
+        await ocr.waitUntilReading()
+        #expect(scan.stage == .processingOCR)
+        scan.cancelScan()
+        #expect(scan.isCancelling)
+        #expect(scan.isProcessing)
+        ocr.finishReading()
+        await operation.value
+        #expect(scan.stage == .idle)
+        #expect(!scan.isProcessing)
+        #expect(scan.extractedCandidates.isEmpty)
+        #expect(scan.lastResult == nil)
+        #expect(try context.fetchCount(FetchDescriptor<ScannedAsset>()) == 0)
+        #expect(try context.fetchCount(FetchDescriptor<EventCandidate>()) == 0)
+        #expect(try context.fetchCount(FetchDescriptor<InterpretationRecord>()) == 0)
     }
 
     private func makeItem(

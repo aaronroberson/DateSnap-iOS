@@ -33,7 +33,7 @@ struct MarketingKitView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 22)
                     .fill(
-                        LinearGradient(colors: [Color.dsSecondary.opacity(0.35), Color.dsAccent.opacity(0.22), Color.dsBackground.opacity(0.4)],
+                        LinearGradient(colors: [Color.pdSecondary.opacity(0.35), Color.pdTertiaryContainer.opacity(0.22), Color.pdSurface.opacity(0.4)],
                                        startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
                 // Floating calendar cards echoing the hero artwork
@@ -45,26 +45,26 @@ struct MarketingKitView: View {
                     .offset(x: 82, y: 14)
                 VStack(spacing: 4) {
                     Text("Pencil'd")
-                        .font(DSTypography.displayHero())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.display)
+                        .foregroundStyle(Color.pdOnSurface)
                     Text("Precision Temporal AI")
-                        .font(DSTypography.headlineCard())
-                        .foregroundStyle(Color.dsScanGradient)
+                        .font(PDFont.headlineSM)
+                        .foregroundStyle(LinearGradient.pdSignature)
                 }
             }
             .frame(height: 150)
             .frame(maxWidth: .infinity)
 
-            ValueChip(text: "OFFICIAL LAUNCH & MARKETING KIT", tint: .dsAccent, systemImage: "megaphone.fill")
+            ValueChip(text: "OFFICIAL LAUNCH & MARKETING KIT", tint: .pdTertiaryContainer, systemImage: "megaphone.fill")
 
             VStack(spacing: 8) {
                 Text("Never Miss a Moment You Saved.")
-                    .font(DSTypography.headlineSection())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.headlineMD)
+                    .foregroundStyle(Color.pdOnSurface)
                     .multilineTextAlignment(.center)
                 Text("Turn concert flyers, event screenshots, and chat invites into calibrated calendar reminders in 0.12 seconds — 100% on-device.")
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                     .multilineTextAlignment(.center)
             }
         }
@@ -76,12 +76,12 @@ struct MarketingKitView: View {
 
     private var socialAngles: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "number", title: "01 · Social Media Angles", tint: .dsSecondary)
+            SettingsSectionHeader(icon: "number", title: "01 · Social Media Angles", tint: .pdSecondary)
             VStack(spacing: 14) {
                 copyBlock("Headline Hook", "X / Instagram",
                           quote: "“Your camera roll is where event plans go to die. We fixed that.”",
                           body: "Pencil'd reads dates from concert posters, festival lineups, and group chats like a human. 0.12s on-device OCR, zero cloud lag, zero privacy compromises.")
-                Divider().overlay(Color.dsBorder)
+                Divider().overlay(Color.pdOutlineVariant)
                 copyBlock("Feature Spotlight", "LinkedIn / Tech",
                           quote: "“Introducing Temporal AI: Instant Natural Language Extraction on iOS.”",
                           body: "'Tomorrow 10am', 'Next Friday at 9' — parsed instantly into structured Apple Calendar events with 3-tier staggered alerts.")
@@ -95,9 +95,9 @@ struct MarketingKitView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
-                    .font(DSTypography.bodyCompact().weight(.semibold))
-                    .foregroundStyle(Color.dsForeground)
-                ValueChip(text: channel, tint: .dsSecondary)
+                    .font(PDFont.bodyMD.weight(.semibold))
+                    .foregroundStyle(Color.pdOnSurface)
+                ValueChip(text: channel, tint: .pdSecondary)
                 Spacer()
                 Button {
                     UIPasteboard.general.string = "\(quote)\n\n\(body)"
@@ -105,15 +105,15 @@ struct MarketingKitView: View {
                 } label: {
                     Image(systemName: "doc.on.doc")
                         .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
             }
             Text(quote)
-                .font(DSTypography.bodyCompact().weight(.semibold))
-                .foregroundStyle(Color.dsPrimary)
+                .font(PDFont.bodyMD.weight(.semibold))
+                .foregroundStyle(Color.pdPrimary)
             Text(body)
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
     }
 
@@ -121,15 +121,15 @@ struct MarketingKitView: View {
 
     private var adHeadlines: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "megaphone.fill", title: "02 · Ad Headlines & CTAs", tint: .dsAccent)
+            SettingsSectionHeader(icon: "megaphone.fill", title: "02 · Ad Headlines & CTAs", tint: .pdTertiaryContainer)
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("PRIMARY AD HEADLINE")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                     Text("“Screenshot Today. Scheduled Forever.”")
-                        .font(DSTypography.headlineCard())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.headlineSM)
+                        .foregroundStyle(Color.pdOnSurface)
                 }
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(["100% On-Device Neural Processing",
@@ -137,22 +137,22 @@ struct MarketingKitView: View {
                              "3-Tier Smart Alert Staging"], id: \.self) { bullet in
                         HStack(spacing: 8) {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(Color.dsPrimaryForeground)
+                                .font(PDFont.labelSM)
+                                .foregroundStyle(Color.pdOnPrimaryFixed)
                                 .frame(width: 16, height: 16)
-                                .background(Circle().fill(Color.dsSuccess))
+                                .background(Circle().fill(Color.pdSuccess))
                             Text(bullet)
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                         }
                     }
                 }
 
-                Divider().overlay(Color.dsBorder)
+                Divider().overlay(Color.pdOutlineVariant)
 
                 Text("HIGH-CONVERSION CALL TO ACTIONS")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                 HStack(spacing: 10) {
                     Button {
                         appState.showToast("App Store campaign link opened")
@@ -178,11 +178,11 @@ struct MarketingKitView: View {
     private var emailCampaign: some View {
         VStack(alignment: .leading, spacing: 10) {
             SettingsSectionHeader(icon: "envelope.fill", title: "Email Campaign",
-                                  tint: .dsInfo, trailing: "3-Touch Announcement")
+                                  tint: .pdInfo, trailing: "3-Touch Announcement")
             VStack(alignment: .leading, spacing: 12) {
                 Text("Product Launch Email Announcement")
-                    .font(DSTypography.headlineCard())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
 
                 copyableRow("SUBJECT", subjectLine)
                 copyableRow("PREVIEW TEXT", previewText)
@@ -199,8 +199,8 @@ struct MarketingKitView: View {
                     }
                     Text("Download Pencil'd on the iOS App Store today and experience seamless screenshot-to-calendar superpowers.")
                 }
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
 
                 Button {
                     appState.showToast("App Store campaign link opened")
@@ -221,15 +221,15 @@ struct MarketingKitView: View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "sparkle")
                 .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(Color.dsAccent)
+                .foregroundStyle(Color.pdTertiaryContainer)
                 .padding(.top, 2)
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(DSTypography.caption().weight(.bold))
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.bodySM.weight(.bold))
+                    .foregroundStyle(Color.pdOnSurface)
                 Text(body)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
             }
         }
     }
@@ -241,20 +241,20 @@ struct MarketingKitView: View {
         } label: {
             HStack(alignment: .top, spacing: 10) {
                 Text(label)
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                     .frame(width: 80, alignment: .leading)
                 Text(content)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurface)
                     .multilineTextAlignment(.leading)
                 Spacer()
                 Image(systemName: "doc.on.doc")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color.dsPrimary)
+                    .foregroundStyle(Color.pdPrimary)
             }
             .padding(10)
-            .background(RoundedRectangle(cornerRadius: 12).fill(Color.dsMuted))
+            .background(RoundedRectangle(cornerRadius: 12).fill(Color.pdSurfaceHighest))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

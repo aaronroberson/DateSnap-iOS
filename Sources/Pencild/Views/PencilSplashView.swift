@@ -1,8 +1,6 @@
 import SwiftUI
 import SwiftData
 
-/// Timing for the launch carousel. The splash always hands off to the home
-/// screen on its own; it never stays up longer than `maximumSeconds`.
 enum SplashTiming {
     static let firstPageSeconds: Double = 3.0
     static let maximumSeconds: Double = 8.0
@@ -12,17 +10,18 @@ enum SplashCopy {
     static let slogan = "Scanned. Reviewed. Pencil'd."
     static let welcomeLead = "Scanned. Reviewed. "
     static let welcomeAccent = "Pencil'd."
-    static let welcomeBody = "Select screenshots, physical flyers, invites, tickets, or PDFs. Your calendar handles the rest automatically."
+    static let welcomeBody = "Select screenshots, physical flyers, invites, tickets, or PDFs. Review the detected details before saving to your calendar."
     static let scanCTA = "Scan screenshot or flyer"
     static let importCTA = "Import PDF or file"
     static let privacyBody = "Pencil'd detects screenshots containing dates, venues, or meeting links directly on your phone."
-    static let privacyLine = "None of your data, photos or calendar entries leave your iPhone."
+    static let privacyLine = "Your scans are processed on this device."
 }
 
 /// Two-page launch carousel: (1) brand splash, (2) welcome with the two
 /// primary capture actions. Auto-advances, can be swiped or skipped, and
 /// always finishes by itself.
 struct PencilSplashView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let onFinish: () -> Void
     let onScan: () -> Void
     let onImport: () -> Void
@@ -48,10 +47,21 @@ struct PencilSplashView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
 
             VStack {
-                HStack {
+                HStack(spacing: 8) {
                     Spacer()
+                    if page == 0 {
+                        Button("Continue") {
+                            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.35)) { page = 1 }
+                        }
+                        .font(PDFont.jakarta(15, .semibold, relativeTo: .subheadline))
+                        .foregroundStyle(Color.pdPrimary)
+                        .padding(.horizontal, 12)
+                        .frame(minHeight: 44)
+                        .accessibilityHint("Opens the capture and import options")
+                        .accessibilityIdentifier("splash.continue")
+                    }
                     Button("Skip") { finish(then: nil) }
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(PDFont.jakarta(15, .semibold, relativeTo: .subheadline))
                         .foregroundStyle(Color.pdOnSurfaceVariant)
                         .padding(.horizontal, 16)
                         .frame(minHeight: 44)
@@ -73,7 +83,7 @@ struct PencilSplashView: View {
                     .frame(width: index == page ? 22 : 8, height: 8)
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: page)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: page)
         .accessibilityHidden(true)
     }
 
@@ -82,7 +92,7 @@ struct PencilSplashView: View {
         try? await Task.sleep(for: .seconds(SplashTiming.firstPageSeconds))
         guard !Task.isCancelled, !finished else { return }
         if page == 0 {
-            withAnimation(.easeInOut(duration: 0.5)) { page = 1 }
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.5)) { page = 1 }
         }
         try? await Task.sleep(for: .seconds(SplashTiming.maximumSeconds - SplashTiming.firstPageSeconds))
         guard !Task.isCancelled else { return }
@@ -128,12 +138,12 @@ private struct SplashBrandPage: View {
                     .accessibilityLabel("Pencil'd app icon")
 
                 Text("Pencil'd")
-                    .font(.system(size: 42, weight: .heavy))
+                    .font(PDFont.jakarta(42, .heavy, relativeTo: .largeTitle))
                     .tracking(-1)
-                    .foregroundStyle(LinearGradient.pdSignature)
+                    .foregroundStyle(LinearGradient.pdHeadline)
 
                 Text(SplashCopy.slogan.uppercased())
-                    .font(.system(size: 13, weight: .medium))
+                    .font(PDFont.jakarta(13, .medium, relativeTo: .footnote))
                     .tracking(2)
                     .foregroundStyle(Color.pdOnSurface.opacity(0.6))
                     .multilineTextAlignment(.center)
@@ -174,13 +184,13 @@ private struct SplashWelcomePage: View {
                     .accessibilityHidden(true)
 
                 (Text(SplashCopy.welcomeLead).foregroundStyle(Color.pdOnSurface)
-                    + Text(SplashCopy.welcomeAccent).foregroundStyle(LinearGradient.pdSignature))
-                    .font(.system(size: 30, weight: .bold))
+                    + Text(SplashCopy.welcomeAccent).foregroundStyle(LinearGradient.pdHeadline))
+                    .font(PDFont.jakarta(30, .bold, relativeTo: .largeTitle))
                     .multilineTextAlignment(.center)
                     .padding(.top, 20)
 
                 Text(SplashCopy.welcomeBody)
-                    .font(.system(size: 16))
+                    .font(PDFont.jakarta(16, .regular, relativeTo: .body))
                     .foregroundStyle(Color.pdOnSurfaceVariant)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 300)
@@ -192,7 +202,7 @@ private struct SplashWelcomePage: View {
                             Image(systemName: "photo.badge.plus")
                             Text(SplashCopy.scanCTA).fontWeight(.bold)
                         }
-                        .font(.system(size: 16))
+                        .font(PDFont.jakarta(16, .regular, relativeTo: .body))
                         .foregroundStyle(Color.pdOnSurface)
                         .frame(maxWidth: .infinity, minHeight: 56)
                         .background(Capsule().fill(Color.pdSurface))
@@ -206,7 +216,7 @@ private struct SplashWelcomePage: View {
                                 .foregroundStyle(Color.pdPrimary)
                             Text(SplashCopy.importCTA)
                         }
-                        .font(.system(size: 15, weight: .medium))
+                        .font(PDFont.jakarta(15, .medium, relativeTo: .subheadline))
                         .foregroundStyle(Color.pdOnSurface)
                         .frame(maxWidth: .infinity, minHeight: 48)
                         .background(Capsule().fill(Color.pdSurfaceContainer))
@@ -218,11 +228,11 @@ private struct SplashWelcomePage: View {
                 VStack(spacing: 10) {
                     HStack {
                         Text("ACCEPTED INPUTS")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                             .tracking(1.2)
                         Spacer()
-                        Text("Instant OCR")
-                            .font(.system(size: 12))
+                        Text("On-device OCR")
+                            .font(PDFont.jakarta(12, .regular, relativeTo: .footnote))
                             .opacity(0.7)
                     }
                     .foregroundStyle(Color.pdOnSurfaceVariant)
@@ -231,15 +241,15 @@ private struct SplashWelcomePage: View {
                         ForEach(inputs, id: \.title) { input in
                             VStack(spacing: 6) {
                                 Image(systemName: input.icon)
-                                    .font(.system(size: 17))
+                                    .font(PDFont.jakarta(17, .regular, relativeTo: .body))
                                     .foregroundStyle(Color.pdPrimary)
                                     .frame(width: 36, height: 36)
                                     .background(RoundedRectangle(cornerRadius: 10).fill(Color.pdSurfaceContainer))
                                 Text(input.title)
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .font(PDFont.jakarta(11, .semibold, relativeTo: .caption2))
                                     .foregroundStyle(Color.pdOnSurface)
                                 Text(input.detail)
-                                    .font(.system(size: 10))
+                                    .font(PDFont.jakarta(10, .regular, relativeTo: .caption2))
                                     .foregroundStyle(Color.pdOnSurfaceVariant)
                                     .multilineTextAlignment(.center)
                             }
@@ -258,7 +268,7 @@ private struct SplashWelcomePage: View {
                     .padding(.top, 24)
 
                 Label(SplashCopy.privacyLine, systemImage: "lock")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(PDFont.jakarta(11, .semibold, relativeTo: .caption2))
                     .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.6))
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 380)
@@ -276,11 +286,11 @@ private struct SplashWelcomePage: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("From your library", systemImage: "photo.on.rectangle")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(PDFont.jakarta(18, .semibold, relativeTo: .title3))
                     .foregroundStyle(Color.pdOnSurface)
                 Spacer(minLength: 8)
                 Label("Private on-device", systemImage: "checkmark.shield")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(PDFont.jakarta(10, .bold, relativeTo: .caption2))
                     .tracking(0.6)
                     .foregroundStyle(Color.pdOnSurfaceVariant)
                     .padding(.horizontal, 8)
@@ -288,36 +298,36 @@ private struct SplashWelcomePage: View {
                     .background(Capsule().fill(Color.pdSurfaceContainerHigh))
             }
             Text(SplashCopy.privacyBody)
-                .font(.system(size: 12))
+                .font(PDFont.jakarta(12, .regular, relativeTo: .footnote))
                 .foregroundStyle(Color.pdOnSurfaceVariant)
 
-            if let latest = candidates.first {
+            if let latest = candidates.first(where: { $0.savedEvent == nil || $0.savedEvent?.status == .draft }) {
                 Button(action: onReview) {
                     HStack(spacing: 10) {
                         Image(systemName: "envelope.open")
-                            .font(.system(size: 18))
+                            .font(PDFont.jakarta(18, .regular, relativeTo: .title3))
                             .foregroundStyle(Color.pdLavender)
                             .frame(width: 40, height: 40)
                             .background(RoundedRectangle(cornerRadius: 10).fill(Color.pdSurfaceContainer))
                         VStack(alignment: .leading, spacing: 2) {
                             HStack {
-                                Text("\u{201C}\(latest.title)\u{201D}")
-                                    .font(.system(size: 12, weight: .semibold))
+                                Text("“\(latest.title)”")
+                                    .font(PDFont.jakarta(12, .semibold, relativeTo: .footnote))
                                     .foregroundStyle(Color.pdOnSurface)
                                     .lineLimit(1)
                                 Spacer(minLength: 6)
                                 Text("Found \(latest.createdAt.formatted(.relative(presentation: .named)))")
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(PDFont.jakarta(10, .bold, relativeTo: .caption2))
                                     .foregroundStyle(Color.pdPrimary)
                                     .lineLimit(1)
                             }
                             Text(candidateDetail(latest))
-                                .font(.system(size: 12))
+                                .font(PDFont.jakarta(12, .regular, relativeTo: .footnote))
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .lineLimit(1)
                         }
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(PDFont.jakarta(13, .semibold, relativeTo: .footnote))
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                     }
                     .padding(8)
@@ -333,6 +343,6 @@ private struct SplashWelcomePage: View {
     private func candidateDetail(_ candidate: EventCandidate) -> String {
         let when = candidate.startDate.formatted(date: .abbreviated, time: candidate.isAllDay ? .omitted : .shortened)
         guard let place = candidate.venueName ?? candidate.location, !place.isEmpty else { return when }
-        return "\(when) \u{2022} \(place)"
+        return "\(when) • \(place)"
     }
 }

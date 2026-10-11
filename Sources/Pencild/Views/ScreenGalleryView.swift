@@ -164,6 +164,64 @@ struct ScreenGalleryView: View {
             category: "Settings",
             modal: nil,
             settingsRoute: SettingsRoute.marketingKit.rawValue
+        ),
+        ScreenItem(
+            id: 18,
+            title: "User Profile",
+            stitchId: "80ec0320a47a4f6f9ff8c98bec1e6a5d",
+            description: "Profile persona, productivity velocity bento, credentials and Pencil'd Pro spotlight.",
+            category: "Account & Security",
+            modal: .userProfile,
+            settingsRoute: SettingsRoute.userProfile.rawValue
+        ),
+        ScreenItem(
+            id: 19,
+            title: "Verify Phone Number",
+            stitchId: "1e01d494177a4ab4bff2ef6014d788e4",
+            description: "Country code (+1), mobile input, SMS/WhatsApp delivery, and zero-spam privacy guarantee.",
+            category: "Account & Security",
+            modal: .userProfile
+        ),
+        ScreenItem(
+            id: 20,
+            title: "Enter Phone SMS Code",
+            stitchId: "b01ff3968f5a41e091549e94981e6563",
+            description: "6-digit OTP boxes, native iOS Messages autofill pill (849-204), and resend timer.",
+            category: "Account & Security",
+            modal: .userProfile
+        ),
+        ScreenItem(
+            id: 21,
+            title: "Verify Email Address",
+            stitchId: "10feefa51f1a40699d59b22ebea70b22",
+            description: "Email input, quick domain chips (@icloud.com), briefing and extraction receipt toggles.",
+            category: "Account & Security",
+            modal: .userProfile
+        ),
+        ScreenItem(
+            id: 22,
+            title: "Check Email Inbox",
+            stitchId: "cf05d2e2cc52430093ad092c8a62d76c",
+            description: "Magic link sent hero card, Open Mail App button, manual OTP fallback, and expiration timer.",
+            category: "Account & Security",
+            modal: .userProfile
+        ),
+        ScreenItem(
+            id: 23,
+            title: "Verification Complete",
+            stitchId: "a77a1855fc904c529b04aada1d00c5a7",
+            description: "Celebratory radiant checkmark crest, verified channel cards (SMS + Email), and feature summary.",
+            category: "Account & Security",
+            modal: .userProfile
+        ),
+        ScreenItem(
+            id: 24,
+            title: "Default Calendar",
+            stitchId: "f3d0483edc2a43438cfa34e37205fecd",
+            description: "Seamless Zero-Conflict Sync, iCloud & Google calendar account groupings, and Ask Every Time toggle.",
+            category: "Settings",
+            modal: .defaultCalendar,
+            settingsRoute: SettingsRoute.defaultCalendar.rawValue
         )
     ]
     
@@ -174,23 +232,23 @@ struct ScreenGalleryView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("PENCIL'D DESIGN SYSTEM")
-                                .font(DSTypography.overlineConfidence())
-                                .foregroundStyle(Color.dsPrimary)
-                            Text("All 17 Stitch Screens")
-                                .font(DSTypography.displayTitle())
-                                .foregroundStyle(Color.dsForeground)
+                                .font(PDFont.labelSM)
+                                .foregroundStyle(Color.pdPrimary)
+                            Text("All 24 Stitch Screens")
+                                .font(PDFont.headlineXL)
+                                .foregroundStyle(Color.pdOnSurface)
                         }
                         Spacer()
                         Button("Done") { dismiss() }
-                            .font(DSTypography.bodyCompact())
-                            .foregroundStyle(Color.dsPrimary)
+                            .font(PDFont.bodyMD)
+                            .foregroundStyle(Color.pdPrimary)
                     }
                     .padding(.horizontal)
                     .padding(.top, 12)
                     
                     Text("Select any screen below to preview the implemented SwiftUI view, test navigation links, and verify interactive states:")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                         .padding(.horizontal)
                     
                     ForEach(screens) { item in
@@ -214,38 +272,38 @@ struct ScreenGalleryView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack {
                                     Text("\(item.id). \(item.title)")
-                                        .font(DSTypography.bodyStrong())
-                                        .foregroundStyle(Color.dsForeground)
+                                        .font(PDFont.labelLG)
+                                        .foregroundStyle(Color.pdOnSurface)
                                     Spacer()
                                     Text(item.category)
-                                        .font(DSTypography.overlineConfidence())
-                                        .foregroundStyle(Color.dsSecondary)
+                                        .font(PDFont.labelSM)
+                                        .foregroundStyle(Color.pdSecondary)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 3)
-                                        .background(Capsule().fill(Color.dsSecondary.opacity(0.15)))
+                                        .background(Capsule().fill(Color.pdSecondary.opacity(0.15)))
                                 }
                                 
                                 Text(item.description)
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsMutedForeground)
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
                                     .multilineTextAlignment(.leading)
                                 
                                 HStack {
                                     Text("Stitch ID: \(item.stitchId)")
                                         .font(.system(size: 10, design: .monospaced))
-                                        .foregroundStyle(Color.dsMutedForeground.opacity(0.8))
+                                        .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
                                     Spacer()
                                     HStack(spacing: 4) {
                                         Text("Open")
                                         Image(systemName: "chevron.right")
                                     }
-                                    .font(DSTypography.labelChip())
-                                    .foregroundStyle(Color.dsPrimary)
+                                    .font(PDFont.labelMD)
+                                    .foregroundStyle(Color.pdPrimary)
                                 }
                                 .padding(.top, 2)
                             }
                             .padding(14)
-                            .dsGlassCard(cornerRadius: 16)
+                            .dsGlassCard(cornerRadius: PDRadius.card)
                             .padding(.horizontal)
                         }
                     }

@@ -21,296 +21,147 @@ struct NoDatesFoundView: View {
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    // Top Bar
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(Color.dsForeground)
-                                .frame(width: 36, height: 36)
-                                .background(Circle().fill(Color.dsCardElevated))
-                        }
-                        
-                        Spacer()
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "lock.shield.fill")
-                            Text("Scanned on-device")
-                        }
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
-                        
-                        Spacer()
-                        
-                        Button {
-                            dismiss()
-                        } label: {
+                VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                    PDTopBar(title: "Scan result") {
+                        Button { dismiss() } label: {
                             Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .frame(width: 36, height: 36)
-                                .background(Circle().fill(Color.dsMuted))
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .frame(width: 44, height: 44)
                         }
+                        .accessibilityLabel("Close scan result")
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 12)
-                    
-                    // Screenshot Preview Box with Optical Reticle
-                    VStack(spacing: 12) {
-                        ZStack {
+
+                    PDScreenIntro(
+                        eyebrow: "No dates found",
+                        title: "Couldn't find any dates",
+                        subtitle: "Pencil'd read this image on your device, but didn't find a date or time to review. Try a clearer image or enter the details yourself."
+                    )
+
+                    PDCard {
+                        VStack(alignment: .leading, spacing: 16) {
                             if let image = appState.lastScanImage {
                                 Image(uiImage: image)
                                     .resizable()
-                                    .scaledToFill()
-                                    .frame(height: 180)
-                                    .frame(maxWidth: .infinity)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                                    .opacity(0.55)
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity, maxHeight: 220)
+                                    .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
                                     .accessibilityLabel("Scanned image")
                             }
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color.dsCardElevated, Color.dsCard],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .frame(height: 180)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                                )
-                            
-                            // Laser Reticle Corners (Accent Orange)
-                            VStack {
-                                HStack {
-                                    RoundedCornerBracket(corner: .topLeft)
-                                        .stroke(Color(red: 255/255, green: 138/255, blue: 61/255), lineWidth: 2)
-                                        .frame(width: 20, height: 20)
-                                    Spacer()
-                                    RoundedCornerBracket(corner: .topRight)
-                                        .stroke(Color(red: 255/255, green: 138/255, blue: 61/255), lineWidth: 2)
-                                        .frame(width: 20, height: 20)
+                            PDStatusBadge(text: "No date or time detected", icon: "calendar.badge.minus", tone: .warning)
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("\(rawFragments.count) text line\(rawFragments.count == 1 ? "" : "s") read")
+                                        .font(PDFont.labelLG)
+                                        .foregroundStyle(Color.pdOnSurface)
+                                    Label("Text recognition on your device", systemImage: "lock.shield")
+                                        .font(PDFont.bodySM)
+                                        .foregroundStyle(Color.pdOnSurfaceVariant)
                                 }
                                 Spacer()
-                                HStack {
-                                    RoundedCornerBracket(corner: .bottomLeft)
-                                        .stroke(Color(red: 255/255, green: 138/255, blue: 61/255), lineWidth: 2)
-                                        .frame(width: 20, height: 20)
-                                    Spacer()
-                                    RoundedCornerBracket(corner: .bottomRight)
-                                        .stroke(Color(red: 255/255, green: 138/255, blue: 61/255), lineWidth: 2)
-                                        .frame(width: 20, height: 20)
-                                }
-                            }
-                            .padding(14)
-                            .frame(height: 180)
-                            
-                            // Stationary Laser Beam
-                            Rectangle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color(red: 255/255, green: 138/255, blue: 61/255), Color.dsAccent, Color(red: 123/255, green: 97/255, blue: 255/255)],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .frame(height: 2)
-                                .padding(.horizontal, 24)
-                                .shadow(color: Color(red: 255/255, green: 138/255, blue: 61/255), radius: 6)
-                            
-                            VStack(spacing: 8) {
-                                Image(systemName: "calendar.badge.minus")
-                                    .font(.system(size: 38))
-                                    .foregroundStyle(Color.dsWarning)
-                                
-                                Text("NO DATES DETECTED")
-                                    .font(DSTypography.overlineConfidence())
-                                    .foregroundStyle(Color.dsWarning)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 4)
-                                    .background(Capsule().fill(Color.dsWarning.opacity(0.16)))
-                            }
-                        }
-                        
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Scanned Image")
-                                    .font(DSTypography.bodyStrong())
-                                    .foregroundStyle(Color.dsForeground)
-                                Text("\(rawFragments.count) text line\(rawFragments.count == 1 ? "" : "s") read • 100% on-device")
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsMutedForeground)
-                            }
-                            Spacer()
-                            Button {
-                                showImage = true
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "viewfinder")
-                                    Text("Inspect")
-                                }
-                                .font(DSTypography.labelChip())
-                                .foregroundStyle(Color.dsPrimary)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(Capsule().fill(Color.dsPrimary.opacity(0.12)))
-                            }
-                        }
-                    }
-                    .padding(16)
-                    .dsGlassCard(cornerRadius: 20)
-                    .padding(.horizontal)
-                    
-                    // Explanation Title
-                    VStack(spacing: 8) {
-                        Text("Couldn't find any dates")
-                            .font(DSTypography.displayTitle())
-                            .foregroundStyle(Color.dsForeground)
-                        
-                        Text("Pencil'd analyzed this image on your device, but didn't find a date or time to review.")
-                            .font(DSTypography.bodyBase())
-                            .foregroundStyle(Color.dsMutedForeground)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 16)
-                    }
-                    
-                    // Diagnostics: Why did this happen?
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack {
-                            Image(systemName: "lightbulb.fill")
-                                .foregroundStyle(Color.dsWarning)
-                            Text("Why did this happen?")
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
-                            Spacer()
-                            Text("Diagnostics")
-                                .font(DSTypography.overlineConfidence())
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        
-                        diagnosticRow(
-                            icon: "pencil.tip.crop.circle",
-                            title: "Handwriting or heavy stylization",
-                            description: "Graffiti, brush scripts, or stylized logo typefaces often disguise standard numeric dates."
-                        )
-                        
-                        diagnosticRow(
-                            icon: "clock.arrow.2.circlepath",
-                            title: "Relative or speculative phrasing",
-                            description: "Phrases like 'Coming this Fall', 'Next weekend', or 'TBA' lack absolute calendar timestamps."
-                        )
-                        
-                        diagnosticRow(
-                            icon: "photo.on.rectangle.angled",
-                            title: "Pure imagery, memes, or screenshots",
-                            description: "If the image contains scenery, chat banter, or product receipts without dates, detection yields zero."
-                        )
-                    }
-                    .padding(18)
-                    .dsGlassCard(cornerRadius: 22)
-                    .padding(.horizontal)
-                    
-                    // Detected Words Drawer
-                    VStack(alignment: .leading, spacing: 12) {
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                showRawWords.toggle()
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "doc.text.magnifyingglass")
-                                    .foregroundStyle(Color.dsPrimary)
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("View Detected Words")
-                                        .font(DSTypography.bodyStrong())
-                                        .foregroundStyle(Color.dsForeground)
-                                    Text(rawFragments.isEmpty ? "No readable text was found" : "\(rawFragments.count) raw text fragments extracted")
-                                        .font(DSTypography.caption())
-                                        .foregroundStyle(Color.dsMutedForeground)
-                                }
-                                
-                                Spacer()
-                                
-                                Image(systemName: showRawWords ? "chevron.up" : "chevron.down")
-                                    .foregroundStyle(Color.dsMutedForeground)
-                            }
-                        }
-                        
-                        if showRawWords {
-                            Divider().background(Color.dsBorder)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                ForEach(Array(rawFragments.enumerated()), id: \.offset) { _, word in
-                                    HStack {
-                                        Text("• \(word)")
-                                            .font(.system(size: 13, design: .monospaced))
-                                            .foregroundStyle(Color.dsForeground)
-                                        Spacer()
+                                if appState.lastScanImage != nil {
+                                    Button { showImage = true } label: {
+                                        PDChip(text: "Inspect", icon: "viewfinder", selected: true)
+                                            .frame(minHeight: 44)
                                     }
-                                }
-                                
-                                Button {
-                                    UIPasteboard.general.string = rawFragments.joined(separator: "\n")
-                                    appState.showToast("Copied \(rawFragments.count) raw OCR fragments to clipboard")
-                                } label: {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "doc.on.doc")
-                                        Text("Copy Raw OCR")
-                                    }
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsPrimary)
-                                    .padding(.top, 4)
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Inspect scanned image")
                                 }
                             }
                         }
                     }
-                    .padding(16)
-                    .dsGlassCard(cornerRadius: 18)
-                    .padding(.horizontal)
-                    
-                    // Action Buttons
+
+                    PDSectionHeader(title: "Quick tips for better scans")
+                    PDCard(highlighted: true) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            diagnosticRow(
+                                icon: "crop", title: "Focus on the schedule",
+                                description: "Use Photos to crop around the date and time, then select the edited image to scan again."
+                            )
+                            diagnosticRow(
+                                icon: "sun.max", title: "Use clear, readable text",
+                                description: "Choose a sharper image with good lighting and contrast. Small or stylized lettering can be harder to read."
+                            )
+                            diagnosticRow(
+                                icon: "calendar", title: "Check for a date or time",
+                                description: "An announcement without a date may need manual entry. Review the detected words below to see what Pencil'd could read."
+                            )
+                        }
+                    }
+
                     VStack(spacing: 12) {
-                        Button {
-                            createManualEvent()
-                        } label: {
-                            HStack {
-                                Image(systemName: "calendar.badge.plus")
-                                Text("Create Event Manually from Image")
-                                Image(systemName: "arrow.right")
-                            }
+                        Button { createManualEvent() } label: {
+                            Label("Create Event Manually", systemImage: "calendar.badge.plus")
                         }
                         .buttonStyle(DSPrimaryButtonStyle())
-                        
+
                         Button {
                             dismiss()
                             appState.selectedTab = .home
                             appState.requestPhotoPicker = true
                         } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "photo.badge.plus")
-                                Text("Scan a Different Image")
-                            }
+                            Label("Try Another Image", systemImage: "photo.badge.plus")
                         }
                         .buttonStyle(DSSecondaryButtonStyle())
-                        
-                        Button {
-                            dismiss()
-                        } label: {
-                            Text("Discard & Return to Dashboard")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .padding(.top, 4)
+
+                        Button { dismiss() } label: {
+                            Text("Discard & Return Home")
+                                .font(PDFont.labelLG)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    PDCard {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Button { showRawWords.toggle() } label: {
+                                HStack(spacing: 12) {
+                                    PDIconTile(systemName: "doc.text.magnifyingglass", tint: .pdSecondary)
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Inspect OCR Text")
+                                            .font(PDFont.labelLG)
+                                            .foregroundStyle(Color.pdOnSurface)
+                                        Text(rawFragments.isEmpty ? "No readable text was found" : "\(rawFragments.count) recognized text lines")
+                                            .font(PDFont.bodySM)
+                                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                                    }
+                                    Spacer()
+                                    Image(systemName: showRawWords ? "chevron.up" : "chevron.down")
+                                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                                }
+                                .frame(minHeight: 44)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityValue(showRawWords ? "Expanded" : "Collapsed")
+
+                            if showRawWords {
+                                Divider().overlay(Color.pdOutlineVariant)
+                                Text(rawFragments.isEmpty ? "No readable text was found in this scan." : appState.lastScanRawText)
+                                    .font(PDFont.bodySM.monospaced())
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                                    .textSelection(.enabled)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(12)
+                                    .background(Color.pdSurfaceLowest, in: RoundedRectangle(cornerRadius: PDRadius.tile))
+                                if !rawFragments.isEmpty {
+                                    Button {
+                                        UIPasteboard.general.string = appState.lastScanRawText
+                                        appState.showToast("Copied scan text to clipboard")
+                                    } label: {
+                                        Label("Copy Raw OCR", systemImage: "doc.on.doc")
+                                            .font(PDFont.labelMD)
+                                            .foregroundStyle(Color.pdPrimary)
+                                            .frame(minHeight: 44)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom, 24)
                 }
+                .padding(.horizontal, PDSpacing.margin)
+                .padding(.top, PDSpacing.sm)
+                .padding(.bottom, PDSpacing.lg)
             }
             .dsScreenBackground()
             .sheet(isPresented: $showImage) {
@@ -318,23 +169,21 @@ struct NoDatesFoundView: View {
                     ScrollView([.horizontal, .vertical]) {
                         Image(uiImage: image)
                     }
-                    .background(Color.dsBackground)
+                    .background(Color.pdSurface)
                     .presentationDragIndicator(.visible)
                 }
             }
         }
     }
 
-    /// Starts a blank review (tomorrow 7 PM) carrying the scanned text, so the user can fill in the details.
+    /// Creates an unsaved review carrying the scan text. The current time is an editable starting value.
     private func createManualEvent() {
-        let calendar = Calendar.current
-        let tomorrow = calendar.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-        let start = calendar.date(bySettingHour: 19, minute: 0, second: 0, of: tomorrow) ?? tomorrow
+        let start = Date()
         let candidate = EventCandidate(
             title: rawFragments.first ?? "",
             startDate: start,
             endDate: EventDurationPolicy.fallbackEnd(for: start),
-            confidenceScore: 0.5,
+            confidenceScore: 0,
             rawTextSnippet: appState.lastScanRawText,
             confidenceTierRaw: ConfidenceTier.low.rawValue
         )
@@ -353,25 +202,17 @@ struct NoDatesFoundView: View {
         Task { await appState.present(.eventReviewEdit(candidate.toPencildEvent())) }
     }
     
-    @ViewBuilder
     private func diagnosticRow(icon: String, title: String, description: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.dsMuted)
-                    .frame(width: 32, height: 32)
-                Image(systemName: icon)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.dsWarning)
-            }
-            
-            VStack(alignment: .leading, spacing: 2) {
+            PDIconTile(systemName: icon, tint: .pdPrimary)
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(DSTypography.bodyStrong())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
                 Text(description)
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.bodyMD)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

@@ -14,8 +14,8 @@ struct InterpretationDiagnosticsView: View {
                 expanded.toggle()
             } label: {
                 Label("Diagnostics (DEBUG)", systemImage: "ladybug")
-                    .font(DSTypography.labelChip())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.labelMD)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                     .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
             if expanded {
@@ -41,12 +41,12 @@ struct InterpretationDiagnosticsView: View {
                     }
                 }
                 .font(.system(size: 11, design: .monospaced))
-                .foregroundStyle(Color.dsSecondary)
+                .foregroundStyle(Color.pdSecondary)
                 .textSelection(.enabled)
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: 20)
+        .dsGlassCard(cornerRadius: PDRadius.card)
     }
 
     private func line(_ label: String, _ value: String) -> some View {

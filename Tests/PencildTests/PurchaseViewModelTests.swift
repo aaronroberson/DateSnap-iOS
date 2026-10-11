@@ -27,10 +27,36 @@ struct PurchaseViewModelTests {
         #expect(purchases.displayPrice(.plus, annual: true) == nil)
         #expect(!purchases.canPurchase(.plus, annual: true))
     }
+
+    @Test("Cancelled restore closes without an error or entitlement change")
+    @MainActor
+    func cancelledRestoreIsQuiet() async {
+        let purchases = PurchaseViewModel()
+        await purchases.attach(OfflineSubscriptionService(restoreError: .subscription(.purchaseCancelled)))
+
+        #expect(await purchases.restore() == nil)
+        #expect(purchases.errorMessage == nil)
+        #expect(!purchases.isPurchasing)
+        #expect(purchases.currentTier == .starter)
+    }
+
+    @Test("Failed restore offers recovery without claiming verification failure")
+    @MainActor
+    func restoreFailureIsActionable() async {
+        let purchases = PurchaseViewModel()
+        await purchases.attach(OfflineSubscriptionService(restoreError: .subscription(.restoreFailed)))
+
+        #expect(await purchases.restore() == nil)
+        #expect(purchases.errorMessage?.contains("Couldn't restore purchases") == true)
+        #expect(purchases.errorMessage?.contains("cryptographic") == false)
+        #expect(!purchases.isPurchasing)
+        #expect(purchases.currentTier == .starter)
+    }
 }
 
 @MainActor
 private struct OfflineSubscriptionService: SubscriptionServiceProtocol {
+    var restoreError: PencildError? = nil
     var currentTier: SubscriptionTier { .starter }
     var isSubscribed: Bool { false }
     var entitlementSnapshot: EntitlementSnapshot {
@@ -48,7 +74,8 @@ private struct OfflineSubscriptionService: SubscriptionServiceProtocol {
     }
 
     func restorePurchases() async throws -> SubscriptionTier {
-        .starter
+        if let restoreError { throw restoreError }
+        return .starter
     }
 
     func updateCustomerProductStatus() async {}

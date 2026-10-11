@@ -1,28 +1,22 @@
 import SwiftUI
 import SwiftData
 
-/// Edits up to three alert offsets for an event and shows the save result.
+/// Edits the existing production alert offsets and reports the actual save result.
 struct ReminderScheduleEditorView: View {
     @Environment(\.dismiss) private var dismiss
-    
     let title: String
     let eventStart: Date
     let isAllDay: Bool
     let onSave: @MainActor ([ReminderOffset]) async -> MutationResult
-    
+
     @State private var selectedPreset: ReminderPreset
     @State private var offsets: [ReminderOffset]
-    @State private var isSyncing: Bool = false
-    @State private var syncCompleted: Bool = false
+    @State private var isSyncing = false
+    @State private var syncCompleted = false
     @State private var resultMessage: String?
-    
-    init(
-        title: String,
-        eventStart: Date,
-        isAllDay: Bool,
-        initialOffsets: [ReminderOffset],
-        onSave: @escaping @MainActor ([ReminderOffset]) async -> MutationResult
-    ) {
+
+    init(title: String, eventStart: Date, isAllDay: Bool, initialOffsets: [ReminderOffset],
+         onSave: @escaping @MainActor ([ReminderOffset]) async -> MutationResult) {
         self.title = title
         self.eventStart = eventStart
         self.isAllDay = isAllDay
@@ -30,387 +24,191 @@ struct ReminderScheduleEditorView: View {
         self._offsets = State(initialValue: Array(initialOffsets.prefix(3)))
         self._selectedPreset = State(initialValue: Self.preset(matching: initialOffsets))
     }
-    
+
     var body: some View {
-        NavigationView {
-            ZStack(alignment: .bottom) {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        // Top Bar
-                        HStack {
-                            Button {
-                                dismiss()
-                            } label: {
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 15, weight: .bold))
-                                    .foregroundStyle(Color.dsSecondary)
-                                    .frame(width: 44, height: 44)
-                            }
-                            
-                            HStack(spacing: 8) {
-                                Image(systemName: "calendar.badge.clock")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(Color.dsPrimary)
-                                Text("Pencil'd")
-                                    .font(DSTypography.headlineCard())
-                                    .foregroundStyle(Color.dsForeground)
-                            }
-                            
-                            Spacer()
-                            
-                            Text("Reminder Schedule")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .lineLimit(1)
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: PDSpacing.lg) {
+                    PDTopBar(title: "Reminder schedule")
+                    PDScreenIntro(eyebrow: "REMINDER ALERTS", title: "Reminder Schedule", subtitle: "Choose when Pencil'd should remind you about this event.")
+                    summary
+                    presets
+                    VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                        PDSectionHeader(title: "Your alert schedule", trailing: "\(offsets.count) of 3")
+                        ForEach(Array(offsets.enumerated()), id: \.element.id) { index, offset in
+                            alertCard(index: index, offset: offset)
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                        
-                        // Screen Intro / Event Anchor
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 6) {
-                                Circle().fill(Color.dsPrimary).frame(width: 6, height: 6)
-                                Text("REMINDER ALERTS")
-                                    .font(DSTypography.overlineConfidence())
-                                    .foregroundStyle(Color.dsSecondary)
-                            }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(Capsule().fill(Color.white.opacity(0.08)))
-                            
-                            HStack(spacing: 6) {
-                                Image(systemName: "calendar")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color.dsPrimary)
-                                Text("\(title) · \(eventStart.formatted(date: .abbreviated, time: isAllDay ? .omitted : .shortened))")
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsSecondary)
-                            }
-                            
-                            Text("Reminder Schedule")
-                                .font(DSTypography.displayTitle())
-                                .foregroundStyle(Color.dsForeground)
-                            
-                            Text("Configure multi-stage alerts so you never miss ticket drops, preparation windows, or final departure.")
-                                .font(DSTypography.bodyCompact())
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-                        
-                        // Quick Presets Carousel
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("REMINDER PRESETS")
-                                    .font(DSTypography.overlineConfidence())
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                Spacer()
-                                Text("Customizable")
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsPrimary)
-                            }
-                            .padding(.horizontal)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 10) {
-                                    presetPill(title: "Default (2 alerts)", icon: "sparkles", preset: .defaultPreset)
-                                    presetPill(title: "Travel Heavy (3 alerts)", icon: "airplane.departure", preset: .travelHeavy)
-                                    presetPill(title: "Day-of Only", icon: "calendar.badge.clock", preset: .dayOfOnly)
-                                    presetPill(title: "Custom", icon: "slider.horizontal.3", preset: .custom)
-                                }
-                                .padding(.horizontal)
+                        if offsets.isEmpty {
+                            PDCard {
+                                Label("No alerts configured", systemImage: "bell.slash")
+                                    .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
                             }
                         }
-                        
-                        // Configured Reminder Rows (Up to 3 Interactive Glass Cards)
-                        VStack(spacing: 14) {
-                            ForEach(Array(offsets.enumerated()), id: \.element.id) { index, offset in
-                                VStack(spacing: 10) {
-                                    HStack {
-                                        HStack(spacing: 10) {
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .fill(alertColor(for: index).opacity(0.18))
-                                                    .frame(width: 40, height: 40)
-                                                Image(systemName: alertIcon(for: index))
-                                                    .font(.system(size: 18))
-                                                    .foregroundStyle(alertColor(for: index))
-                                            }
-                                            
-                                            VStack(alignment: .leading, spacing: 2) {
-                                                Text("ALERT \(index + 1)")
-                                                    .font(DSTypography.overlineConfidence())
-                                                    .foregroundStyle(Color.dsMutedForeground)
-                                                Menu {
-                                                    ForEach(ReminderOffset.catalog) { option in
-                                                        Button(option.label) {
-                                                            offsets[index] = option
-                                                            selectedPreset = Self.preset(matching: offsets)
-                                                        }
-                                                        .disabled(offsets.contains(where: { $0.timeInterval == option.timeInterval }))
-                                                    }
-                                                } label: {
-                                                    HStack(spacing: 4) {
-                                                        Text(offset.label)
-                                                        Image(systemName: "chevron.up.chevron.down").font(.system(size: 11))
-                                                    }
-                                                    .font(DSTypography.headlineCard())
-                                                    .foregroundStyle(Color.dsForeground)
-                                                }
-                                                .accessibilityLabel("Alert \(index + 1), \(offset.label). Change timing")
-                                            }
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        Button {
-                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-                                                offsets.remove(at: index)
-                                                selectedPreset = Self.preset(matching: offsets)
-                                            }
-                                        } label: {
-                                            Image(systemName: "trash")
-                                                .font(.system(size: 14))
-                                                .foregroundStyle(Color.dsMutedForeground)
-                                                .frame(width: 44, height: 44)
-                                                .background(Circle().fill(Color.white.opacity(0.06)))
-                                        }
-                                        .accessibilityLabel("Remove alert \(index + 1)")
-                                    }
-                                    
-                                    // Detail strip & selectors
-                                    VStack(spacing: 8) {
-                                        HStack {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "clock")
-                                                    .font(.system(size: 12))
-                                                    .foregroundStyle(Color.dsSecondary)
-                                                Text("Scheduled for")
-                                                    .font(DSTypography.caption())
-                                                    .foregroundStyle(Color.dsMutedForeground)
-                                            }
-                                            Spacer()
-                                            Text(scheduledText(for: offset))
-                                                .font(DSTypography.labelChip())
-                                                .foregroundStyle(Color.dsForeground)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 3)
-                                                .background(RoundedRectangle(cornerRadius: 6).fill(Color.white.opacity(0.08)))
-                                        }
-                                        
-                                        HStack {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "bell.badge")
-                                                    .font(.system(size: 12))
-                                                    .foregroundStyle(Color.dsSecondary)
-                                                Text("Channel")
-                                                    .font(DSTypography.caption())
-                                                    .foregroundStyle(Color.dsMutedForeground)
-                                            }
-                                            Spacer()
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "calendar.badge.clock")
-                                                    .font(.system(size: 11))
-                                                Text("Calendar · Reminders · Alert")
-                                                    .font(DSTypography.caption())
-                                            }
-                                            .foregroundStyle(Color.dsSecondary)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 4)
-                                            .background(Capsule().fill(Color.white.opacity(0.08)))
-                                        }
-                                    }
-                                    .padding(10)
-                                    .background(Color.black.opacity(0.3))
-                                    .cornerRadius(12)
-                                }
-                                .padding(14)
-                                .dsGlassCard(cornerRadius: 20)
-                            }
+                        Button { addNextAlert() } label: {
+                            Label("Add another alert", systemImage: "plus.circle")
+                                .font(PDFont.labelLG).foregroundStyle(Color.pdSecondary)
+                                .frame(maxWidth: .infinity, minHeight: 48)
+                                .background(Color.pdSurfaceLow, in: RoundedRectangle(cornerRadius: PDRadius.card))
                         }
-                        .padding(.horizontal)
-                        
-                        // Add Alert Action & Limit Indicator
-                        VStack(spacing: 6) {
-                            if offsets.count >= 3 {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "plus.circle")
-                                    Text("Alert Limit Reached (3 of 3 max)")
-                                }
-                                .font(DSTypography.labelChip())
-                                .foregroundStyle(Color.dsMutedForeground.opacity(0.6))
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(Color.white.opacity(0.04))
-                                .cornerRadius(16)
-                            } else {
-                                Button {
-                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                                        addNextAlert()
-                                    }
-                                } label: {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "plus.circle.fill")
-                                        Text("+ Add Alert (\(offsets.count) of 3 active)")
-                                    }
-                                    .font(DSTypography.labelChip())
-                                    .foregroundStyle(Color.dsPrimary)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 52)
-                                    .background(Color.white.opacity(0.08))
-                                    .cornerRadius(16)
-                                }
-                            }
-                            
-                            Text("Tiered notifications prevent calendar alert fatigue while safeguarding essential arrival windows.")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsSecondary.opacity(0.6))
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 16)
+                        .disabled(offsets.count >= 3)
+                        .opacity(offsets.count >= 3 ? 0.5 : 1)
+                        Text("Up to three alerts per event. Choosing no alerts removes the current schedule.")
+                            .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
+                    PDCard {
+                        HStack(alignment: .top, spacing: PDSpacing.sm) {
+                            PDIconTile(systemName: "info.circle", tint: .pdInfo)
+                            Text(isAllDay ? "All-day alerts use 9:00 AM local time on the offset day. Times that have already passed will not create new Pencil'd notifications." : "Alert times follow the event start. Times that have already passed will not create new Pencil'd notifications.")
+                                .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
                         }
-                        .padding(.horizontal)
-                        
-                        // Timed vs All-Day Logic Card
-                        HStack(alignment: .top, spacing: 12) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.white.opacity(0.08))
-                                    .frame(width: 36, height: 36)
-                                Image(systemName: "info")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundStyle(Color.dsPrimary)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Timed vs. All-Day Logic")
-                                    .font(DSTypography.bodyStrong())
-                                    .foregroundStyle(Color.dsForeground)
-                                Text("Timed events trigger at precise temporal countdown offsets. If an event is designated as all-day, reminder tiers calibrate automatically to 9:00 AM local time on designated offset days.")
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                    .lineSpacing(2)
-                            }
-                        }
-                        .padding(16)
-                        .dsGlassCard(cornerRadius: 20)
-                        .padding(.horizontal)
-                        .padding(.bottom, 120)
                     }
                 }
-                
-                // Sticky Bottom Actions
-                VStack(spacing: 10) {
-                    Button {
-                        isSyncing = true
-                        Task {
-                            let sorted = offsets.sorted { $0.timeInterval < $1.timeInterval }
-                            let result = await onSave(sorted)
-                            isSyncing = false
-                            switch result {
-                            case .success:
-                                syncCompleted = true
-                                try? await Task.sleep(for: .milliseconds(600))
-                                dismiss()
-                            case .partial(let issues):
-                                resultMessage = "Schedule saved with issues: \(issues.joined(separator: "; "))"
-                            case .failure(let error):
-                                resultMessage = error.localizedDescription
+                .padding(PDSpacing.md)
+                .padding(.bottom, PDSpacing.md)
+                .disabled(isSyncing || syncCompleted)
+            }
+            .safeAreaInset(edge: .bottom) { saveActions }
+            .dsScreenBackground()
+            .toolbar(.hidden, for: .navigationBar)
+        }
+        .alert("Reminder schedule", isPresented: Binding(
+            get: { resultMessage != nil }, set: { if !$0 { resultMessage = nil } }
+        )) { Button("OK", role: .cancel) {} } message: { Text(resultMessage ?? "") }
+    }
+
+    private var summary: some View {
+        PDCard(highlighted: true) {
+            HStack(alignment: .top, spacing: PDSpacing.md) {
+                PDIconTile(systemName: "calendar.badge.clock", size: .large)
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    Text(title).font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
+                    Text(eventStart.formatted(date: .complete, time: isAllDay ? .omitted : .shortened))
+                        .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                    if isAllDay {
+                        PDStatusBadge(text: "All-day event", icon: "sun.max", tone: .info)
+                    }
+                    Label("\(offsets.count) configured alert\(offsets.count == 1 ? "" : "s")", systemImage: "bell")
+                        .font(PDFont.labelMD).foregroundStyle(Color.pdSecondary)
+                }
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    private var presets: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Quick presets")
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: PDSpacing.sm) {
+                    ForEach(ReminderPreset.allCases) { preset in
+                        Button { applyPreset(preset) } label: {
+                            PDCard(highlighted: selectedPreset == preset) {
+                                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                                    HStack {
+                                        PDIconTile(systemName: preset.icon, tint: .pdSecondary)
+                                        Spacer()
+                                        if selectedPreset == preset { PDCheckmark(size: 20) }
+                                    }
+                                    Text(preset.rawValue).font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
+                                    Text(Self.offsets(for: preset)?.map(\.label).joined(separator: " · ") ?? "Edit each alert timing")
+                                        .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
+                            .frame(width: 180)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(selectedPreset == preset ? .isSelected : [])
+                    }
+                }
+            }
+            if let presetOffsets = Self.offsets(for: selectedPreset) {
+                Text(presetOffsets.map(\.label).joined(separator: " · "))
+                    .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+            } else {
+                Text("Adjust each alert below to create your own schedule.")
+                    .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+        }
+    }
+
+    private func alertCard(index: Int, offset: ReminderOffset) -> some View {
+        PDCard {
+            HStack(alignment: .top, spacing: PDSpacing.sm) {
+                PDIconTile(systemName: "bell", tint: .pdSecondary, size: .large)
+                VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                    Text("ALERT \(index + 1)").font(PDFont.labelSM).foregroundStyle(Color.pdOnSurfaceVariant)
+                    Menu {
+                        ForEach(ReminderOffset.catalog) { option in
+                            Button(option.label) {
+                                offsets[index] = option
+                                selectedPreset = Self.preset(matching: offsets)
+                            }
+                            .disabled(offsets.enumerated().contains { $0.offset != index && $0.element.timeInterval == option.timeInterval })
                         }
                     } label: {
-                        HStack(spacing: 8) {
-                            if isSyncing {
-                                ProgressView().tint(Color.dsPrimaryForeground)
-                                Text("Syncing Schedule...")
-                            } else if syncCompleted {
-                                Image(systemName: "checkmark.circle.fill")
-                                Text("Schedule Synced!")
-                            } else {
-                                Image(systemName: "checkmark.circle.fill")
-                                Text(offsets.isEmpty ? "Save Without Alerts" : "Save Reminder Schedule")
-                            }
+                        HStack(spacing: PDSpacing.sm) {
+                            Text(offset.label).font(PDFont.headlineSM)
+                            Image(systemName: "chevron.up.chevron.down").font(PDFont.labelSM)
                         }
+                        .foregroundStyle(Color.pdOnSurface).frame(minHeight: 44)
                     }
-                    .buttonStyle(DSPrimaryButtonStyle())
-                    .disabled(isSyncing)
-                    
-                    HStack {
-                        Button {
-                            applyPreset(.defaultPreset)
-                        } label: {
-                            Text("Reset to Default")
-                                .font(DSTypography.labelChip())
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            dismiss()
-                        } label: {
-                            Text("Discard Changes")
-                                .font(DSTypography.labelChip())
-                                .foregroundStyle(Color.dsError.opacity(0.85))
-                        }
-                    }
-                    .padding(.horizontal, 8)
+                    .accessibilityLabel("Alert \(index + 1), \(offset.label). Change timing")
+                    Text(scheduledText(for: offset)).font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
                 }
-                .padding(.horizontal)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
-                .background(Color.dsBackground.opacity(0.95))
+                Spacer(minLength: 0)
+                Button {
+                    offsets.remove(at: index)
+                    selectedPreset = Self.preset(matching: offsets)
+                } label: {
+                    Image(systemName: "trash").foregroundStyle(Color.pdError).frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("Remove alert \(index + 1)")
             }
-            .dsScreenBackground()
-        }
-        .alert("Reminder Schedule", isPresented: Binding(
-            get: { resultMessage != nil },
-            set: { if !$0 { resultMessage = nil } }
-        )) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(resultMessage ?? "")
         }
     }
-    
-    @ViewBuilder
-    private func presetPill(title: String, icon: String, preset: ReminderPreset) -> some View {
-        let isSel = selectedPreset == preset
-        Button {
-            selectedPreset = preset
-            applyPreset(preset)
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 13))
-                Text(title)
-                    .font(DSTypography.labelChip())
+
+    private var saveActions: some View {
+        VStack(spacing: PDSpacing.sm) {
+            Button { save() } label: {
+                HStack(spacing: PDSpacing.sm) {
+                    if isSyncing { ProgressView().tint(Color.pdOnPrimaryFixed) }
+                    else { Image(systemName: syncCompleted ? "checkmark.circle.fill" : "checkmark") }
+                    Text(isSyncing ? "Saving schedule…" : syncCompleted ? "Schedule saved" : offsets.isEmpty ? "Save without alerts" : "Save reminder schedule")
+                }
             }
-            .foregroundStyle(isSel ? Color.dsPrimaryForeground : Color.dsForeground)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(
-                Capsule()
-                    .fill(isSel ? Color.dsPrimary : Color.white.opacity(0.08))
-            )
+            .buttonStyle(DSPrimaryButtonStyle())
+            .disabled(isSyncing || syncCompleted)
+            HStack {
+                Button("Reset to default") { applyPreset(.defaultPreset) }
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                Spacer()
+                Button("Discard changes") { dismiss() }.foregroundStyle(Color.pdError)
+            }
+            .font(PDFont.labelMD).frame(minHeight: 44)
+            .disabled(isSyncing || syncCompleted)
+        }
+        .padding(PDSpacing.md)
+        .background(Color.pdSurfaceLow)
+    }
+
+    private func save() {
+        isSyncing = true
+        Task {
+            let result = await onSave(offsets.sorted { $0.timeInterval < $1.timeInterval })
+            isSyncing = false
+            switch result {
+            case .success:
+                syncCompleted = true
+                try? await Task.sleep(for: .milliseconds(600))
+                dismiss()
+            case .partial(let issues): resultMessage = "Schedule saved with issues: \(issues.joined(separator: "; "))"
+            case .failure(let error): resultMessage = error.localizedDescription
+            }
         }
     }
-    
-    private func alertColor(for index: Int) -> Color {
-        switch index {
-        case 0: return Color(red: 123/255, green: 97/255, blue: 255/255)
-        case 1: return Color(red: 255/255, green: 138/255, blue: 61/255)
-        default: return Color.dsSuccess
-        }
-    }
-    
-    private func alertIcon(for index: Int) -> String {
-        switch index {
-        case 0: return "archivebox.fill"
-        case 1: return "figure.walk"
-        default: return "bolt.fill"
-        }
-    }
-    
+
     private func scheduledText(for offset: ReminderOffset) -> String {
         let fire = offset.triggerDate(forEventStart: eventStart, isAllDay: isAllDay)
         let text = fire.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute())
@@ -419,7 +217,7 @@ struct ReminderScheduleEditorView: View {
 
     private static func offsets(for preset: ReminderPreset) -> [ReminderOffset]? {
         switch preset {
-        case .defaultPreset: return [.oneDayBefore, .twoHoursBefore]
+        case .defaultPreset: return ReminderOffset.defaultStaggered
         case .travelHeavy: return [.twoDaysBefore, .threeHoursBefore, .fortyFiveMinutesBefore]
         case .dayOfOnly: return [.twoHoursBefore]
         case .custom: return nil
@@ -429,27 +227,21 @@ struct ReminderScheduleEditorView: View {
     private static func preset(matching offsets: [ReminderOffset]) -> ReminderPreset {
         let intervals = offsets.map(\.timeInterval).sorted()
         for preset in ReminderPreset.allCases {
-            if let presetOffsets = Self.offsets(for: preset), presetOffsets.map(\.timeInterval).sorted() == intervals {
-                return preset
-            }
+            if let presetOffsets = Self.offsets(for: preset), presetOffsets.map(\.timeInterval).sorted() == intervals { return preset }
         }
         return .custom
     }
 
     private func applyPreset(_ preset: ReminderPreset) {
         selectedPreset = preset
-        if let presetOffsets = Self.offsets(for: preset) {
-            offsets = presetOffsets
-        }
+        if let presetOffsets = Self.offsets(for: preset) { offsets = presetOffsets }
     }
 
     private func addNextAlert() {
         guard offsets.count < 3 else { return }
         let used = Set(offsets.map(\.timeInterval))
         let preferred: [ReminderOffset] = [.oneDayBefore, .twoHoursBefore, .thirtyMinutesBefore]
-        if let next = (preferred + ReminderOffset.catalog).first(where: { !used.contains($0.timeInterval) }) {
-            offsets.append(next)
-        }
+        if let next = (preferred + ReminderOffset.catalog).first(where: { !used.contains($0.timeInterval) }) { offsets.append(next) }
         selectedPreset = Self.preset(matching: offsets)
     }
 }
@@ -481,8 +273,8 @@ struct SavedEventScheduleEditor: View {
             }
         } else {
             Text("This event is no longer available")
-                .font(DSTypography.bodyStrong())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.headlineSM)
+                .foregroundStyle(Color.pdOnSurface)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .dsScreenBackground()
         }

@@ -5,6 +5,7 @@ struct HistoryArchiveView: View {
     @Environment(\.services) private var services
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var appState: AppState
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \SavedEvent.createdAt, order: .reverse) private var savedEvents: [SavedEvent]
     
     @State private var selectedFilter: SavedEventStatus = .saved
@@ -48,87 +49,70 @@ struct HistoryArchiveView: View {
         }
     }
     
+    /// Group the real filtered records by their event month, retaining upcoming-first order.
+    private var monthGroups: [(month: Date, events: [SavedEvent])] {
+        var groups: [(month: Date, events: [SavedEvent])] = []
+        for saved in filteredEvents {
+            guard let candidate = saved.candidate,
+                  let month = Calendar.current.dateInterval(of: .month, for: candidate.startDate)?.start else { continue }
+            if let index = groups.firstIndex(where: { $0.month == month }) {
+                groups[index].events.append(saved)
+            } else {
+                groups.append((month, [saved]))
+            }
+        }
+        return groups
+    }
+
+    /// Only persisted scans attached to history records are counted; no invented storage sizes.
+    private var retainedScanCount: Int {
+        Set(savedEvents.compactMap { $0.candidate?.scannedAsset?.id }).count
+    }
+
     var body: some View {
-        NavigationView {
+        Group {
             VStack(spacing: 0) {
-                // Header Area
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("TEMPORAL LOG • ON-DEVICE")
-                                .font(DSTypography.overlineConfidence())
-                                .foregroundStyle(Color.dsPrimary)
-                            
-                            Text("History & Archive")
-                                .font(DSTypography.displayTitle())
-                                .foregroundStyle(Color.dsForeground)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            appState.selectedTab = .home
-                        } label: {
-                            Image(systemName: "camera.viewfinder")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(Color.dsPrimary)
-                                .frame(width: 44, height: 44)
-                                .background(Circle().fill(Color.dsCardElevated))
+                PDTopBar(title: "Repository & Logs")
+                    .frame(maxWidth: horizontalSizeClass == .regular ? 1080 : .infinity)
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    HStack(alignment: .top, spacing: PDSpacing.md) {
+                        PDScreenIntro(eyebrow: "ON YOUR DEVICE", title: "History & Archive", subtitle: "Your saved events, drafts, and archived scans.")
+                        Spacer(minLength: 0)
+                        Button { appState.selectedTab = .home } label: {
+                            PDIconTile(systemName: "camera.viewfinder", size: .large)
                         }
                         .accessibilityLabel("Scan a new screenshot")
                     }
-                    
-                    Text("All synced events, past scans, and triage records.")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
-                    
                     EventSearchFilterBar(
                         searchText: $searchText,
                         status: $selectedFilter,
                         smartFilter: $smartFilter,
                         counts: Dictionary(uniqueKeysWithValues: SavedEventStatus.allCases.map { ($0, count($0)) }),
-                        idPrefix: "history"
+                        idPrefix: "history",
+                        palette: .pencild
                     )
                 }
-                .padding(.horizontal)
+                .frame(maxWidth: horizontalSizeClass == .regular ? 1080 : .infinity)
+                .padding(.horizontal, horizontalSizeClass == .regular ? 28 : 16)
                 .padding(.top, 10)
                 .padding(.bottom, 8)
-                
-                // Events List or Empty State
+
                 List {
                     Group {
-                        HStack {
-                            Text(selectedFilter == .saved ? "Upcoming First" : selectedFilter.eventStatus.rawValue)
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
-                            Spacer()
-                            Text("\(filteredEvents.count) Events")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 6)
-                        
+                        PDSectionHeader(title: selectedFilter == .saved ? "Upcoming first" : selectedFilter.eventStatus.rawValue,
+                                        trailing: "\(filteredEvents.count) event\(filteredEvents.count == 1 ? "" : "s")")
+                            .padding(.horizontal, PDSpacing.md)
                         if filteredEvents.isEmpty {
-                            VStack(spacing: 12) {
-                                Image(systemName: "tray")
-                                    .font(.system(size: 38))
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                    .padding(.top, 36)
-                                Text(searchText.isEmpty ? "No \(selectedFilter.eventStatus.rawValue.lowercased()) events yet" : "No matches for “\(searchText)”")
-                                    .font(DSTypography.bodyStrong())
-                                    .foregroundStyle(Color.dsForeground)
-                                Text("Screenshots scanned and parsed will appear in this timeline.")
-                                    .font(DSTypography.caption())
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .padding(.horizontal)
+                            emptyState
                         } else {
-                            ForEach(filteredEvents) { saved in
-                                eventCard(saved: saved)
+                            ForEach(monthGroups, id: \.month) { group in
+                                Text(group.month.formatted(.dateTime.month(.wide).year()))
+                                    .font(PDFont.labelLG).foregroundStyle(Color.pdPrimary)
+                                    .padding(.horizontal, PDSpacing.md).padding(.top, PDSpacing.sm)
+                                ForEach(group.events) { saved in eventCard(saved: saved) }
                             }
                         }
+                        localStorage
                         Color.clear.frame(height: 90)
                     }
                     .listRowBackground(Color.clear)
@@ -138,8 +122,11 @@ struct HistoryArchiveView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .scrollIndicators(.hidden)
+                .frame(maxWidth: horizontalSizeClass == .regular ? 1080 : .infinity)
+                .frame(maxWidth: .infinity)
             }
             .dsScreenBackground()
+            .toolbar(.hidden, for: .navigationBar)
             .confirmationDialog(
                 "Delete this event?",
                 isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
@@ -149,7 +136,7 @@ struct HistoryArchiveView: View {
                 Button("Delete from Pencil'd Only", role: .destructive) {
                     reportMutation(actions.delete(saved, removeFromCalendar: false), success: "Removed from Pencil'd history")
                 }
-                if saved.externalCalendarEventId != nil {
+                if saved.externalCalendarEventId != nil || !saved.externalReminderIds.isEmpty || saved.deadlineReminderId != nil {
                     Button("Delete from Calendar & Reminders Too", role: .destructive) {
                         reportMutation(actions.delete(saved, removeFromCalendar: true), success: "Deleted event")
                     }
@@ -159,81 +146,95 @@ struct HistoryArchiveView: View {
             }
         }
     }
-    
+
+    private var emptyState: some View {
+        PDCard {
+            VStack(spacing: PDSpacing.md) {
+                PDIconTile(systemName: "tray", tint: .pdSecondary, size: .large)
+                Text(searchText.isEmpty ? "No \(selectedFilter.eventStatus.rawValue.lowercased()) events match these filters" : "No matches for “\(searchText)”")
+                    .font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
+                Text("Try a different filter or scan a screenshot to add an event.")
+                    .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                    .multilineTextAlignment(.center)
+                Button { appState.selectedTab = .home } label: {
+                    Label("Scan a screenshot", systemImage: "camera.viewfinder")
+                }
+                .buttonStyle(DSPrimaryButtonStyle())
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, PDSpacing.md)
+    }
+
+    private var localStorage: some View {
+        PDCard {
+            HStack(alignment: .top, spacing: PDSpacing.sm) {
+                PDIconTile(systemName: "internaldrive", tint: .pdSecondary)
+                VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                    Text("Local scan history").font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
+                    Text("\(retainedScanCount) scan\(retainedScanCount == 1 ? "" : "s") linked to \(savedEvents.count) event\(savedEvents.count == 1 ? "" : "s")")
+                        .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                    Text("Deleting a Pencil'd record removes it from this history. Original images remain in Photos when available.")
+                        .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+                Spacer(minLength: 0)
+            }
+        }
+        .padding(.horizontal, PDSpacing.md)
+    }
+
     @ViewBuilder
     private func eventCard(saved: SavedEvent) -> some View {
-        let event = saved.candidate?.toPencildEvent()
-        if let event {
-            Button {
-                if saved.status == .draft {
-                    appState.activeModal = .eventReviewEdit(event)
-                } else {
-                    appState.activeModal = .savedEventDetail(event)
-                }
-            } label: {
-                HStack(spacing: 14) {
-                    DSDateBadge(month: event.month, day: event.day, isSelected: saved.status == .saved)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(event.title)
-                                .font(DSTypography.bodyStrong())
-                                .foregroundStyle(Color.dsForeground)
-                                .lineLimit(1)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(Color.dsMutedForeground)
-                        }
-                        
-                        HStack(spacing: 6) {
-                            Image(systemName: "location.fill")
-                                .font(.system(size: 11))
-                                .foregroundStyle(Color.dsMutedForeground)
-                            Text("\(event.locationName) • \(event.timeWindow)")
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
-                                .lineLimit(1)
-                        }
-                        
-                        HStack(spacing: 8) {
-                            statusBadge(for: saved)
-                            
-                            HStack(spacing: 4) {
-                                Image(systemName: "calendar")
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(Color.dsSecondary)
-                                Text(event.targetCalendar)
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(Color.dsMutedForeground)
-                                    .lineLimit(1)
+        if let candidate = saved.candidate {
+            let event = candidate.toPencildEvent()
+            PDCard {
+                VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                    Button {
+                        appState.activeModal = saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)
+                    } label: {
+                        HStack(alignment: .top, spacing: PDSpacing.md) {
+                            PDScanSourceThumbnail(candidate: candidate)
+                            VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                                Text(event.title).font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
+                                    .lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
+                                Text(candidate.startDate.formatted(date: .abbreviated, time: candidate.isAllDay ? .omitted : .shortened))
+                                    .font(PDFont.bodySM).foregroundStyle(Color.pdPrimary)
+                                Label(event.locationName, systemImage: "mappin.and.ellipse")
+                                    .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant).lineLimit(1)
+                                DSConfidencePill(score: event.confidenceScore, label: event.confidenceLabel)
                             }
-                            
-                            if !saved.alertOffsets.isEmpty {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "bell.fill")
-                                        .font(.system(size: 10))
-                                        .foregroundStyle(Color.dsAccent)
-                                    Text("\(saved.alertOffsets.count) Alert\(saved.alertOffsets.count == 1 ? "" : "s")")
-                                        .font(.system(size: 11))
-                                        .foregroundStyle(Color.dsMutedForeground)
-                                }
-                            }
+                            Image(systemName: "chevron.right").font(PDFont.labelMD).foregroundStyle(Color.pdOutline)
+                                .padding(.top, PDSpacing.sm)
                         }
-                        .padding(.top, 2)
+                        .frame(minHeight: 76)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    HStack(spacing: PDSpacing.sm) {
+                        statusBadge(for: saved)
+                        if !saved.alertOffsets.isEmpty {
+                            Label("\(saved.alertOffsets.count)", systemImage: "bell")
+                                .font(PDFont.labelMD).foregroundStyle(Color.pdSecondary)
+                                .accessibilityLabel("\(saved.alertOffsets.count) configured alerts")
+                        }
+                        Spacer(minLength: 0)
+                        Button { toggleArchive(saved) } label: {
+                            Label(saved.status == .archived ? "Restore" : "Archive",
+                                  systemImage: saved.status == .archived ? "arrow.uturn.backward" : "archivebox")
+                                .font(PDFont.labelMD).foregroundStyle(Color.pdSecondary).frame(minHeight: 44)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if saved.externalCalendarEventId != nil {
+                        Label(saved.targetCalendar, systemImage: "calendar")
+                            .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
                     }
                 }
-                .padding(14)
-                .dsGlassCard(cornerRadius: 18)
-                .padding(.horizontal)
             }
+            .padding(.horizontal, PDSpacing.md)
             .contextMenu { triageMenu(for: saved) }
             .swipeActions { triageMenu(for: saved) }
-            .accessibilityAction(named: saved.status == .archived ? "Restore" : "Archive") {
-                let isRestoring = saved.status == .archived
-                let result = actions.setStatus(isRestoring ? .saved : .archived, for: saved)
-                reportMutation(result, success: isRestoring ? "Event restored" : "Event archived")
-            }
+            .accessibilityAction(named: saved.status == .archived ? "Restore" : "Archive") { toggleArchive(saved) }
             .accessibilityAction(named: "Delete") { pendingDelete = saved }
         }
     }
@@ -242,26 +243,18 @@ struct HistoryArchiveView: View {
     private func statusBadge(for saved: SavedEvent) -> some View {
         switch saved.status {
         case .saved:
-            HStack(spacing: 4) {
-                Image(systemName: saved.externalCalendarEventId != nil ? "checkmark.circle.fill" : "exclamationmark.circle")
-                    .font(.system(size: 10))
-                Text(saved.externalCalendarEventId != nil ? "In Calendar" : "Not in Calendar")
-                    .font(.system(size: 11, weight: .semibold))
-            }
-            .foregroundStyle(saved.externalCalendarEventId != nil ? Color.dsSuccess : Color.dsWarning)
-        case .draft:
-            HStack(spacing: 4) {
-                Image(systemName: "bookmark.fill").font(.system(size: 10))
-                Text("Draft").font(.system(size: 11, weight: .semibold))
-            }
-            .foregroundStyle(Color.dsWarning)
-        case .archived:
-            HStack(spacing: 4) {
-                Image(systemName: "archivebox.fill").font(.system(size: 10))
-                Text("Archived").font(.system(size: 11, weight: .semibold))
-            }
-            .foregroundStyle(Color.dsMutedForeground)
+            PDStatusBadge(text: saved.externalCalendarEventId != nil ? "Saved to Calendar" : "Not in Calendar",
+                          icon: saved.externalCalendarEventId != nil ? "checkmark.circle" : "exclamationmark.circle",
+                          tone: saved.externalCalendarEventId != nil ? .success : .warning)
+        case .draft: PDStatusBadge(text: "Draft", icon: "bookmark", tone: .warning)
+        case .archived: PDStatusBadge(text: "Archived", icon: "archivebox")
         }
+    }
+
+    private func toggleArchive(_ saved: SavedEvent) {
+        let restoring = saved.status == .archived
+        let destination: SavedEventStatus = restoring ? (saved.externalCalendarEventId != nil ? .saved : .draft) : .archived
+        reportMutation(actions.setStatus(destination, for: saved), success: restoring ? "Event restored" : "Event archived")
     }
 
     /// Triage actions shared by the context menu and swipe actions.

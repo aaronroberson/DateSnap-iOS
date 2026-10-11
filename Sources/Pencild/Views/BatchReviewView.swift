@@ -10,12 +10,17 @@ import SwiftData
 struct BatchReviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.services) private var services
     @EnvironmentObject private var appState: AppState
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @StateObject private var session: BatchReviewSession
 
     @State private var expandedIDs: Set<UUID> = []
+    @State private var dismissedDuplicateWarnings: Set<UUID> = []
     @State private var showDiscardConfirmFor: BatchEventItem? = nil
     @State private var showFailureAlert = false
+    @State private var pendingFailureAlert = false
+    @State private var showNotificationRecovery = false
 
     init(session: BatchReviewSession) {
         _session = StateObject(wrappedValue: session)
@@ -28,13 +33,12 @@ struct BatchReviewView: View {
                     VStack(alignment: .leading, spacing: 14) {
                         header
 
-                        ForEach(session.events) { event in
-                            BatchEventCard(
-                                event: event,
-                                isExpanded: expandedIDs.contains(event.id),
-                                onToggle: { toggle(event.id) },
-                                onDiscard: { showDiscardConfirmFor = event }
-                            )
+                        if horizontalSizeClass == .regular {
+                            LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], alignment: .leading, spacing: 14) {
+                                eventCards
+                            }
+                        } else {
+                            eventCards
                         }
 
                         if session.events.isEmpty {
@@ -43,8 +47,10 @@ struct BatchReviewView: View {
 
                         skippedCard
                     }
-                    .padding(.horizontal)
+                    .frame(maxWidth: horizontalSizeClass == .regular ? 1120 : .infinity)
+                    .padding(.horizontal, horizontalSizeClass == .regular ? 28 : 16)
                     .padding(.bottom, 130)
+                    .frame(maxWidth: .infinity)
                 }
 
                 if session.actionableCount > 0 || session.lastSummary != nil {
@@ -53,7 +59,20 @@ struct BatchReviewView: View {
             }
             .dsScreenBackground()
             .navigationBarHidden(true)
-            .task { await session.prepareDestinations() }
+            .task {
+                await session.prepareDestinations()
+                for event in session.events {
+                    event.review.findDuplicates(in: modelContext)
+                }
+            }
+            .sheet(isPresented: $showNotificationRecovery, onDismiss: {
+                if pendingFailureAlert {
+                    pendingFailureAlert = false
+                    showFailureAlert = true
+                }
+            }) {
+                NotificationPermissionDeniedView()
+            }
             .alert("Some Events Did Not Save", isPresented: $showFailureAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -85,44 +104,42 @@ struct BatchReviewView: View {
     // MARK: Header
 
     private var header: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color.dsSecondary)
-                    .frame(width: 44, height: 44)
-            }
-            .accessibilityLabel("Close")
-
-            HStack(spacing: 8) {
-                Image(systemName: "square.stack.3d.up.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(Color.dsPrimary)
-                Text("Batch Review")
-                    .font(DSTypography.headlineCard())
-                    .foregroundStyle(Color.dsForeground)
-            }
-
-            Spacer()
-
-            Text("\(session.events.count) event\(session.events.count == 1 ? "" : "s") · \(session.skipped.count) skipped")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
-                .lineLimit(1)
+        VStack(alignment: .leading, spacing: PDSpacing.md) {
+            PDTopBar(title: "Batch review")
+            PDScreenIntro(
+                eyebrow: "Verification stage",
+                title: "Review your events",
+                subtitle: "\(session.events.count) event\(session.events.count == 1 ? "" : "s") · \(session.skipped.count) skipped"
+            )
+            Text("Each event keeps its own calendar and reminder schedule.")
+                .font(PDFont.bodyMD)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
-        .padding(.top, 8)
+        .padding(.top, PDSpacing.sm)
+    }
+
+    private var eventCards: some View {
+        ForEach(session.events) { event in
+            BatchEventCard(
+                event: event,
+                isExpanded: expandedIDs.contains(event.id),
+                duplicateWarningDismissed: dismissedDuplicateWarnings.contains(event.id),
+                onDismissDuplicateWarning: { dismissedDuplicateWarnings.insert(event.id) },
+                onToggle: { toggle(event.id) },
+                onDiscard: { showDiscardConfirmFor = event },
+                onNotificationsDenied: { showNotificationRecovery = true }
+            )
+        }
     }
 
     private var emptyState: some View {
         VStack(spacing: 12) {
             Image(systemName: "checkmark.seal")
                 .font(.system(size: 38))
-                .foregroundStyle(Color.dsSuccess)
+                .foregroundStyle(Color.pdSuccess)
             Text("Nothing left to review")
-                .font(DSTypography.bodyStrong())
-                .foregroundStyle(Color.dsForeground)
+                .font(PDFont.labelLG)
+                .foregroundStyle(Color.pdOnSurface)
             Button("Close") { dismiss() }
                 .buttonStyle(DSSecondaryButtonStyle())
                 .padding(.top, 4)
@@ -138,8 +155,8 @@ struct BatchReviewView: View {
         if !session.skipped.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 Text("SKIPPED SCREENSHOTS")
-                    .font(DSTypography.overlineConfidence())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
                 ForEach(session.skipped) { item in
                     HStack(spacing: 10) {
                         if let image = item.image {
@@ -150,20 +167,20 @@ struct BatchReviewView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                         } else {
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.dsCard)
+                                .fill(Color.pdSurfaceContainer)
                                 .frame(width: 44, height: 44)
                                 .overlay {
                                     Image(systemName: "photo")
-                                        .foregroundStyle(Color.dsMutedForeground)
+                                        .foregroundStyle(Color.pdOnSurfaceVariant)
                                 }
                         }
                         VStack(alignment: .leading, spacing: 1) {
                             Text(item.label)
-                                .font(DSTypography.bodyCompact())
-                                .foregroundStyle(Color.dsForeground)
+                                .font(PDFont.bodyMD)
+                                .foregroundStyle(Color.pdOnSurface)
                             Text(BatchReviewView.skipReason(for: item.stage))
-                                .font(DSTypography.caption())
-                                .foregroundStyle(Color.dsMutedForeground)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .lineLimit(2)
                         }
                         Spacer()
@@ -175,7 +192,7 @@ struct BatchReviewView: View {
                 }
             }
             .padding(14)
-            .dsGlassCard(cornerRadius: 20)
+            .dsGlassCard(cornerRadius: PDRadius.card)
         }
     }
 
@@ -199,9 +216,9 @@ struct BatchReviewView: View {
 
     private static func skipColor(for stage: BatchScanItem.Stage) -> Color {
         switch stage {
-        case .failed: return Color.dsError
-        case .alreadySaved: return Color.dsSuccess
-        default: return Color.dsMutedForeground
+        case .failed: return Color.pdError
+        case .alreadySaved: return Color.pdSuccess
+        default: return Color.pdOnSurfaceVariant
         }
     }
 
@@ -212,12 +229,12 @@ struct BatchReviewView: View {
             if let summary = session.lastSummary {
                 HStack(spacing: 6) {
                     Image(systemName: summary.isAllSaved ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                        .foregroundStyle(summary.isAllSaved ? Color.dsSuccess : Color.dsWarning)
+                        .foregroundStyle(summary.isAllSaved ? Color.pdSuccess : Color.pdWarning)
                     Text(summary.isAllSaved
                          ? "All \(summary.savedCount) event\(summary.savedCount == 1 ? "" : "s") saved"
                          : "\(summary.savedCount) of \(summary.savedCount + summary.failedMessages.count) saved — tap Save All to retry")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurface)
                 }
             }
 
@@ -226,7 +243,7 @@ struct BatchReviewView: View {
             } label: {
                 HStack(spacing: 8) {
                     if session.isSaving {
-                        ProgressView().tint(Color.dsPrimaryForeground)
+                        ProgressView().tint(Color.pdOnPrimaryFixed)
                         Text("Saving events…")
                     } else {
                         Image(systemName: "calendar.badge.plus")
@@ -235,17 +252,17 @@ struct BatchReviewView: View {
                     }
                 }
             }
-            .buttonStyle(DSPrimaryButtonStyle())
+            .buttonStyle(PDGradientButtonStyle())
             .disabled(session.isSaving || session.actionableCount == 0)
         }
         .padding(14)
         .padding(.bottom, 10)
         .background(
             Rectangle()
-                .fill(Color.dsBackground.opacity(0.95))
+                .fill(Color.pdSurface.opacity(0.95))
                 .overlay(
                     Rectangle()
-                        .fill(Color.dsPrimary.opacity(0.15))
+                        .fill(Color.pdPrimary.opacity(0.15))
                         .blur(radius: 24)
                 )
                 .ignoresSafeArea(edges: .bottom)
@@ -255,7 +272,12 @@ struct BatchReviewView: View {
     private func saveAll() async {
         let summary = await session.saveAll(modelContext: modelContext)
         if summary.failedMessages.isEmpty && summary.savedCount > 0 {
-            appState.showToast("✓ Saved \(summary.savedCount) event\(summary.savedCount == 1 ? "" : "s") to Calendar & Reminders")
+            appState.showToast("Saved \(summary.savedCount) event\(summary.savedCount == 1 ? "" : "s") to Calendar")
+        }
+        if session.events.contains(where: { $0.review.notificationsSkipped }),
+           await services.notifications.authorizationStatus() == .denied {
+            pendingFailureAlert = !summary.failedMessages.isEmpty
+            showNotificationRecovery = true
         } else if !summary.failedMessages.isEmpty {
             showFailureAlert = true
         }
@@ -275,19 +297,35 @@ struct BatchReviewView: View {
 // MARK: - Per-Event Card
 private struct BatchEventCard: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.services) private var services
+    @EnvironmentObject private var appState: AppState
     @ObservedObject var event: BatchEventItem
     /// The card reads editable state through the review VM, so observe it directly too.
     @ObservedObject private var review: EventReviewViewModel
     let isExpanded: Bool
+    let duplicateWarningDismissed: Bool
+    let onDismissDuplicateWarning: () -> Void
     let onToggle: () -> Void
     let onDiscard: () -> Void
+    let onNotificationsDenied: () -> Void
 
-    init(event: BatchEventItem, isExpanded: Bool, onToggle: @escaping () -> Void, onDiscard: @escaping () -> Void) {
+    init(
+        event: BatchEventItem,
+        isExpanded: Bool,
+        duplicateWarningDismissed: Bool,
+        onDismissDuplicateWarning: @escaping () -> Void,
+        onToggle: @escaping () -> Void,
+        onDiscard: @escaping () -> Void,
+        onNotificationsDenied: @escaping () -> Void
+    ) {
         _event = ObservedObject(wrappedValue: event)
         _review = ObservedObject(wrappedValue: event.review)
         self.isExpanded = isExpanded
+        self.duplicateWarningDismissed = duplicateWarningDismissed
+        self.onDismissDuplicateWarning = onDismissDuplicateWarning
         self.onToggle = onToggle
         self.onDiscard = onDiscard
+        self.onNotificationsDenied = onNotificationsDenied
     }
 
     var body: some View {
@@ -300,11 +338,8 @@ private struct BatchEventCard: View {
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: 20)
-        .overlay(alignment: .topTrailing) {
-            statusChip
-                .padding(10)
-        }
+        .dsGlassCard(cornerRadius: PDRadius.card)
+
     }
 
     private var statusChip: some View {
@@ -315,55 +350,59 @@ private struct BatchEventCard: View {
             case .saving:
                 ProgressView().controlSize(.small)
             case .saved:
-                Label("Saved", systemImage: "checkmark.circle.fill")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(Color.dsSuccess)
-                    .labelStyle(.titleAndIcon)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.dsSuccess.opacity(0.15)))
+                PDStatusBadge(
+                    text: review.errorMessage == nil ? "Saved" : "Saved with issues",
+                    icon: review.errorMessage == nil ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
+                    tone: review.errorMessage == nil ? .success : .warning
+                )
             case .failed:
-                Label("Failed", systemImage: "exclamationmark.triangle.fill")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(Color.dsError)
-                    .labelStyle(.titleAndIcon)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.dsError.opacity(0.15)))
+                PDStatusBadge(text: "Failed", icon: "exclamationmark.triangle.fill", tone: .error)
             }
         }
     }
 
     private var header: some View {
-        Button(action: onToggle) {
-            HStack(spacing: 12) {
-                screenshotThumb
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(event.review.title.isEmpty ? "Untitled Event" : event.review.title)
-                        .font(DSTypography.bodyStrong())
-                        .foregroundStyle(Color.dsForeground)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                    HStack(spacing: 4) {
-                        Image(systemName: "calendar")
-                            .font(.system(size: 10))
-                        Text(event.review.selectedCalendar?.title ?? "Default calendar")
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            Button(action: onToggle) {
+                HStack(spacing: 12) {
+                    screenshotThumb
+                    VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                        Text(review.title.isEmpty ? "Untitled event" : review.title)
+                            .font(PDFont.labelLG)
+                            .foregroundStyle(Color.pdOnSurface)
                             .lineLimit(1)
+                            .multilineTextAlignment(.leading)
+                        Label(review.selectedCalendar?.title ?? "Default calendar", systemImage: "calendar")
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                            .lineLimit(1)
+                        Text(review.startDate.formatted(date: .abbreviated, time: review.isAllDay ? .omitted : .shortened))
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                        statusChip
                     }
-                    .font(DSTypography.caption())
-                    .foregroundStyle(Color.dsMutedForeground)
+                    Spacer()
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
-                Spacer()
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color.dsMutedForeground)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
             }
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(event.screenshotLabel), \(review.title), saving to \(review.selectedCalendar?.title ?? "default calendar")")
+            .accessibilityHint(isExpanded ? "Collapse" : "Expand to edit details")
+            if !review.duplicateMatches.isEmpty && !duplicateWarningDismissed {
+                PossibleDuplicateBanner(
+                    matches: review.duplicateMatches,
+                    onOpen: { candidateID in
+                        guard let candidate = SavedEventActions.candidate(id: candidateID, in: modelContext) else { return }
+                        Task { await appState.present(.savedEventDetail(candidate.toPencildEvent())) }
+                    },
+                    onKeepSeparate: onDismissDuplicateWarning
+                )
+            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(event.screenshotLabel), \(event.review.title), saving to \(event.review.selectedCalendar?.title ?? "default calendar")")
-        .accessibilityHint(isExpanded ? "Collapse" : "Expand to edit details")
     }
 
     private var screenshotThumb: some View {
@@ -373,28 +412,24 @@ private struct BatchEventCard: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                ZStack {
-                    Rectangle().fill(Color.dsCard)
-                    Image(systemName: "photo")
-                        .foregroundStyle(Color.dsMutedForeground)
-                }
+                PDScanSourceThumbnail(candidate: event.candidate, width: 56, height: 72)
             }
         }
         .frame(width: 56, height: 72)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.dsBorder, lineWidth: 1))
+
     }
 
     private var collapsedDestinations: some View {
         HStack(spacing: 12) {
             destinationSummary(
                 icon: "checklist",
-                tint: Color.dsInfo,
+                tint: Color.pdInfo,
                 text: event.review.selectedReminderList?.title ?? "No reminders list"
             )
             destinationSummary(
                 icon: "bell.badge",
-                tint: Color.dsSecondary,
+                tint: Color.pdSecondary,
                 text: event.review.selectedOffsets.isEmpty
                     ? "No alerts"
                     : "\(event.review.selectedOffsets.count) alert\(event.review.selectedOffsets.count == 1 ? "" : "s")"
@@ -408,8 +443,8 @@ private struct BatchEventCard: View {
                 .font(.system(size: 11))
                 .foregroundStyle(tint)
             Text(text)
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
                 .lineLimit(1)
         }
     }
@@ -417,16 +452,65 @@ private struct BatchEventCard: View {
     @ViewBuilder
     private var detail: some View {
         VStack(alignment: .leading, spacing: 12) {
+            Text(event.screenshotLabel)
+                .font(PDFont.labelMD)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+            PDStatusBadge(
+                text: "\(Int((review.confidenceScore * 100).rounded()))% · \(review.confidenceTier.label)",
+                icon: review.confidenceTier.iconName,
+                tone: review.confidenceTier == .high ? .success : .warning
+            )
             editableFields
             BatchDestinationsEditor(viewModel: event.review)
+            if let issue = review.errorMessage {
+                Label(issue, systemImage: "exclamationmark.triangle.fill")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdWarning)
+            }
             actionRow
         }
     }
 
     private var editableFields: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            BatchTitledField(title: "EVENT TITLE", text: $review.title, placeholder: "Enter event name…", icon: "textformat", iconColor: .dsPrimary)
-            BatchTitledField(title: "LOCATION", text: $review.location, placeholder: "Venue or address", icon: "mappin.and.ellipse", iconColor: .dsSecondary)
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Extracted fields")
+            PDGroupedList {
+                BatchTitledField(title: "EVENT TITLE", text: $review.title, placeholder: "Enter event name…", icon: "textformat", iconColor: .pdPrimary)
+                    .padding(PDSpacing.md)
+                PDRowDivider()
+                VStack(spacing: PDSpacing.sm) {
+                    DatePicker(
+                        review.isAllDay ? "Date" : "Starts",
+                        selection: $review.startDate,
+                        displayedComponents: review.isAllDay ? [.date] : [.date, .hourAndMinute]
+                    )
+                    .onChange(of: review.startDate) { previous, _ in review.startDateChanged(from: previous) }
+                    if !review.isAllDay {
+                        DatePicker("Ends", selection: $review.endDate, in: review.startDate..., displayedComponents: [.date, .hourAndMinute])
+                    }
+                    Toggle("All-day event", isOn: $review.isAllDay)
+                        .toggleStyle(PDToggleStyle())
+                }
+                .font(PDFont.bodyMD)
+                .tint(Color.pdPrimary)
+                .padding(PDSpacing.md)
+                PDRowDivider()
+                BatchTitledField(title: "VENUE", text: $review.venueName, placeholder: "Venue name", icon: "mappin.and.ellipse", iconColor: .pdTertiary)
+                    .padding(PDSpacing.md)
+                PDRowDivider()
+                BatchTitledField(title: "ADDRESS", text: $review.location, placeholder: "Address", icon: "map", iconColor: .pdTertiary)
+                    .padding(PDSpacing.md)
+                PDRowDivider()
+                VStack(alignment: .leading, spacing: PDSpacing.xs) {
+                    PDEyebrow(text: "Notes & details")
+                    TextEditor(text: $review.notes)
+                        .font(PDFont.bodyMD)
+                        .scrollContentBackground(.hidden)
+                        .frame(minHeight: 64)
+                        .accessibilityLabel("Notes and details")
+                }
+                .padding(PDSpacing.md)
+            }
         }
     }
 
@@ -435,13 +519,13 @@ private struct BatchEventCard: View {
             Button(action: onDiscard) {
                 HStack(spacing: 6) {
                     Image(systemName: "trash")
-                        .foregroundStyle(Color.dsError)
+                        .foregroundStyle(Color.pdError)
                     Text("Discard")
-                        .font(DSTypography.labelChip())
-                        .foregroundStyle(Color.dsError)
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdError)
                 }
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.dsError.opacity(0.12)))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color.pdError.opacity(0.12)))
             }
             .disabled(!event.isActionable)
 
@@ -452,6 +536,9 @@ private struct BatchEventCard: View {
                     switch result {
                     case .success, .partial:
                         event.status = .saved
+                        if review.notificationsSkipped, await services.notifications.authorizationStatus() == .denied {
+                            onNotificationsDenied()
+                        }
                     case .failure(let error):
                         event.status = .failed(error.message)
                     }
@@ -459,15 +546,13 @@ private struct BatchEventCard: View {
             } label: {
                 HStack(spacing: 6) {
                     if event.review.isSaving {
-                        ProgressView().tint(Color.dsPrimaryForeground)
+                        ProgressView().tint(Color.pdOnPrimaryFixed)
                     }
                     Text(event.review.isSaving ? "Saving…" : "Save")
-                        .font(DSTypography.labelChip())
-                        .foregroundStyle(Color.dsPrimary)
+                        .font(PDFont.labelMD)
                 }
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.dsPrimary.opacity(0.14)))
             }
+            .buttonStyle(PDGradientButtonStyle())
             .disabled(event.review.isSaving || !event.isActionable)
         }
     }
@@ -484,21 +569,20 @@ struct BatchTitledField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(DSTypography.overlineConfidence())
-                .foregroundStyle(Color.dsMutedForeground)
+                .font(PDFont.labelSM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
             HStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(iconColor)
                 TextField(placeholder, text: $text)
-                    .font(DSTypography.bodyStrong())
-                    .foregroundStyle(Color.dsForeground)
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
             }
             .padding(12)
             .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.dsCard)
-                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.dsBorder, lineWidth: 1))
+                RoundedRectangle(cornerRadius: PDRadius.tile)
+                    .fill(Color.pdSurfaceLowest)
             )
         }
     }
@@ -513,19 +597,15 @@ struct BatchDestinationsEditor: View {
         VStack(spacing: 12) {
             if viewModel.availableCalendars.isEmpty {
                 HStack(spacing: 8) {
-                    Image(systemName: "calendar")
-                        .foregroundStyle(Color.dsMutedForeground)
+                    PDIconTile(systemName: "calendar", tint: .pdPrimary)
                     Text("Default calendar (access requested on save)")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                     Spacer()
                 }
             } else {
                 HStack(spacing: 8) {
-                    Image(systemName: "calendar")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.dsSecondary)
-                        .frame(width: 18)
+                    PDIconTile(systemName: "calendar", tint: .pdPrimary)
                     Menu {
                         ForEach(viewModel.availableCalendars, id: \.calendarIdentifier) { calendar in
                             Button(calendar.title) { viewModel.selectedCalendar = calendar }
@@ -536,8 +616,8 @@ struct BatchDestinationsEditor: View {
                                 .lineLimit(1)
                             Image(systemName: "chevron.up.chevron.down").font(.system(size: 9))
                         }
-                        .font(DSTypography.bodyCompact())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.bodyMD)
+                        .foregroundStyle(Color.pdOnSurface)
                         .frame(minHeight: 44)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -546,10 +626,7 @@ struct BatchDestinationsEditor: View {
 
             if !viewModel.availableReminderLists.isEmpty {
                 HStack(spacing: 8) {
-                    Image(systemName: "checklist")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.dsInfo)
-                        .frame(width: 18)
+                    PDIconTile(systemName: "checklist", tint: .pdSecondary)
                     Menu {
                         ForEach(viewModel.availableReminderLists, id: \.calendarIdentifier) { list in
                             Button(list.title) { viewModel.selectedReminderList = list }
@@ -560,8 +637,8 @@ struct BatchDestinationsEditor: View {
                                 .lineLimit(1)
                             Image(systemName: "chevron.up.chevron.down").font(.system(size: 9))
                         }
-                        .font(DSTypography.bodyCompact())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.bodyMD)
+                        .foregroundStyle(Color.pdOnSurface)
                         .frame(minHeight: 44)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -572,19 +649,17 @@ struct BatchDestinationsEditor: View {
                 showScheduleEditor = true
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: "bell.badge.fill")
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.dsSecondary)
+                    PDIconTile(systemName: "bell.badge.fill", tint: .pdSecondary)
                     Text(viewModel.selectedOffsets.isEmpty
                          ? "No alerts"
                          : viewModel.selectedOffsets.map(\.label).joined(separator: " · "))
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsForeground)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurface)
                         .lineLimit(1)
                     Spacer()
                     Image(systemName: "pencil")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color.dsMutedForeground)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
                 .frame(minHeight: 44)
             }
@@ -592,9 +667,8 @@ struct BatchDestinationsEditor: View {
         }
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.05))
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.dsBorder, lineWidth: 1))
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .fill(Color.pdSurfaceLowest)
         )
         .sheet(isPresented: $showScheduleEditor) {
             ReminderScheduleEditorView(

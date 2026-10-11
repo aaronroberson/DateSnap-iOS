@@ -1,47 +1,53 @@
 import SwiftUI
+import SwiftData
 import UIKit
 import StoreKit
 
-// Manage Plan — active subscription, benefits, premium upsell and
-// subscription controls. Pushed from the Settings Hub.
+// Active StoreKit subscription, local record counts and Apple billing controls.
 struct ManagePlanView: View {
     @Environment(\.services) private var services
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var settings: SettingsState
     @StateObject private var purchases = PurchaseViewModel()
+    @Query private var savedEvents: [SavedEvent]
+    @Query private var scannedAssets: [ScannedAsset]
     @State private var showManageSubscriptions = false
     @State private var showOfferCode = false
     @State private var restoring = false
-    @State private var entitlement: EntitlementSnapshot? = nil
+    @State private var isRefreshingEntitlement = false
+    @State private var entitlement: ActiveSubscription?
 
-    /// The active subscription as reported by StoreKit.
-    struct EntitlementSnapshot {
-        var productID: String
+    private struct ActiveSubscription {
+        var product: SubscriptionProductID
         var expirationDate: Date?
         var willAutoRenew: Bool?
-        var isAnnual: Bool { productID.hasSuffix(".annual") }
     }
 
     private var tier: SubscriptionTier { appState.subscriptionTier }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 18) {
+            VStack(alignment: .leading, spacing: PDSpacing.lg) {
                 SettingsScreenHeader(title: "Manage Plan", showBack: true)
+                PDScreenIntro(
+                    eyebrow: "Your membership",
+                    title: "Your Plan, Your Pace",
+                    subtitle: "Review your current plan and manage billing with Apple."
+                )
                 subscriptionCard
+                usageSummary
                 benefits
                 if tier != .premium { upsell }
                 controls
                 SettingsFooterNote(
-                    lines: ["Subscriptions are managed by Apple through your Apple ID. Manage or cancel them in iPhone Settings. Pencil'd does not receive or store payment credentials."],
+                    lines: ["Apple manages subscription billing through your Apple ID. Pencil'd does not receive or store payment credentials."],
                     systemImage: "info.circle.fill"
                 )
                 footerLinks
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+            .padding(.horizontal, PDSpacing.margin)
+            .padding(.top, PDSpacing.sm)
+            .padding(.bottom, PDSpacing.lg)
         }
         .dsScreenBackground()
         .manageSubscriptionsSheet(isPresented: $showManageSubscriptions)
@@ -55,6 +61,9 @@ struct ManagePlanView: View {
         .onChange(of: appState.subscriptionTier) { _, _ in
             Task { await refreshEntitlement() }
         }
+        .onChange(of: showManageSubscriptions) { _, presented in
+            if !presented { Task { await refreshEntitlement() } }
+        }
         .alert("Subscription Issue", isPresented: Binding(
             get: { purchases.errorMessage != nil },
             set: { if !$0 { purchases.errorMessage = nil } }
@@ -65,317 +74,250 @@ struct ManagePlanView: View {
         }
     }
 
-    /// Reads the current subscription transaction and renewal state from StoreKit.
+    /// Only known, verified, active products matching the resolved tier supply billing details.
     private func refreshEntitlement() async {
-        var latest: StoreKit.Transaction? = nil
+        isRefreshingEntitlement = true
+        defer { isRefreshingEntitlement = false }
+        var latest: StoreKit.Transaction?
+        let now = Date()
         for await result in StoreKit.Transaction.currentEntitlements {
-            guard case .verified(let transaction) = result, transaction.revocationDate == nil,
-                  transaction.productType == .autoRenewable else { continue }
-            if latest == nil || (transaction.expirationDate ?? .distantPast) > (latest?.expirationDate ?? .distantPast) {
+            guard case .verified(let transaction) = result,
+                  transaction.revocationDate == nil,
+                  transaction.productType == .autoRenewable,
+                  SubscriptionCatalog.tier(for: transaction.productID) == tier,
+                  let expiration = transaction.expirationDate, expiration > now else { continue }
+            if latest == nil || expiration > (latest?.expirationDate ?? .distantPast) {
                 latest = transaction
             }
         }
-        guard let latest else {
+        guard let latest,
+              let product = SubscriptionCatalog.allProductIDs.first(where: { $0.rawValue == latest.productID }) else {
             entitlement = nil
             return
         }
-        var willAutoRenew: Bool? = nil
-        if let statuses = try? await purchases.product(latest.productID.contains("premium") ? .premium : .plus,
-                                                       annual: latest.productID.hasSuffix(".annual"))?.subscription?.status,
+        var willAutoRenew: Bool?
+        if let statuses = try? await purchases.products[latest.productID]?.subscription?.status,
            let status = statuses.first(where: { status in
-               if case .verified(let t) = status.transaction { return t.originalID == latest.originalID }
+               if case .verified(let transaction) = status.transaction {
+                   return transaction.originalID == latest.originalID
+               }
                return false
            }),
            case .verified(let renewal) = status.renewalInfo {
             willAutoRenew = renewal.willAutoRenew
         }
-        entitlement = EntitlementSnapshot(productID: latest.productID, expirationDate: latest.expirationDate, willAutoRenew: willAutoRenew)
+        entitlement = ActiveSubscription(product: product, expirationDate: latest.expirationDate, willAutoRenew: willAutoRenew)
     }
 
-    // MARK: - Subscription card
-
     private var planName: String {
-        switch tier {
-        case .starter: return "Pencil'd Free"
-        case .plus, .premium:
-            guard let entitlement else { return tier.displayName }
-            return "\(tier.displayName) (\(entitlement.isAnnual ? "Annual" : "Monthly"))"
-        }
+        guard let entitlement else { return tier.displayName }
+        return "\(entitlement.product.tier.displayName) · \(entitlement.product.isAnnual ? "Annual" : "Monthly")"
     }
 
     private var planPrice: String {
         guard tier != .starter else { return "Free" }
-        let plan: PurchaseViewModel.Plan = tier == .premium ? .premium : .plus
-        let annual = entitlement?.isAnnual ?? true
-        return purchases.displayPrice(plan, annual: annual)
+        guard let entitlement else {
+            return isRefreshingEntitlement ? "Checking subscription…" : "Subscription details unavailable"
+        }
+        return purchases.products[entitlement.product.rawValue]?.displayPrice
             ?? (purchases.isLoadingProducts ? "Loading price…" : "Price unavailable")
     }
 
     private var subscriptionCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
+        PDCard(highlighted: true) {
+            VStack(alignment: .leading, spacing: 16) {
                 if tier == .starter {
-                    ValueChip(text: "FREE PLAN", tint: .dsInfo, systemImage: "sparkle")
+                    PDStatusBadge(text: "Free plan", icon: "sparkle", tone: .info)
+                } else if entitlement != nil {
+                    PDStatusBadge(text: "Active subscription", icon: "checkmark.seal.fill", tone: .success)
                 } else {
-                    ValueChip(text: "ACTIVE SUBSCRIPTION", tint: .dsSuccess, systemImage: "checkmark.seal.fill")
-                    ValueChip(text: "Apple ID Linked", tint: .dsInfo, systemImage: "filemenu.and.selection")
+                    PDStatusBadge(text: "\(tier.badgeText) plan", icon: "checkmark.seal", tone: .neutral)
                 }
-            }
-
-            HStack(alignment: .firstTextBaseline) {
-                Text(planName)
-                    .font(DSTypography.headlineCard())
-                    .foregroundStyle(Color.dsForeground)
-                Spacer()
-                HStack(alignment: .firstTextBaseline, spacing: 3) {
-                    Text(planPrice)
-                        .font(DSTypography.displayTitle())
-                        .foregroundStyle(Color.dsPrimary)
-                    Text(tier == .starter ? "" : (entitlement?.isAnnual == false ? "/ month" : "/ year"))
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                Text(planName).font(PDFont.headlineMD).foregroundStyle(Color.pdOnSurface)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(planPrice).font(PDFont.headlineSM).foregroundStyle(Color.pdPrimary)
+                    if let entitlement, purchases.products[entitlement.product.rawValue] != nil {
+                        Text(entitlement.product.isAnnual ? "Billed annually" : "Billed monthly")
+                            .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
                 }
-            }
-
-            if let entitlement, let expiration = entitlement.expirationDate {
-                HStack(spacing: 6) {
-                    Image(systemName: "calendar.badge.clock")
-                        .font(.system(size: 11))
-                        .foregroundStyle(Color.dsMutedForeground)
-                    Text("\(entitlement.willAutoRenew == false ? "Expires" : "Renews") on \(expiration.formatted(date: .abbreviated, time: .omitted))")
-                        .font(DSTypography.caption())
-                        .foregroundStyle(Color.dsMutedForeground)
+                if let entitlement, let expiration = entitlement.expirationDate {
+                    let status = entitlement.willAutoRenew.map { $0 ? "Renews" : "Expires" } ?? "Current period ends"
+                    Label("\(status) on \(expiration.formatted(date: .abbreviated, time: .omitted))", systemImage: "calendar.badge.clock")
+                        .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
                     if let willAutoRenew = entitlement.willAutoRenew {
-                        Text("•")
-                            .foregroundStyle(Color.dsMutedForeground)
-                        HStack(spacing: 4) {
-                            Image(systemName: willAutoRenew ? "arrow.triangle.2.circlepath" : "exclamationmark.circle")
-                                .font(.system(size: 10, weight: .bold))
-                            Text(willAutoRenew ? "Auto-renewal ON" : "Auto-renewal OFF")
-                                .font(DSTypography.overlineConfidence())
-                        }
-                        .foregroundStyle(willAutoRenew ? Color.dsSuccess : Color.dsWarning)
+                        PDStatusBadge(
+                            text: willAutoRenew ? "Auto-renewal on" : "Auto-renewal off",
+                            icon: willAutoRenew ? "arrow.triangle.2.circlepath" : "pause.circle",
+                            tone: willAutoRenew ? .success : .warning
+                        )
                     }
                 }
-            } else if tier == .starter {
-                Button {
-                    appState.activeModal = .plusPaywall
-                } label: {
-                    HStack {
-                        Text("See Plus & Premium Plans")
-                        Image(systemName: "arrow.up.right")
+                if tier == .starter {
+                    Button { appState.activeModal = .plusPaywall } label: {
+                        Label("See Plus & Premium Plans", systemImage: "arrow.up.right")
                     }
+                    .buttonStyle(DSSecondaryButtonStyle(minHeight: 44))
                 }
-                .buttonStyle(DSSecondaryButtonStyle(minHeight: 44))
-            }
-
-            HStack(spacing: 10) {
-                planStat("doc.text.viewfinder", "Neural Scans", "Unlimited")
-                planStat("bell.badge.fill", "Reminders", "3 per event")
-                planStat("tray.full.fill", "Auto-Detect", tier == .starter ? "Plus" : "On")
             }
         }
-        .padding(16)
-        .dsGlassCard()
     }
 
-    private func planStat(_ icon: String, _ label: String, _ value: String) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color.dsPrimary)
-                .frame(width: 30, height: 30)
-                .background(RoundedRectangle(cornerRadius: 8).fill(Color.dsPrimary.opacity(0.12)))
-            VStack(alignment: .leading, spacing: 1) {
-                Text(label.uppercased())
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundStyle(Color.dsMutedForeground)
-                Text(value)
-                    .font(DSTypography.labelChip())
-                    .foregroundStyle(Color.dsForeground)
+    private var usageSummary: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            PDSectionHeader(title: "On this device")
+            PDCard {
+                VStack(spacing: 16) {
+                    recordCount(icon: "calendar", title: "Saved events", count: savedEvents.filter { $0.status == .saved }.count)
+                    Divider().overlay(Color.pdOutlineVariant)
+                    recordCount(icon: "doc.text.viewfinder", title: "Stored scans", count: scannedAssets.count)
+                }
             }
+            Text("Counts reflect the records currently kept by Pencil'd on this device.")
+                .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.dsMuted))
     }
 
-    // MARK: - Benefits
+    private func recordCount(icon: String, title: String, count: Int) -> some View {
+        HStack(spacing: 12) {
+            PDIconTile(systemName: icon, tint: .pdPrimary)
+            Text(title).font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
+            Spacer()
+            Text(count.formatted()).font(PDFont.headlineMD).foregroundStyle(Color.pdPrimary)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var includedFeatures: [PremiumFeature] {
+        PremiumFeature.allCases.filter {
+            FeatureAccessPolicy.decision(for: $0, snapshot: services.subscription.entitlementSnapshot) == .allowed
+        }
+    }
 
     private var benefits: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "checkmark.seal.fill", title: "Your Current Benefits",
-                                  tint: .dsSuccess, trailing: "Included")
-            VStack(spacing: 12) {
-                benefitRow("doc.text.viewfinder", "Unlimited Screenshot OCR",
-                           "Instant localized on-device neural temporal extraction")
-                benefitRow("bell.badge.fill", "3 Reminders Per Captured Event",
-                           "Direct Apple Calendar, Reminders & ICS bidirectional sync")
-                benefitRow("sparkles", "Smart Auto-Draft Generation",
-                           "Intelligent temporal titles, venues, flight numbers & zoom URLs")
-                benefitRow("lock.shield.fill", "Zero Cloud Telemetry",
-                           "100% on-device sandboxed privacy; images never leave storage")
-            }
-            .padding(16)
-            .dsGlassCard()
-        }
-    }
-
-    private func benefitRow(_ icon: String, _ title: String, _ subtitle: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "checkmark")
-                .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(Color.dsPrimaryForeground)
-                .frame(width: 18, height: 18)
-                .background(Circle().fill(Color.dsSuccess))
-                .padding(.top, 2)
-            SettingRow(icon: icon, iconTint: .dsSecondary, title: title, subtitle: subtitle) {
-                EmptyView()
+        VStack(alignment: .leading, spacing: 12) {
+            PDSectionHeader(title: "Your current benefits")
+            PDCard {
+                VStack(alignment: .leading, spacing: 16) {
+                    benefitRow(icon: "doc.text.viewfinder", title: "Scan, review and save", subtitle: "Read an image on your device, edit the details and approve events before saving.")
+                    ForEach(includedFeatures, id: \.self) { feature in
+                        benefitRow(icon: featureIcon(feature), title: featureTitle(feature), subtitle: feature.upgradeReason)
+                    }
+                }
             }
         }
     }
 
-    // MARK: - Upsell
+    private func featureTitle(_ feature: PremiumFeature) -> String {
+        switch feature {
+        case .automaticScreenshotDetection: return "Automatic screenshot detection"
+        case .likelyEventTriage: return "Likely event triage"
+        case .documentImport: return "PDF & Files import"
+        case .duplicateClusters: return "Possible duplicate grouping"
+        case .advancedReminderPlans: return "Tailored reminder plans"
+        }
+    }
+
+    private func featureIcon(_ feature: PremiumFeature) -> String {
+        switch feature {
+        case .automaticScreenshotDetection: return "camera.viewfinder"
+        case .likelyEventTriage: return "sparkles"
+        case .documentImport: return "doc.text"
+        case .duplicateClusters: return "square.on.square"
+        case .advancedReminderPlans: return "bell.badge"
+        }
+    }
+
+    private func benefitRow(icon: String, title: String, subtitle: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            PDIconTile(systemName: icon, tint: .pdSecondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
+                Text(subtitle).font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
 
     private var upsell: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "crown.fill")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.dsGoldGradient)
-                Text("UPGRADE TO PREMIUM")
-                    .font(DSTypography.overlineConfidence())
-                    .foregroundStyle(Color.dsWarning)
-            }
-            Text("Need multi-page PDF scanning & iOS Files import?")
-                .font(DSTypography.headlineCard())
-                .foregroundStyle(Color.dsForeground)
-            Text("Multi-Page PDF schedule scanning · iOS Files & iCloud Drive integration · High-velocity batch flyer imports up to 10× at once.")
-                .font(DSTypography.caption())
-                .foregroundStyle(Color.dsMutedForeground)
-
-            Button {
-                appState.activeModal = .premiumPaywall
-            } label: {
-                HStack {
-                    Text(tier == .starter ? "Explore Premium" : "Upgrade to Premium")
-                    Image(systemName: "arrow.up.right")
+        PDCard(highlighted: true) {
+            VStack(alignment: .leading, spacing: 12) {
+                PDEyebrow(text: "Pencil'd Premium")
+                Text("Bring your documents into the plan.")
+                    .font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
+                Text(PremiumFeature.documentImport.upgradeReason)
+                    .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
+                Button { appState.activeModal = .premiumPaywall } label: {
+                    Label(tier == .starter ? "Explore Premium" : "Upgrade to Premium", systemImage: "arrow.up.right")
                 }
+                .buttonStyle(DSPrimaryButtonStyle(minHeight: 44))
             }
-            .buttonStyle(DSSecondaryButtonStyle(minHeight: 44))
-
-            Button {
-                appState.activeModal = .premiumPaywall
-            } label: {
-                HStack {
-                    Text("Review Plan")
-                        .font(DSTypography.labelChip())
-                    Image(systemName: "arrow.forward")
-                        .font(.system(size: 11, weight: .bold))
-                }
-                .foregroundStyle(Color.dsPrimary)
-            }
-            .buttonStyle(.plain)
         }
-        .padding(16)
-        .dsGlassCard(borderColor: Color.dsWarning.opacity(0.35))
     }
 
-    // MARK: - Controls
-
     private var controls: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "slider.horizontal.3", title: "Subscription Controls", tint: .dsSecondary)
-            VStack(spacing: 14) {
-                Button {
-                    showManageSubscriptions = true
-                } label: {
-                    SettingRow(icon: "person.crop.rectangle.stack", iconTint: .dsInfo,
-                               title: "Manage Subscription",
-                               subtitle: "Cancel, switch family sharing, or edit billing") {
-                        Image(systemName: "arrow.up.forward")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(Color.dsInfo)
-                    }
-                    .contentShape(Rectangle())
+        VStack(alignment: .leading, spacing: 12) {
+            PDSectionHeader(title: "Store management")
+            PDGroupedList {
+                Button { showManageSubscriptions = true } label: {
+                    PDListRow(icon: "person.crop.rectangle.stack", tint: .pdInfo, title: "Manage Subscription", subtitle: "Change your plan or cancel through Apple")
                 }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Color.dsBorder)
-
-                Button {
-                    showManageSubscriptions = true
-                } label: {
-                    SettingRow(icon: "arrow.left.arrow.right", iconTint: .dsSecondary,
-                               title: "Change Billing Frequency",
-                               subtitle: "Switch between annual & monthly billing in the App Store") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
+                .buttonStyle(PDRowButtonStyle())
+                PDRowDivider()
+                Button { showManageSubscriptions = true } label: {
+                    PDListRow(icon: "arrow.left.arrow.right", tint: .pdSecondary, title: "Change Billing Frequency", subtitle: "Switch annual or monthly billing in the App Store")
                 }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Color.dsBorder)
-
+                .buttonStyle(PDRowButtonStyle())
+                PDRowDivider()
                 Button {
                     restoring = true
                     Task { @MainActor in
                         let restored = await purchases.restore()
                         restoring = false
                         if let restored {
-                            appState.showToast(restored == .starter ? "No active subscription found to restore" : "✓ \(restored.displayName) restored")
+                            appState.showToast(restored == .starter ? "No active subscription found to restore" : "\(restored.displayName) restored")
                             await refreshEntitlement()
                         }
                     }
                 } label: {
-                    SettingRow(icon: "arrow.triangle.2.circlepath", iconTint: .dsPrimary,
-                               title: "Restore Purchases",
-                               subtitle: "Re-sync active licenses on this Apple device") {
+                    PDListRow(icon: "arrow.triangle.2.circlepath", tint: .pdPrimary, title: "Restore Purchases", subtitle: "Check the subscriptions linked to your Apple ID") {
                         if restoring {
-                            ProgressView()
-                                .tint(Color.dsPrimary)
+                            ProgressView().tint(Color.pdPrimary)
                         } else {
-                            SettingsChevron()
+                            PDValueChevron()
                         }
                     }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
-                .disabled(restoring)
-
-                Divider().overlay(Color.dsBorder)
-
-                Button {
-                    showOfferCode = true
-                } label: {
-                    SettingRow(icon: "gift.fill", iconTint: .dsAccent,
-                               title: "Redeem Offer Code",
-                               subtitle: "Enter promotional or educational partner keys") {
-                        SettingsChevron()
-                    }
-                    .contentShape(Rectangle())
+                .buttonStyle(PDRowButtonStyle())
+                .disabled(restoring || purchases.isPurchasing)
+                PDRowDivider()
+                Button { showOfferCode = true } label: {
+                    PDListRow(icon: "gift.fill", tint: .pdTertiary, title: "Redeem Offer Code", subtitle: "Redeem an App Store subscription offer code")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PDRowButtonStyle())
             }
-            .padding(16)
-            .dsGlassCard()
         }
     }
 
-    // MARK: - Footer
-
     private var footerLinks: some View {
         VStack(spacing: 8) {
-            HStack(spacing: 8) {
-                Button("Terms of Use (EULA)") { openURL(PencildLinks.termsOfUse) }
-                Text("•").foregroundStyle(Color.dsMutedForeground)
-                Button("Privacy Policy") { openURL(PencildLinks.privacyPolicy) }
+            HStack(spacing: 16) {
+                Button { openURL(PencildLinks.termsOfUse) } label: {
+                    Text("Terms of Use").frame(minHeight: 44)
+                }
+                Button { openURL(PencildLinks.privacyPolicy) } label: {
+                    Text("Privacy Policy").frame(minHeight: 44)
+                }
             }
-            .font(DSTypography.caption())
-            .foregroundStyle(Color.dsSecondary)
-            Text("Pencil'd \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")) • StoreKit 2")
-                .font(.system(size: 10))
-                .foregroundStyle(Color.dsMutedForeground.opacity(0.7))
+            .font(PDFont.labelMD)
+            .foregroundStyle(Color.pdSecondary)
+            .frame(minHeight: 44)
+            if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+               let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                Text("Pencil'd \(version) (\(build))")
+                    .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
+            }
         }
+        .frame(maxWidth: .infinity)
     }
 }
