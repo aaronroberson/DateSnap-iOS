@@ -311,6 +311,24 @@ struct TabletWorkspaceTests {
         }
         #expect(home.recentScreenshots.isEmpty)
     }
+
+    @Test("Paywall interstitials render with the close button pinned top-right")
+    func paywallInterstitialsRender() async throws {
+        let services = services()
+        for (size, sizeClass, suffix) in [
+            (CGSize(width: 1194, height: 834), UIUserInterfaceSizeClass.regular, "ipad"),
+            (CGSize(width: 402, height: 874), UIUserInterfaceSizeClass.compact, "compact"),
+        ] {
+            _ = try await render(
+                PlusPaywallView().environmentObject(AppState()).pencildServices(services),
+                size: size, sizeClass: sizeClass, name: "08-\(suffix)-plus-paywall"
+            )
+            _ = try await render(
+                PremiumPaywallView().environmentObject(AppState()).pencildServices(services),
+                size: size, sizeClass: sizeClass, name: "09-\(suffix)-premium-paywall"
+            )
+        }
+    }
 }
 
 private extension MutationResult {
