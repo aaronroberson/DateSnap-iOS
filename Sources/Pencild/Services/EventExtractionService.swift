@@ -104,18 +104,11 @@ public struct ExtractedCandidateData: Sendable {
 // MARK: - Event Extraction Service Protocol
 
 public protocol EventExtractionServiceProtocol: Sendable {
-    /// Baseline extraction from raw text.
-    func extractCandidates(from text: String, locale: Locale) async -> [EventCandidate]
-
     /// Structured extraction with visual layout and bounding box metadata.
     func extractCandidates(from result: OCRResult, locale: Locale) async -> [EventCandidate]
 }
 
 extension EventExtractionServiceProtocol {
-    public func extractCandidates(from text: String, locale: Locale = .current) async -> [EventCandidate] {
-        await extractCandidates(from: text, locale: locale)
-    }
-
     public func extractCandidates(from result: OCRResult, locale: Locale = .current) async -> [EventCandidate] {
         await extractCandidates(from: result, locale: locale)
     }
@@ -125,18 +118,6 @@ extension EventExtractionServiceProtocol {
 
 public final class EventExtractionService: EventExtractionServiceProtocol {
     public init() {}
-
-    public func extractCandidates(from text: String, locale: Locale = .current) async -> [EventCandidate] {
-        let dummyLines = text.components(separatedBy: "\n").enumerated().map { index, line in
-            OCRLine(
-                text: line,
-                confidence: 0.95,
-                boundingBox: CGRect(x: 0, y: max(0, 1.0 - (Double(index) * 0.05)), width: 1.0, height: 0.04)
-            )
-        }
-        let result = OCRResult(fullText: text, lines: dummyLines, meanConfidence: 0.95)
-        return await extractCandidates(from: result, locale: locale, anchor: Date())
-    }
 
     public func extractCandidates(from result: OCRResult, locale: Locale = .current) async -> [EventCandidate] {
         await extractCandidates(from: result, locale: locale, anchor: Date())
