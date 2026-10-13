@@ -26,18 +26,27 @@ struct StoreKitRestoreIntegrationTests {
         return session
     }
 
-    /// Out-of-band purchases are delivered to every live `Transaction.updates` listener — the
-    /// test host's `SubscriptionService.shared` as well as the instance under test — and each
-    /// finishes the transaction asynchronously. Clearing the session before those finishes land
-    /// makes StoreKit log "Error finishing transaction", so wait for them to drain first.
+    /// Out-of-band purchases are delivered to the `Transaction.updates` listener, which finishes
+    /// them asynchronously. Clearing the session before that finish lands makes StoreKit log
+    /// "Error finishing transaction", so wait for it to drain first. Tests drive the app's single
+    /// `SubscriptionService.shared` so there is exactly one listener finishing each transaction.
     private func drainAndClear(_ session: SKTestSession) async throws {
-        for _ in 0..<100 {
-            var pending = false
-            for await _ in Transaction.unfinished { pending = true; break }
-            if !pending { break }
+        try await drainUnfinished()
+        session.clearTransactions()
+    }
+
+    /// Waits until no transaction is unfinished and the app listener is idle, observed on
+    /// several consecutive polls so an update that is just being delivered is not missed.
+    private func drainUnfinished() async throws {
+        var quietPolls = 0
+        for _ in 0..<200 where quietPolls < 3 {
+            var pending = SubscriptionService.shared.isProcessingTransactionUpdate
+            if !pending {
+                for await _ in Transaction.unfinished { pending = true; break }
+            }
+            quietPolls = pending ? 0 : quietPolls + 1
             try await Task.sleep(for: .milliseconds(20))
         }
-        session.clearTransactions()
     }
 
     @Test("Local catalog exposes every subscription product identifier")
@@ -54,7 +63,7 @@ struct StoreKitRestoreIntegrationTests {
     func emptyRestoreResolvesStarter() async throws {
         let session = try makeSession()
 
-        let service = SubscriptionService()
+        let service = SubscriptionService.shared
         let tier = try await service.restorePurchases()
 
         #expect(tier == .starter)
@@ -62,18 +71,19 @@ struct StoreKitRestoreIntegrationTests {
         try await drainAndClear(session)
     }
 
-    @Test("Restore after an out-of-band purchase unlocks the purchased tier", arguments: [
+    @Test("Restore after an out-of-band purchase unlocks the purchased tier", .serialized, arguments: [
         ("com.pencild.plus.monthly", SubscriptionTier.plus),
         ("com.pencild.premium.annual", SubscriptionTier.premium),
     ])
     func positiveRestoreUnlocksPurchasedTier(productID: String, expected: SubscriptionTier) async throws {
         let session = try makeSession()
 
-        // Purchase out-of-band (as on another device) so this service instance has never
-        // observed the transaction; only restore can surface it.
+        // Purchase out-of-band, as if made on another device.
         _ = try await session.buyProduct(identifier: productID)
 
-        let service = SubscriptionService()
+        // The listener also receives the unfinished purchase and starts its own refresh;
+        // restore must still report the purchased tier rather than a stale read.
+        let service = SubscriptionService.shared
         let tier = try await service.restorePurchases()
 
         #expect(tier == expected)
@@ -88,9 +98,12 @@ struct StoreKitRestoreIntegrationTests {
         let session = try makeSession()
 
         let transaction = try await session.buyProduct(identifier: "com.pencild.plus.monthly")
+        // Let the listener finish the purchase before expiring it, so its finish() does not
+        // target a transaction the test session has already replaced.
+        try await drainUnfinished()
         try session.expireSubscription(productIdentifier: transaction.productID)
 
-        let service = SubscriptionService()
+        let service = SubscriptionService.shared
         let tier = try await service.restorePurchases()
 
         #expect(tier == .starter)

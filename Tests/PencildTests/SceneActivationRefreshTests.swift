@@ -63,7 +63,7 @@ struct SceneActivationRefreshTests {
 
     @Test("Verified resolution promotes tier, active IDs, and stamps the provenance")
     func verifiedResolutionUpdatesPublishedState() {
-        let service = SubscriptionService()
+        let service = SubscriptionService(observesTransactionUpdates: false)
         let resolution = SubscriptionEntitlementResolver.resolve(
             [
                 SubscriptionEntitlementRecord(
@@ -94,7 +94,7 @@ struct SceneActivationRefreshTests {
 
     @Test("Unverifiable records fail the live snapshot closed")
     func unverifiableRecordFailsClosed() {
-        let service = SubscriptionService()
+        let service = SubscriptionService(observesTransactionUpdates: false)
         let resolution = SubscriptionEntitlementResolver.resolve(
             [
                 SubscriptionEntitlementRecord(
@@ -119,7 +119,7 @@ struct SceneActivationRefreshTests {
 
     @Test("StoreKit transaction listener resolves through entitlement pipeline")
     func storeKitListenerUpdatesServiceState() async {
-        let service = SubscriptionService()
+        let service = SubscriptionService(observesTransactionUpdates: false)
 
         await service.updateCustomerProductStatus()
 
@@ -128,7 +128,7 @@ struct SceneActivationRefreshTests {
 
     @Test("A slower launch refresh cannot overwrite a newer resolution")
     func launchRefreshDoesNotOverwriteNewerResolution() async throws {
-        let service = SubscriptionService()
+        let service = SubscriptionService(observesTransactionUpdates: false)
         service.apply(SubscriptionEntitlementResolver.resolve(
             [SubscriptionEntitlementRecord(
                 productID: "com.pencild.premium.annual",
