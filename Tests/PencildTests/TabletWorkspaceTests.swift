@@ -235,6 +235,82 @@ struct TabletWorkspaceTests {
             name: "03-compact-saved-detail"
         )
     }
+
+    @Test("Populated Batch Review renders found and skipped sources at regular and compact width")
+    func populatedBatchReviewSmoke() async throws {
+        let container = try modelContainer()
+        let context = container.mainContext
+        let services = services()
+        let blank = UIGraphicsImageRenderer(size: CGSize(width: 600, height: 800)).image { ctx in
+            UIColor.darkGray.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: 600, height: 800))
+        }
+
+        // Real batch pipeline: one flyer with an event, one image with no readable dates.
+        let scanner = BatchScanViewModel(services: services)
+        await scanner.scan(
+            [.loaded(id: "batch-flyer", image: SampleFlyer.render()), .loaded(id: "batch-blank", image: blank)],
+            modelContext: context
+        )
+        let session = BatchReviewSession(scan: scanner, services: services)
+        #expect(session.events.count == 1)
+        #expect(session.skipped.count == 1)
+
+        for (size, sizeClass, name) in [
+            (CGSize(width: 1194, height: 834), UIUserInterfaceSizeClass.regular, "04-ipad-batch-review"),
+            (CGSize(width: 402, height: 874), UIUserInterfaceSizeClass.compact, "05-compact-batch-review"),
+        ] {
+            _ = try await render(
+                BatchReviewView(session: session)
+                    .environmentObject(AppState())
+                    .pencildServices(services)
+                    .modelContainer(container),
+                size: size,
+                sizeClass: sizeClass,
+                name: name
+            )
+        }
+    }
+
+    @Test("Scan flow: populated review queue and empty screenshot picker render at regular and compact width")
+    func scanFlowSmoke() async throws {
+        let container = try modelContainer()
+        let context = container.mainContext
+        let services = services()
+        let scan = ScanViewModel(services: services)
+        await scan.scanSampleFlyer(modelContext: context)
+        let pending = try context.fetch(FetchDescriptor<EventCandidate>())
+        #expect(pending.count == 1, "The review queue should show the persisted, unsaved scan")
+
+        let appState = AppState()
+        let home = HomeViewModel(services: services)
+        for (size, sizeClass, suffix) in [
+            (CGSize(width: 1194, height: 834), UIUserInterfaceSizeClass.regular, "ipad"),
+            (CGSize(width: 402, height: 874), UIUserInterfaceSizeClass.compact, "compact"),
+        ] {
+            _ = try await render(
+                ReviewQueueView()
+                    .environmentObject(appState)
+                    .pencildServices(services)
+                    .modelContainer(container),
+                size: size,
+                sizeClass: sizeClass,
+                name: "06-\(suffix)-review-queue"
+            )
+            _ = try await render(
+                RecentScreenshotsView()
+                    .environmentObject(appState)
+                    .environmentObject(home)
+                    .environmentObject(scan)
+                    .pencildServices(services)
+                    .modelContainer(container),
+                size: size,
+                sizeClass: sizeClass,
+                name: "07-\(suffix)-recent-screenshots"
+            )
+        }
+        #expect(home.recentScreenshots.isEmpty)
+    }
 }
 
 private extension MutationResult {
