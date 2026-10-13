@@ -36,6 +36,7 @@
 		367D0F4544B84F11C984F908 /* EvidenceValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3240BE97FF1B2DDA671E3967 /* EvidenceValidator.swift */; };
 		395D98794C7B551223C5BEB9 /* UserProfileFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F94FD76F56A28C61CF9EB7A /* UserProfileFlowView.swift */; };
 		3E13C5F2D6C042064A8BC707 /* SettingsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735974555C0E683D61175693 /* SettingsState.swift */; };
+		3EBF7CD04442C9AAF487C21C /* StoreKitRestoreIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCE6A8CF00E2DC2CAA68FD0 /* StoreKitRestoreIntegrationTests.swift */; };
 		3EEE9A68E2E645BD288D9277 /* SwiftDataEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8912CF4259DF7C05ED61EA94 /* SwiftDataEntities.swift */; };
 		46E9FED2EAE95E6A359330DA /* PlusJakartaSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 92A994D0C24FA67406D7EB58 /* PlusJakartaSans-Bold.ttf */; };
 		46F0A0E7CD40ADA613A66952 /* MarketingKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A12955F31961C0BCB6B0F4 /* MarketingKitView.swift */; };
@@ -229,6 +230,7 @@
 		B917CD2393B33C973D723130 /* Pencild.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = Pencild.icon; sourceTree = "<group>"; };
 		B94DFE55456408A8679E0CC6 /* HelpFeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpFeedbackView.swift; sourceTree = "<group>"; };
 		BC8926A0631C0A2903EB8165 /* DefaultCalendarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCalendarTests.swift; sourceTree = "<group>"; };
+		BDCE6A8CF00E2DC2CAA68FD0 /* StoreKitRestoreIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitRestoreIntegrationTests.swift; sourceTree = "<group>"; };
 		BEB3D98D52AB4EF8BF195F56 /* Pencild-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Pencild-Debug.xcconfig"; sourceTree = "<group>"; };
 		C13240D46ED07A1881537D9A /* EntitlementPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitlementPolicyTests.swift; sourceTree = "<group>"; };
 		C3BCB48BBF952DF38F0BDA34 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
@@ -473,6 +475,7 @@
 				AF8DC2195127D8269853C65D /* PencildTests.swift */,
 				F026E309222940E174698AA6 /* PurchaseViewModelTests.swift */,
 				3F194AFA71747698A409D2C6 /* SceneActivationRefreshTests.swift */,
+				BDCE6A8CF00E2DC2CAA68FD0 /* StoreKitRestoreIntegrationTests.swift */,
 				3DA5282580F02881BF1E980E /* SubscriptionServiceTests.swift */,
 				F8FC57D9A4D1A4F644D0E6F0 /* TabletWorkspaceTests.swift */,
 			);
@@ -734,6 +737,7 @@
 				61BE9F6D3CFD6CE31A23E211 /* PencildTests.swift in Sources */,
 				063BA72AEEFDEED2612A5C4B /* PurchaseViewModelTests.swift in Sources */,
 				0042866E8E4FDD45513DB9AC /* SceneActivationRefreshTests.swift in Sources */,
+				3EBF7CD04442C9AAF487C21C /* StoreKitRestoreIntegrationTests.swift in Sources */,
 				D33417CF53C1FF636B6A2B29 /* SubscriptionServiceTests.swift in Sources */,
 				5FEAD6D63F56F382F06F672C /* TabletWorkspaceTests.swift in Sources */,
 			);
