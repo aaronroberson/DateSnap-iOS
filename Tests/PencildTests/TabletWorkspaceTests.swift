@@ -69,9 +69,11 @@ private final class TabletTestSubscriptionService: SubscriptionServiceProtocol {
     func updateCustomerProductStatus() async {}
 }
 
-@Suite("Tablet and Accessibility Workspace Tests")
+@Suite("Tablet workspace populated smoke", .serialized)
 @MainActor
 struct TabletWorkspaceTests {
+    /// Retained screenshot evidence for the populated regular-width workspaces.
+    private static let evidenceDirectory = URL(fileURLWithPath: "/private/tmp/pencild-ipad-smoke", isDirectory: true)
 
     private func modelContainer() throws -> ModelContainer {
         try ModelContainer(
@@ -89,77 +91,155 @@ struct TabletWorkspaceTests {
             reminders: TabletTestReminderService(),
             notifications: TabletTestNotificationService(),
             subscription: TabletTestSubscriptionService(),
-            understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
+            understanding: EventUnderstandingPipeline.rulesOnly(calendar: .current)
         )
     }
 
-    @Test("EventReviewSourceInspector supports zoom limits and reset state")
-    func sourceInspectorZoomScaleAndReset() throws {
-        let container = try modelContainer()
-        let candidate = EventCandidate(title: "Design System Showcase", startDate: testAnchor)
-        candidate.venueName = "Yerba Buena Center"
-        candidate.location = "701 Mission St, San Francisco, CA"
-        container.mainContext.insert(candidate)
-        try container.mainContext.save()
+    /// Hosts `view` in a window of the running test host with a forced size class, lets
+    /// `.task` modifiers run, and returns a rendered snapshot of the hierarchy.
+    private func render<V: View>(
+        _ view: V,
+        size: CGSize,
+        sizeClass: UIUserInterfaceSizeClass,
+        name: String
+    ) async throws -> UIImage {
+        let scene = try #require(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(origin: .zero, size: size)
+        let host = UIHostingController(rootView: view)
+        host.traitOverrides.horizontalSizeClass = sizeClass
+        window.rootViewController = host
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true }
 
-        let vm = EventReviewViewModel(candidate: candidate, services: services())
+        for _ in 0..<10 {
+            window.layoutIfNeeded()
+            try await Task.sleep(for: .milliseconds(100))
+        }
 
-        var zoomScale: CGFloat = 1.0
-        var panOffset: CGSize = .zero
-
-        // Simulating zoom in clamp
-        zoomScale = min(2.5, zoomScale + 0.2)
-        #expect(zoomScale == 1.2)
-
-        zoomScale = min(2.5, zoomScale + 2.0)
-        #expect(zoomScale == 2.5) // Clamped at 2.5
-
-        // Simulating zoom out clamp
-        zoomScale = max(0.8, zoomScale - 2.0)
-        #expect(zoomScale == 0.8) // Clamped at 0.8
-
-        // Reset
-        zoomScale = 1.0
-        panOffset = .zero
-        #expect(zoomScale == 1.0)
-        #expect(panOffset == .zero)
-        #expect(vm.title == "Design System Showcase")
+        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            _ = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        let data = try #require(image.pngData())
+        try FileManager.default.createDirectory(at: Self.evidenceDirectory, withIntermediateDirectories: true)
+        try data.write(to: Self.evidenceDirectory.appendingPathComponent("\(name).png"))
+        Attachment.record(data, named: "\(name).png")
+        return image
     }
 
-    @Test("SavedEventDetailView regular-layout and iPhone single-column requirements")
-    func savedEventDetailRequirements() throws {
+    @Test("Source viewport clamps zoom, pans only while magnified, and resets")
+    func sourceViewportRules() {
+        var viewport = SourceViewport()
+        viewport.pan(to: CGSize(width: 40, height: 10))
+        #expect(viewport.offset == .zero, "Panning at 100% must not move the document")
+
+        viewport.zoomIn()
+        #expect(viewport.percent == 120)
+        for _ in 0..<20 { viewport.zoomIn() }
+        #expect(viewport.scale == SourceViewport.maxScale)
+
+        viewport.pan(to: CGSize(width: 40, height: 10))
+        #expect(viewport.offset == CGSize(width: 40, height: 10))
+
+        for _ in 0..<20 { viewport.zoomOut() }
+        #expect(viewport.scale == SourceViewport.minScale)
+        #expect(viewport.offset == .zero, "Zooming back to fit must recenter the document")
+
+        viewport.zoomIn(); viewport.zoomIn(); viewport.zoomIn()
+        viewport.pan(to: CGSize(width: -20, height: 30))
+        viewport.reset()
+        #expect(viewport == SourceViewport())
+    }
+
+    @Test("Populated iPad review → save → detail → archive/restore over a real scanned flyer")
+    func populatedRegularWorkspaceSmoke() async throws {
         let container = try modelContainer()
-        let candidate = EventCandidate(title: "Design System Showcase", startDate: testAnchor)
-        let saved = SavedEvent(
-            externalCalendarEventId: "ext-cal-123",
-            targetCalendar: "Work Calendar",
-            targetRemindersList: "Action Items",
-            candidate: candidate
+        let context = container.mainContext
+        let services = services()
+        let appState = AppState()
+
+        // 1. Seed through the real local scan path: rendered flyer → Vision OCR → rules pipeline → SwiftData.
+        let scan = ScanViewModel(services: services)
+        await scan.scanSampleFlyer(modelContext: context)
+        guard case .complete(let candidates) = scan.stage, let candidate = candidates.first else {
+            Issue.record("Sample flyer scan did not produce a candidate: \(scan.stage)")
+            return
+        }
+        let persisted = try context.fetch(FetchDescriptor<EventCandidate>())
+        #expect(persisted.contains { $0.id == candidate.id })
+        #expect(candidate.scannedAsset?.assetIdentifier == "pencild-sample-flyer")
+        #expect(candidate.title.localizedCaseInsensitiveContains("neon sunset"))
+        #expect(Calendar.current.isDate(candidate.startDate, inSameDayAs: SampleFlyer.eventDate()))
+        let showTime = Calendar.current.dateComponents([.hour, .minute], from: candidate.startDate)
+        #expect(showTime.hour == 20 && showTime.minute == 30, "Start must come from the flyer's SHOW 8:30 PM line")
+        appState.rememberSourceImage(scan.currentProcessingImage, for: [candidate])
+
+        // 2. Regular-width Event Review over the persisted candidate.
+        let reviewImage = try await render(
+            EventReviewEditView(event: candidate.toPencildEvent())
+                .environmentObject(appState)
+                .pencildServices(services)
+                .modelContainer(container),
+            size: CGSize(width: 1194, height: 834),
+            sizeClass: .regular,
+            name: "01-ipad-event-review"
         )
-        candidate.savedEvent = saved
-        container.mainContext.insert(candidate)
-        container.mainContext.insert(saved)
-        try container.mainContext.save()
+        #expect(reviewImage.size.width == 1194)
 
-        let event = candidate.toPencildEvent()
-        #expect(event.title == "Design System Showcase")
-        #expect(candidate.savedEvent?.externalCalendarEventId == "ext-cal-123")
-        #expect(candidate.savedEvent?.targetCalendar == "Work Calendar")
+        // 3. Review-state checks on the same candidate: no duplicates yet, ambiguity swap is reversible.
+        let review = EventReviewViewModel(candidate: candidate, services: services, sourceImage: scan.currentProcessingImage)
+        review.findDuplicates(in: context)
+        #expect(review.duplicateMatches.isEmpty)
+        let originalStart = review.startDate
+        review.swapMonthAndDay()
+        review.swapMonthAndDay()
+        #expect(review.startDate == originalStart)
 
-        // Status determinations
-        #expect(saved.status != SavedEventStatus.archived)
-        #expect(saved.externalCalendarEventId != nil)
+        // 4. Explicit Save writes through the (fake) Calendar/Reminders/notification services.
+        let result = await review.commitEvent(modelContext: context)
+        if case .failure(let failure) = result { Issue.record("Save failed: \(failure.localizedDescription)") }
+        let saved = try #require(candidate.savedEvent)
+        #expect(saved.externalCalendarEventId == "test-calendar-id")
+        #expect(saved.status == .saved)
+        #expect(!saved.alertOffsets.isEmpty)
+
+        // 5. A second scan of the same flyer is now recognized as already saved.
+        let rescan = ScanViewModel(services: services)
+        await rescan.scanSampleFlyer(modelContext: context)
+        #expect(rescan.stage == .alreadySaved(count: 1))
+
+        // 6. Regular-width Saved Event Detail, then archive and restore through the shared action path.
+        _ = try await render(
+            SavedEventDetailView(event: candidate.toPencildEvent())
+                .environmentObject(appState)
+                .pencildServices(services)
+                .modelContainer(container),
+            size: CGSize(width: 1194, height: 834),
+            sizeClass: .regular,
+            name: "02-ipad-saved-detail"
+        )
+        let actions = SavedEventActions(services: services, modelContext: context)
+        #expect(actions.setStatus(.archived, for: saved).isSuccess)
+        #expect(saved.status == .archived)
+        #expect(actions.setStatus(.saved, for: saved).isSuccess)
+        #expect(saved.status == .saved)
+
+        // 7. Compact width keeps the single-column path for the same record.
+        _ = try await render(
+            SavedEventDetailView(event: candidate.toPencildEvent())
+                .environmentObject(appState)
+                .pencildServices(services)
+                .modelContainer(container),
+            size: CGSize(width: 402, height: 874),
+            sizeClass: .compact,
+            name: "03-compact-saved-detail"
+        )
     }
+}
 
-    @Test("All review interactive controls have valid touch target and VoiceOver metadata")
-    func accessibilityTouchTargetsAndVoiceOver() {
-        // PDChip minimum height
-        let chip = PDChip(text: "View original", icon: "eye", selected: false)
-        #expect(chip.text == "View original")
-
-        // Top bar back button minimum target
-        let topBar = PDTopBar(title: "Review event")
-        #expect(topBar.title == "Review event")
-        #expect(topBar.showsBack == true)
+private extension MutationResult {
+    var isSuccess: Bool {
+        if case .success = self { return true }
+        return false
     }
 }
