@@ -30,25 +30,19 @@ struct BatchReviewView: View {
         NavigationStack {
             ZStack(alignment: .bottom) {
                 ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: PDSpacing.lg) {
                         header
-
-                        if horizontalSizeClass == .regular {
-                            LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], alignment: .leading, spacing: 14) {
-                                eventCards
-                            }
-                        } else {
-                            eventCards
-                        }
 
                         if session.events.isEmpty {
                             emptyState
+                        } else {
+                            eventsSection
                         }
 
-                        skippedCard
+                        skippedSection
                     }
-                    .frame(maxWidth: horizontalSizeClass == .regular ? 1120 : .infinity)
-                    .padding(.horizontal, horizontalSizeClass == .regular ? 28 : 16)
+                    .frame(maxWidth: Self.contentMaxWidth(for: horizontalSizeClass))
+                    .padding(.horizontal, Self.horizontalPadding(for: horizontalSizeClass))
                     .padding(.bottom, 130)
                     .frame(maxWidth: .infinity)
                 }
@@ -109,13 +103,38 @@ struct BatchReviewView: View {
             PDScreenIntro(
                 eyebrow: "Verification stage",
                 title: "Review your events",
-                subtitle: "\(session.events.count) event\(session.events.count == 1 ? "" : "s") · \(session.skipped.count) skipped"
+                subtitle: "Each event keeps its own calendar and reminder schedule. Nothing is saved until you confirm."
             )
-            Text("Each event keeps its own calendar and reminder schedule.")
-                .font(PDFont.bodyMD)
-                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
         .padding(.top, PDSpacing.sm)
+    }
+
+    static func contentMaxWidth(for sizeClass: UserInterfaceSizeClass?) -> CGFloat {
+        sizeClass == .regular ? 1120 : .infinity
+    }
+
+    static func horizontalPadding(for sizeClass: UserInterfaceSizeClass?) -> CGFloat {
+        sizeClass == .regular ? 28 : PDSpacing.md
+    }
+
+    private var eventsSection: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(
+                title: "Detected events",
+                trailing: "\(session.events.count) event\(session.events.count == 1 ? "" : "s")"
+            )
+            if horizontalSizeClass == .regular {
+                LazyVGrid(
+                    columns: [GridItem(.flexible(), spacing: PDSpacing.md), GridItem(.flexible(), spacing: PDSpacing.md)],
+                    alignment: .leading,
+                    spacing: PDSpacing.md
+                ) {
+                    eventCards
+                }
+            } else {
+                VStack(spacing: PDSpacing.md) { eventCards }
+            }
+        }
     }
 
     private var eventCards: some View {
@@ -133,67 +152,69 @@ struct BatchReviewView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "checkmark.seal")
-                .font(.system(size: 38))
-                .foregroundStyle(Color.pdSuccess)
-            Text("Nothing left to review")
-                .font(PDFont.labelLG)
-                .foregroundStyle(Color.pdOnSurface)
-            Button("Close") { dismiss() }
-                .buttonStyle(PDSecondaryButtonStyle())
-                .padding(.top, 4)
+        PDCard {
+            VStack(spacing: PDSpacing.sm) {
+                PDIconTile(systemName: "checkmark.seal", tint: .pdSuccess)
+                Text("Nothing left to review")
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
+                Button("Close") { dismiss() }
+                    .buttonStyle(PDSecondaryButtonStyle())
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 40)
     }
 
     // MARK: Skipped screenshots
 
     @ViewBuilder
-    private var skippedCard: some View {
+    private var skippedSection: some View {
         if !session.skipped.isEmpty {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("SKIPPED SCREENSHOTS")
-                    .font(PDFont.labelSM)
-                    .foregroundStyle(Color.pdOnSurfaceVariant)
-                ForEach(session.skipped) { item in
-                    HStack(spacing: 10) {
-                        if let image = item.image {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 44, height: 44)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        } else {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.pdSurfaceContainer)
-                                .frame(width: 44, height: 44)
-                                .overlay {
-                                    Image(systemName: "photo")
-                                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                                }
-                        }
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(item.label)
-                                .font(PDFont.bodyMD)
-                                .foregroundStyle(Color.pdOnSurface)
-                            Text(BatchReviewView.skipReason(for: item.stage))
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .lineLimit(2)
-                        }
-                        Spacer()
-                        Image(systemName: Self.skipIcon(for: item.stage))
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(Self.skipColor(for: item.stage))
+            VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                PDSectionHeader(title: "Skipped screenshots", trailing: "\(session.skipped.count)")
+                PDGroupedList {
+                    ForEach(Array(session.skipped.enumerated()), id: \.element.id) { index, item in
+                        if index > 0 { PDRowDivider() }
+                        skippedRow(item)
                     }
-                    .accessibilityElement(children: .combine)
                 }
             }
-            .padding(14)
-            .pdGlassCard(cornerRadius: PDRadius.card)
         }
+    }
+
+    private func skippedRow(_ item: BatchScanItem) -> some View {
+        HStack(spacing: 12) {
+            Group {
+                if let image = item.image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    PDIconTile(systemName: "photo", tint: .pdOnSurfaceVariant)
+                }
+            }
+            .frame(width: 32, height: 32)
+            .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
+            .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.label)
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
+                Text(BatchReviewView.skipReason(for: item.stage))
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+            Image(systemName: Self.skipIcon(for: item.stage))
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Self.skipColor(for: item.stage))
+                .accessibilityHidden(true)
+        }
+        .padding(.horizontal, PDSpacing.md)
+        .padding(.vertical, 12)
+        .frame(minHeight: 56)
+        .accessibilityElement(children: .combine)
     }
 
     private static func skipReason(for stage: BatchScanItem.Stage) -> String {
@@ -209,8 +230,8 @@ struct BatchReviewView: View {
     private static func skipIcon(for stage: BatchScanItem.Stage) -> String {
         switch stage {
         case .failed: return "exclamationmark.triangle.fill"
-        case .alreadySaved: return "checkmark.seal.fill"
-        default: return "magnifyingglass"
+        case .alreadySaved: return "calendar.badge.checkmark"
+        default: return "calendar.badge.exclamationmark"
         }
     }
 
@@ -218,7 +239,7 @@ struct BatchReviewView: View {
         switch stage {
         case .failed: return Color.pdError
         case .alreadySaved: return Color.pdSuccess
-        default: return Color.pdOnSurfaceVariant
+        default: return Color.pdWarning
         }
     }
 
@@ -255,8 +276,11 @@ struct BatchReviewView: View {
             .buttonStyle(PDGradientButtonStyle())
             .disabled(session.isSaving || session.actionableCount == 0)
         }
-        .padding(14)
-        .padding(.bottom, 10)
+        .frame(maxWidth: horizontalSizeClass == .regular ? 560 : .infinity)
+        .padding(.horizontal, Self.horizontalPadding(for: horizontalSizeClass))
+        .padding(.top, PDSpacing.md)
+        .padding(.bottom, PDSpacing.sm)
+        .frame(maxWidth: .infinity)
         .background(
             Rectangle()
                 .fill(Color.pdSurface.opacity(0.95))
@@ -329,17 +353,16 @@ private struct BatchEventCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            header
-            if isExpanded {
-                detail
-            } else {
-                collapsedDestinations
+        PDCard {
+            VStack(alignment: .leading, spacing: 12) {
+                header
+                if isExpanded {
+                    detail
+                } else {
+                    collapsedDestinations
+                }
             }
         }
-        .padding(14)
-        .pdGlassCard(cornerRadius: PDRadius.card)
-
     }
 
     private var statusChip: some View {
@@ -416,8 +439,8 @@ private struct BatchEventCard: View {
             }
         }
         .frame(width: 56, height: 72)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-
+        .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
+        .accessibilityHidden(true)
     }
 
     private var collapsedDestinations: some View {

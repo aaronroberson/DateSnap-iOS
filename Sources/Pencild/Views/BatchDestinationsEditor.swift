@@ -77,7 +77,7 @@ struct BatchDestinationsEditor: View {
             }
             .accessibilityLabel("Edit alerts")
         }
-        .padding(12)
+        .padding(PDSpacing.sm)
         .background(
             RoundedRectangle(cornerRadius: PDRadius.card)
                 .fill(Color.pdSurfaceLowest)
@@ -105,7 +105,7 @@ struct BatchTitledField: View {
     let iconColor: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: PDSpacing.xs) {
             Text(title)
                 .font(PDFont.labelSM)
                 .foregroundStyle(Color.pdOnSurfaceVariant)
