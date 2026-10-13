@@ -120,7 +120,14 @@ During baseline verification and project compilation, the following issues in ne
   - `HomeEmptyStateView.swift` referenced a non-existent `tint` parameter in `DSPrimaryButtonStyle`.
   - `AgendaView.swift` invoked `appState.openHistory()`, which is not a method on `AppState` (navigated via `appState.selectedTab = .history`).
 - **Recommendation:** Audit all `AppState` navigation helper methods to ensure consistent naming conventions (`selectedTab`, `activeModal`, `pendingRoute`).
-- **Status (2026-10-12): Partially resolved.** `AppState.openHistory()` now exists, and `AgendaView` compiles against it. `AppState` exposes `selectedTab` and `activeModal`; `pendingRoute` belongs to `SettingsState`. A full naming audit of the navigation helpers is still open.
+- **Status (2026-10-12): Resolved.** Navigation audit findings and fixes:
+  - **One way to show a modal.** 13 call sites (including the `ContentView` deep link) assigned `activeModal` directly, and `review(_:)` did too, while 11 used `present(_:)`. All now go through `present(_:)`, which dismisses an open sheet first. `review(_:)` is now async and routes through `present`.
+  - **Navigation lives in `AppState`.** `present(_:)` and `handleScanOutcome(_:)` moved out of an extension in `ScanFlowViews.swift` into a `// MARK: - Navigation` section of `AppState.swift`. The deep-link presentation moved from `ContentView` into `presentDeepLinkedEvent(_:)`.
+  - **One dismissal delay.** Three copies of dismiss, sleep, then present (400ms, 400ms, and 350ms) collapsed into `dismissPresentedSheets()` and `AppState.sheetDismissalDelay`.
+  - **Typed settings routes.** `SettingsState.pendingRoute` changed from `String?` (raw values parsed back) to `SettingsRoute?`. The Screen Gallery's `""` sentinel became `opensSettingsHub`.
+  - **Bug fixed.** Batch Review's "open existing event" action for a possible duplicate silently did nothing, because the root could not stack a second sheet. It now opens in a sheet hosted by Batch Review, so unsaved batch edits are kept.
+  - **Naming conventions.** State is a noun (`selectedTab`, `activeModal`, `batchReviewSession`, `showHistory`), presentation helpers start with `present`/`open`, and one-shot commands use `request*` (`requestPhotoPicker`, `requestFileImporter`).
+  - Covered by `AppStateNavigationTests`.
 
 ### 3.4 Paywalls & History Views (`PlusPaywallView.swift`, `PremiumPaywallView.swift`, `HistoryArchiveView.swift`)
 - **Observation:** The paywalls and history views still use legacy `dsGlassCard` and `DSTypography` calls.

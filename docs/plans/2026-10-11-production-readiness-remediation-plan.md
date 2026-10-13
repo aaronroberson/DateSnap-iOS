@@ -331,3 +331,16 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   comments) stands by decision. Still open: the `AppState` navigation naming
   audit and `PDTopBar` adoption in the two paywalls (Profile & Settings audit
   §3.3 and §3.4).
+
+2026-10-12: `AppState` navigation-naming audit (Profile & Settings audit §3.3).
+- Every modal goes through `AppState.present(_:)`; 13 direct `activeModal`
+  assignments were removed. Navigation helpers moved into `AppState.swift`
+  with a single `sheetDismissalDelay`. `SettingsState.pendingRoute` is typed as
+  `SettingsRoute?`.
+- Fixed the Batch Review duplicate "open existing event" action, which could
+  not present over the batch sheet.
+- New `AppStateNavigationTests`. This work was verified in a clean worktree,
+  because the shared checkout carries another session's uncommitted
+  `-warnings-as-errors` project change. That change currently fails to build:
+  Apple's StoreKitTest SDK header triggers a deprecation warning, which the
+  flag turns into an error.
