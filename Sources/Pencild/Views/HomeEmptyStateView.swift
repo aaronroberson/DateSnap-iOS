@@ -34,6 +34,7 @@ struct HomeEmptyStateView: View {
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
     @State private var showDocumentCamera: Bool = false
+    @AppStorage(AutoDetectPreference.key) private var autoDetectPreferred = true
 
     /// Screenshots the library observer has seen that Pencil'd has not scanned yet.
     private var newScreenshots: [PHAsset] {
@@ -209,7 +210,8 @@ struct HomeEmptyStateView: View {
     // MARK: - Source cards
 
     private var recentScreenshotsCard: some View {
-        let autoDetect = appState.isEntitled(to: .automaticScreenshotDetection)
+        let entitledToAutoDetect = appState.isEntitled(to: .automaticScreenshotDetection)
+        let autoDetect = entitledToAutoDetect && autoDetectPreferred
         return VStack(alignment: .leading, spacing: 14) {
             Button(action: scanRecentScreenshots) {
                 HStack(alignment: .top, spacing: PDSpacing.md) {
@@ -262,7 +264,7 @@ struct HomeEmptyStateView: View {
             }
 
             if autoDetect && !photosAuthorized {
-                Text("Allow Photos access and Pencil\u{2019}d will surface new event screenshots here.")
+                Text("Allow Photos access and Pencil\u{2019}d will check your newest screenshots whenever you open the app.")
                     .font(PDFont.bodySM)
                     .foregroundStyle(Color.pdOnSurfaceVariant)
             }
@@ -281,6 +283,10 @@ struct HomeEmptyStateView: View {
                         .labelStyle(TrailingIconLabelStyle())
                         .font(PDFont.labelMD)
                         .foregroundStyle(Color.pdPrimary)
+                } else if entitledToAutoDetect {
+                    Label("Auto-detect is off", systemImage: "pause.circle")
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
                 } else {
                     Button {
                         Task { await appState.present(.plusPaywall) }

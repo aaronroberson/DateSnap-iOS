@@ -16,7 +16,7 @@ struct UserProfileFlowView: View {
     @AppStorage("account.displayName") private var displayName = ""
     @AppStorage("account.email") private var email = ""
     @AppStorage("account.linkedAt") private var linkedAt: Double = 0
-    @AppStorage("settings.automaticCaptureEnabled") private var autoCaptureEnabled = true
+    @AppStorage(AutoDetectPreference.key) private var autoCaptureEnabled = true
 
     private enum EditField: String, Identifiable {
         case name
@@ -378,7 +378,7 @@ struct UserProfileFlowView: View {
                     PDListRow(
                         icon: "camera.viewfinder",
                         tint: .pdPrimary,
-                        title: "Automatic capture"
+                        title: "Auto-detect screenshots"
                     ) {
                         PDValueChevron(value: autoCaptureEnabled ? "On" : "Off")
                     }

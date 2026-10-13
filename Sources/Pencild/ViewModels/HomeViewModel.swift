@@ -153,6 +153,8 @@ public final class HomeViewModel: ObservableObject {
             snapshot: subscriptionService.entitlementSnapshot
         )
         guard decision == .allowed else { return decision }
+        // The user's own "Auto-detect screenshots" switch (Settings). Manual loading is unaffected.
+        guard AutoDetectPreference.isEnabled else { return .allowed }
         loadRecentScreenshots(limit: limit)
         return .allowed
     }
@@ -164,6 +166,7 @@ public final class HomeViewModel: ObservableObject {
         let snapshot = subscriptionService.entitlementSnapshot
         let decision = FeatureAccessPolicy.decision(for: .likelyEventTriage, snapshot: snapshot)
         guard decision == .allowed else { return decision }
+        guard AutoDetectPreference.isEnabled else { return .allowed }
         guard triageTask == nil else { return .allowed }
         let candidates = recentScreenshots
             .filter { !scannedIDs.contains($0.localIdentifier) && !assessedIDs.contains($0.localIdentifier) }

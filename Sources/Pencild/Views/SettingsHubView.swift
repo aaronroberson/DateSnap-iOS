@@ -11,7 +11,7 @@ struct SettingsHubView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @StateObject private var purchases = PurchaseViewModel()
 
-    @AppStorage("settings.automaticCaptureEnabled") private var autoCaptureEnabled = true
+    @AppStorage(AutoDetectPreference.key) private var autoCaptureEnabled = true
     @State private var store = DefaultCalendarStore()
     @State private var restoring = false
     @Environment(\.scenePhase) private var scenePhase
@@ -274,8 +274,8 @@ struct SettingsHubView: View {
                 PDToggleRow(
                     icon: "arrow.triangle.2.circlepath",
                     tint: .pdPrimary,
-                    title: "Automatic Capture",
-                    subtitle: autoCaptureEnabled ? "Background photo scan on" : "Background photo scan off",
+                    title: "Auto-detect screenshots",
+                    subtitle: autoCaptureEnabled ? "Checks new screenshots when Pencil’d is open" : "Off",
                     isOn: $autoCaptureEnabled
                 )
             }

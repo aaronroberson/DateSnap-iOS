@@ -1,130 +1,89 @@
 import SwiftUI
 
-// MARK: - Automation Settings View (Automatic Capture)
-/// Mirrors Stitch design `.stitch/Settings-Functional-Sub-Screens/Settings/Automatic-Capture/design.html`.
+// MARK: - Auto-detect Settings (Automatic Capture)
+/// Stitch reference: `.stitch/Settings-Functional-Sub-Screens/Settings/Automatic-Capture/design.html`.
+///
+/// Pencil'd does not scan in the background. iOS does not let an app read the photo library while
+/// it is closed, so auto-detect runs only while Pencil'd is open: it looks at the newest
+/// screenshots, ranks the likely events, and waits for the user to review. Every control here
+/// has a runtime consumer (`AutoDetectPreference`, `IntelligencePolicy`).
 struct AutomationSettingsView: View {
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var appState: AppState
     @AppStorage(IntelligencePolicy.userDefaultsKey) private var enhancedInterpretation = true
-    @AppStorage("settings.automaticCaptureEnabled") private var backgroundRadarEnabled = true
-    @AppStorage("settings.discoverySensitivityTier") private var sensitivityTier = 2 // 1 = High, 2 = Balanced, 3 = Broad
-    @AppStorage("settings.monitorScreenshots") private var monitorScreenshots = true
-    @AppStorage("settings.monitorPhotos") private var monitorPhotos = true
-    @AppStorage("settings.lowPowerPause") private var pauseOnLowPower = true
+    @AppStorage(AutoDetectPreference.key) private var autoDetectEnabled = true
 
     @State private var capability: IntelligenceCapability = .unavailable(.unknown)
+
+    private var includedInPlan: Bool { appState.isEntitled(to: .automaticScreenshotDetection) }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                PDTopBar(title: "Automatic Capture", showsBack: true) {
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color.pdOnPrimary)
-                        .frame(width: 32, height: 32)
-                        .background(Circle().fill(Color.pdPrimary))
-                        .accessibilityHidden(true)
-                }
+                PDTopBar(title: "Auto-detect", showsBack: true)
 
                 PDScreenIntro(
                     eyebrow: "Settings",
-                    title: "Automatic Capture",
-                    subtitle: "Privately scan new camera roll items in the background and suggest verified calendar events for one-tap review."
+                    title: "Auto-detect screenshots",
+                    subtitle: "When you open Pencil’d, it checks your newest screenshots for event dates and lines up likely events for your review."
                 )
 
-                // Master Switch Hero Card
+                // Master switch
                 PDCard(highlighted: true) {
-                    HStack(spacing: 14) {
-                        PDIconTile(systemName: "dot.radiowaves.left.and.right", tint: .pdPrimary, size: .large)
+                    VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                        HStack(spacing: 14) {
+                            PDIconTile(systemName: "sparkle.magnifyingglass", tint: .pdPrimary, size: .large)
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Text("Background Radar")
-                                    .font(PDFont.headlineSM)
-                                    .foregroundStyle(Color.pdOnSurface)
-                                PDStatusBadge(text: "LIVE", icon: "bolt.fill", tone: .success)
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 6) {
+                                    Text("Check new screenshots")
+                                        .font(PDFont.headlineSM)
+                                        .foregroundStyle(Color.pdOnSurface)
+                                    if !includedInPlan {
+                                        PDStatusBadge(text: "Plus", icon: "lock.fill", tone: .neutral)
+                                    }
+                                }
+                                Text("Runs while Pencil’d is open. Nothing is saved until you review it.")
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
                             }
 
-                            Text("Privately check newly saved screenshots and photos for date stamps and event posters.")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .lineLimit(2)
+                            Spacer()
+
+                            Toggle("Check new screenshots", isOn: $autoDetectEnabled)
+                                .labelsHidden()
+                                .toggleStyle(PDToggleStyle())
                         }
 
-                        Spacer()
-
-                        Toggle("Background Radar", isOn: $backgroundRadarEnabled)
-                            .labelsHidden()
-                            .toggleStyle(PDToggleStyle())
+                        if !includedInPlan {
+                            Text("Auto-detect is included with Plus. You can still scan any screenshot yourself.")
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                        }
                     }
                 }
 
-                // Highlighted Privacy Vault & Trust Card
+                // How it works
                 PDCard {
                     VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                        HStack {
-                            HStack(spacing: 8) {
-                                Image(systemName: "shield.lefthalf.filled")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(Color.pdPrimary)
-                                Image(systemName: "cpu")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(Color.pdSecondary)
-                            }
-                            Spacer()
-                            PDChip(text: "Zero Cloud Telemetry", icon: "lock.shield.fill", selected: true)
-                        }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("100% On-Device Neural Privacy")
+                        HStack(spacing: 8) {
+                            PDIconTile(systemName: "iphone", tint: .pdSecondary)
+                            Text("How it works")
                                 .font(PDFont.headlineSM)
                                 .foregroundStyle(Color.pdOnSurface)
-                            Text("Your photos and screenshots never leave your iPhone. Analysis runs strictly in local silicon sandbox memory without network calls.")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .lineSpacing(2)
                         }
-
-                        HStack(spacing: 6) {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Color.pdSecondary)
-                            Text("Encrypted inside Secure Enclave storage")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdSecondary)
-                        }
+                        howRow("Looks only at your Screenshots album, newest first.")
+                        howRow("Needs Photos access. Limited access works too.")
+                        howRow("Does not run when Pencil’d is closed.")
+                        howRow("Analysis happens on your iPhone; screenshots are not uploaded.")
                     }
                 }
 
-                // Discovery Sensitivity Selector
-                VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                    PDSectionHeader(title: "Discovery Sensitivity", trailing: "Adaptive OCR")
-
-                    tierCard(
-                        tier: 1,
-                        title: "High Confidence Only (95%+)",
-                        description: "Only flags explicit calendar invitations and confirmed concert ticket stubs."
-                    )
-
-                    tierCard(
-                        tier: 2,
-                        title: "Balanced Discovery",
-                        description: "Detects flyers, travel boarding confirmations, SMS date screenshots, and appointment cards.",
-                        badge: "RECOMMENDED"
-                    )
-
-                    tierCard(
-                        tier: 3,
-                        title: "Broad Discovery",
-                        description: "Surfaces any photo containing dates, weekdays, or time references."
-                    )
-                }
-
-                // Apple Intelligence Ambient Model Card
+                // Apple Intelligence
                 PDCard {
                     VStack(alignment: .leading, spacing: PDSpacing.sm) {
                         HStack {
                             PDIconTile(systemName: "wand.and.stars", tint: .pdPrimary)
-                            Text("Apple Intelligence Enhancement")
+                            Text("Apple Intelligence")
                                 .font(PDFont.headlineSM)
                                 .foregroundStyle(Color.pdOnSurface)
                             Spacer()
@@ -144,37 +103,6 @@ struct AutomationSettingsView: View {
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                     }
                 }
-
-                // Monitored Assets & Pace
-                VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                    PDSectionHeader(title: "Monitored Assets & Pace")
-
-                    PDGroupedList {
-                        PDToggleRow(
-                            icon: "camera.viewfinder",
-                            tint: .pdPrimary,
-                            title: "Screenshots & Clips",
-                            subtitle: "Instant notification upon taking screenshots",
-                            isOn: $monitorScreenshots
-                        )
-                        PDRowDivider()
-                        PDToggleRow(
-                            icon: "photo.on.rectangle.angled",
-                            tint: .pdSecondary,
-                            title: "Camera Roll Photos",
-                            subtitle: "Scans flyers and poster photos",
-                            isOn: $monitorPhotos
-                        )
-                        PDRowDivider()
-                        PDToggleRow(
-                            icon: "battery.100.bolt",
-                            tint: .pdWarning,
-                            title: "Pause in Low Power Mode",
-                            subtitle: "Preserves battery when below 20%",
-                            isOn: $pauseOnLowPower
-                        )
-                    }
-                }
             }
             .padding(.horizontal, PDSpacing.margin)
             .padding(.top, PDSpacing.sm)
@@ -184,56 +112,17 @@ struct AutomationSettingsView: View {
         .task { capability = IntelligenceComposition.currentCapability() }
     }
 
-    private func tierCard(tier: Int, title: String, description: String, badge: String? = nil) -> some View {
-        let isSelected = sensitivityTier == tier
-        return Button {
-            sensitivityTier = tier
-        } label: {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 6) {
-                        Text(title)
-                            .font(PDFont.labelLG)
-                            .foregroundStyle(Color.pdOnSurface)
-
-                        if let badge {
-                            PDStatusBadge(text: badge, tone: isSelected ? .success : .neutral)
-                        }
-                    }
-
-                    Text(description)
-                        .font(PDFont.bodySM)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                        .lineSpacing(2)
-                }
-
-                Spacer()
-
-                ZStack {
-                    Circle()
-                        .fill(isSelected ? Color.pdPrimary : Color.pdSurfaceHighest)
-                        .frame(width: 22, height: 22)
-
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Color.pdOnPrimary)
-                    }
-                }
+    private func howRow(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(Color.pdSuccess)
                 .padding(.top, 2)
-            }
-            .padding(PDSpacing.md)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: PDRadius.card)
-                    .fill(isSelected ? AnyShapeStyle(LinearGradient.pdSelected) : AnyShapeStyle(Color.pdSurfaceLow.opacity(0.9)))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: PDRadius.card)
-                    .stroke(isSelected ? Color.pdPrimary.opacity(0.5) : Color.clear, lineWidth: 1)
-            )
+                .accessibilityHidden(true)
+            Text(text)
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
         }
-        .buttonStyle(PDRowButtonStyle())
     }
 
     private var statusDescription: String {
@@ -246,5 +135,16 @@ struct AutomationSettingsView: View {
         case .unavailable(let reason):
             return reason.userFacingDescription
         }
+    }
+}
+
+// MARK: - Auto-detect preference
+/// The one switch behind "Auto-detect screenshots". Plus entitlement is checked separately by
+/// `FeatureAccessPolicy`; this is the user's own on/off choice (default on).
+enum AutoDetectPreference {
+    static let key = "settings.automaticCaptureEnabled"
+
+    static var isEnabled: Bool {
+        UserDefaults.standard.object(forKey: key) as? Bool ?? true
     }
 }
