@@ -58,6 +58,8 @@ The automated pre-commit brand check (`./scripts/hooks/pre-commit` running `scri
     - `com.pencild.plus.annual`
     - `com.pencild.premium.monthly`
     - `com.pencild.premium.annual`
+    - `com.pencild.plus.lifetime` (non-consumable; introductory offer, added 2026-10-13)
+    - `com.pencild.premium.lifetime` (non-consumable; introductory offer, added 2026-10-13)
 
 ### 3.2 Legacy Identifier Shims in Code
 **Status (2026-10-12): Retired.** The legacy `DS*`/`ds*` style layer has been removed. The zero-caller color aliases, `DSTypography`, `DSConfidencePill`, and `DSDateBadge` were deleted. The live card, background, and button styles were renamed to `PDGlassCardModifier`/`pdGlassCard`, `pdScreenBackground`, `PDPrimaryButtonStyle`, and `PDSecondaryButtonStyle`. The only remaining `DS`-prefixed identifier is the Info.plist key `DSEnhancedInterpretationRollout`. It is configuration rather than styling, so it is kept for compatibility.
@@ -259,4 +261,25 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   previous extraction code.
 - Candidates created before this fix stay in the Review queue until they are
   discarded.
+
+### 7.8 Lifetime Introductory Offer (2026-10-13)
+- Both paywalls offer a third billing period, **Lifetime**: a one-time,
+  non-renewing purchase (`com.pencild.plus.lifetime`,
+  `com.pencild.premium.lifetime`). Local StoreKit test prices are $39.99 and
+  $79.99; live prices come from App Store Connect.
+- The option is an introductory promotion. `LifetimeIntroOffer` shows it
+  through April 13, 2027 and hides it from April 14. Owners keep their
+  entitlement after the window closes.
+- Billing is modeled by `BillingPeriod` (monthly, annual, lifetime), replacing
+  the paywalls' `annual: Bool`. `SubscriptionCatalog` is the single source of
+  product IDs; `SubscriptionService.productIdentifiers` now reads from it.
+- Manage Plan shows lifetime owners "Lifetime access" and "One-time purchase ·
+  never renews", with no renewal status.
+- Evidence: `LifetimeOfferTests` covers the promo window, catalog coverage,
+  non-expiring resolution, and refunds. `StoreKitRestoreIntegrationTests`
+  buys each lifetime product through StoreKitTest and restores the right tier.
+- **Release prerequisite:** create both non-consumable products in App Store
+  Connect with these exact IDs before submission. Ending the promotion on
+  the App Store side (removing the products from sale) is a separate manual
+  step.
 

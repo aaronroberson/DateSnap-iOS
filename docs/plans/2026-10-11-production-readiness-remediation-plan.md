@@ -366,3 +366,8 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - `abd8829`: the title is the most prominent line, not a wide description.
 - iPhone 17 and iPad Pro 11-inch (M5): 145 tests in 33 suites passed.
 
+2026-10-13: Lifetime introductory offer (see audit §7.8).
+- Non-consumable `com.pencild.plus.lifetime` ($39.99 locally) and
+  `com.pencild.premium.lifetime` ($79.99 locally), shown through 2027-04-13.
+- Open: create both products in App Store Connect before release.
+
