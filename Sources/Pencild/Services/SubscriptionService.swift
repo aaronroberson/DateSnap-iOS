@@ -68,12 +68,19 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     ]
 
     private var updateListenerTask: Task<Void, Error>? = nil
+    /// Reserved when a refresh is requested or a resolution is applied directly. A refresh only
+    /// publishes if no newer refresh/apply was requested while it was reading StoreKit, so a
+    /// slow launch read cannot overwrite a later restore or transaction update.
+    private var entitlementGeneration = 0
 
     public init() {
         updateListenerTask = listenForTransactions()
 
+        // Reserve the launch generation now: the Task starts later, after any refresh the
+        // caller requests, and must not outrank it.
+        let launchGeneration = reserveEntitlementGeneration()
         Task {
-            await refreshEntitlements(.launch)
+            await resolveEntitlements(.launch, generation: launchGeneration)
             _ = try? await fetchProducts()
         }
     }
@@ -84,7 +91,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
 
     // MARK: - Transaction Listener
     private func listenForTransactions() -> Task<Void, Error> {
-        Task.detached(priority: .background) { [weak self] in
+        Task.detached { [weak self] in
             for await result in Transaction.updates {
                 do {
                     let transaction = try Self.checkVerified(result)
@@ -171,6 +178,15 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     /// Silent by design: never triggers sign-in UI and never toggles `isLoading` — use
     /// `restorePurchases()` for the interactive path.
     public func refreshEntitlements(_ provenance: EntitlementProvenance) async {
+        await resolveEntitlements(provenance, generation: reserveEntitlementGeneration())
+    }
+
+    private func reserveEntitlementGeneration() -> Int {
+        entitlementGeneration += 1
+        return entitlementGeneration
+    }
+
+    private func resolveEntitlements(_ provenance: EntitlementProvenance, generation: Int) async {
         var records: [SubscriptionEntitlementRecord] = []
 
         for await result in Transaction.currentEntitlements {
@@ -195,12 +211,18 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
             }
         }
 
-        apply(SubscriptionEntitlementResolver.resolve(records, provenance: provenance))
+        guard generation == entitlementGeneration else { return }
+        publish(SubscriptionEntitlementResolver.resolve(records, provenance: provenance))
     }
 
     /// Applies a resolver output to the published state. Internal so tests can drive the
     /// resolution path hermetically, without StoreKit.
     func apply(_ resolution: SubscriptionEntitlementResolution) {
+        _ = reserveEntitlementGeneration()
+        publish(resolution)
+    }
+
+    private func publish(_ resolution: SubscriptionEntitlementResolution) {
         purchasedProductIDs = resolution.activeProductIDs
         currentTier = resolution.snapshot.tier
         entitlementSnapshot = resolution.snapshot

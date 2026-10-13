@@ -125,4 +125,24 @@ struct SceneActivationRefreshTests {
 
         #expect(service.entitlementSnapshot.provenance == .transactionUpdate)
     }
+
+    @Test("A slower launch refresh cannot overwrite a newer resolution")
+    func launchRefreshDoesNotOverwriteNewerResolution() async throws {
+        let service = SubscriptionService()
+        service.apply(SubscriptionEntitlementResolver.resolve(
+            [SubscriptionEntitlementRecord(
+                productID: "com.pencild.premium.annual",
+                expirationDate: nil,
+                revocationDate: nil,
+                verification: .verified
+            )],
+            provenance: .restore
+        ))
+
+        // Give the init-time launch refresh time to finish reading StoreKit.
+        try await Task.sleep(for: .milliseconds(500))
+
+        #expect(service.currentTier == .premium)
+        #expect(service.entitlementSnapshot.provenance == .restore)
+    }
 }
