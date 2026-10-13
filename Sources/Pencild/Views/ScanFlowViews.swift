@@ -53,7 +53,7 @@ struct RecentScreenshotsView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var columns: [GridItem] {
-        Array(repeating: GridItem(.flexible(), spacing: 12), count: horizontalSizeClass == .regular ? 5 : 3)
+        Array(repeating: GridItem(.flexible(), spacing: PDSpacing.sm), count: horizontalSizeClass == .regular ? 5 : 3)
     }
 
     @State private var isSelecting = false
@@ -76,8 +76,20 @@ struct RecentScreenshotsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    PDScreenIntro(eyebrow: "SCREENSHOT TRIAGE", title: "Your screenshots", subtitle: "Choose the sources you want to scan on this device.")
+                VStack(alignment: .leading, spacing: PDSpacing.md) {
+                    PDTopBar(title: "Recent screenshots") {
+                        if !homeViewModel.recentScreenshots.isEmpty {
+                            Button(isSelecting ? "Cancel" : "Select") {
+                                isSelecting.toggle()
+                                if !isSelecting { selectedAssetIDs.removeAll() }
+                            }
+                            .font(PDFont.labelLG)
+                            .foregroundStyle(Color.pdPrimary)
+                            .frame(minWidth: 44, minHeight: 44)
+                            .accessibilityIdentifier("screenshots.select")
+                        }
+                    }
+                    PDScreenIntro(eyebrow: "Screenshot triage", title: "Your screenshots", subtitle: "Choose the sources you want to scan on this device.")
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: PDSpacing.xs) {
                             Button { likelyOnly = false } label: {
@@ -112,24 +124,23 @@ struct RecentScreenshotsView: View {
                     if homeViewModel.isRefreshing && homeViewModel.recentScreenshots.isEmpty {
                         ProgressView().tint(Color.pdPrimary).frame(maxWidth: .infinity).padding(.top, 40)
                     } else if visibleAssets.isEmpty {
-                        VStack(spacing: 10) {
-                            Image(systemName: "photo.on.rectangle.angled")
-                                .font(.system(size: 36))
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                            Text(likelyOnly ? "No likely events found" : "No screenshots found")
-                                .font(PDFont.jakarta(16, .semibold, relativeTo: .body))
-                                .foregroundStyle(Color.pdOnSurface)
-                            Text(likelyOnly ? "Open All to choose another screenshot for review." : homeViewModel.photoAuthorizationStatus == .limited
-                                 ? "Pencil'd can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
-                                 : "Take a screenshot of an event, then come back.")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .multilineTextAlignment(.center)
+                        PDCard {
+                            VStack(spacing: PDSpacing.sm) {
+                                PDIconTile(systemName: "photo.on.rectangle.angled", tint: .pdOnSurfaceVariant)
+                                Text(likelyOnly ? "No likely events found" : "No screenshots found")
+                                    .font(PDFont.headlineSM)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                Text(likelyOnly ? "Open All to choose another screenshot for review." : homeViewModel.photoAuthorizationStatus == .limited
+                                     ? "Pencil'd can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
+                                     : "Take a screenshot of an event, then come back.")
+                                    .font(PDFont.bodyMD)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .frame(maxWidth: .infinity)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 40)
                     } else {
-                        LazyVGrid(columns: columns, spacing: 10) {
+                        LazyVGrid(columns: columns, spacing: PDSpacing.sm) {
                             ForEach(visibleAssets, id: \.localIdentifier) { asset in
                                 Button {
                                     if isSelecting {
@@ -157,28 +168,7 @@ struct RecentScreenshotsView: View {
                 .frame(maxWidth: .infinity)
             }
             .pdScreenBackground()
-            .navigationTitle("Recent Screenshots")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(isSelecting ? "Cancel" : "Close") {
-                        if isSelecting {
-                            isSelecting = false
-                            selectedAssetIDs.removeAll()
-                        } else {
-                            dismiss()
-                        }
-                    }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    if !homeViewModel.recentScreenshots.isEmpty {
-                        Button(isSelecting ? "Done" : "Select") {
-                            isSelecting.toggle()
-                            if !isSelecting { selectedAssetIDs.removeAll() }
-                        }
-                    }
-                }
-            }
+            .toolbar(.hidden, for: .navigationBar)
             .safeAreaInset(edge: .bottom) {
                 if isSelecting {
                     batchScanBar
@@ -214,7 +204,7 @@ struct RecentScreenshotsView: View {
     private var batchScanBar: some View {
         HStack(spacing: 12) {
             Text("\(selectedAssetIDs.count) selected")
-                .font(PDFont.jakarta(14, .medium, relativeTo: .subheadline))
+                .font(PDFont.labelLG)
                 .foregroundStyle(Color.pdOnSurface)
             Spacer()
             Button {
@@ -234,7 +224,7 @@ struct RecentScreenshotsView: View {
             .buttonStyle(PDPrimaryButtonStyle())
             .disabled(selectedAssetIDs.isEmpty || appState.isBatchScanning)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PDSpacing.md)
         .padding(.vertical, 12)
         .background(
             Rectangle()
@@ -297,7 +287,7 @@ private struct BatchScanProgressContent: View {
             Color.pdSurface.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                    PDScreenIntro(eyebrow: "BATCH SCAN", title: "Reading your sources", subtitle: "Each detected event will wait for your review.")
+                    PDScreenIntro(eyebrow: "Batch scan", title: "Reading your sources", subtitle: "Each detected event will wait for your review.")
                     HStack {
                         ProgressView().tint(Color.pdPrimary)
                         Text(scanner.currentLabel.isEmpty ? "Preparing…" : scanner.currentLabel)
@@ -410,7 +400,7 @@ struct ReviewQueueView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                    PDScreenIntro(eyebrow: "REVIEW QUEUE", title: "Needs review", subtitle: "Nothing is added to your calendar until you confirm it.")
+                    PDScreenIntro(eyebrow: "Review queue", title: "Needs review", subtitle: "Nothing is added to your calendar until you confirm it.")
                     PDStatusBadge(text: "\(pending.count) pending review", icon: "tray.full.fill", tone: pending.isEmpty ? .neutral : .warning)
                     PDCard {
                         VStack(alignment: .leading, spacing: PDSpacing.xs) {
@@ -438,13 +428,16 @@ struct ReviewQueueView: View {
                     }
                     if visibleCandidates.isEmpty {
                         emptyState
-                    } else {
-                        ForEach(visibleCandidates) { candidate in
-                            ReviewQueueRow(candidate: candidate, onReview: { appState.review(candidate) }, onDiscard: {
-                                candidateToDiscard = candidate
-                                showDiscardConfirmation = true
-                            })
+                    } else if horizontalSizeClass == .regular {
+                        LazyVGrid(
+                            columns: [GridItem(.flexible(), spacing: PDSpacing.md), GridItem(.flexible(), spacing: PDSpacing.md)],
+                            alignment: .leading,
+                            spacing: PDSpacing.md
+                        ) {
+                            queueRows
                         }
+                    } else {
+                        queueRows
                     }
                 }
                 .frame(maxWidth: horizontalSizeClass == .regular ? 1040 : .infinity)
@@ -470,8 +463,10 @@ struct ReviewQueueView: View {
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                             .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: horizontalSizeClass == .regular ? 560 : .infinity)
                     .padding(PDSpacing.md)
                     .padding(.bottom, horizontalSizeClass == .regular ? 0 : 72)
+                    .frame(maxWidth: .infinity)
                     .background(Color.pdSurface)
                 }
             }
@@ -489,6 +484,15 @@ struct ReviewQueueView: View {
             } message: { candidate in
                 Text("Remove \(candidate.title) from the review queue? This does not change your calendar.")
             }
+        }
+    }
+
+    private var queueRows: some View {
+        ForEach(visibleCandidates) { candidate in
+            ReviewQueueRow(candidate: candidate, onReview: { appState.review(candidate) }, onDiscard: {
+                candidateToDiscard = candidate
+                showDiscardConfirmation = true
+            })
         }
     }
 
