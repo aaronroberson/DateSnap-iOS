@@ -132,7 +132,7 @@ During baseline verification and project compilation, the following issues in ne
 ### 3.4 Paywalls & History Views (`PlusPaywallView.swift`, `PremiumPaywallView.swift`, `HistoryArchiveView.swift`)
 - **Observation:** The paywalls and history views still use legacy `dsGlassCard` and `DSTypography` calls.
 - **Recommendation:** In the planned monetization and archive work sessions, migrate these views to `PencilComponents.swift` (`PDCard`, `PDTopBar`, `PDSectionHeader`, `PDStatusBadge`).
-- **Status (2026-10-12): Mostly resolved.** All three views now use `PDCard` and `PDSectionHeader`, and `DSTypography` has been deleted. `HistoryArchiveView` uses `PDTopBar`. The two paywalls still use their own headers and have not adopted `PDTopBar`.
+- **Status (2026-10-12): Mostly resolved.** All three views now use `PDCard` and `PDSectionHeader`, and `DSTypography` has been deleted. `HistoryArchiveView` uses `PDTopBar`. The two paywalls deliberately do not use `PDTopBar`. They are interstitial sheets and share `PDInterstitialHeader`, with Restore on the leading edge, an "Upgrade to …" title, and close in the top-right corner. See §7.6 of the production readiness audit. **Resolved by design.**
 
 ---
 

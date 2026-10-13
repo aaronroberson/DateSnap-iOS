@@ -328,9 +328,9 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   per device (131 tests) passed with zero "Error finishing transaction" log
   lines.
 - Status: next-wave items 1 to 3 are done. Item 4 (keep the 15 `stitch-id`
-  comments) stands by decision. Still open: the `AppState` navigation naming
-  audit and `PDTopBar` adoption in the two paywalls (Profile & Settings audit
-  §3.3 and §3.4).
+  comments) stands by decision. At the time, the `AppState` navigation naming
+  audit and the paywall headers (Profile & Settings audit §3.3 and §3.4) were
+  still open. Both were closed on 2026-10-12; see below.
 
 2026-10-12: `AppState` navigation-naming audit (Profile & Settings audit §3.3).
 - Every modal goes through `AppState.present(_:)`; 13 direct `activeModal`
@@ -350,3 +350,11 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   (`/private/tmp/pencild-head-iphone.xcresult`,
   `/private/tmp/pencild-head-ipad.xcresult`). The strict Release build and the
   release-content scan passed.
+
+2026-10-12: Paywall interstitials done (no top bar by design).
+- The Plus and Premium paywalls share a pinned `PDInterstitialHeader`: Restore
+  on the leading edge, an "Upgrade to Plus"/"Upgrade to Premium" title, and
+  close in the top-right corner. The intro eyebrow spacing is fixed.
+- Reverted the `37eede7` purchase-button change. Buttons again show the live
+  StoreKit price, the trial offer, or "Price unavailable".
+- No open items remain from the Profile & Settings follow-up audit.

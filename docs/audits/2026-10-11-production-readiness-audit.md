@@ -118,6 +118,10 @@ The monolithic views identified in earlier passes have been decomposed into focu
 - All paywalls ([`PlusPaywallView.swift`](../../Sources/Pencild/Views/PlusPaywallView.swift), [`PremiumPaywallView.swift`](../../Sources/Pencild/Views/PremiumPaywallView.swift)) bind directly to StoreKit products loaded by `PurchaseViewModel`.
 - When products fail to load or network is absent, purchases are disabled with user-visible recovery options; no fake fallback products are sold.
 - Restore purchase flows properly reflect verification states.
+- Purchase buttons show the live StoreKit price or free-trial offer, and show
+  "Price unavailable" (disabled) when products have not loaded. A brief change
+  in `37eede7` replaced them with fixed "UPGRADE TO …" labels; that was
+  reverted on 2026-10-12.
 
 ---
 
@@ -210,3 +214,28 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   run at regular and compact width. Before screenshots are in
   `/private/tmp/pencild-batch-before/` and after screenshots are in
   `/private/tmp/pencild-ipad-smoke/`.
+
+### 7.6 Paywall Interstitials (2026-10-12): Done
+- **Status: done; no top bar by design.** The Plus and Premium paywalls are
+  interstitial sheets that can open from anywhere in the app, so they do not
+  use `PDTopBar`: its back chevron means "return to the previous screen".
+  Instead they share a pinned `PDInterstitialHeader` whose only control is
+  the close button in the top-right corner. The bar is transparent, so the
+  screen's ambient gradient reaches the top edge, and it stays visible while
+  the paywall content scrolls. Restore Purchases stays in the footer.
+- Layout, top to bottom: the eyebrow; an "Upgrade to Plus" / "Upgrade to
+  Premium" headline (the previous headline is folded into the description);
+  the included-features list; the "You stay in control" card; the billing-
+  period options; then the purchase button.
+- On Premium, "PDF & Files import" is listed directly after "Everything in
+  Plus" and is highlighted: a bold title on the highlight-card gradient.
+- Billing periods use the shared `PDPlanOption`. The selected option fills
+  with the action gradient and a checkmark; the earlier left-edge bar is
+  removed. This replaces four duplicated plan-card implementations.
+- The intro eyebrow now has top spacing below the pinned header.
+- Saved Event Detail is also only ever presented as a sheet (after Save, from
+  notifications, and from Batch Review). It now uses the shared top-right
+  `PDCloseButton` instead of `PDTopBar`'s back chevron, which did not read as a
+  way to close the screen.
+- Verified by `paywallInterstitialsRender` in `TabletWorkspaceTests` at
+  regular and compact width.
