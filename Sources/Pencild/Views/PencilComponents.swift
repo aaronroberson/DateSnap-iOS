@@ -87,6 +87,109 @@ extension PDTopBar where Trailing == EmptyView {
     }
 }
 
+// MARK: - Interstitial header (pinned close, top-right)
+/// Pinned header for interstitial sheets such as the paywalls, which can open from anywhere.
+/// It keeps the close button in the top-right corner while the content scrolls beneath it.
+/// The bar itself is transparent so the screen's ambient gradient reaches the top edge.
+struct PDInterstitialHeader: View {
+    let closeLabel: String
+
+    var body: some View {
+        HStack {
+            Spacer()
+            PDCloseButton(accessibilityLabel: closeLabel)
+        }
+        .padding(.horizontal, PDSpacing.md)
+        .padding(.vertical, PDSpacing.sm)
+    }
+}
+
+// MARK: - Plan option (paywall billing period)
+/// Selectable billing-period row. The selected option fills with the action gradient; the
+/// checkmark, label, and color together carry the selected state.
+struct PDPlanOption: View {
+    let title: String
+    var badge: String? = nil
+    let detail: String
+    let price: String
+    var showsPerMonth = false
+    let isSelected: Bool
+    let action: () -> Void
+
+    private var primaryText: Color { isSelected ? .pdOnPrimaryFixed : .pdOnSurface }
+    private var secondaryText: Color { isSelected ? .pdOnPrimaryFixed.opacity(0.75) : .pdOnSurfaceVariant }
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Text(title)
+                            .font(PDFont.labelLG)
+                            .foregroundStyle(primaryText)
+                        if let badge {
+                            Text(badge)
+                                .font(PDFont.labelSM)
+                                .foregroundStyle(isSelected ? Color.pdPrimary : Color.pdOnPrimaryFixed)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Capsule().fill(isSelected ? Color.pdOnPrimaryFixed : Color.pdPrimary))
+                        }
+                    }
+                    Text(detail)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(secondaryText)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(price)
+                        .font(PDFont.headlineSM)
+                        .foregroundStyle(primaryText)
+                    if showsPerMonth {
+                        Text("/ month")
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(secondaryText)
+                    }
+                }
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(isSelected ? Color.pdOnPrimaryFixed : Color.pdOnSurfaceVariant)
+                    .padding(.leading, 8)
+                    .accessibilityHidden(true)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: PDRadius.plan)
+                    .fill(isSelected ? AnyShapeStyle(LinearGradient.pdAction) : AnyShapeStyle(Color.pdSurfaceLow))
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+// MARK: - Close button
+/// Top-right close for sheets that can open from anywhere. Pushed screens use `PDTopBar`'s
+/// back chevron instead.
+struct PDCloseButton: View {
+    var accessibilityLabel = "Close"
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        Button { dismiss() } label: {
+            Image(systemName: "xmark")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+                .frame(width: 44, height: 44)
+                .background(Circle().fill(Color.pdSurfaceHighest))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
+    }
+}
+
 // MARK: - Card
 struct PDCard<Content: View>: View {
     var padding: CGFloat = PDSpacing.md

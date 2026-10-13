@@ -15,38 +15,46 @@ struct PremiumPaywallView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
-                    // Header Bar
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .frame(width: 44, height: 44)
-                                .background(Circle().fill(Color.pdSurfaceHighest))
-                        }
-                        
-                        .accessibilityLabel("Close paywall")
-
-                        Spacer()
-
-                        Button("Restore") {
-                            Task { await restore() }
-                        }
-                        .disabled(purchases.isPurchasing)
-                        .font(PDFont.labelLG)
-                        .foregroundStyle(Color.pdPrimary)
-                        .frame(minHeight: 44)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 12)
-                    
                     PDScreenIntro(
                         eyebrow: "Pencil'd Premium",
-                        title: "Turn flyers and files into plans.",
-                        subtitle: "Import PDFs and images from Files, review extracted dates, and choose what to save."
+                        title: "Upgrade to Premium",
+                        subtitle: "Turn flyers and files into plans. Import PDFs and images from Files, review the extracted dates, and choose what to save."
                     )
+                    .padding(.horizontal)
+                    .padding(.top, PDSpacing.md)
+
+                    PDSectionHeader(title: "Included with Premium")
+                        .padding(.horizontal)
+                    PDCard {
+                        VStack(spacing: 16) {
+                            featureRow(
+                                icon: "camera.viewfinder", iconColor: .pdPrimary,
+                                title: "Everything in Plus",
+                                subtitle: PremiumFeature.automaticScreenshotDetection.upgradeReason
+                            )
+                            featureRow(
+                                icon: "doc.text.viewfinder", iconColor: .pdPrimary,
+                                title: "PDF & Files import",
+                                subtitle: PremiumFeature.documentImport.upgradeReason,
+                                isHighlighted: true
+                            )
+                            featureRow(
+                                icon: "sparkles", iconColor: .pdPrimary,
+                                title: "Likely event triage",
+                                subtitle: PremiumFeature.likelyEventTriage.upgradeReason
+                            )
+                            featureRow(
+                                icon: "square.on.square", iconColor: .pdPrimary,
+                                title: "Find possible duplicates",
+                                subtitle: PremiumFeature.duplicateClusters.upgradeReason
+                            )
+                            featureRow(
+                                icon: "bell.badge", iconColor: .pdPrimary,
+                                title: "Tailored reminder plans",
+                                subtitle: PremiumFeature.advancedReminderPlans.upgradeReason
+                            )
+                        }
+                    }
                     .padding(.horizontal)
 
                     PDCard(highlighted: true) {
@@ -64,151 +72,22 @@ struct PremiumPaywallView: View {
                     }
                     .padding(.horizontal)
 
-                    PDSectionHeader(title: "Included with Premium")
-                        .padding(.horizontal)
-                    PDCard {
-                        VStack(spacing: 16) {
-                            featureRow(
-                                icon: "camera.viewfinder", iconColor: .pdPrimary,
-                                title: "Everything in Plus",
-                                subtitle: PremiumFeature.automaticScreenshotDetection.upgradeReason
-                            )
-                            featureRow(
-                                icon: "sparkles", iconColor: .pdPrimary,
-                                title: "Likely event triage",
-                                subtitle: PremiumFeature.likelyEventTriage.upgradeReason
-                            )
-                            featureRow(
-                                icon: "doc.text.viewfinder", iconColor: .pdPrimary,
-                                title: "PDF & Files import",
-                                subtitle: PremiumFeature.documentImport.upgradeReason
-                            )
-                            featureRow(
-                                icon: "square.on.square", iconColor: .pdPrimary,
-                                title: "Find possible duplicates",
-                                subtitle: PremiumFeature.duplicateClusters.upgradeReason
-                            )
-                            featureRow(
-                                icon: "bell.badge", iconColor: .pdPrimary,
-                                title: "Tailored reminder plans",
-                                subtitle: PremiumFeature.advancedReminderPlans.upgradeReason
-                            )
-                        }
-                    }
-                    .padding(.horizontal)
-
-                    // Pricing Selector Cards
                     VStack(spacing: 12) {
-                        // Annual Card
-                        Button {
-                            selectedPlanIsAnnual = true
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(spacing: 8) {
-                                        Text("Annual")
-                                            .font(PDFont.labelLG)
-                                            .foregroundStyle(Color.pdOnSurface)
-                                        
-                                        if let savingsText {
-                                            Text(savingsText)
-                                                .font(PDFont.labelSM)
-                                                .foregroundStyle(Color.pdOnPrimaryFixed)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(Capsule().fill(Color.pdPrimary))
-                                        }
-                                    }
-                                    
-                                    Text(planPriceDescription(.premium, annual: true))
-                                        .font(PDFont.bodySM)
-                                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(priceAmount(.premium, annual: true))
-                                        .font(PDFont.headlineSM)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    if purchases.monthlyEquivalent(.premium) != nil {
-                                        Text("/ month")
-                                            .font(PDFont.bodySM)
-                                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                                    }
-                                }
-                                
-                                Image(systemName: selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundStyle(selectedPlanIsAnnual ? Color.pdPrimary : Color.pdOnSurfaceVariant)
-                                    .padding(.leading, 8)
-                            }
-                            .padding(16)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(
-                                selectedPlanIsAnnual ? Color.pdSurfaceContainer : Color.pdSurfaceLow,
-                                in: RoundedRectangle(cornerRadius: PDRadius.plan)
-                            )
-                            .overlay(alignment: .leading) {
-                                if selectedPlanIsAnnual {
-                                    Capsule().fill(Color.pdPrimary)
-                                        .frame(width: 4)
-                                        .padding(.vertical, 16)
-                                }
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(selectedPlanIsAnnual ? .isSelected : [])
-
-                        // Monthly Card
-                        Button {
-                            selectedPlanIsAnnual = false
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Monthly")
-                                        .font(PDFont.labelLG)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    
-                                    Text(planPriceDescription(.premium, annual: false))
-                                        .font(PDFont.bodySM)
-                                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(priceAmount(.premium, annual: false))
-                                        .font(PDFont.headlineSM)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    if purchases.displayPrice(.premium, annual: false) != nil {
-                                        Text("/ month")
-                                            .font(PDFont.bodySM)
-                                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                                    }
-                                }
-                                
-                                Image(systemName: !selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundStyle(!selectedPlanIsAnnual ? Color.pdPrimary : Color.pdOnSurfaceVariant)
-                                    .padding(.leading, 8)
-                            }
-                            .padding(16)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(
-                                !selectedPlanIsAnnual ? Color.pdSurfaceContainer : Color.pdSurfaceLow,
-                                in: RoundedRectangle(cornerRadius: PDRadius.plan)
-                            )
-                            .overlay(alignment: .leading) {
-                                if !selectedPlanIsAnnual {
-                                    Capsule().fill(Color.pdPrimary)
-                                        .frame(width: 4)
-                                        .padding(.vertical, 16)
-                                }
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(!selectedPlanIsAnnual ? .isSelected : [])
+                        PDPlanOption(
+                            title: "Annual",
+                            badge: savingsText,
+                            detail: planPriceDescription(.premium, annual: true),
+                            price: priceAmount(.premium, annual: true),
+                            showsPerMonth: purchases.monthlyEquivalent(.premium) != nil,
+                            isSelected: selectedPlanIsAnnual
+                        ) { selectedPlanIsAnnual = true }
+                        PDPlanOption(
+                            title: "Monthly",
+                            detail: planPriceDescription(.premium, annual: false),
+                            price: priceAmount(.premium, annual: false),
+                            showsPerMonth: purchases.displayPrice(.premium, annual: false) != nil,
+                            isSelected: !selectedPlanIsAnnual
+                        ) { selectedPlanIsAnnual = false }
                     }
                     .padding(.horizontal)
 
@@ -267,6 +146,9 @@ struct PremiumPaywallView: View {
                         .padding(.bottom, 24)
                     }
                 }
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                PDInterstitialHeader(closeLabel: "Close paywall")
             }
             .pdScreenBackground()
             .task {
@@ -364,13 +246,15 @@ struct PremiumPaywallView: View {
     }
     
     @ViewBuilder
-    private func featureRow(icon: String, iconColor: Color, title: String, subtitle: String) -> some View {
+    /// `isHighlighted` marks Premium's headline feature: a bold title on the highlight-card
+    /// gradient, so it stands out from the rows around it.
+    private func featureRow(icon: String, iconColor: Color, title: String, subtitle: String, isHighlighted: Bool = false) -> some View {
         HStack(alignment: .top, spacing: 14) {
             PDIconTile(systemName: icon, tint: iconColor, size: .large)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(PDFont.labelLG)
+                    .font(isHighlighted ? PDFont.headlineSM : PDFont.labelLG)
                     .foregroundStyle(Color.pdOnSurface)
                 Text(subtitle)
                     .font(PDFont.bodySM)
@@ -379,5 +263,17 @@ struct PremiumPaywallView: View {
             }
             Spacer()
         }
+        .padding(isHighlighted ? 12 : 0)
+        .background {
+            if isHighlighted {
+                RoundedRectangle(cornerRadius: PDRadius.card)
+                    .fill(LinearGradient.pdHighlightCard)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: PDRadius.card)
+                            .stroke(Color.pdPrimary.opacity(0.35), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(.horizontal, isHighlighted ? -12 : 0)
     }
 }

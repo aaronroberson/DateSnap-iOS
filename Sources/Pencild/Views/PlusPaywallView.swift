@@ -16,54 +16,13 @@ struct PlusPaywallView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
-                    // Header Bar
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .frame(width: 44, height: 44)
-                                .background(Circle().fill(Color.pdSurfaceHighest))
-                        }
-                        
-                        .accessibilityLabel("Close paywall")
-
-                        Spacer()
-
-                        Button("Restore") {
-                            Task { await restore() }
-                        }
-                        .disabled(purchases.isPurchasing)
-                        .font(PDFont.labelLG)
-                        .foregroundStyle(Color.pdPrimary)
-                        .frame(minHeight: 44)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 12)
-                    
                     PDScreenIntro(
                         eyebrow: "Pencil'd Plus",
-                        title: "Find the dates worth keeping.",
-                        subtitle: "Surface new screenshots on Home and highlight the ones that look like events."
+                        title: "Upgrade to Plus",
+                        subtitle: "Find the dates worth keeping. Plus surfaces new screenshots on Home and highlights the ones that look like events."
                     )
                     .padding(.horizontal)
-
-                    PDCard(highlighted: true) {
-                        HStack(alignment: .top, spacing: 12) {
-                            PDIconTile(systemName: "checkmark.shield", tint: .pdSecondary, size: .large)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("You stay in control")
-                                    .font(PDFont.headlineSM)
-                                    .foregroundStyle(Color.pdOnSurface)
-                                Text("Review every date before saving to Apple Calendar. Single-image scanning and manual review remain available on the Free plan.")
-                                    .font(PDFont.bodyMD)
-                                    .foregroundStyle(Color.pdOnSurfaceVariant)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
+                    .padding(.top, PDSpacing.md)
 
                     PDSectionHeader(title: "Included with Plus")
                         .padding(.horizontal)
@@ -83,118 +42,37 @@ struct PlusPaywallView: View {
                     }
                     .padding(.horizontal)
 
-                    // Pricing Selector Cards
-                    VStack(spacing: 12) {
-                        // Annual Plan
-                        Button {
-                            selectedPlanIsAnnual = true
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(spacing: 8) {
-                                        Text("Annual")
-                                            .font(PDFont.labelLG)
-                                            .foregroundStyle(Color.pdOnSurface)
-                                        
-                                        if let savingsText {
-                                            Text(savingsText)
-                                                .font(PDFont.labelSM)
-                                                .foregroundStyle(Color.pdOnPrimaryFixed)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(Capsule().fill(Color.pdPrimary))
-                                        }
-                                    }
-                                    
-                                    Text(planPriceDescription(.plus, annual: true))
-                                        .font(PDFont.bodySM)
-                                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(priceAmount(.plus, annual: true))
-                                        .font(PDFont.headlineSM)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    if purchases.monthlyEquivalent(.plus) != nil {
-                                        Text("/ month")
-                                            .font(PDFont.bodySM)
-                                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                                    }
-                                }
-                                
-                                Image(systemName: selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundStyle(selectedPlanIsAnnual ? Color.pdPrimary : Color.pdOnSurfaceVariant)
-                                    .padding(.leading, 8)
-                            }
-                            .padding(16)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(
-                                selectedPlanIsAnnual ? Color.pdSurfaceContainer : Color.pdSurfaceLow,
-                                in: RoundedRectangle(cornerRadius: PDRadius.plan)
-                            )
-                            .overlay(alignment: .leading) {
-                                if selectedPlanIsAnnual {
-                                    Capsule().fill(Color.pdPrimary)
-                                        .frame(width: 4)
-                                        .padding(.vertical, 16)
-                                }
+                    PDCard(highlighted: true) {
+                        HStack(alignment: .top, spacing: 12) {
+                            PDIconTile(systemName: "checkmark.shield", tint: .pdSecondary, size: .large)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("You stay in control")
+                                    .font(PDFont.headlineSM)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                Text("Review every date before saving to Apple Calendar. Single-image scanning and manual review remain available on the Free plan.")
+                                    .font(PDFont.bodyMD)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
                             }
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(selectedPlanIsAnnual ? .isSelected : [])
+                    }
+                    .padding(.horizontal)
 
-                        // Monthly Plan
-                        Button {
-                            selectedPlanIsAnnual = false
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Monthly")
-                                        .font(PDFont.labelLG)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    
-                                    Text(planPriceDescription(.plus, annual: false))
-                                        .font(PDFont.bodySM)
-                                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(priceAmount(.plus, annual: false))
-                                        .font(PDFont.headlineSM)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    if purchases.displayPrice(.plus, annual: false) != nil {
-                                        Text("/ month")
-                                            .font(PDFont.bodySM)
-                                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                                    }
-                                }
-                                
-                                Image(systemName: !selectedPlanIsAnnual ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundStyle(!selectedPlanIsAnnual ? Color.pdPrimary : Color.pdOnSurfaceVariant)
-                                    .padding(.leading, 8)
-                            }
-                            .padding(16)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(
-                                !selectedPlanIsAnnual ? Color.pdSurfaceContainer : Color.pdSurfaceLow,
-                                in: RoundedRectangle(cornerRadius: PDRadius.plan)
-                            )
-                            .overlay(alignment: .leading) {
-                                if !selectedPlanIsAnnual {
-                                    Capsule().fill(Color.pdPrimary)
-                                        .frame(width: 4)
-                                        .padding(.vertical, 16)
-                                }
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(!selectedPlanIsAnnual ? .isSelected : [])
+                    VStack(spacing: 12) {
+                        PDPlanOption(
+                            title: "Annual",
+                            badge: savingsText,
+                            detail: planPriceDescription(.plus, annual: true),
+                            price: priceAmount(.plus, annual: true),
+                            showsPerMonth: purchases.monthlyEquivalent(.plus) != nil,
+                            isSelected: selectedPlanIsAnnual
+                        ) { selectedPlanIsAnnual = true }
+                        PDPlanOption(
+                            title: "Monthly",
+                            detail: planPriceDescription(.plus, annual: false),
+                            price: priceAmount(.plus, annual: false),
+                            showsPerMonth: purchases.displayPrice(.plus, annual: false) != nil,
+                            isSelected: !selectedPlanIsAnnual
+                        ) { selectedPlanIsAnnual = false }
                     }
                     .padding(.horizontal)
 
@@ -269,6 +147,9 @@ struct PlusPaywallView: View {
                     .frame(minHeight: 44)
                     .padding(.bottom, 24)
                 }
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                PDInterstitialHeader(closeLabel: "Close paywall")
             }
             .pdScreenBackground()
             .task {
