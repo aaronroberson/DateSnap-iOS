@@ -23,7 +23,7 @@ struct MarketingKitView: View {
             .padding(.top, 8)
             .padding(.bottom, 24)
         }
-        .dsScreenBackground()
+        .pdScreenBackground()
     }
 
     // MARK: - Hero
@@ -37,10 +37,10 @@ struct MarketingKitView: View {
                                        startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
                 // Floating calendar cards echoing the hero artwork
-                DSDateBadge(month: "OCT", day: "24", isSelected: true)
+                PDDateBadge(month: "OCT", day: "24", highlighted: true)
                     .rotationEffect(.degrees(-7))
                     .offset(x: -78, y: -8)
-                DSDateBadge(month: "OCT", day: "18")
+                PDDateBadge(month: "OCT", day: "18")
                     .rotationEffect(.degrees(9))
                     .offset(x: 82, y: 14)
                 VStack(spacing: 4) {
@@ -69,7 +69,7 @@ struct MarketingKitView: View {
             }
         }
         .padding(18)
-        .dsGlassCard()
+        .pdGlassCard()
     }
 
     // MARK: - 01 Social Media Angles
@@ -87,7 +87,7 @@ struct MarketingKitView: View {
                           body: "'Tomorrow 10am', 'Next Friday at 9' — parsed instantly into structured Apple Calendar events with 3-tier staggered alerts.")
             }
             .padding(16)
-            .dsGlassCard()
+            .pdGlassCard()
         }
     }
 
@@ -159,17 +159,17 @@ struct MarketingKitView: View {
                     } label: {
                         Text("Try Free on App Store")
                     }
-                    .buttonStyle(DSPrimaryButtonStyle(minHeight: 42))
+                    .buttonStyle(PDPrimaryButtonStyle(minHeight: 42))
                     Button {
                         appState.showToast("7-day trial claim link opened")
                     } label: {
                         Text("Claim 7-Day Trial")
                     }
-                    .buttonStyle(DSSecondaryButtonStyle(minHeight: 42))
+                    .buttonStyle(PDSecondaryButtonStyle(minHeight: 42))
                 }
             }
             .padding(16)
-            .dsGlassCard()
+            .pdGlassCard()
         }
     }
 
@@ -210,10 +210,10 @@ struct MarketingKitView: View {
                         Image(systemName: "arrow.right")
                     }
                 }
-                .buttonStyle(DSPrimaryButtonStyle(minHeight: 46))
+                .buttonStyle(PDPrimaryButtonStyle(minHeight: 46))
             }
             .padding(16)
-            .dsGlassCard()
+            .pdGlassCard()
         }
     }
 

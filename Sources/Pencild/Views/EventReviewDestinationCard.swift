@@ -17,7 +17,7 @@ struct EventReviewDestinationCard: View {
             alertScheduleButton
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
     }
 
     private var calendarPickerRow: some View {

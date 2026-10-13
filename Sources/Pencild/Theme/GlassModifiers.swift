@@ -5,7 +5,7 @@ import SwiftUI
 /// border. An explicit `borderColor` is kept as an accent outline for
 /// highlighted or warning cards. Legacy radii above 16pt collapse to the
 /// Stitch card radius so older call sites converge on one shape.
-struct DSGlassCardModifier: ViewModifier {
+struct PDGlassCardModifier: ViewModifier {
     var cornerRadius: CGFloat = PDRadius.card
     var elevated: Bool = false
     var borderColor: Color = .clear
@@ -28,13 +28,13 @@ struct DSGlassCardModifier: ViewModifier {
 }
 
 extension View {
-    func dsGlassCard(
+    func pdGlassCard(
         cornerRadius: CGFloat = PDRadius.card,
         elevated: Bool = false,
         borderColor: Color = .clear,
         borderWidth: CGFloat = 1
     ) -> some View {
-        modifier(DSGlassCardModifier(
+        modifier(PDGlassCardModifier(
             cornerRadius: cornerRadius,
             elevated: elevated,
             borderColor: borderColor,
@@ -43,7 +43,7 @@ extension View {
     }
 
     /// Stitch canvas: deep surface with faint orange and violet ambient light.
-    func dsScreenBackground() -> some View {
+    func pdScreenBackground() -> some View {
         self
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
@@ -67,51 +67,9 @@ extension View {
 
 // MARK: - Confidence Pill
 /// Confidence state always combines icon, label and color.
-struct DSConfidencePill: View {
-    let score: Int
-    let label: String
-
-    private var color: Color {
-        if score >= 90 { return .pdSuccess }
-        if score >= 70 { return .pdWarning }
-        return .pdError
-    }
-
-    private var iconName: String {
-        if score >= 90 { return "checkmark.seal.fill" }
-        if score >= 70 { return "exclamationmark.triangle.fill" }
-        return "xmark.octagon.fill"
-    }
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: iconName)
-                .font(PDFont.jakarta(11, .bold, relativeTo: .caption2))
-            Text("\(score)% \(label)")
-                .font(PDFont.labelMD)
-        }
-        .foregroundStyle(color)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(Capsule().fill(color.opacity(0.15)))
-        .accessibilityElement(children: .combine)
-    }
-}
-
-// MARK: - Date Badge
-struct DSDateBadge: View {
-    let month: String
-    let day: String
-    var isSelected: Bool = false
-
-    var body: some View {
-        PDDateBadge(month: month, day: day, highlighted: isSelected)
-    }
-}
-
 // MARK: - Primary CTA
 /// Full-width gradient pill, the Stitch primary action.
-struct DSPrimaryButtonStyle: ButtonStyle {
+struct PDPrimaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.isEnabled) private var isEnabled
     var minHeight: CGFloat = 52
@@ -135,7 +93,7 @@ struct DSPrimaryButtonStyle: ButtonStyle {
 
 // MARK: - Secondary CTA
 /// Tonal pill on surface-container-high, the Stitch secondary action.
-struct DSSecondaryButtonStyle: ButtonStyle {
+struct PDSecondaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.isEnabled) private var isEnabled
     var minHeight: CGFloat = 50

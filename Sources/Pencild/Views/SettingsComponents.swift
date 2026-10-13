@@ -81,10 +81,10 @@ struct ValueChip: View {
         PDStatusBadge(
             text: text,
             icon: systemImage,
-            tone: tint == .pdSuccess || tint == .dsSuccess ? .success :
-                  tint == .pdWarning || tint == .dsWarning ? .warning :
-                  tint == .pdInfo || tint == .dsInfo ? .info :
-                  tint == .pdError || tint == .dsError ? .error : .neutral
+            tone: tint == .pdSuccess ? .success :
+                  tint == .pdWarning ? .warning :
+                  tint == .pdInfo ? .info :
+                  tint == .pdError ? .error : .neutral
         )
     }
 }

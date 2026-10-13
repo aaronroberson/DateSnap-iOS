@@ -133,7 +133,7 @@ struct EventSearchFilterBar: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(palette.muted)
             TextField("Search events, venues, dates...", text: $searchText)
-                .font(DSTypography.bodyCompact())
+                .font(PDFont.jakarta(14, .medium, relativeTo: .subheadline))
                 .foregroundStyle(palette.text)
                 .accessibilityIdentifier("\(idPrefix).search")
             if !searchText.isEmpty {
@@ -165,7 +165,7 @@ struct EventSearchFilterBar: View {
                     PDCheckmark(size: 16)
                 }
                 Text(option.eventStatus.rawValue)
-                    .font(DSTypography.labelChip())
+                    .font(PDFont.labelMD)
                 Text("\(counts[option] ?? 0)")
                     .font(PDFont.labelSM)
                     .padding(.horizontal, 6)
@@ -201,7 +201,7 @@ struct EventSearchFilterBar: View {
                 Image(systemName: locked ? "lock.fill" : filter.icon)
                     .font(.system(size: 11, weight: .semibold))
                 Text(filter.rawValue)
-                    .font(DSTypography.caption())
+                    .font(PDFont.bodySM)
             }
             .foregroundStyle(isSelected ? palette.selectedText : palette.muted)
             .padding(.horizontal, 12)

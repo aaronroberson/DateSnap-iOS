@@ -106,7 +106,7 @@ struct RecentScreenshotsView: View {
                     Text(isSelecting
                          ? "Tap screenshots to add them to the batch. Each event keeps its own calendar and reminders."
                          : "Pick a screenshot of a flyer, invite, or ticket. Text is read on this device only.")
-                        .font(DSTypography.caption())
+                        .font(PDFont.bodySM)
                         .foregroundStyle(Color.pdOnSurfaceVariant)
 
                     if homeViewModel.isRefreshing && homeViewModel.recentScreenshots.isEmpty {
@@ -117,12 +117,12 @@ struct RecentScreenshotsView: View {
                                 .font(.system(size: 36))
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
                             Text(likelyOnly ? "No likely events found" : "No screenshots found")
-                                .font(DSTypography.bodyStrong())
+                                .font(PDFont.jakarta(16, .semibold, relativeTo: .body))
                                 .foregroundStyle(Color.pdOnSurface)
                             Text(likelyOnly ? "Open All to choose another screenshot for review." : homeViewModel.photoAuthorizationStatus == .limited
                                  ? "Pencil'd can only see the photos you shared. Choose more in iOS Settings, or use Choose from Photo Library."
                                  : "Take a screenshot of an event, then come back.")
-                                .font(DSTypography.caption())
+                                .font(PDFont.bodySM)
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .multilineTextAlignment(.center)
                         }
@@ -156,7 +156,7 @@ struct RecentScreenshotsView: View {
                 .padding(.bottom, isSelecting ? 120 : 0)
                 .frame(maxWidth: .infinity)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .navigationTitle("Recent Screenshots")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -214,7 +214,7 @@ struct RecentScreenshotsView: View {
     private var batchScanBar: some View {
         HStack(spacing: 12) {
             Text("\(selectedAssetIDs.count) selected")
-                .font(DSTypography.bodyCompact())
+                .font(PDFont.jakarta(14, .medium, relativeTo: .subheadline))
                 .foregroundStyle(Color.pdOnSurface)
             Spacer()
             Button {
@@ -231,7 +231,7 @@ struct RecentScreenshotsView: View {
                     }
                 }
             }
-            .buttonStyle(DSPrimaryButtonStyle())
+            .buttonStyle(PDPrimaryButtonStyle())
             .disabled(selectedAssetIDs.isEmpty || appState.isBatchScanning)
         }
         .padding(.horizontal, 16)
@@ -453,7 +453,7 @@ struct ReviewQueueView: View {
                 .padding(.bottom, 100)
                 .frame(maxWidth: .infinity)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .safeAreaInset(edge: .bottom) {
                 if !pending.isEmpty {
                     VStack(spacing: PDSpacing.xs) {
@@ -462,7 +462,7 @@ struct ReviewQueueView: View {
                         } label: {
                             Label("Review high confidence (\(highConfidence.count))", systemImage: "checkmark.seal")
                         }
-                        .buttonStyle(DSPrimaryButtonStyle())
+                        .buttonStyle(PDPrimaryButtonStyle())
                         .disabled(highConfidence.isEmpty)
                         .accessibilityIdentifier("review.batch.highConfidence")
                         Text("Choose destinations and confirm each event before saving.")
@@ -506,7 +506,7 @@ struct ReviewQueueView: View {
                 Button(pending.isEmpty ? "Go to scanner" : "Show all scans") {
                     if pending.isEmpty { appState.selectedTab = .home } else { highConfidenceOnly = false }
                 }
-                .buttonStyle(DSSecondaryButtonStyle())
+                .buttonStyle(PDSecondaryButtonStyle())
             }
             .frame(maxWidth: .infinity)
         }
@@ -558,7 +558,7 @@ private struct ReviewQueueRow: View {
                 }
                 HStack(spacing: PDSpacing.sm) {
                     Button(action: onReview) { Label("Review", systemImage: "pencil") }
-                        .buttonStyle(DSPrimaryButtonStyle())
+                        .buttonStyle(PDPrimaryButtonStyle())
                         .accessibilityIdentifier("review.event.\(candidate.id)")
                     if candidate.savedEvent == nil {
                         Button(action: onDiscard) {

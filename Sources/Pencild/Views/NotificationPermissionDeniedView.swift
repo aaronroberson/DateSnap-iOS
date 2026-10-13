@@ -49,14 +49,14 @@ struct NotificationPermissionDeniedView: View {
                         } label: {
                             Label("Enable in iOS Settings", systemImage: "arrow.up.right")
                         }
-                        .buttonStyle(DSPrimaryButtonStyle())
+                        .buttonStyle(PDPrimaryButtonStyle())
                         Button {
                             appState.showToast("Pencil'd local alerts remain muted")
                             dismiss()
                         } label: {
                             Text("Keep Pencil'd Alerts Muted")
                         }
-                        .buttonStyle(DSSecondaryButtonStyle())
+                        .buttonStyle(PDSecondaryButtonStyle())
                     }
                     Text("You can change notification access anytime in iOS Settings.")
                         .font(PDFont.bodySM)
@@ -68,7 +68,7 @@ struct NotificationPermissionDeniedView: View {
                 .padding(.top, PDSpacing.sm)
                 .padding(.bottom, PDSpacing.lg)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
         }
     }
 

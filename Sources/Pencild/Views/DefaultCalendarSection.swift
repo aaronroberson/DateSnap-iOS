@@ -26,7 +26,7 @@ struct DefaultCalendarSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsSectionHeader(icon: "calendar.badge.checkmark", title: "Destinations", tint: .dsSecondary)
+            SettingsSectionHeader(icon: "calendar.badge.checkmark", title: "Destinations", tint: .pdSecondary)
 
             PDCard {
                 VStack(alignment: .leading, spacing: PDSpacing.sm) {

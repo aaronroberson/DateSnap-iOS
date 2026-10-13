@@ -92,7 +92,7 @@ struct NoDatesFoundView: View {
                         Button { createManualEvent() } label: {
                             Label("Create Event Manually", systemImage: "calendar.badge.plus")
                         }
-                        .buttonStyle(DSPrimaryButtonStyle())
+                        .buttonStyle(PDPrimaryButtonStyle())
 
                         Button {
                             dismiss()
@@ -101,7 +101,7 @@ struct NoDatesFoundView: View {
                         } label: {
                             Label("Try Another Image", systemImage: "photo.badge.plus")
                         }
-                        .buttonStyle(DSSecondaryButtonStyle())
+                        .buttonStyle(PDSecondaryButtonStyle())
 
                         Button { dismiss() } label: {
                             Text("Discard & Return Home")
@@ -163,7 +163,7 @@ struct NoDatesFoundView: View {
                 .padding(.top, PDSpacing.sm)
                 .padding(.bottom, PDSpacing.lg)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .sheet(isPresented: $showImage) {
                 if let image = appState.lastScanImage {
                     ScrollView([.horizontal, .vertical]) {

@@ -303,14 +303,14 @@ struct ScreenGalleryView: View {
                                 .padding(.top, 2)
                             }
                             .padding(14)
-                            .dsGlassCard(cornerRadius: PDRadius.card)
+                            .pdGlassCard(cornerRadius: PDRadius.card)
                             .padding(.horizontal)
                         }
                     }
                 }
                 .padding(.bottom, 30)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
         }
     }
 }

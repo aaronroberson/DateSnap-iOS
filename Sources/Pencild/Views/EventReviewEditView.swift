@@ -30,11 +30,11 @@ struct EventReviewEditView: View {
                     .font(PDFont.labelLG)
                     .foregroundStyle(Color.pdOnSurface)
                 Button("Close") { dismiss() }
-                    .buttonStyle(DSSecondaryButtonStyle())
+                    .buttonStyle(PDSecondaryButtonStyle())
                     .padding(.horizontal, 40)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .dsScreenBackground()
+            .pdScreenBackground()
         }
     }
 }
@@ -84,7 +84,7 @@ struct EventReviewForm: View {
 
                 if showSuccessToast { successToast }
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .navigationBarHidden(true)
             .sheet(isPresented: $showScheduleEditor) {
                 ReminderScheduleEditorView(
@@ -399,7 +399,7 @@ struct EventReviewForm: View {
             }
         }
         .padding(PDSpacing.md)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
     }
 
     // MARK: - Destination (Calendar, Reminders list, Alerts)

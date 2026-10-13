@@ -125,7 +125,7 @@ struct HistoryArchiveView: View {
                 .frame(maxWidth: horizontalSizeClass == .regular ? 1080 : .infinity)
                 .frame(maxWidth: .infinity)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .toolbar(.hidden, for: .navigationBar)
             .confirmationDialog(
                 "Delete this event?",
@@ -159,7 +159,7 @@ struct HistoryArchiveView: View {
                 Button { appState.selectedTab = .home } label: {
                     Label("Scan a screenshot", systemImage: "camera.viewfinder")
                 }
-                .buttonStyle(DSPrimaryButtonStyle())
+                .buttonStyle(PDPrimaryButtonStyle())
             }
             .frame(maxWidth: .infinity)
         }

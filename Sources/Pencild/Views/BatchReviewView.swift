@@ -57,7 +57,7 @@ struct BatchReviewView: View {
                     saveAllBar
                 }
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .navigationBarHidden(true)
             .task {
                 await session.prepareDestinations()
@@ -141,7 +141,7 @@ struct BatchReviewView: View {
                 .font(PDFont.labelLG)
                 .foregroundStyle(Color.pdOnSurface)
             Button("Close") { dismiss() }
-                .buttonStyle(DSSecondaryButtonStyle())
+                .buttonStyle(PDSecondaryButtonStyle())
                 .padding(.top, 4)
         }
         .frame(maxWidth: .infinity)
@@ -192,7 +192,7 @@ struct BatchReviewView: View {
                 }
             }
             .padding(14)
-            .dsGlassCard(cornerRadius: PDRadius.card)
+            .pdGlassCard(cornerRadius: PDRadius.card)
         }
     }
 
@@ -338,7 +338,7 @@ private struct BatchEventCard: View {
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
 
     }
 

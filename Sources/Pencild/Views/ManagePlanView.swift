@@ -49,7 +49,7 @@ struct ManagePlanView: View {
             .padding(.top, PDSpacing.sm)
             .padding(.bottom, PDSpacing.lg)
         }
-        .dsScreenBackground()
+        .pdScreenBackground()
         .manageSubscriptionsSheet(isPresented: $showManageSubscriptions)
         .offerCodeRedemption(isPresented: $showOfferCode) { _ in
             Task { await refreshEntitlement() }
@@ -157,7 +157,7 @@ struct ManagePlanView: View {
                     Button { appState.activeModal = .plusPaywall } label: {
                         Label("See Plus & Premium Plans", systemImage: "arrow.up.right")
                     }
-                    .buttonStyle(DSSecondaryButtonStyle(minHeight: 44))
+                    .buttonStyle(PDSecondaryButtonStyle(minHeight: 44))
                 }
             }
         }
@@ -250,7 +250,7 @@ struct ManagePlanView: View {
                 Button { appState.activeModal = .premiumPaywall } label: {
                     Label(tier == .starter ? "Explore Premium" : "Upgrade to Premium", systemImage: "arrow.up.right")
                 }
-                .buttonStyle(DSPrimaryButtonStyle(minHeight: 44))
+                .buttonStyle(PDPrimaryButtonStyle(minHeight: 44))
             }
         }
     }

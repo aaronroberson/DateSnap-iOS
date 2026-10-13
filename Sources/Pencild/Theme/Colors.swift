@@ -25,48 +25,4 @@ extension Color {
             opacity: opacity * (Double(a) / 255)
         )
     }
-    
-    // MARK: - Legacy semantic aliases
-    // Older views use these names; they resolve to the Pencil'd roles in
-    // PencilTokens.swift so every screen shares one palette.
-    static let dsBackground = pdSurface
-    static let dsForeground = pdOnSurface
-    static let dsCard = pdSurfaceContainer.opacity(0.85)
-    static let dsCardElevated = pdSurfaceContainerHigh.opacity(0.92)
-    static let dsSurfaceElevated = pdSurfaceContainerHigh
-    static let dsCardForeground = pdOnSurface
-
-    static let dsPrimary = pdPrimary
-    static let dsPrimaryForeground = pdOnPrimaryFixed
-
-    static let dsSecondary = pdSecondary
-    static let dsSecondaryForeground = pdOnSurface
-
-    static let dsMuted = pdSurfaceHighest.opacity(0.6)
-    static let dsMutedForeground = pdOnSurfaceVariant
-
-    static let dsBorder = pdSurfaceHighest.opacity(0.6)
-    static let dsBorderBright = pdOutlineVariant
-
-    static let dsAccent = pdTertiaryContainer
-    static let dsAccent2 = pdPrimaryContainer
-
-    static let dsSuccess = pdSuccess
-    static let dsWarning = pdWarning
-    static let dsError = pdError
-    static let dsInfo = pdInfo
-
-    static let dsOverlay = pdSurfaceLowest.opacity(0.85)
-    static let dsGlassHighlight = Color.white.opacity(0.12)
-
-    // MARK: - Gradients
-    static let dsScanGradient = LinearGradient.pdSignature
-    static let dsBrandGradient = LinearGradient.pdSignature
-    static let dsPrimaryActionGradient = LinearGradient.pdAction
-    static let dsPrimaryAction = dsPrimaryActionGradient
-    static let dsGoldGradient = LinearGradient(
-        colors: [.pdWarning, .pdPrimaryContainer],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
 }

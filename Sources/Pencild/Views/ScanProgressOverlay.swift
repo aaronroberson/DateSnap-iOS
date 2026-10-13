@@ -58,7 +58,7 @@ struct ScanProgressOverlay: View {
                         }
                         if scan.stage == .interpreting && !scan.isCancelling {
                             Button("Skip — use standard result") { scan.skipInterpretation() }
-                                .buttonStyle(DSSecondaryButtonStyle())
+                                .buttonStyle(PDSecondaryButtonStyle())
                                 .accessibilityHint("Stops Apple Intelligence and shows the rules-based result")
                                 .accessibilityIdentifier("scan.skipInterpretation")
                         }

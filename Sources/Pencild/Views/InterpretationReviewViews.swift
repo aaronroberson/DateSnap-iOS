@@ -153,7 +153,7 @@ struct AlternativeInterpretationsCard: View {
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
     }
 }
 
@@ -201,7 +201,7 @@ struct WhyThisSection: View {
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
         .onChange(of: expandOnRequest) { _, _ in expanded = true }
     }
 }
@@ -315,7 +315,7 @@ struct EventActionsChecklist: View {
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
     }
 
     private func icon(for kind: ActionSuggestion.Kind) -> String {
@@ -422,7 +422,7 @@ struct ReviewSuggestionsCard: View {
                 }
             }
             .padding(14)
-            .dsGlassCard(cornerRadius: PDRadius.card)
+            .pdGlassCard(cornerRadius: PDRadius.card)
         }
     }
 

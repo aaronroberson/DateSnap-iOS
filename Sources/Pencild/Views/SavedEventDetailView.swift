@@ -48,7 +48,7 @@ struct SavedEventDetailView: View {
                     iPhoneLayout
                 }
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .toolbar(.hidden, for: .navigationBar)
         }
     }
@@ -221,7 +221,7 @@ struct SavedEventDetailView: View {
             } label: {
                 Label("Open in Apple Calendar", systemImage: "calendar")
             }
-            .buttonStyle(DSPrimaryButtonStyle())
+            .buttonStyle(PDPrimaryButtonStyle())
             .disabled(!hasCalendarRecord)
             HStack(spacing: PDSpacing.sm) {
                 Button { Task { await appState.present(.eventReviewEdit(event)) } } label: {

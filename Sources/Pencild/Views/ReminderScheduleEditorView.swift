@@ -68,7 +68,7 @@ struct ReminderScheduleEditorView: View {
                 .disabled(isSyncing || syncCompleted)
             }
             .safeAreaInset(edge: .bottom) { saveActions }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .toolbar(.hidden, for: .navigationBar)
         }
         .alert("Reminder schedule", isPresented: Binding(
@@ -178,7 +178,7 @@ struct ReminderScheduleEditorView: View {
                     Text(isSyncing ? "Saving schedule…" : syncCompleted ? "Schedule saved" : offsets.isEmpty ? "Save without alerts" : "Save reminder schedule")
                 }
             }
-            .buttonStyle(DSPrimaryButtonStyle())
+            .buttonStyle(PDPrimaryButtonStyle())
             .disabled(isSyncing || syncCompleted)
             HStack {
                 Button("Reset to default") { applyPreset(.defaultPreset) }
@@ -276,7 +276,7 @@ struct SavedEventScheduleEditor: View {
                 .font(PDFont.headlineSM)
                 .foregroundStyle(Color.pdOnSurface)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .dsScreenBackground()
+                .pdScreenBackground()
         }
     }
 }

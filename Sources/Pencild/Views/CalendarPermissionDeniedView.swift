@@ -47,14 +47,14 @@ struct CalendarPermissionDeniedView: View {
                         } label: {
                             Label("Open iOS Settings", systemImage: "arrow.up.right")
                         }
-                        .buttonStyle(DSPrimaryButtonStyle())
+                        .buttonStyle(PDPrimaryButtonStyle())
                         Button {
                             appState.showToast("You can keep reviewing without Calendar access")
                             dismiss()
                         } label: {
                             Label("Not Now — Keep in Review", systemImage: "tray.and.arrow.down")
                         }
-                        .buttonStyle(DSSecondaryButtonStyle())
+                        .buttonStyle(PDSecondaryButtonStyle())
                     }
                     Text("You can change Calendar access anytime in iOS Settings.")
                         .font(PDFont.bodySM)
@@ -66,7 +66,7 @@ struct CalendarPermissionDeniedView: View {
                 .padding(.top, PDSpacing.sm)
                 .padding(.bottom, PDSpacing.lg)
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
         }
     }
 

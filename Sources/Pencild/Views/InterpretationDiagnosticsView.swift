@@ -46,7 +46,7 @@ struct InterpretationDiagnosticsView: View {
             }
         }
         .padding(14)
-        .dsGlassCard(cornerRadius: PDRadius.card)
+        .pdGlassCard(cornerRadius: PDRadius.card)
     }
 
     private func line(_ label: String, _ value: String) -> some View {

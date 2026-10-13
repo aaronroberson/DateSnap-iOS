@@ -226,7 +226,7 @@ struct PremiumPaywallView: View {
                             }
                         }
                     }
-                    .buttonStyle(DSPrimaryButtonStyle())
+                    .buttonStyle(PDPrimaryButtonStyle())
                     .disabled(!purchases.canPurchase(.premium, annual: selectedPlanIsAnnual) || appState.isPremiumMember)
                     .padding(.horizontal)
                     
@@ -268,7 +268,7 @@ struct PremiumPaywallView: View {
                     }
                 }
             }
-            .dsScreenBackground()
+            .pdScreenBackground()
             .task {
                 await purchases.attach(services.subscription)
                 for annual in [true, false] {
