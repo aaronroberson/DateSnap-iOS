@@ -1,0 +1,22 @@
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+  - DerivedData
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - weak_delegate
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+custom_rules:
+  production_quality_markers:
+    included: "Sources"
+    name: "Production quality marker"
+    regex: "\\b(?:TODO|FIXME|HACK|XXX|notImplemented)\\b"
+    message: "Production sources must not contain TODO/FIXME/HACK/XXX/notImplemented markers."
+    severity: error

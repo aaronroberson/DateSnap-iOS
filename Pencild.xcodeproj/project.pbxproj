@@ -10,6 +10,7 @@
 		0042866E8E4FDD45513DB9AC /* SceneActivationRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F194AFA71747698A409D2C6 /* SceneActivationRefreshTests.swift */; };
 		02AEC0CC528534824E3953F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97CB2BACBE2A5163DB93305F /* Assets.xcassets */; };
 		063BA72AEEFDEED2612A5C4B /* PurchaseViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F026E309222940E174698AA6 /* PurchaseViewModelTests.swift */; };
+		08834263B88E79F5EFD5AD92 /* AppStateNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07902642A2FE9DCF839079C6 /* AppStateNavigationTests.swift */; };
 		08ABFEB3E65A149A39A7CABB /* ScanProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DC59F7457BA35EBA982443 /* ScanProgressOverlay.swift */; };
 		0C5AD6707F58ED30ECE4A9B5 /* InterpretationDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08055FFC8B121D81CF52CC4 /* InterpretationDiagnosticsView.swift */; };
 		0C6E414F0E712AEF46EC0BB3 /* PlusJakartaSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16C57127AB7B208570033B0F /* PlusJakartaSans-ExtraBold.ttf */; };
@@ -138,6 +139,7 @@
 /* Begin PBXFileReference section */
 		004939D4AA292575F0426237 /* ReminderStrategyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderStrategyService.swift; sourceTree = "<group>"; };
 		02D2B0BED9889FF4F4805D2B /* PurchaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseViewModel.swift; sourceTree = "<group>"; };
+		07902642A2FE9DCF839079C6 /* AppStateNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateNavigationTests.swift; sourceTree = "<group>"; };
 		0906B1F32CB0F552A14CDB93 /* PlusJakartaSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Regular.ttf"; sourceTree = "<group>"; };
 		0911D523FB0E047E4531F065 /* AdvisorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvisorTests.swift; sourceTree = "<group>"; };
 		0AB2F30E688F1BBBCAF519D1 /* EventReviewViewModel+Interpretation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventReviewViewModel+Interpretation.swift"; sourceTree = "<group>"; };
@@ -458,6 +460,7 @@
 				0911D523FB0E047E4531F065 /* AdvisorTests.swift */,
 				B5A22311FC54DFC2AEF98273 /* AppleIntelligenceLiveTests.swift */,
 				CEF77E02F1FF3A14BAFA47FA /* AppStateImageStateTests.swift */,
+				07902642A2FE9DCF839079C6 /* AppStateNavigationTests.swift */,
 				3566FF6E109E84BBE7C2F418 /* AppStateToastTests.swift */,
 				53F69AE7E4C445E2E0F26007 /* BatchScanTests.swift */,
 				52AFEF6E81F03190ACBA429C /* CalendarServiceTests.swift */,
@@ -717,6 +720,7 @@
 			files = (
 				9C4D4317255AB11232FE947C /* AdvisorTests.swift in Sources */,
 				1315FB5436EF32CE62F8F64E /* AppStateImageStateTests.swift in Sources */,
+				08834263B88E79F5EFD5AD92 /* AppStateNavigationTests.swift in Sources */,
 				295E3410707C6658DF39E50F /* AppStateToastTests.swift in Sources */,
 				E4B0AC3CD16CCC20F5D7AD77 /* AppleIntelligenceLiveTests.swift in Sources */,
 				7C14D465C7871D7B7278B49C /* BatchScanTests.swift in Sources */,
@@ -863,12 +867,14 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "-strict-concurrency=complete -warnings-as-errors";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
@@ -943,12 +949,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "-strict-concurrency=complete -warnings-as-errors";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;

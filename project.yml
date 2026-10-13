@@ -18,6 +18,8 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_APPROACHABLE_CONCURRENCY: YES
     SWIFT_STRICT_CONCURRENCY: complete
+    OTHER_SWIFT_FLAGS: "-strict-concurrency=complete -warnings-as-errors"
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
     DEVELOPMENT_TEAM: WGKKDYY866
 targets:
   Pencild:

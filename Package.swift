@@ -14,6 +14,7 @@ let package = Package(
             path: "Sources/Pencild",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
+                .unsafeFlags(["-strict-concurrency=complete", "-warnings-as-errors"]),
             ]
         ),
         .testTarget(
@@ -22,6 +23,7 @@ let package = Package(
             path: "Tests/PencildTests",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
+                .unsafeFlags(["-strict-concurrency=complete", "-warnings-as-errors"]),
             ]
         ),
     ]
