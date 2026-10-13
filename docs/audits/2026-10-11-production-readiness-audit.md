@@ -239,3 +239,24 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   way to close the screen.
 - Verified by `paywallInterstitialsRender` in `TabletWorkspaceTests` at
   regular and compact width.
+
+### 7.7 Screenshot Extraction Grounding (2026-10-13)
+- **Undated screenshots no longer become events.** Every screenshot carries a
+  status-bar clock. The `NSDataDetector` fallback read a bare time ("9:41") or
+  a vague phrase ("last night") as today and rolled it forward a year, which
+  fabricated a date for chats, notes, and other undated screenshots and filled
+  the Review queue. A bare clock in the top strip of the image is now dropped
+  before extraction, and a fallback match must name a month, weekday, or
+  numeric date. The status-bar time also no longer becomes an event's start
+  time.
+- **Titles come from the most prominent line.** Title ranking had weighted
+  line width (0.45) above type size, measured "size" as height divided by
+  character count, and penalised flyer words such as LIVE and FREE, so a wide
+  description line could beat a large headline. Ranking now uses rendered
+  line height first, keeps width as a minor signal, and penalises
+  sentence-like body copy.
+- Covered by `ScreenshotGroundingTests` (7 tests). Three of them fail on the
+  previous extraction code.
+- Candidates created before this fix stay in the Review queue until they are
+  discarded.
+

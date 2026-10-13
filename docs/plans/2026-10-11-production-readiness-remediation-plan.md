@@ -358,3 +358,11 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - Reverted the `37eede7` purchase-button change. Buttons again show the live
   StoreKit price, the trial offer, or "Price unavailable".
 - No open items remain from the Profile & Settings follow-up audit.
+
+2026-10-13: Extraction grounding fixes, from user reports.
+- `3b33161`: only text that names a day produces an event. The status-bar
+  clock and bare times no longer fabricate dates, so undated screenshots stay
+  out of Review.
+- `abd8829`: the title is the most prominent line, not a wide description.
+- iPhone 17 and iPad Pro 11-inch (M5): 145 tests in 33 suites passed.
+
