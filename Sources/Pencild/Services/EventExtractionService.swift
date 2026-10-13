@@ -1139,7 +1139,8 @@ public enum DateInference {
         let upperLines = lines.filter { $0.boundingBox.origin.y >= 0.40 }
         let candidatePool = upperLines.isEmpty ? lines : upperLines
 
-        let maxFontProxy = candidatePool.map { $0.fontSizeProxy }.max() ?? 1.0
+        // Type size is the rendered line height; the tallest line in the pool is the headline.
+        let maxHeight = candidatePool.map { $0.boundingBox.height }.max() ?? 1.0
 
         for line in candidatePool {
             let trimmed = line.text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1154,13 +1155,17 @@ public enum DateInference {
             let isNumericDate = trimmed.range(of: "^\\d{1,2}[/.-]\\d{1,2}", options: .regularExpression) != nil
             if isNumericDate || isTemporalOnlyLine(trimmed) { continue }
 
-            let widthScore = Float(line.normalizedWidth) * 0.45
-            let fontRank = Float(line.fontSizeProxy / max(0.001, maxFontProxy)) * 0.30
+            // Prominence dominates: a large headline beats wider body copy.
+            let sizeRank = Float(line.boundingBox.height / max(0.001, maxHeight)) * 0.55
+            let widthScore = Float(line.normalizedWidth) * 0.10
             // Top quartile bonus: maxY in top 25% of image (y >= 0.75)
-            let topQuartileBonus: Float = line.boundingBox.maxY >= 0.75 ? 0.15 : 0.0
-            let penalty: Float = containsBoilerplate ? 0.25 : 0.0
+            let topQuartileBonus: Float = line.boundingBox.maxY >= 0.75 ? 0.10 : 0.0
+            // Sentence-like lines (many words, or closing punctuation) are descriptions, not titles.
+            let wordCount = trimmed.split(whereSeparator: \.isWhitespace).count
+            let isSentence = wordCount > 8 || trimmed.hasSuffix(".") || trimmed.hasSuffix("!") || trimmed.hasSuffix("?")
+            let penalty: Float = (containsBoilerplate ? 0.25 : 0.0) + (isSentence ? 0.25 : 0.0)
 
-            let totalScore = max(0.1, widthScore + fontRank + topQuartileBonus - penalty)
+            let totalScore = max(0.1, sizeRank + widthScore + topQuartileBonus - penalty)
             scoredLines.append((line, totalScore))
         }
 
