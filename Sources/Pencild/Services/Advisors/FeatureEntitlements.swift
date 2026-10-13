@@ -185,31 +185,84 @@ public protocol EntitlementProviding: Sendable {
 /// A typed, hashable identifier for a StoreKit product. Raw values are the exact product
 /// identifiers from `Pencild.storekit` (the four known IDs). Tier and annual status are
 /// derived from the raw value, not inferred via substring matching.
+/// How a plan is paid for. Lifetime is a one-time, non-renewing purchase.
+public enum BillingPeriod: Sendable, Hashable, CaseIterable {
+    case monthly, annual, lifetime
+
+    public var displayName: String {
+        switch self {
+        case .monthly: return "Monthly"
+        case .annual: return "Annual"
+        case .lifetime: return "Lifetime"
+        }
+    }
+
+    public var billingDescription: String {
+        switch self {
+        case .monthly: return "Billed monthly"
+        case .annual: return "Billed annually"
+        case .lifetime: return "One-time purchase · never renews"
+        }
+    }
+}
+
 public struct SubscriptionProductID: Sendable, Hashable {
     public let rawValue: String
     public var tier: SubscriptionTier
-    public var isAnnual: Bool
+    public var period: BillingPeriod
 
-    public init(rawValue: String, tier: SubscriptionTier, isAnnual: Bool) {
+    public init(rawValue: String, tier: SubscriptionTier, period: BillingPeriod) {
         self.rawValue = rawValue
         self.tier = tier
-        self.isAnnual = isAnnual
+        self.period = period
+    }
+}
+
+/// Lifetime purchases are an introductory promotion, offered for six months from launch. Owners
+/// keep their entitlement after the window closes; only the offer stops being shown.
+public enum LifetimeIntroOffer {
+    /// First day the offer is no longer shown (it is available through April 13, 2027).
+    public static let endsOn = DateComponents(year: 2027, month: 4, day: 14)
+
+    public static func isAvailable(at now: Date = Date(), calendar: Calendar = .current) -> Bool {
+        guard let end = calendar.date(from: endsOn) else { return false }
+        return now < end
+    }
+
+    /// Last day of the offer, formatted for display, e.g. "Apr 13, 2027".
+    public static func lastDayText(calendar: Calendar = .current) -> String {
+        guard let end = calendar.date(from: endsOn),
+              let lastDay = calendar.date(byAdding: .day, value: -1, to: end) else { return "" }
+        return lastDay.formatted(date: .abbreviated, time: .omitted)
     }
 }
 
 // MARK: - Subscription Catalog
 
-/// The typed, exact product catalog for the four known StoreKit identifiers. Centralizes the
+/// The typed, exact product catalog for the known StoreKit identifiers. Centralizes the
 /// product-ID-to-tier mapping so that no duplicate/substring-based inference exists anywhere
 /// in the codebase (addressing F-05). Unknown product IDs resolve to no entitlement.
 public enum SubscriptionCatalog {
-    /// The four known product identifiers from `Pencild.storekit`.
+    /// The known product identifiers from `Pencild.storekit`: auto-renewing monthly and annual
+    /// subscriptions, plus non-consumable lifetime purchases, for each paid tier.
     public static let allProductIDs: Set<SubscriptionProductID> = [
-        SubscriptionProductID(rawValue: "com.pencild.plus.monthly", tier: .plus, isAnnual: false),
-        SubscriptionProductID(rawValue: "com.pencild.plus.annual", tier: .plus, isAnnual: true),
-        SubscriptionProductID(rawValue: "com.pencild.premium.monthly", tier: .premium, isAnnual: false),
-        SubscriptionProductID(rawValue: "com.pencild.premium.annual", tier: .premium, isAnnual: true),
+        SubscriptionProductID(rawValue: "com.pencild.plus.monthly", tier: .plus, period: .monthly),
+        SubscriptionProductID(rawValue: "com.pencild.plus.annual", tier: .plus, period: .annual),
+        SubscriptionProductID(rawValue: "com.pencild.plus.lifetime", tier: .plus, period: .lifetime),
+        SubscriptionProductID(rawValue: "com.pencild.premium.monthly", tier: .premium, period: .monthly),
+        SubscriptionProductID(rawValue: "com.pencild.premium.annual", tier: .premium, period: .annual),
+        SubscriptionProductID(rawValue: "com.pencild.premium.lifetime", tier: .premium, period: .lifetime),
     ]
+
+    /// The product for a tier and billing period, if one exists.
+    public static func product(tier: SubscriptionTier, period: BillingPeriod) -> SubscriptionProductID? {
+        allProductIDs.first { $0.tier == tier && $0.period == period }
+    }
+
+    /// The catalog entry for a product identifier, if known.
+    public static func product(id productID: String) -> SubscriptionProductID? {
+        allProductIDs.first { $0.rawValue == productID }
+    }
 
     /// The complete set of product identifiers.
     public static let productIdentifiers: Set<String> = Set(allProductIDs.map(\.rawValue))

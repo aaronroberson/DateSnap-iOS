@@ -7,7 +7,7 @@ struct PremiumPaywallView: View {
     @EnvironmentObject private var appState: AppState
     @StateObject private var purchases = PurchaseViewModel()
     
-    @State private var selectedPlanIsAnnual: Bool = true
+    @State private var selectedPeriod: BillingPeriod = .annual
     @State private var trialEligibleProductIDs: Set<String> = []
     @State private var restoreMessage: String?
     
@@ -76,18 +76,27 @@ struct PremiumPaywallView: View {
                         PDPlanOption(
                             title: "Annual",
                             badge: savingsText,
-                            detail: planPriceDescription(.premium, annual: true),
-                            price: priceAmount(.premium, annual: true),
+                            detail: planPriceDescription(.premium, .annual),
+                            price: priceAmount(.premium, .annual),
                             showsPerMonth: purchases.monthlyEquivalent(.premium) != nil,
-                            isSelected: selectedPlanIsAnnual
-                        ) { selectedPlanIsAnnual = true }
+                            isSelected: selectedPeriod == .annual
+                        ) { selectedPeriod = .annual }
                         PDPlanOption(
                             title: "Monthly",
-                            detail: planPriceDescription(.premium, annual: false),
-                            price: priceAmount(.premium, annual: false),
-                            showsPerMonth: purchases.displayPrice(.premium, annual: false) != nil,
-                            isSelected: !selectedPlanIsAnnual
-                        ) { selectedPlanIsAnnual = false }
+                            detail: planPriceDescription(.premium, .monthly),
+                            price: priceAmount(.premium, .monthly),
+                            showsPerMonth: purchases.displayPrice(.premium, .monthly) != nil,
+                            isSelected: selectedPeriod == .monthly
+                        ) { selectedPeriod = .monthly }
+                        if LifetimeIntroOffer.isAvailable() {
+                            PDPlanOption(
+                                title: "Lifetime",
+                                badge: "Intro offer",
+                                detail: planPriceDescription(.premium, .lifetime),
+                                price: priceAmount(.premium, .lifetime),
+                                isSelected: selectedPeriod == .lifetime
+                            ) { selectedPeriod = .lifetime }
+                        }
                     }
                     .padding(.horizontal)
 
@@ -106,7 +115,7 @@ struct PremiumPaywallView: View {
                         }
                     }
                     .buttonStyle(PDPrimaryButtonStyle())
-                    .disabled(!purchases.canPurchase(.premium, annual: selectedPlanIsAnnual) || appState.isPremiumMember)
+                    .disabled(!purchases.canPurchase(.premium, selectedPeriod) || appState.isPremiumMember)
                     .padding(.horizontal)
                     
                     // Reassurance & Terms
@@ -153,8 +162,8 @@ struct PremiumPaywallView: View {
             .pdScreenBackground()
             .task {
                 await purchases.attach(services.subscription)
-                for annual in [true, false] {
-                    if let product = purchases.product(.premium, annual: annual),
+                for period in [BillingPeriod.annual, .monthly] {
+                    if let product = purchases.product(.premium, period),
                        let subscription = product.subscription,
                        await subscription.isEligibleForIntroOffer {
                         trialEligibleProductIDs.insert(product.id)
@@ -182,19 +191,20 @@ struct PremiumPaywallView: View {
 
     private var ctaTitle: String {
         if appState.isPremiumMember { return "Premium Is Active" }
-        guard let price = purchases.displayPrice(.premium, annual: selectedPlanIsAnnual) else {
+        guard let price = purchases.displayPrice(.premium, selectedPeriod) else {
             return priceUnavailableText
         }
-        if let trial = eligibleTrialDescription(annual: selectedPlanIsAnnual) {
+        if selectedPeriod == .lifetime { return "Buy Lifetime for \(price)" }
+        if let trial = eligibleTrialDescription(selectedPeriod) {
             return "Start \(trial.capitalized) Free Trial"
         }
         return appState.isPlusMember ? "Upgrade to Premium" : "Subscribe for \(price)"
     }
 
-    private func eligibleTrialDescription(annual: Bool) -> String? {
-        guard let product = purchases.product(.premium, annual: annual),
+    private func eligibleTrialDescription(_ period: BillingPeriod) -> String? {
+        guard let product = purchases.product(.premium, period),
               trialEligibleProductIDs.contains(product.id) else { return nil }
-        return purchases.trialDescription(.premium, annual: annual)
+        return purchases.trialDescription(.premium, period)
     }
 
     private var priceUnavailableText: String {
@@ -202,26 +212,28 @@ struct PremiumPaywallView: View {
     }
 
     private var renewalText: String {
-        guard let price = purchases.displayPrice(.premium, annual: selectedPlanIsAnnual) else {
+        guard let price = purchases.displayPrice(.premium, selectedPeriod) else {
             return priceUnavailableText
         }
-        return "Renews at \(price)/\(selectedPlanIsAnnual ? "yr" : "mo") until cancelled. Cancel anytime in Settings › Apple ID › Subscriptions."
+        if selectedPeriod == .lifetime { return "\(price) once. Lifetime is a one-time purchase and never renews." }
+        return "Renews at \(price)/\(selectedPeriod == .annual ? "yr" : "mo") until cancelled. Cancel anytime in Settings › Apple ID › Subscriptions."
     }
 
-    private func priceAmount(_ plan: PurchaseViewModel.Plan, annual: Bool) -> String {
-        let price = annual ? purchases.monthlyEquivalent(plan) : purchases.displayPrice(plan, annual: false)
+    private func priceAmount(_ plan: PurchaseViewModel.Plan, _ period: BillingPeriod) -> String {
+        let price = period == .annual ? purchases.monthlyEquivalent(plan) : purchases.displayPrice(plan, period)
         return price ?? priceUnavailableText
     }
 
-    private func planPriceDescription(_ plan: PurchaseViewModel.Plan, annual: Bool) -> String {
-        guard let price = purchases.displayPrice(plan, annual: annual) else { return priceUnavailableText }
-        let billing = annual ? "billed annually" : "billed monthly, cancel anytime"
-        let trial = eligibleTrialDescription(annual: annual).map { " (includes \($0) free trial)" } ?? ""
+    private func planPriceDescription(_ plan: PurchaseViewModel.Plan, _ period: BillingPeriod) -> String {
+        if period == .lifetime { return "Pay once · offer ends \(LifetimeIntroOffer.lastDayText())" }
+        guard let price = purchases.displayPrice(plan, period) else { return priceUnavailableText }
+        let billing = period == .annual ? "billed annually" : "billed monthly, cancel anytime"
+        let trial = eligibleTrialDescription(period).map { " (includes \($0) free trial)" } ?? ""
         return "\(price) \(billing)\(trial)"
     }
 
     private var savingsText: String? {
-        guard let monthly = purchases.product(.premium, annual: false), let annual = purchases.product(.premium, annual: true),
+        guard let monthly = purchases.product(.premium, .monthly), let annual = purchases.product(.premium, .annual),
               monthly.price > 0 else { return nil }
         let yearlyAtMonthly = monthly.price * 12
         let saving = (yearlyAtMonthly - annual.price) / yearlyAtMonthly * 100
@@ -230,7 +242,7 @@ struct PremiumPaywallView: View {
     }
 
     private func purchase() async {
-        guard let tier = await purchases.purchase(.premium, annual: selectedPlanIsAnnual) else { return }
+        guard let tier = await purchases.purchase(.premium, selectedPeriod) else { return }
         appState.showToast("Current plan: \(tier.displayName)")
         dismiss()
     }

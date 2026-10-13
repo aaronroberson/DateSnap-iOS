@@ -9,9 +9,11 @@ final class PurchaseViewModel: ObservableObject {
     enum Plan: Sendable {
         case plus, premium
 
-        var monthlyID: String { self == .plus ? "com.pencild.plus.monthly" : "com.pencild.premium.monthly" }
-        var annualID: String { self == .plus ? "com.pencild.plus.annual" : "com.pencild.premium.annual" }
         var tier: SubscriptionTier { self == .plus ? .plus : .premium }
+
+        func productID(_ period: BillingPeriod) -> String? {
+            SubscriptionCatalog.product(tier: tier, period: period)?.rawValue
+        }
     }
 
     private var subscription: SubscriptionServiceProtocol?
@@ -41,28 +43,28 @@ final class PurchaseViewModel: ObservableObject {
         }
     }
 
-    func product(_ plan: Plan, annual: Bool) -> Product? {
-        products[annual ? plan.annualID : plan.monthlyID]
+    func product(_ plan: Plan, _ period: BillingPeriod) -> Product? {
+        plan.productID(period).flatMap { products[$0] }
     }
 
     /// Localized price from the App Store. `nil` means the product is unavailable.
-    func displayPrice(_ plan: Plan, annual: Bool) -> String? {
-        product(plan, annual: annual)?.displayPrice
+    func displayPrice(_ plan: Plan, _ period: BillingPeriod) -> String? {
+        product(plan, period)?.displayPrice
     }
 
     /// Annual price expressed per month, e.g. "$3.33".
     func monthlyEquivalent(_ plan: Plan) -> String? {
-        guard let annual = product(plan, annual: true) else { return nil }
+        guard let annual = product(plan, .annual) else { return nil }
         return (annual.price / 12).formatted(annual.priceFormatStyle)
     }
 
-    func canPurchase(_ plan: Plan, annual: Bool) -> Bool {
-        !isLoadingProducts && !isPurchasing && product(plan, annual: annual) != nil
+    func canPurchase(_ plan: Plan, _ period: BillingPeriod) -> Bool {
+        !isLoadingProducts && !isPurchasing && product(plan, period) != nil
     }
 
     /// Free-trial length from the product's introductory offer, if it has one.
-    func trialDescription(_ plan: Plan, annual: Bool) -> String? {
-        guard let offer = product(plan, annual: annual)?.subscription?.introductoryOffer,
+    func trialDescription(_ plan: Plan, _ period: BillingPeriod) -> String? {
+        guard let offer = product(plan, period)?.subscription?.introductoryOffer,
               offer.paymentMode == .freeTrial else { return nil }
         let period = offer.period
         switch period.unit {
@@ -75,8 +77,8 @@ final class PurchaseViewModel: ObservableObject {
     }
 
     /// Purchases the plan. Returns the resulting tier, or nil if cancelled / failed (with `errorMessage` set on failure).
-    func purchase(_ plan: Plan, annual: Bool) async -> SubscriptionTier? {
-        guard let subscription, let product = product(plan, annual: annual) else {
+    func purchase(_ plan: Plan, _ period: BillingPeriod) async -> SubscriptionTier? {
+        guard let subscription, let product = product(plan, period) else {
             errorMessage = "This plan isn't available yet. Please try again in a moment."
             return nil
         }

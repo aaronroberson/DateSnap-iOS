@@ -79,19 +79,29 @@ struct ManagePlanView: View {
         isRefreshingEntitlement = true
         defer { isRefreshingEntitlement = false }
         var latest: StoreKit.Transaction?
+        var lifetime: SubscriptionProductID?
         let now = Date()
         for await result in StoreKit.Transaction.currentEntitlements {
             guard case .verified(let transaction) = result,
                   transaction.revocationDate == nil,
-                  transaction.productType == .autoRenewable,
-                  SubscriptionCatalog.tier(for: transaction.productID) == tier,
+                  let product = SubscriptionCatalog.product(id: transaction.productID),
+                  product.tier == tier else { continue }
+            // A lifetime purchase outranks any subscription for the same tier.
+            if product.period == .lifetime {
+                lifetime = product
+                continue
+            }
+            guard transaction.productType == .autoRenewable,
                   let expiration = transaction.expirationDate, expiration > now else { continue }
             if latest == nil || expiration > (latest?.expirationDate ?? .distantPast) {
                 latest = transaction
             }
         }
-        guard let latest,
-              let product = SubscriptionCatalog.allProductIDs.first(where: { $0.rawValue == latest.productID }) else {
+        if let lifetime {
+            entitlement = ActiveSubscription(product: lifetime, expirationDate: nil, willAutoRenew: nil)
+            return
+        }
+        guard let latest, let product = SubscriptionCatalog.product(id: latest.productID) else {
             entitlement = nil
             return
         }
@@ -111,7 +121,7 @@ struct ManagePlanView: View {
 
     private var planName: String {
         guard let entitlement else { return tier.displayName }
-        return "\(entitlement.product.tier.displayName) · \(entitlement.product.isAnnual ? "Annual" : "Monthly")"
+        return "\(entitlement.product.tier.displayName) · \(entitlement.product.period.displayName)"
     }
 
     private var planPrice: String {
@@ -128,6 +138,8 @@ struct ManagePlanView: View {
             VStack(alignment: .leading, spacing: 16) {
                 if tier == .starter {
                     PDStatusBadge(text: "Free plan", icon: "sparkle", tone: .info)
+                } else if entitlement?.product.period == .lifetime {
+                    PDStatusBadge(text: "Lifetime access", icon: "infinity", tone: .success)
                 } else if entitlement != nil {
                     PDStatusBadge(text: "Active subscription", icon: "checkmark.seal.fill", tone: .success)
                 } else {
@@ -137,7 +149,7 @@ struct ManagePlanView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(planPrice).font(PDFont.headlineSM).foregroundStyle(Color.pdPrimary)
                     if let entitlement, purchases.products[entitlement.product.rawValue] != nil {
-                        Text(entitlement.product.isAnnual ? "Billed annually" : "Billed monthly")
+                        Text(entitlement.product.period.billingDescription)
                             .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
                     }
                 }

@@ -61,19 +61,23 @@ struct FeatureAccessPolicyTests {
 
 @Suite("Subscription product catalog")
 struct SubscriptionCatalogTests {
-    @Test("Catalog exactly matches the four StoreKit configuration products")
+    @Test("Catalog exactly matches the six StoreKit configuration products")
     func exactCatalog() {
         #expect(SubscriptionCatalog.productIdentifiers == [
             "com.pencild.plus.monthly",
             "com.pencild.plus.annual",
+            "com.pencild.plus.lifetime",
             "com.pencild.premium.monthly",
             "com.pencild.premium.annual",
+            "com.pencild.premium.lifetime",
         ])
-        #expect(SubscriptionCatalog.allProductIDs.count == 4)
+        #expect(SubscriptionCatalog.allProductIDs.count == 6)
         #expect(SubscriptionCatalog.tier(for: "com.pencild.plus.monthly") == .plus)
         #expect(SubscriptionCatalog.tier(for: "com.pencild.plus.annual") == .plus)
+        #expect(SubscriptionCatalog.tier(for: "com.pencild.plus.lifetime") == .plus)
         #expect(SubscriptionCatalog.tier(for: "com.pencild.premium.monthly") == .premium)
         #expect(SubscriptionCatalog.tier(for: "com.pencild.premium.annual") == .premium)
+        #expect(SubscriptionCatalog.tier(for: "com.pencild.premium.lifetime") == .premium)
     }
 
     @Test("Unknown and lookalike identifiers never grant access")

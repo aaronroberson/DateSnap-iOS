@@ -10,11 +10,11 @@ struct PurchaseViewModelTests {
     func missingProductsDoNotExposeFallbackPricing() {
         let purchases = PurchaseViewModel()
 
-        #expect(purchases.displayPrice(.plus, annual: true) == nil)
-        #expect(purchases.displayPrice(.premium, annual: false) == nil)
+        #expect(purchases.displayPrice(.plus, .annual) == nil)
+        #expect(purchases.displayPrice(.premium, .monthly) == nil)
         #expect(purchases.monthlyEquivalent(.plus) == nil)
-        #expect(!purchases.canPurchase(.plus, annual: true))
-        #expect(!purchases.canPurchase(.premium, annual: false))
+        #expect(!purchases.canPurchase(.plus, .annual))
+        #expect(!purchases.canPurchase(.premium, .monthly))
     }
 
     @Test("StoreKit lookup failure remains visible and cannot be purchased")
@@ -24,8 +24,8 @@ struct PurchaseViewModelTests {
         await purchases.attach(OfflineSubscriptionService())
 
         #expect(purchases.errorMessage?.contains("Subscriptions are unavailable") == true)
-        #expect(purchases.displayPrice(.plus, annual: true) == nil)
-        #expect(!purchases.canPurchase(.plus, annual: true))
+        #expect(purchases.displayPrice(.plus, .annual) == nil)
+        #expect(!purchases.canPurchase(.plus, .annual))
     }
 
     @Test("Unavailable product purchase produces truthful visible recovery message")
@@ -34,7 +34,7 @@ struct PurchaseViewModelTests {
         let purchases = PurchaseViewModel()
         await purchases.attach(OfflineSubscriptionService())
 
-        let result = await purchases.purchase(.plus, annual: true)
+        let result = await purchases.purchase(.plus, .annual)
         #expect(result == nil)
         #expect(purchases.errorMessage == "This plan isn't available yet. Please try again in a moment.")
     }

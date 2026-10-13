@@ -4,7 +4,36 @@
 
   ],
   "products" : [
-
+    {
+      "displayPrice" : "39.99",
+      "familyShareable" : false,
+      "internalID" : "64710101",
+      "localizations" : [
+        {
+          "description" : "One-time purchase of Pencil'd Plus. Introductory offer.",
+          "displayName" : "Pencil'd Plus Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.pencild.plus.lifetime",
+      "referenceName" : "Plus Lifetime",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "79.99",
+      "familyShareable" : false,
+      "internalID" : "64710102",
+      "localizations" : [
+        {
+          "description" : "One-time purchase of Pencil'd Premium. Introductory offer.",
+          "displayName" : "Pencil'd Premium Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.pencild.premium.lifetime",
+      "referenceName" : "Premium Lifetime",
+      "type" : "NonConsumable"
+    }
   ],
   "settings" : {
     "_failTransactionsEnabled" : false,

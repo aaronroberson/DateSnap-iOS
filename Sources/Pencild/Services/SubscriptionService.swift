@@ -60,12 +60,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
         currentTier != .starter
     }
 
-    public static let productIdentifiers: Set<String> = [
-        "com.pencild.plus.monthly",
-        "com.pencild.plus.annual",
-        "com.pencild.premium.monthly",
-        "com.pencild.premium.annual"
-    ]
+    public static let productIdentifiers: Set<String> = SubscriptionCatalog.productIdentifiers
 
     private var updateListenerTask: Task<Void, Error>? = nil
     /// Entitlement refreshes run one at a time in request order, so a later refresh always

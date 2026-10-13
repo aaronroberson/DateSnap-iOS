@@ -74,6 +74,8 @@ struct StoreKitRestoreIntegrationTests {
     @Test("Restore after an out-of-band purchase unlocks the purchased tier", .serialized, arguments: [
         ("com.pencild.plus.monthly", SubscriptionTier.plus),
         ("com.pencild.premium.annual", SubscriptionTier.premium),
+        ("com.pencild.plus.lifetime", SubscriptionTier.plus),
+        ("com.pencild.premium.lifetime", SubscriptionTier.premium),
     ])
     func positiveRestoreUnlocksPurchasedTier(productID: String, expected: SubscriptionTier) async throws {
         let session = try makeSession()
