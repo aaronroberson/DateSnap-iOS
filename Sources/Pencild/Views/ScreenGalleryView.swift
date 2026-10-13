@@ -17,8 +17,9 @@ struct ScreenGalleryView: View {
         // nil for screens that live inside the Settings cluster tab.
         let modal: AppModalScreen?
         // Non-nil routes jump into the Settings cluster's navigation stack.
-        // An empty string opens the Settings Hub itself.
-        var settingsRoute: String? = nil
+        var settingsRoute: SettingsRoute? = nil
+        // Opens the Settings tab at its hub.
+        var opensSettingsHub = false
     }
     
     let screens: [ScreenItem] = [
@@ -109,7 +110,7 @@ struct ScreenGalleryView: View {
             description: "Profile, scanning & capture, destinations, privacy toggles, billing and support entry points.",
             category: "Settings",
             modal: nil,
-            settingsRoute: ""
+            opensSettingsHub: true
         ),
         ScreenItem(
             id: 12,
@@ -118,7 +119,7 @@ struct ScreenGalleryView: View {
             description: "Zero-cloud extraction story, permission audits, data retention controls and guarantees.",
             category: "Settings",
             modal: nil,
-            settingsRoute: SettingsRoute.privacyCenter.rawValue
+            settingsRoute: .privacyCenter
         ),
         ScreenItem(
             id: 13,
@@ -127,7 +128,7 @@ struct ScreenGalleryView: View {
             description: "Scan automation profiles, capture scope, AI confidence tuning and energy throttling.",
             category: "Settings",
             modal: nil,
-            settingsRoute: SettingsRoute.automationSettings.rawValue
+            settingsRoute: .automationSettings
         ),
         ScreenItem(
             id: 14,
@@ -136,7 +137,7 @@ struct ScreenGalleryView: View {
             description: "Alert architecture presets, editable timed alerts, delivery routing and live simulation.",
             category: "Settings",
             modal: nil,
-            settingsRoute: SettingsRoute.reminderSettings.rawValue
+            settingsRoute: .reminderSettings
         ),
         ScreenItem(
             id: 15,
@@ -145,7 +146,7 @@ struct ScreenGalleryView: View {
             description: "Active subscription, current benefits, Premium upsell and subscription controls.",
             category: "Settings",
             modal: nil,
-            settingsRoute: SettingsRoute.managePlan.rawValue
+            settingsRoute: .managePlan
         ),
         ScreenItem(
             id: 16,
@@ -154,7 +155,7 @@ struct ScreenGalleryView: View {
             description: "Searchable care hub, quick troubleshooting guides, FAQs and diagnostic summary.",
             category: "Settings",
             modal: nil,
-            settingsRoute: SettingsRoute.helpFeedback.rawValue
+            settingsRoute: .helpFeedback
         ),
         ScreenItem(
             id: 17,
@@ -163,7 +164,7 @@ struct ScreenGalleryView: View {
             description: "Official launch kit: social angles, ad headlines, CTAs and the email announcement.",
             category: "Settings",
             modal: nil,
-            settingsRoute: SettingsRoute.marketingKit.rawValue
+            settingsRoute: .marketingKit
         ),
         ScreenItem(
             id: 18,
@@ -172,7 +173,7 @@ struct ScreenGalleryView: View {
             description: "Profile persona, productivity velocity bento, credentials and Pencil'd Pro spotlight.",
             category: "Account & Security",
             modal: .userProfile,
-            settingsRoute: SettingsRoute.userProfile.rawValue
+            settingsRoute: .userProfile
         ),
         ScreenItem(
             id: 19,
@@ -221,7 +222,7 @@ struct ScreenGalleryView: View {
             description: "Seamless Zero-Conflict Sync, iCloud & Google calendar account groupings, and Ask Every Time toggle.",
             category: "Settings",
             modal: .defaultCalendar,
-            settingsRoute: SettingsRoute.defaultCalendar.rawValue
+            settingsRoute: .defaultCalendar
         )
     ]
     
@@ -257,15 +258,15 @@ struct ScreenGalleryView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             if let route = item.settingsRoute {
                                 appState.selectedTab = .settings
-                                if !route.isEmpty {
-                                    settingsState.pendingRoute = route
-                                }
+                                settingsState.pendingRoute = route
+                            } else if item.opensSettingsHub {
+                                appState.selectedTab = .settings
                             } else if item.id == 7 {
                                 appState.selectedTab = .home
                             } else if item.id == 3 {
                                 appState.openHistory()
                             } else if let modal = item.modal {
-                                appState.activeModal = modal
+                                Task { await appState.present(modal) }
                             }
                         }
                     } label: {

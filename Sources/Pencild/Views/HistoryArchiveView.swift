@@ -190,7 +190,7 @@ struct HistoryArchiveView: View {
             PDCard {
                 VStack(alignment: .leading, spacing: PDSpacing.sm) {
                     Button {
-                        appState.activeModal = saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)
+                        Task { await appState.present(saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)) }
                     } label: {
                         HStack(alignment: .top, spacing: PDSpacing.md) {
                             PDScanSourceThumbnail(candidate: candidate)
@@ -276,7 +276,7 @@ struct HistoryArchiveView: View {
         }
         if saved.status == .saved, let event = saved.candidate?.toPencildEvent() {
             Button {
-                appState.activeModal = .eventReviewEdit(event)
+                Task { await appState.present(.eventReviewEdit(event)) }
             } label: {
                 Label("Edit", systemImage: "pencil")
             }

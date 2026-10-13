@@ -299,14 +299,8 @@ struct PremiumPaywallView: View {
     }
 
     private var ctaTitle: String {
-        if appState.isPremiumMember { return "Premium Is Active" }
-        guard let price = purchases.displayPrice(.premium, annual: selectedPlanIsAnnual) else {
-            return priceUnavailableText
-        }
-        if let trial = eligibleTrialDescription(annual: selectedPlanIsAnnual) {
-            return "Start \(trial.capitalized) Free Trial"
-        }
-        return appState.isPlusMember ? "Upgrade to Premium" : "Subscribe for \(price)"
+        if appState.isPremiumMember { return "\(appState.subscriptionTier.displayName) Is Active" }
+        return "UPGRADE TO PREMIUM"
     }
 
     private func eligibleTrialDescription(annual: Bool) -> String? {

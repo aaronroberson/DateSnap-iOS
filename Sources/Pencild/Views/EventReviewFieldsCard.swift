@@ -40,10 +40,6 @@ struct EventReviewFieldsCard: View {
             }
 
             HStack(spacing: 10) {
-                Image(systemName: "textformat")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.pdPrimary)
-
                 TextField("Enter event name...", text: $viewModel.title)
                     .font(PDFont.labelLG)
                     .foregroundStyle(Color.pdOnSurface)

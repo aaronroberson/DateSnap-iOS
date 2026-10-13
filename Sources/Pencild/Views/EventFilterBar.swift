@@ -192,7 +192,7 @@ struct EventSearchFilterBar: View {
         let locked = filter == .duplicates && !appState.isEntitled(to: .duplicateClusters)
         return Button {
             if locked {
-                appState.activeModal = .premiumPaywall
+                Task { await appState.present(.premiumPaywall) }
             } else {
                 smartFilter = isSelected ? nil : filter
             }

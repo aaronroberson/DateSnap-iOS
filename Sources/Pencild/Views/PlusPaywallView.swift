@@ -302,13 +302,7 @@ struct PlusPaywallView: View {
 
     private var ctaTitle: String {
         if appState.isPlusMember { return "\(appState.subscriptionTier.displayName) Is Active" }
-        guard let price = purchases.displayPrice(.plus, annual: selectedPlanIsAnnual) else {
-            return priceUnavailableText
-        }
-        if let trial = eligibleTrialDescription(annual: selectedPlanIsAnnual) {
-            return "Start \(trial.capitalized) Free Trial"
-        }
-        return "Subscribe for \(price)"
+        return "UPGRADE TO PLUS"
     }
 
     private func eligibleTrialDescription(annual: Bool) -> String? {

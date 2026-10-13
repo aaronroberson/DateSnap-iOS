@@ -401,7 +401,7 @@ struct SettingsHubView: View {
     }
 
     private func navigate(_ route: SettingsRoute) {
-        settings.pendingRoute = route.rawValue
+        settings.pendingRoute = route
     }
 
     private func permissionRow(icon: String, iconColor: Color, title: String, subtitle: String, status: String, granted: Bool) -> some View {

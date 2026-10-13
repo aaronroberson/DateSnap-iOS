@@ -167,7 +167,7 @@ struct HelpFeedbackView: View {
                 ForEach(filteredTopics) { topic in
                     Button {
                         if topic.id == "manageBilling" {
-                            settings.pendingRoute = SettingsRoute.managePlan.rawValue
+                            settings.pendingRoute = .managePlan
                         } else {
                             topicGuide = topic
                         }
@@ -196,7 +196,7 @@ struct HelpFeedbackView: View {
 
     private var billingQuickAction: some View {
         Button {
-            settings.pendingRoute = SettingsRoute.managePlan.rawValue
+            settings.pendingRoute = .managePlan
         } label: {
             PDCard {
                 VStack(alignment: .leading, spacing: 8) {

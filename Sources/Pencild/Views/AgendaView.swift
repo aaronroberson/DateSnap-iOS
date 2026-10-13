@@ -280,7 +280,7 @@ struct AgendaView: View {
         return VStack(alignment: .leading, spacing: 10) {
             Button {
                 guard let event = candidate?.toPencildEvent() else { return }
-                appState.activeModal = saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)
+                Task { await appState.present(saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)) }
             } label: {
                 HStack(alignment: .top, spacing: 12) {
                     PDDateBadge(

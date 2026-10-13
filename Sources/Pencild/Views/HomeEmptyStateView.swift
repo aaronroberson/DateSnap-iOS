@@ -283,7 +283,7 @@ struct HomeEmptyStateView: View {
                         .foregroundStyle(Color.pdPrimary)
                 } else {
                     Button {
-                        appState.activeModal = .plusPaywall
+                        Task { await appState.present(.plusPaywall) }
                     } label: {
                         Label("Auto-detect with Plus", systemImage: "lock.fill")
                             .font(PDFont.labelMD)
@@ -543,7 +543,7 @@ struct HomeEmptyStateView: View {
         if appState.isEntitled(to: .documentImport) {
             showFileImporter = true
         } else {
-            appState.activeModal = .premiumPaywall
+            Task { await appState.present(.premiumPaywall) }
         }
     }
 
@@ -607,7 +607,7 @@ struct HomeEmptyStateView: View {
                 return
             }
             homeViewModel.loadRecentScreenshots(limit: 30)
-            appState.activeModal = .recentScreenshots
+            Task { await appState.present(.recentScreenshots) }
         }
     }
 }

@@ -21,6 +21,9 @@ struct BatchReviewView: View {
     @State private var showFailureAlert = false
     @State private var pendingFailureAlert = false
     @State private var showNotificationRecovery = false
+    /// A possible-duplicate saved event opened from a card. Shown from this sheet because the
+    /// root can present only one sheet and leaving would discard the batch's unsaved edits.
+    @State private var openedDuplicate: PencildEvent? = nil
 
     init(session: BatchReviewSession) {
         _session = StateObject(wrappedValue: session)
@@ -58,6 +61,9 @@ struct BatchReviewView: View {
                 for event in session.events {
                     event.review.findDuplicates(in: modelContext)
                 }
+            }
+            .sheet(item: $openedDuplicate) { event in
+                SavedEventDetailView(event: event)
             }
             .sheet(isPresented: $showNotificationRecovery, onDismiss: {
                 if pendingFailureAlert {
@@ -146,7 +152,8 @@ struct BatchReviewView: View {
                 onDismissDuplicateWarning: { dismissedDuplicateWarnings.insert(event.id) },
                 onToggle: { toggle(event.id) },
                 onDiscard: { showDiscardConfirmFor = event },
-                onNotificationsDenied: { showNotificationRecovery = true }
+                onNotificationsDenied: { showNotificationRecovery = true },
+                onOpenDuplicate: { openedDuplicate = $0 }
             )
         }
     }
@@ -322,7 +329,6 @@ struct BatchReviewView: View {
 private struct BatchEventCard: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.services) private var services
-    @EnvironmentObject private var appState: AppState
     @ObservedObject var event: BatchEventItem
     /// The card reads editable state through the review VM, so observe it directly too.
     @ObservedObject private var review: EventReviewViewModel
@@ -332,6 +338,7 @@ private struct BatchEventCard: View {
     let onToggle: () -> Void
     let onDiscard: () -> Void
     let onNotificationsDenied: () -> Void
+    let onOpenDuplicate: (PencildEvent) -> Void
 
     init(
         event: BatchEventItem,
@@ -340,7 +347,8 @@ private struct BatchEventCard: View {
         onDismissDuplicateWarning: @escaping () -> Void,
         onToggle: @escaping () -> Void,
         onDiscard: @escaping () -> Void,
-        onNotificationsDenied: @escaping () -> Void
+        onNotificationsDenied: @escaping () -> Void,
+        onOpenDuplicate: @escaping (PencildEvent) -> Void
     ) {
         _event = ObservedObject(wrappedValue: event)
         _review = ObservedObject(wrappedValue: event.review)
@@ -350,6 +358,7 @@ private struct BatchEventCard: View {
         self.onToggle = onToggle
         self.onDiscard = onDiscard
         self.onNotificationsDenied = onNotificationsDenied
+        self.onOpenDuplicate = onOpenDuplicate
     }
 
     var body: some View {
@@ -420,7 +429,7 @@ private struct BatchEventCard: View {
                     matches: review.duplicateMatches,
                     onOpen: { candidateID in
                         guard let candidate = SavedEventActions.candidate(id: candidateID, in: modelContext) else { return }
-                        Task { await appState.present(.savedEventDetail(candidate.toPencildEvent())) }
+                        onOpenDuplicate(candidate.toPencildEvent())
                     },
                     onKeepSeparate: onDismissDuplicateWarning
                 )

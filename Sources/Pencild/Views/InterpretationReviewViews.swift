@@ -390,13 +390,6 @@ struct ReviewSuggestionsCard: View {
                             detail: plan.rationale,
                             actionTitle: "Use"
                         ) { viewModel.applyReminderPlan() }
-                    } else {
-                        Button(action: onUpgrade) {
-                            Label("Tailored alert plans with Premium", systemImage: "lock.fill")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .frame(minHeight: 44)
-                        }
                     }
                 }
 

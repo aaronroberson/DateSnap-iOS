@@ -40,11 +40,9 @@ struct SettingsClusterView: View {
                 }
         }
         .onChange(of: settings.pendingRoute) { _, newValue in
-            guard let raw = newValue else { return }
+            guard let route = newValue else { return }
             settings.pendingRoute = nil
-            if let route = SettingsRoute(rawValue: raw) {
-                path.append(route)
-            }
+            path.append(route)
         }
     }
 }

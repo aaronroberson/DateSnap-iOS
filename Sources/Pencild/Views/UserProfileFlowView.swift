@@ -162,7 +162,7 @@ struct UserProfileFlowView: View {
                     Spacer()
                 }
                 Button {
-                    appState.activeModal = .premiumPaywall
+                    Task { await appState.present(.premiumPaywall) }
                 } label: {
                     Text(tier == .starter ? "See plans" : "Manage subscription")
                         .font(PDFont.labelLG)
@@ -348,7 +348,7 @@ struct UserProfileFlowView: View {
             PDSectionHeader(title: "Pipeline & Preferences")
 
             PDGroupedList {
-                Button { settings.pendingRoute = SettingsRoute.reminderSettings.rawValue } label: {
+                Button { settings.pendingRoute = .reminderSettings } label: {
                     PDListRow(
                         icon: "alarm.fill",
                         tint: .pdPrimary,
@@ -361,7 +361,7 @@ struct UserProfileFlowView: View {
 
                 PDRowDivider()
 
-                Button { settings.pendingRoute = SettingsRoute.defaultCalendar.rawValue } label: {
+                Button { settings.pendingRoute = .defaultCalendar } label: {
                     PDListRow(
                         icon: "calendar.badge.checkmark",
                         tint: .pdPrimary,
@@ -374,7 +374,7 @@ struct UserProfileFlowView: View {
 
                 PDRowDivider()
 
-                Button { settings.pendingRoute = SettingsRoute.automationSettings.rawValue } label: {
+                Button { settings.pendingRoute = .automationSettings } label: {
                     PDListRow(
                         icon: "camera.viewfinder",
                         tint: .pdPrimary,

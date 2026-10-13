@@ -148,6 +148,33 @@ Consequences for this plan:
 - Phases 2–3 split across a few subagents working on disjoint view files. Each gets this plan, the token/component API, and its Stitch HTML paths. Shared files (`AppState`, `ContentView`, `PencilComponents`) are only touched by the main session.
 - Commit per feature chunk (Conventional Commits). Run the brand pre-commit hook (`./scripts/install-hooks.sh`).
 
+## Current verification record (2026-10-11)
+
+The in-scope implementation is present on `main` and has passed the current
+build, test, accessibility, and production-artifact checks recorded in the
+companion remediation plan:
+
+- XcodeGen output, Debug builds, and Release build succeed for the supported
+  iPhone 17 and iPad Pro 11-inch simulator destinations.
+- Full suites report 125 tests total, 123 passed, 2 skipped, 0 failed, with no
+  runtime warnings on both destinations. Result bundles:
+  `/private/tmp/pencild-phase4-current-iphone.xcresult` and
+  `/private/tmp/pencild-phase4-current-ipad-retry.xcresult`.
+- `scripts/verify-release-content.sh --require-app`, the brand gate, and
+  `git diff --check` pass. The legacy literal scan has no in-scope view matches
+  for `dsPrimaryActionGradient`, `0A0E1E`, or `7CFFEA`.
+- Dynamic Type XL, Reduce Motion, VoiceOver labels, and 44-point controls were
+  exercised; the regular-size tablet workspace structure and touch metadata are
+  covered by `TabletWorkspaceTests.swift`.
+
+The following plan checks remain environment-limited and are recorded without
+invented evidence: a positive local StoreKit restore could not be completed
+because the CLI simulator did not synchronize the local catalog, and populated
+iPad dual-pane Event Review/Saved Event Detail smoke was not exercised with a
+live record. See
+[`2026-10-11-production-readiness-remediation-plan.md`](2026-10-11-production-readiness-remediation-plan.md)
+for the full evidence and ownership notes.
+
 ## Verification
 - `xcodegen generate --spec project.yml`, then:
   ```sh
@@ -167,6 +194,7 @@ Consequences for this plan:
 - Accessibility: Dynamic Type XL, VoiceOver labels on icon-only buttons, 44pt targets, Reduce Motion on splash and stepper.
 
 ## Context
+
 At the start of this refresh, only `HomeEmptyStateView` and `PencilSplashView` used the Pencil'd `pd*` tokens (`Theme/PencilTokens.swift`); every other view used the legacy theme. That legacy theme consisted of:
 - `Color.ds*` from `Theme/Colors.swift`: cyan `#7CFFEA` on `#050816`
 - `DSTypography` from `Theme/Typography.swift`: SF system font
@@ -210,7 +238,7 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - CTA gradient: `#ff7a00` → `#ff7288` → `#670fac` (or `#deb7ff`).
 - Headline gradient: `#ff7a00` → `#ff5277` → `#deb7ff`.
 
-**Type:** Plus Jakarta Sans, which is not bundled yet.
+**Type:** Plus Jakarta Sans, bundled under `Resources/Fonts/` and registered in the app manifest.
 
 | Role | Size/line | Weight |
 |---|---|---|

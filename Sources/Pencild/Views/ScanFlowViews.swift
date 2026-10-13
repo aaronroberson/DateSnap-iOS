@@ -2,44 +2,6 @@ import SwiftUI
 import SwiftData
 import Photos
 
-// MARK: - Scan Outcome Routing
-extension AppState {
-    /// Presents a modal, first dismissing any sheet already on screen.
-    func present(_ modal: AppModalScreen) async {
-        if activeModal != nil {
-            activeModal = nil
-            try? await Task.sleep(for: .milliseconds(400))
-        }
-        activeModal = modal
-    }
-
-    /// Routes a finished scan to review, the no-dates recovery screen, or an error toast.
-    func handleScanOutcome(_ scan: ScanViewModel) async {
-        switch scan.stage {
-        case .complete(let candidates):
-            rememberSourceImage(scan.currentProcessingImage, for: candidates)
-            guard let first = candidates.first else { return }
-            await present(.eventReviewEdit(first.toPencildEvent()))
-            if candidates.count > 1 {
-                showToast("\(candidates.count - 1) more event\(candidates.count == 2 ? "" : "s") waiting in Review")
-            }
-        case .noDatesFound(let rawText):
-            lastScanRawText = rawText
-            lastScanImage = scan.currentProcessingImage
-            await present(.noDatesFound)
-        case .alreadySaved(let count):
-            activeModal = nil
-            showToast(count == 1 ? "Already saved — find it in History" : "All \(count) events are already saved")
-            openHistory()
-        case .failed(let message):
-            activeModal = nil
-            showToast(message)
-        default:
-            break
-        }
-    }
-}
-
 // MARK: - Recent Screenshots Gallery
 struct RecentScreenshotsView: View {
     @Environment(\.dismiss) private var dismiss
@@ -489,7 +451,7 @@ struct ReviewQueueView: View {
 
     private var queueRows: some View {
         ForEach(visibleCandidates) { candidate in
-            ReviewQueueRow(candidate: candidate, onReview: { appState.review(candidate) }, onDiscard: {
+            ReviewQueueRow(candidate: candidate, onReview: { Task { await appState.review(candidate) } }, onDiscard: {
                 candidateToDiscard = candidate
                 showDiscardConfirmation = true
             })

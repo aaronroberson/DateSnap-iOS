@@ -254,12 +254,8 @@ struct ContentView: View {
             appState.showToast("That event is no longer in Pencil'd")
             return
         }
-        let event = candidate.toPencildEvent()
-        appState.activeModal = nil
-        // Let any presented sheet dismiss before presenting the detail.
         Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(350))
-            appState.activeModal = candidate.savedEvent?.status == .saved ? .savedEventDetail(event) : .eventReviewEdit(event)
+            await appState.presentDeepLinkedEvent(candidate)
         }
     }
     

@@ -225,14 +225,6 @@ struct EventReviewForm: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: PDSpacing.md) {
             PDTopBar(title: viewModel.isEditingSavedEvent ? "Edit event" : "Review event")
-            HStack(spacing: PDSpacing.sm) {
-                Text(viewModel.isEditingSavedEvent ? "Agenda" : "Review")
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 9, weight: .semibold))
-                Text(viewModel.isEditingSavedEvent ? "Edit event" : "Verify details")
-            }
-            .font(PDFont.labelMD)
-            .foregroundStyle(Color.pdOnSurfaceVariant)
             PDScreenIntro(
                 eyebrow: viewModel.isEditingSavedEvent ? "Saved event" : "Verification stage",
                 title: viewModel.isEditingSavedEvent ? "Edit event" : "Review before saving",
@@ -337,6 +329,8 @@ struct EventReviewForm: View {
         VStack(spacing: 14) {
             PDSectionHeader(title: "Extracted fields", trailing: "Tap any field to refine")
             EventReviewFieldsCard(viewModel: viewModel, onOpenURL: { openURL($0) })
+            destinationCard
+            PDSectionHeader(title: "CALENDAR & REMINDERS", trailing: "")
             ReviewSuggestionsCard(
                 viewModel: viewModel,
                 isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
@@ -351,7 +345,6 @@ struct EventReviewForm: View {
                     onUpgrade: { Task { await appState.present(.premiumPaywall) } }
                 )
             }
-            destinationCard
             #if DEBUG
             InterpretationDiagnosticsView(viewModel: viewModel)
             #endif

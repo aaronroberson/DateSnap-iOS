@@ -120,6 +120,20 @@ final class AppState: ObservableObject {
     @Published private(set) var activeBatchScan: BatchScanViewModel? = nil
     @Published private(set) var isBatchScanning = false
 
+    // MARK: - Navigation
+    // Tabs change through `selectedTab`; History through `openHistory()`. Every modal sheet is
+    // shown through `present(_:)` and every batch review through `presentBatchReview(_:)`, so a
+    // sheet already on screen is always dismissed before the next one appears.
+
+    /// How long SwiftUI needs to finish dismissing a sheet before another can be presented.
+    static let sheetDismissalDelay: Duration = .milliseconds(400)
+
+    /// Presents a modal, first dismissing any sheet already on screen.
+    func present(_ modal: AppModalScreen) async {
+        await dismissPresentedSheets()
+        activeModal = modal
+    }
+
     /// Opens History & Archive, which lives under the Agenda tab.
     func openHistory() {
         selectedTab = .agenda
@@ -186,17 +200,54 @@ final class AppState: ObservableObject {
     }
 
     /// Opens the review screen for a scanned candidate.
-    func review(_ candidate: EventCandidate) {
-        activeModal = .eventReviewEdit(candidate.toPencildEvent())
+    func review(_ candidate: EventCandidate) async {
+        await present(.eventReviewEdit(candidate.toPencildEvent()))
     }
 
     /// Presents the batch review sheet, first dismissing any sheet already on screen.
     func presentBatchReview(_ session: BatchReviewSession) async {
         batchReviewSession = nil
-        if activeModal != nil {
-            activeModal = nil
-            try? await Task.sleep(for: .milliseconds(400))
-        }
+        await dismissPresentedSheets()
         batchReviewSession = session
+    }
+
+    /// Opens the saved event (or its review, if not yet saved) a notification pointed at.
+    func presentDeepLinkedEvent(_ candidate: EventCandidate) async {
+        let event = candidate.toPencildEvent()
+        await present(candidate.savedEvent?.status == .saved ? .savedEventDetail(event) : .eventReviewEdit(event))
+    }
+
+    /// Routes a finished scan to review, the no-dates recovery screen, or an error toast.
+    func handleScanOutcome(_ scan: ScanViewModel) async {
+        switch scan.stage {
+        case .complete(let candidates):
+            rememberSourceImage(scan.currentProcessingImage, for: candidates)
+            guard let first = candidates.first else { return }
+            await present(.eventReviewEdit(first.toPencildEvent()))
+            if candidates.count > 1 {
+                showToast("\(candidates.count - 1) more event\(candidates.count == 2 ? "" : "s") waiting in Review")
+            }
+        case .noDatesFound(let rawText):
+            lastScanRawText = rawText
+            lastScanImage = scan.currentProcessingImage
+            await present(.noDatesFound)
+        case .alreadySaved(let count):
+            await dismissPresentedSheets()
+            showToast(count == 1 ? "Already saved — find it in History" : "All \(count) events are already saved")
+            openHistory()
+        case .failed(let message):
+            await dismissPresentedSheets()
+            showToast(message)
+        default:
+            break
+        }
+    }
+
+    /// Dismisses the root modal sheet. A batch review session is left alone so its unsaved
+    /// edits survive; Batch Review presents its own sheets from inside the session.
+    private func dismissPresentedSheets() async {
+        guard activeModal != nil else { return }
+        activeModal = nil
+        try? await Task.sleep(for: Self.sheetDismissalDelay)
     }
 }
