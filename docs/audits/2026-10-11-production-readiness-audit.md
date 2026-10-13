@@ -60,10 +60,7 @@ The automated pre-commit brand check (`./scripts/hooks/pre-commit` running `scri
     - `com.pencild.premium.annual`
 
 ### 3.2 Legacy Identifier Shims in Code
-While brand strings in user-facing copy and identifiers are 100% updated, internal architectural code retains legacy `DS` prefixes in class and modifier naming as an intentional backward-compatibility layer:
-- **Color Tokens:** [`Theme/Colors.swift`](../../Sources/Pencild/Theme/Colors.swift#L32-L60) defines aliases `Color.dsBackground`, `Color.dsPrimary`, `Color.dsCard`, etc., pointing to `Color.pdSurface`, `Color.pdPrimary`, `Color.pdSurfaceContainer`.
-- **Button Styles & Modifiers:** [`Theme/GlassModifiers.swift`](../../Sources/Pencild/Theme/GlassModifiers.swift#L46) still defines `.dsScreenBackground()` and `DSConfidencePill` alongside the canonical `PD` tokens.
-- **Migration Strategy:** As specified in the remediation plan, `ds*` and `DS*` aliases remain in place until in-scope callers are transitioned across scheduled phases.
+**Status (2026-10-12): Retired.** The legacy `DS*`/`ds*` style layer has been removed. The zero-caller color aliases, `DSTypography`, `DSConfidencePill`, and `DSDateBadge` were deleted. The live card, background, and button styles were renamed to `PDGlassCardModifier`/`pdGlassCard`, `pdScreenBackground`, `PDPrimaryButtonStyle`, and `PDSecondaryButtonStyle`. The only remaining `DS`-prefixed identifier is the Info.plist key `DSEnhancedInterpretationRollout`. It is configuration rather than styling, so it is kept for compatibility.
 
 ---
 
@@ -73,8 +70,8 @@ The design specification mandates the **Luminous Precision** system (`Plus Jakar
 
 ### 4.1 Canonical Token Adoption & Migration Closeout
 All product-facing views across [`Sources/Pencild/Views/`](../../Sources/Pencild/Views/) have been successfully migrated to the canonical `PencilTokens` system (`Color.pd*`, `PDRadius`, `PDSpacing`, `PDStatusBadge`, `PDFont`):
-- **`Color.ds*` Call Sites:** 0 call sites remain in production view code. All views resolve directly to `pdSurface`, `pdPrimary`, `pdOnSurface`, `pdWarning`, `pdError`, and related roles. Legacy static variables in [`Theme/Colors.swift`](../../Sources/Pencild/Theme/Colors.swift) remain solely as documented internal compatibility shims.
-- **Modifiers & Badges:** `DSConfidencePill` usage replaced by `PDStatusBadge`. `.dsScreenBackground()` remains as an ergonomic semantic wrapper around `.background(Color.pdSurface)`.
+- **`Color.ds*` Call Sites:** 0 call sites remain in production view code. All views resolve directly to `pdSurface`, `pdPrimary`, `pdOnSurface`, `pdWarning`, `pdError`, and related roles. The legacy static aliases in [`Theme/Colors.swift`](../../Sources/Pencild/Theme/Colors.swift) were deleted on 2026-10-12.
+- **Modifiers & Badges:** `DSConfidencePill` usage replaced by `PDStatusBadge` (the type itself was deleted on 2026-10-12). The screen canvas modifier is now `.pdScreenBackground()`.
 - **Magic Numeric Values:** Replaced with semantic tokens across forms and review surfaces (`PDRadius.card`, `PDRadius.tile`, `PDRadius.pill`, `PDSpacing.md`, `PDSpacing.sm`).
 
 ---
@@ -87,8 +84,8 @@ The monolithic views identified in earlier passes have been decomposed into focu
 | :--- | :---: | :---: | :--- |
 | [`EventReviewEditView.swift`](../../Sources/Pencild/Views/EventReviewEditView.swift) | **1,031** | **568** | [`EventReviewSourceInspector.swift`](../../Sources/Pencild/Views/EventReviewSourceInspector.swift), [`EventReviewFieldsCard.swift`](../../Sources/Pencild/Views/EventReviewFieldsCard.swift), [`EventReviewDestinationCard.swift`](../../Sources/Pencild/Views/EventReviewDestinationCard.swift), [`EventReviewSourceBanner.swift`](../../Sources/Pencild/Views/EventReviewSourceBanner.swift) |
 | [`SavedEventDetailView.swift`](../../Sources/Pencild/Views/SavedEventDetailView.swift) | **375** | **315** | [`EventInterpretationDetailCard.swift`](../../Sources/Pencild/Views/EventInterpretationDetailCard.swift) |
-| [`BatchReviewView.swift`](../../Sources/Pencild/Views/BatchReviewView.swift) | **685** | **560** | [`BatchDestinationsEditor.swift`](../../Sources/Pencild/Views/BatchDestinationsEditor.swift), `BatchTitledField` |
-| [`ScanFlowViews.swift`](../../Sources/Pencild/Views/ScanFlowViews.swift) | **676** | **576** | [`ScanProgressOverlay.swift`](../../Sources/Pencild/Views/ScanProgressOverlay.swift), `PDScanStepRow` |
+| [`BatchReviewView.swift`](../../Sources/Pencild/Views/BatchReviewView.swift) | **685** | **583** | [`BatchDestinationsEditor.swift`](../../Sources/Pencild/Views/BatchDestinationsEditor.swift), `BatchTitledField` |
+| [`ScanFlowViews.swift`](../../Sources/Pencild/Views/ScanFlowViews.swift) | **676** | **580** | [`ScanProgressOverlay.swift`](../../Sources/Pencild/Views/ScanProgressOverlay.swift), `PDScanStepRow` |
 | [`HomeEmptyStateView.swift`](../../Sources/Pencild/Views/HomeEmptyStateView.swift) | **669** | **669** | Self-contained SwiftUI canvas interaction and intake options. |
 | [`PlusPaywallView.swift`](../../Sources/Pencild/Views/PlusPaywallView.swift) | **378** | **378** | Bound to dynamic StoreKit 2 pricing and local-alert restore handling. |
 | [`PremiumPaywallView.swift`](../../Sources/Pencild/Views/PremiumPaywallView.swift) | **383** | **383** | Dynamic tier matrix with truthful pricing. |
@@ -172,7 +169,9 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   `com.pencild.premium.annual` out of band, and asserts the real
   `SubscriptionService.restorePurchases()` resolves `.plus` / `.premium`. It also
   covers catalog loading of all four product IDs, empty restore (`.starter`), and
-  an expired subscription restoring to `.starter`. Evidence:
+  an expired subscription restoring to `.starter`. Entitlement refreshes are
+  serialized (2026-10-12), so a concurrent transaction-update refresh cannot
+  make restore report a stale tier. Evidence:
   `/private/tmp/pencild-storekit-restore.xcresult` (iPhone 17).
 - Local-first integrity preserved: calendar mutations require explicit user review and confirmation.
 
@@ -197,3 +196,17 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   production sources, no network processing paths (on-device claims hold),
   `ScreenGalleryView` and `MarketingKitView` remain `#if DEBUG`-only, and the
   15 `stitch-id` provenance comments are retained per plan.
+
+### 7.5 Batch Review & Scan Flow Component Alignment (2026-10-12)
+- `BatchReviewView` and the scan-flow views (`RecentScreenshotsView`,
+  `ReviewQueueView`, `BatchDestinationsEditor`) were aligned to the shared
+  `PD*` components and tokens. This closes items 3.1 and 3.2 of the Profile &
+  Settings follow-up audit. Line counts grew slightly (583 and 580) because
+  regular-width layouts were added. Behavior is unchanged: the same save,
+  discard, selection, and batch-scan paths are used.
+- `TabletWorkspaceTests` adds `populatedBatchReviewSmoke`, which runs a real
+  batch scan with one event and one no-dates source, and `scanFlowSmoke`,
+  which covers a populated review queue and the empty screenshot picker. Both
+  run at regular and compact width. Before screenshots are in
+  `/private/tmp/pencild-batch-before/` and after screenshots are in
+  `/private/tmp/pencild-ipad-smoke/`.

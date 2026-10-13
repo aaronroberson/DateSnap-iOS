@@ -105,6 +105,7 @@ During baseline verification and project compilation, the following issues in ne
 ### 3.1 `BatchReviewView.swift` & Batch Pipeline
 - **Observation:** `BatchReviewView` had mismatched initializer parameters and an unclosed `VStack` in its header. A minimal compiler fix was applied to keep the project buildable.
 - **Recommendation:** Perform a dedicated refactoring of `BatchReviewView.swift` to fully align with `PDTopBar`, `PDScreenIntro`, `PDCard`, `PDSectionHeader`, and `PDGroupedList`, retiring all remaining `dsGlassCard` calls.
+- **Status (2026-10-12): Resolved.** Event cards use `PDCard`; detected events and skipped screenshots each sit under a `PDSectionHeader`, with skipped rows in a `PDGroupedList`. The Save All bar and content are width-capped on iPad, and spacing and radii use `PDSpacing`/`PDRadius`. No `dsGlassCard` callers remain anywhere. Verified by `populatedBatchReviewSmoke` in `TabletWorkspaceTests`.
 
 ### 3.2 `ScanFlowViews.swift` & Review Queue
 - **Observation:**
@@ -112,16 +113,19 @@ During baseline verification and project compilation, the following issues in ne
   - `EventReviewViewModel.discard(...)` returns a three-case `MutationResult` (`.success`, `.partial([String])`, `.failure(...)`). Call sites must handle all cases exhaustively.
   - `DSConfidencePill` requires both `score: Int` and `label: String`.
 - **Recommendation:** Audit the entire extraction and scan flow views for any remaining deprecated `ds*` styling tokens.
+- **Status (2026-10-12): Resolved.** No `ds*`/`DS*` style names remain in the codebase (`DSConfidencePill` was deleted with zero callers). `RecentScreenshotsView` replaced the system navigation title and four toolbar buttons with `PDTopBar` plus a single Select/Cancel action, and its empty state uses `PDCard`. On iPad, `ReviewQueueView` lays out cards in two columns and caps its bottom action bar. Verified by `scanFlowSmoke` in `TabletWorkspaceTests`.
 
 ### 3.3 `HomeEmptyStateView.swift` & `AgendaView.swift`
 - **Observation:**
   - `HomeEmptyStateView.swift` referenced a non-existent `tint` parameter in `DSPrimaryButtonStyle`.
   - `AgendaView.swift` invoked `appState.openHistory()`, which is not a method on `AppState` (navigated via `appState.selectedTab = .history`).
 - **Recommendation:** Audit all `AppState` navigation helper methods to ensure consistent naming conventions (`selectedTab`, `activeModal`, `pendingRoute`).
+- **Status (2026-10-12): Partially resolved.** `AppState.openHistory()` now exists, and `AgendaView` compiles against it. `AppState` exposes `selectedTab` and `activeModal`; `pendingRoute` belongs to `SettingsState`. A full naming audit of the navigation helpers is still open.
 
 ### 3.4 Paywalls & History Views (`PlusPaywallView.swift`, `PremiumPaywallView.swift`, `HistoryArchiveView.swift`)
 - **Observation:** The paywalls and history views still use legacy `dsGlassCard` and `DSTypography` calls.
 - **Recommendation:** In the planned monetization and archive work sessions, migrate these views to `PencilComponents.swift` (`PDCard`, `PDTopBar`, `PDSectionHeader`, `PDStatusBadge`).
+- **Status (2026-10-12): Mostly resolved.** All three views now use `PDCard` and `PDSectionHeader`, and `DSTypography` has been deleted. `HistoryArchiveView` uses `PDTopBar`. The two paywalls still use their own headers and have not adopted `PDTopBar`.
 
 ---
 

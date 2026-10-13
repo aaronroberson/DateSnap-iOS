@@ -173,7 +173,7 @@ implementation tasks, not completion claims:
    `DS*`/`ds*` names outside Settings/Profile ownership. Migrate only proven
    callers, remove an alias only after a zero-caller search and build, and
    rerun the brand and release-content gates.
-4. **Provenance-comment review.** Keep the 15 `stitch-id` comments unless the
+4. **[Kept by decision] Provenance-comment review.** Keep the 15 `stitch-id` comments unless the
    mock-data checker is changed to distinguish provenance metadata from runtime
    fixtures. Do not introduce production examples or fabricated data.
 
@@ -280,7 +280,7 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - Full suite: iPhone 17 128 tests in 31 suites passed
   (`/private/tmp/pencild-wave-iphone.xcresult`); iPad Pro 11-inch (M5) 128 tests in
   31 suites passed (`/private/tmp/pencild-wave-ipad.xcresult`).
-- Items 3 (alias retirement) and 4 (provenance comments) remain as written.
+- At the time, items 3 (alias retirement) and 4 (provenance comments) remained open. Item 3 was closed in the next entry.
 
 2026-10-11: StoreKit test-log investigation and alias retirement (item 3).
 - "Error finishing transaction" came from test teardown: out-of-band purchases
@@ -303,3 +303,31 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - iPhone 17 and iPad Pro 11-inch (M5): 129 tests in 31 suites passed
   (`/private/tmp/pencild-ds-iphone.xcresult`, `/private/tmp/pencild-ds-ipad.xcresult`);
   brand gate, `git diff --check`, Release build, and release-content scan passed.
+
+2026-10-12: Batch Review and scan-flow component alignment; history committed.
+- Committed the 2026-10-11 work as eight atomic commits (`1914562`..`ee9559f`).
+  Each source commit was checked out clean in a temporary worktree and passed
+  `build-for-testing` on iPhone 17.
+- `BatchReviewView` now uses `PDCard`, `PDSectionHeader`, and `PDGroupedList`,
+  with width-capped content and Save All bar on iPad, the progress screen's
+  no-dates icon, and tokenized spacing. `RecentScreenshotsView` now uses
+  `PDTopBar` with a single Select/Cancel action and a `PDCard` empty state.
+  `ReviewQueueView` uses a two-column grid on iPad with a capped action bar.
+- New smoke renders: `populatedBatchReviewSmoke` and `scanFlowSmoke` in
+  `TabletWorkspaceTests`.
+- Fixed a regression in the 2026-10-11 generation guard, found by a full-suite
+  run. A transaction-update refresh that started during `restorePurchases()`
+  outranked the restore's read, so restore returned a stale `.starter`.
+  Entitlement refreshes are now serialized in request order, and only a
+  direct `apply` invalidates an earlier refresh. The StoreKit integration
+  tests now drive `SubscriptionService.shared`, so a single listener finishes
+  each transaction. Tests that only exercise resolution use
+  `SubscriptionService(observesTransactionUpdates: false)`. The integration
+  tests wait for `isProcessingTransactionUpdate` and `Transaction.unfinished`
+  to settle before clearing their session. Three consecutive full-suite runs
+  per device (131 tests) passed with zero "Error finishing transaction" log
+  lines.
+- Status: next-wave items 1 to 3 are done. Item 4 (keep the 15 `stitch-id`
+  comments) stands by decision. Still open: the `AppState` navigation naming
+  audit and `PDTopBar` adoption in the two paywalls (Profile & Settings audit
+  §3.3 and §3.4).
