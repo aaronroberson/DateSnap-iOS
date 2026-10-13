@@ -68,7 +68,8 @@ public final class HomeViewModel: ObservableObject {
         }
         self.currentSubscriptionTier = subscriptionService.currentTier
 
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             let notifStatus = await notificationService.authorizationStatus()
             self.isNotificationsAuthorized = (notifStatus == .authorized || notifStatus == .provisional)
         }
@@ -131,7 +132,8 @@ public final class HomeViewModel: ObservableObject {
         }
 
         isRefreshing = true
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 let assets = try await photoLibraryService.fetchRecentScreenshots(limit: limit)
                 self.recentScreenshots = assets

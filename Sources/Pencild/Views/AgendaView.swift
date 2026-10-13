@@ -59,7 +59,7 @@ struct AgendaView: View {
     }
 
     private func groupedDays(_ events: [SavedEvent]) -> [(date: Date, events: [SavedEvent])] {
-        let groups = Dictionary(grouping: events) { Calendar.current.startOfDay(for: $0.candidate!.startDate) }
+        let groups = Dictionary(grouping: events) { Calendar.current.startOfDay(for: $0.candidate?.startDate ?? Date()) }
         return groups.keys.sorted().map { (date: $0, events: groups[$0] ?? []) }
     }
 
