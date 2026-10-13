@@ -56,7 +56,9 @@ struct SavedEventDetailView: View {
     private var iPhoneLayout: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                PDTopBar(title: "Event details")
+                PDTopBar(title: "Event details", showsBack: false) {
+                    PDCloseButton(accessibilityLabel: "Close event details")
+                }
                 saveStatus
                 hero
                 destinations
@@ -71,10 +73,12 @@ struct SavedEventDetailView: View {
 
     private var iPadLayout: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PDTopBar(title: "Event details")
-                .padding(.horizontal, PDSpacing.lg)
-                .padding(.top, PDSpacing.md)
-                .padding(.bottom, PDSpacing.sm)
+            PDTopBar(title: "Event details", showsBack: false) {
+                PDCloseButton(accessibilityLabel: "Close event details")
+            }
+            .padding(.horizontal, PDSpacing.lg)
+            .padding(.top, PDSpacing.md)
+            .padding(.bottom, PDSpacing.sm)
 
             HStack(alignment: .top, spacing: PDSpacing.lg) {
                 // Left Column: Hero Overview, Status & Source Artifact
