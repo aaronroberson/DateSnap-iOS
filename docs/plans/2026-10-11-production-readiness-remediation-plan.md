@@ -339,8 +339,14 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   `SettingsRoute?`.
 - Fixed the Batch Review duplicate "open existing event" action, which could
   not present over the batch sheet.
-- New `AppStateNavigationTests`. This work was verified in a clean worktree,
-  because the shared checkout carries another session's uncommitted
-  `-warnings-as-errors` project change. That change currently fails to build:
-  Apple's StoreKitTest SDK header triggers a deprecation warning, which the
-  flag turns into an error.
+- New `AppStateNavigationTests`. The navigation changes were committed in
+  `37eede7`/`fe92247`, together with other follow-up work.
+- Build fix: the strict-concurrency gate (`1bdf83c`) applied warnings-as-errors
+  to the test target as well. There, Apple's StoreKitTest SDK header (a
+  deprecation in `SKTestTransaction.h`) failed to precompile, so tests could
+  not build. The test target now keeps `-strict-concurrency=complete` without
+  warnings-as-errors, in both Xcode and SwiftPM; the app target keeps the full
+  gate. iPhone 17 and iPad Pro 11-inch (M5): 137 tests in 32 suites passed
+  (`/private/tmp/pencild-head-iphone.xcresult`,
+  `/private/tmp/pencild-head-ipad.xcresult`). The strict Release build and the
+  release-content scan passed.
