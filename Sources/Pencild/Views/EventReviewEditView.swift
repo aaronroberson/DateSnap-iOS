@@ -75,7 +75,7 @@ struct EventReviewForm: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack(alignment: .bottom) {
                 if horizontalSizeClass == .regular {
                     iPadDualPaneContent

@@ -19,7 +19,7 @@ struct NoDatesFoundView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
                     PDTopBar(title: "Scan result") {

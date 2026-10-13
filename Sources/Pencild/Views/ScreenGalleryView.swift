@@ -226,7 +226,7 @@ struct ScreenGalleryView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
                     HStack {

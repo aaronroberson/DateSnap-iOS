@@ -13,7 +13,7 @@ struct PlusPaywallView: View {
     @State private var restoreMessage: String?
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     // Header Bar

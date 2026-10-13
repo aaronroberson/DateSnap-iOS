@@ -53,7 +53,7 @@ struct HomeEmptyStateView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView(showsIndicators: false) {
                 captureContent
             }
@@ -120,7 +120,6 @@ struct HomeEmptyStateView: View {
             } message: {
                 Text(HomeBrandCopy.photoLibraryPermissionMessage)
             }
-            .navigationViewStyle(.stack)
         }
     }
 
