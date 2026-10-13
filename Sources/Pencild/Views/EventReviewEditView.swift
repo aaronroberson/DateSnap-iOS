@@ -61,8 +61,7 @@ struct EventReviewForm: View {
     @State private var lastSaveWasPartial = false
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @State private var zoomScale: CGFloat = 1.0
-    @State private var panOffset: CGSize = .zero
+    @State private var sourceViewport = SourceViewport()
 
     init(viewModel: @autoclosure @escaping () -> EventReviewViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())
@@ -218,8 +217,7 @@ struct EventReviewForm: View {
     private var iPadSourceInspector: some View {
         EventReviewSourceInspector(
             viewModel: viewModel,
-            zoomScale: $zoomScale,
-            panOffset: $panOffset
+            viewport: $sourceViewport
         )
     }
 

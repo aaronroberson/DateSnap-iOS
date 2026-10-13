@@ -5,8 +5,7 @@ import SwiftData
 /// neural OCR provenance indicator, and on-device privacy guarantee.
 struct EventReviewSourceInspector: View {
     @ObservedObject var viewModel: EventReviewViewModel
-    @Binding var zoomScale: CGFloat
-    @Binding var panOffset: CGSize
+    @Binding var viewport: SourceViewport
 
     var body: some View {
         VStack(spacing: PDSpacing.sm) {
@@ -35,16 +34,16 @@ struct EventReviewSourceInspector: View {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFit()
-                                    .scaleEffect(zoomScale)
-                                    .offset(panOffset)
+                                    .scaleEffect(viewport.scale)
+                                    .offset(viewport.offset)
                                     .frame(maxHeight: 460)
                                     .clipped()
                                     .gesture(panGesture)
                                     .accessibilityLabel("Original scanned document")
                             } else {
                                 PDScanSourceThumbnail(candidate: viewModel.candidate, width: nil, height: 460, contentMode: .fit)
-                                    .scaleEffect(zoomScale)
-                                    .offset(panOffset)
+                                    .scaleEffect(viewport.scale)
+                                    .offset(viewport.offset)
                                     .clipped()
                                     .gesture(panGesture)
                             }
@@ -54,7 +53,7 @@ struct EventReviewSourceInspector: View {
                         // Floating Viewport Zoom Controls Toolbar
                         HStack(spacing: 12) {
                             Button {
-                                withAnimation(.spring(response: 0.25)) { zoomScale = max(0.8, zoomScale - 0.2) }
+                                withAnimation(.spring(response: 0.25)) { viewport.zoomOut() }
                             } label: {
                                 Image(systemName: "minus.magnifyingglass")
                                     .font(.system(size: 16))
@@ -63,13 +62,13 @@ struct EventReviewSourceInspector: View {
                             .frame(minWidth: 44, minHeight: 44)
                             .accessibilityLabel("Zoom out")
 
-                            Text("\(Int(zoomScale * 100))%")
+                            Text("\(viewport.percent)%")
                                 .font(PDFont.labelSM)
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
                                 .frame(minWidth: 44)
 
                             Button {
-                                withAnimation(.spring(response: 0.25)) { zoomScale = min(2.5, zoomScale + 0.2) }
+                                withAnimation(.spring(response: 0.25)) { viewport.zoomIn() }
                             } label: {
                                 Image(systemName: "plus.magnifyingglass")
                                     .font(.system(size: 16))
@@ -83,10 +82,7 @@ struct EventReviewSourceInspector: View {
                                 .background(Color.pdOutlineVariant)
 
                             Button {
-                                withAnimation(.spring(response: 0.25)) {
-                                    zoomScale = 1.0
-                                    panOffset = .zero
-                                }
+                                withAnimation(.spring(response: 0.25)) { viewport.reset() }
                             } label: {
                                 Image(systemName: "arrow.counterclockwise")
                                     .font(.system(size: 14))
@@ -123,11 +119,42 @@ struct EventReviewSourceInspector: View {
     private var panGesture: some Gesture {
         DragGesture(minimumDistance: 4)
             .onChanged { value in
-                guard zoomScale > 1 else { return }
-                panOffset = value.translation
+                viewport.pan(to: value.translation)
             }
             .onEnded { _ in
-                if zoomScale <= 1 { panOffset = .zero }
+                viewport.endPan()
             }
+    }
+}
+
+/// Zoom and pan state of the source document viewport. Kept as a value type so the
+/// clamping and pan rules are shared by the controls, the drag gesture, and tests.
+struct SourceViewport: Equatable {
+    static let minScale: CGFloat = 0.8
+    static let maxScale: CGFloat = 2.5
+    static let step: CGFloat = 0.2
+
+    private(set) var scale: CGFloat = 1
+    private(set) var offset: CGSize = .zero
+
+    var percent: Int { Int((scale * 100).rounded()) }
+
+    mutating func zoomIn() { scale = min(Self.maxScale, scale + Self.step) }
+
+    mutating func zoomOut() {
+        scale = max(Self.minScale, scale - Self.step)
+        if scale <= 1 { offset = .zero }
+    }
+
+    mutating func reset() { self = SourceViewport() }
+
+    /// Panning is only meaningful while the document is magnified.
+    mutating func pan(to translation: CGSize) {
+        guard scale > 1 else { return }
+        offset = translation
+    }
+
+    mutating func endPan() {
+        if scale <= 1 { offset = .zero }
     }
 }
