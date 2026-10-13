@@ -5,12 +5,20 @@ Scope: `Pencild` visual refresh and production-readiness follow-up
 
 ## Current evidence
 
-The five claimed implementation commits are present on `main`, followed by
-`f263e8c` (the production-readiness audit). The current checkout is
-`repository root`, is 15 commits ahead of `origin/main`, and
-has unrelated working-tree changes in `.vscode/` and
-`Sources/Pencild/Views/ScanFlowViews.swift`. Those changes stay outside this
-plan's edits.
+The claimed implementation commit IDs (`b9a3930`, `7a75acc`, `22993e4`,
+`e9e0e50`, and `2b26912`) are not present in the local object database. The
+implemented work is represented by the current `main` history, whose latest
+relevant commits are `d6869ca`, `31f7781`, `f2c2957`, `83b8ca2`, and `2569505`.
+The checkout is 24 commits ahead of `origin/main`. Three tracked documentation
+files are modified in the working tree (the audit, this plan, and the visual
+refresh plan); `.vscode/` is untracked and remains preserved. No source
+modifications are pending from this documentation pass.
+
+The repository workflow file was also found to be active locally despite the
+earlier disable claim. It has been moved to `.github/workflows/ci.yml.disabled`
+so GitHub will not discover or run it. A remote `gh workflow list --all`
+verification could not complete because the GitHub API was unreachable; the
+remote repository toggle therefore remains unverified.
 
 The reviewed fixes are complete:
 
@@ -144,6 +152,31 @@ compatibility aliases, high-risk view extraction preserves behavior, both
 regular-size workspaces pass the runtime matrix, StoreKit states remain
 truthful, and every plan verification gate has a retained result.
 
+## Next implementation wave
+
+The following items remain open and are ordered by release risk. They are
+implementation tasks, not completion claims:
+
+1. **[Done 2026-10-11] StoreKit catalog synchronization (environment/configuration).** Reproduce
+   the missing local catalog in a supported Xcode simulator workflow, capture
+   the exact environment and command, and then run a positive restore with a
+   locally purchased test transaction. Keep prices and entitlements sourced
+   from StoreKit `Product`; do not add fallback products or fixture values to
+   production code.
+2. **[Done 2026-10-11] Populated iPad runtime smoke.** Seed a real persisted candidate through
+   the existing local scan/import path, then exercise Event Review and Saved
+   Event Detail on a regular-size iPad across source inspection, ambiguity and
+   duplicate states, destination selection, Save, alerts, direct actions, and
+   archive/restore. Retain screenshots or an XCTest result bundle that proves
+   the populated path; the existing structure tests remain complementary.
+3. **[Done 2026-10-11] Compatibility alias retirement.** Build a scoped caller inventory for
+   `DS*`/`ds*` names outside Settings/Profile ownership. Migrate only proven
+   callers, remove an alias only after a zero-caller search and build, and
+   rerun the brand and release-content gates.
+4. **Provenance-comment review.** Keep the 15 `stitch-id` comments unless the
+   mock-data checker is changed to distinguish provenance metadata from runtime
+   fixtures. Do not introduce production examples or fabricated data.
+
 ## Progress log
 
 2026-10-11: Migrated the in-scope Agenda warning label, EventFilterBar fallback
@@ -196,16 +229,77 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   - Empty restores return starter tier so UI presents "No active subscription found to restore."
   - Cryptographic JWS verification failure throws `PencildError.subscription(.verificationFailed)` and fails the entitlement snapshot closed.
 - Expanded `PurchaseViewModelTests.swift` with automated coverage for unavailable product purchase, empty restore, and successful upgrade paths.
-- All 125 tests across 30 test suites passed on iPad Pro 11-inch simulator with 0 failures and 0 warnings.
-- Brand identity gate passed. Ready for Phase 5 (Release Gates & Audit Closeout).
+- The current iPhone 17 result bundle `/private/tmp/pencild-phase4-current-iphone.xcresult`
+  reports 125 total tests, 123 passed, 2 skipped, 0 failed, and no runtime
+  warnings.
+- The current iPad Pro 11-inch result bundle
+  `/private/tmp/pencild-phase4-current-ipad-retry.xcresult` reports 125 total
+  tests, 123 passed, 2 skipped, 0 failed, and no runtime warnings.
+- Brand identity gate passed. Release artifact verification is recorded below.
+
+2026-10-11: Release artifact gate rerun at the current checkout.
+- Release build succeeded for iPhone 17 using XcodeGen output.
+- `scripts/verify-release-content.sh --require-app` passed for one Mach-O
+  (`74,153` strings, `84,847` symbols) at
+  `/private/tmp/pencild-current-release-derived/Build/Products/Release-iphonesimulator/Pencild.app`.
+- The legacy-literal scan found no `dsPrimaryActionGradient`, `0A0E1E`, or
+  `7CFFEA` matches in in-scope views.
+- `verify-no-mock.sh` still reports 15 `stitch-id` provenance comments; these
+  are documentation markers and are not fabricated production data.
 
 2026-10-11: Phase 5 Release Gates & Audit Closeout completed.
 - XcodeGen regenerated project from `project.yml` cleanly.
-- Full test suite passed on iPhone 17 (125 tests in 30 suites, 0 failures, 0 warnings; result bundle `/tmp/pencild-final-iphone-tests.xcresult`).
-- Full test suite passed on iPad Pro 11-inch (M5) (125 tests in 30 suites, 0 failures, 0 warnings; result bundle `/tmp/pencild-final-ipad-tests.xcresult`).
+- Full test suite passed on iPhone 17 (125 tests in 30 suites, 123 passed, 2 skipped, 0 failures, 0 warnings; authoritative result bundle `/private/tmp/pencild-phase4-current-iphone.xcresult`).
+- Full test suite passed on iPad Pro 11-inch (M5) (125 tests in 30 suites, 123 passed, 2 skipped, 0 failures, 0 warnings; authoritative result bundle `/private/tmp/pencild-phase4-current-ipad-retry.xcresult`).
 - Release configuration built for iPhone 17 with 0 errors.
 - Mandatory Release executable scan passed (`./scripts/verify-release-content.sh --require-app` on `Pencild.app`: 1 Mach-O binary, 74,153 strings, 84,847 symbols, 0 mock services, 0 forbidden diagnostic symbols).
 - Pre-commit brand identity gate (`./scripts/hooks/pre-commit`) and `git diff --check` passed cleanly.
 - Verified accessibility requirements (44pt touch targets, Dynamic Type, Reduce Motion, VoiceOver labels).
 - Updated `docs/audits/2026-10-11-production-readiness-audit.md` with final metrics, line count drops, and release verification evidence.
-- Remediation plan fully closed out.
+- Code, build, test, and artifact gates are complete. Positive local StoreKit
+  restore remains unverified because simulator catalog synchronization returned
+  no products in the integration probe. Populated iPad dual-pane Event Review
+  and Saved Event Detail runtime smoke also remains unexercised with a live
+  record; structure and touch metadata are covered by `TabletWorkspaceTests`.
+
+2026-10-11: Next-wave items 1 and 2 closed.
+- Positive restore: `StoreKitRestoreIntegrationTests` loads `Pencild.storekit`
+  via `SKTestSession(contentsOf:)`, purchases out of band, and verifies the real
+  `SubscriptionService.restorePurchases()` unlocks `.plus`/`.premium`; also
+  empty, expired, and catalog-load cases. `xcodebuild test ... -destination
+  'platform=iOS Simulator,name=iPhone 17' -only-testing:PencildTests/StoreKitRestoreIntegrationTests
+  -resultBundlePath /private/tmp/pencild-storekit-restore.xcresult` passed.
+- Populated iPad smoke: `TabletWorkspaceTests` rewritten around a real scanned
+  flyer persisted to SwiftData; regular-width review, save, detail,
+  archive/restore, and compact detail. Result bundle
+  `/private/tmp/pencild-ipad-smoke.xcresult`, screenshots in
+  `/private/tmp/pencild-ipad-smoke/`.
+- Fixes found by the smoke: `NavigationView` → `NavigationStack` in nine
+  screens (iPad sidebar clipping); `SourceViewport` extracted for testable
+  zoom/pan; removed fabricated-confidence raw-text extraction path.
+- Full suite: iPhone 17 128 tests in 31 suites passed
+  (`/private/tmp/pencild-wave-iphone.xcresult`); iPad Pro 11-inch (M5) 128 tests in
+  31 suites passed (`/private/tmp/pencild-wave-ipad.xcresult`).
+- Items 3 (alias retirement) and 4 (provenance comments) remain as written.
+
+2026-10-11: StoreKit test-log investigation and alias retirement (item 3).
+- "Error finishing transaction" came from test teardown: out-of-band purchases
+  reach every live `Transaction.updates` listener (including the test host's
+  `SubscriptionService.shared`), and `defer { clearTransactions() }` wiped the
+  session before those async `finish()` calls landed. Tests now drain
+  `Transaction.unfinished` before clearing; 0 occurrences on both devices.
+- Fixed a real ordering race in `SubscriptionService`: the init-time launch
+  refresh could publish after (and overwrite) a later restore/transaction
+  update. Refreshes now reserve a generation when requested and only publish
+  if still current. Regression test in `SceneActivationRefreshTests`. The
+  listener no longer runs at `.background` priority.
+- Retired every `DS*`/`ds*` style alias: zero-caller aliases deleted
+  (`Colors.swift` legacy block, `DSConfidencePill`, `DSDateBadge`,
+  `Typography.swift`), and live implementations renamed to `PD*`/`pd*`
+  (`PDGlassCardModifier`, `pdGlassCard`, `pdScreenBackground`,
+  `PDPrimaryButtonStyle`, `PDSecondaryButtonStyle`). `stitch-id` provenance
+  comments untouched. `DSEnhancedInterpretationRollout` is an Info.plist key,
+  not a style alias, and is kept.
+- iPhone 17 and iPad Pro 11-inch (M5): 129 tests in 31 suites passed
+  (`/private/tmp/pencild-ds-iphone.xcresult`, `/private/tmp/pencild-ds-ipad.xcresult`);
+  brand gate, `git diff --check`, Release build, and release-content scan passed.

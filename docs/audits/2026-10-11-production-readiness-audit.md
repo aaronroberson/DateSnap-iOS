@@ -6,6 +6,14 @@
 
 > **Evidence correction (2026-10-11):** This report was refreshed against the current repository checkout (`repository root`). Its canonical StoreKit catalog identifiers are `com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, and `com.pencild.premium.annual`. The `DS*` and `ds*` names mentioned below are intentional internal compatibility aliases, not product-facing legacy branding. Current baselines and a correction sequence are recorded in [`docs/plans/2026-10-11-production-readiness-remediation-plan.md`](../plans/2026-10-11-production-readiness-remediation-plan.md).
 
+The five commit IDs supplied in the handoff (`b9a3930`, `7a75acc`,
+`22993e4`, `e9e0e50`, and `2b26912`) are not present in the local Git object
+database. This audit therefore cites the live checkout and its verified
+artifacts rather than treating those IDs as repository evidence. The automatic
+GitHub Actions workflow is disabled in this checkout by moving it to
+`.github/workflows/ci.yml.disabled`; remote workflow state could not be checked
+because the GitHub API was unreachable.
+
 ---
 
 ## 1. Executive Summary
@@ -118,7 +126,11 @@ The monolithic views identified in earlier passes have been decomposed into focu
 
 ## 7. Remediation Execution & Release Closeout Evidence
 
-All remediation phases defined in [`docs/plans/2026-10-11-production-readiness-remediation-plan.md`](../plans/2026-10-11-production-readiness-remediation-plan.md) have been executed and verified against the repository gates:
+The implementation, build, test, and artifact-gate portions of the remediation
+phases defined in [`docs/plans/2026-10-11-production-readiness-remediation-plan.md`](../plans/2026-10-11-production-readiness-remediation-plan.md)
+have been executed and verified against the repository gates. The positive
+StoreKit restore and populated iPad runtime smoke items from the plan's next
+implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
 
 ### 7.1 Automated Quality Gates
 1. **XcodeGen Project Generation:**
@@ -126,12 +138,12 @@ All remediation phases defined in [`docs/plans/2026-10-11-production-readiness-r
    - Result: Generated clean `Pencild.xcodeproj`.
 2. **iPhone 17 Test Suite:**
    - Destination: `platform=iOS Simulator,name=iPhone 17`
-   - Metrics: **125 tests across 30 suites**, 125 passed, 0 failed, 0 warnings.
-   - Result Bundle: `/tmp/pencild-final-iphone-tests.xcresult`.
+   - Metrics: **125 tests across 30 suites**, 123 passed, 2 skipped, 0 failed, 0 warnings.
+   - Result Bundle: `/private/tmp/pencild-phase4-current-iphone.xcresult`.
 3. **iPad Pro 11-inch (M5) Test Suite:**
    - Destination: `platform=iOS Simulator,name=iPad Pro 11-inch (M5)`
-   - Metrics: **125 tests across 30 suites**, 125 passed, 0 failed, 0 warnings.
-   - Result Bundle: `/tmp/pencild-final-ipad-tests.xcresult`.
+   - Metrics: **125 tests across 30 suites**, 123 passed, 2 skipped, 0 failed, 0 warnings.
+   - Result Bundle: `/private/tmp/pencild-phase4-current-ipad-retry.xcresult`.
 4. **Release Executable Verification:**
    - Command: `xcodebuild -project Pencild.xcodeproj -scheme Pencild -configuration Release -destination 'platform=iOS Simulator,name=iPhone 17' build`
    - Verification Tool: `./scripts/verify-release-content.sh --require-app <built-app-path>`
@@ -152,4 +164,36 @@ All remediation phases defined in [`docs/plans/2026-10-11-production-readiness-r
 ### 7.3 StoreKit 2 & Offline Recovery Edges
 - Verified truthful product pricing and dynamic localized prices.
 - Recovery states verified for unavailable products, user cancellations, pending transactions, empty restores, network failure, and cryptographic verification failure (`PencildError.subscription(.verificationFailed)`).
+- Positive local StoreKit restore is verified by
+  `Tests/PencildTests/StoreKitRestoreIntegrationTests.swift`. The suite loads the
+  repository `Pencild.storekit` directly with `SKTestSession(contentsOf:)`
+  (which avoids the scheme-level catalog sync that returned no products in the
+  earlier CLI probe), buys `com.pencild.plus.monthly` and
+  `com.pencild.premium.annual` out of band, and asserts the real
+  `SubscriptionService.restorePurchases()` resolves `.plus` / `.premium`. It also
+  covers catalog loading of all four product IDs, empty restore (`.starter`), and
+  an expired subscription restoring to `.starter`. Evidence:
+  `/private/tmp/pencild-storekit-restore.xcresult` (iPhone 17).
 - Local-first integrity preserved: calendar mutations require explicit user review and confirmation.
+
+### 7.4 Populated iPad Runtime Smoke & Follow-up Fixes
+- `Tests/PencildTests/TabletWorkspaceTests.swift` replaces the earlier
+  tautological checks (local arithmetic and model-field reads) with a populated
+  smoke: the sample flyer is scanned through real Vision OCR and the rules
+  pipeline into SwiftData, then Event Review and Saved Event Detail are hosted
+  at regular width (1194×834) and compact width, with explicit Save,
+  already-saved rescan detection, and archive/restore through
+  `SavedEventActions`. Zoom/pan rules now live in the `SourceViewport` value
+  type used by the inspector and are tested directly. Screenshots are retained
+  in `/private/tmp/pencild-ipad-smoke/` and attached to
+  `/private/tmp/pencild-ipad-smoke.xcresult` (iPad Pro 11-inch (M5)).
+- The smoke exposed a production layout defect: nine modal screens used the
+  deprecated `NavigationView`, which on iPad defaults to the split style and
+  rendered Event Review inside a ~536pt sidebar column. All were migrated to
+  `NavigationStack` (iOS 17 deployment target).
+- Removed the uncalled raw-text `extractCandidates(from: String)` entry point,
+  which fabricated per-line OCR confidence (0.95) and synthetic bounding boxes.
+- Sweep results: no TODO/FIXME markers, no `fatalError`/`try!`/`print` in
+  production sources, no network processing paths (on-device claims hold),
+  `ScreenGalleryView` and `MarketingKitView` remain `#if DEBUG`-only, and the
+  15 `stitch-id` provenance comments are retained per plan.
