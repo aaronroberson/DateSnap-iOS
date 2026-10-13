@@ -155,6 +155,8 @@ public enum EventExtractionCore {
         assetIdentifier: String = "local_asset",
         calendar: Calendar = .current
     ) -> [ExtractedCandidateData] {
+        // Step 0: Drop the screenshot's status-bar clock so it is never read as an event time.
+        let result = DateInference.removingStatusBarClock(from: result)
         let trimmed = result.fullText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
 
@@ -207,6 +209,26 @@ public enum DateInference {
         let normLoc = normalizeText(venueOrLocation ?? "")
         let rawKey = "\(normTitle)|\(roundedTimeStr)|\(normLoc)|\(assetIdentifier)"
         return fnv1a64(rawKey)
+    }
+
+    // MARK: - Screenshot Chrome
+
+    /// Removes a bare clock ("9:41") sitting in the top strip of the image: the iOS status bar.
+    public static func removingStatusBarClock(from result: OCRResult) -> OCRResult {
+        let lines = result.lines.filter { line in
+            let text = line.text.trimmingCharacters(in: .whitespaces)
+            let isBareClock = text.range(of: "^\\d{1,2}:\\d{2}$", options: .regularExpression) != nil
+            return !(isBareClock && line.boundingBox.maxY >= 0.9)
+        }
+        guard lines.count != result.lines.count else { return result }
+        return OCRResult(fullText: lines.map(\.text).joined(separator: "\n"), lines: lines, meanConfidence: result.meanConfidence)
+    }
+
+    /// True when text names a specific day: a month, a weekday, or a numeric date. A bare clock time
+    /// or a vague phrase ("last night") does not, so it can't anchor an event on its own.
+    static func namesADay(_ text: String) -> Bool {
+        let pattern = "(?i)\\b(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|june?|july?|aug(ust)?|sept?(ember)?|oct(ober)?|nov(ember)?|dec(ember)?|mon(day)?|tue(s(day)?)?|wed(nesday)?|thu(r(s(day)?)?)?|fri(day)?|sat(urday)?|sun(day)?)\\b|\\b\\d{1,2}[/.-]\\d{1,2}([/.-]\\d{2,4})?\\b"
+        return text.range(of: pattern, options: .regularExpression) != nil
     }
 
     // MARK: - False Positive Filtering (B10)
@@ -518,6 +540,8 @@ public enum DateInference {
         // 4. Fallback: NSDataDetector baseline
         if let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue) {
             let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+                // Only a match that names a day may become an event date.
+                .filter { namesADay((text as NSString).substring(with: $0.range)) }
             if let first = matches.first, let d = first.date {
                 var endDate: Date? = nil
                 if first.duration > 0 {
