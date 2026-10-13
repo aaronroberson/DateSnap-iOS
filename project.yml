@@ -70,3 +70,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.pencild.app.tests
         GENERATE_INFOPLIST_FILE: YES
+        # StoreKitTest's SDK header uses an API deprecated in iOS 18; under warnings-as-errors
+        # its precompiled module fails to build. The app target keeps the strict gate.
+        OTHER_SWIFT_FLAGS: "-strict-concurrency=complete"
+        SWIFT_TREAT_WARNINGS_AS_ERRORS: NO

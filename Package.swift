@@ -23,7 +23,8 @@ let package = Package(
             path: "Tests/PencildTests",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
-                .unsafeFlags(["-strict-concurrency=complete", "-warnings-as-errors"]),
+                // StoreKitTest's SDK header trips warnings-as-errors; the app target keeps it.
+                .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
     ]
