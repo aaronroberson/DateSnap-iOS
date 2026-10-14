@@ -324,3 +324,24 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   only new events, blocking when exhausted, Plus being unlimited, the batch
   flag, and alert caps on review.
 
+### 7.10 Event Review, Batch Review, and Saved Event Detail Flow (2026-10-13)
+- All three screens use one section order: needs-attention items (duplicates,
+  questions, ambiguous dates); **Event details**; alternative readings and
+  **Suggestions**; **Calendar & reminders** (with Alerts); **On the flyer**;
+  the primary action; then the source and "Why Pencil'd chose these details".
+- Fixed: Event Review placed the "Calendar & reminders" heading below the
+  destination card, above the suggestions. On iPhone, scan details sat above
+  Save. Saved Event Detail put the source between destinations and alerts.
+- **Suggestions render only when there is something to suggest**, so there
+  is no empty heading. Previously the card showed a bare "SUGGESTIONS" label
+  when the alert plan differed but the user lacked Premium or the plan was
+  empty. Each suggestion says what "Use" changes ("Use sets the end time",
+  "Use replaces your current alerts"). On free plans, the Premium alert-plan
+  suggestion is shown with a Premium button that opens the paywall.
+- Batch Review's expanded card now includes the same Suggestions section and a
+  "Calendar & reminders" heading. "Other interpretations" moved from scan
+  details to directly after Event details, since choosing one changes the
+  fields.
+- Verified with full-length renders: `10-compact-review-full` and
+  `11-compact-detail-full` in `TabletWorkspaceTests`.
+
