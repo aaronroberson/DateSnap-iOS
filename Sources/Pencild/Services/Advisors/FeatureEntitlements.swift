@@ -119,9 +119,9 @@ public enum FeatureAccessDecision: Sendable, Equatable {
         case .allowed:
             return ""
         case .denied(.checkingEntitlements):
-            return "Pencil'd is still checking your subscription. Please try again shortly."
+            return "Pencil’d is still checking your subscription. Please try again shortly."
         case .denied(.unverified), .denied(.unavailable):
-            return "Pencil'd could not verify your subscription. Please try again."
+            return "Pencil’d could not verify your subscription. Please try again."
         case .denied(.requiresTier):
             return PremiumFeature.documentImport.upgradeReason
         }

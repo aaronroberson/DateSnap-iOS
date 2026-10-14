@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Shared Pencil'd building blocks ("Luminous Precision"). Built only from the tokens in
+// Shared Pencil’d building blocks ("Luminous Precision"). Built only from the tokens in
 // Theme/PencilTokens.swift so screens share one look. All tap targets are at least 44pt.
 
 // MARK: - Eyebrow (glowing dot + uppercase label)

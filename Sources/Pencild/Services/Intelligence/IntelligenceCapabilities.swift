@@ -20,13 +20,13 @@ public enum IntelligenceUnavailableReason: String, Sendable, Codable, CaseIterab
     public var userFacingDescription: String {
         switch self {
         case .osUnsupported, .frameworkUnavailable:
-            return "Needs iOS 26 or later. Scans use Pencil'd's on-device rules."
+            return "Needs iOS 26 or later. Scans use Pencil’d's on-device rules."
         case .deviceNotEligible:
-            return "This device doesn't support Apple Intelligence. Scans use Pencil'd's on-device rules."
+            return "This device doesn't support Apple Intelligence. Scans use Pencil’d's on-device rules."
         case .appleIntelligenceNotEnabled:
             return "Turn on Apple Intelligence in iOS Settings to enable enhanced interpretation."
         case .modelNotReady:
-            return "Apple Intelligence is still getting ready. Scans use Pencil'd's on-device rules for now."
+            return "Apple Intelligence is still getting ready. Scans use Pencil’d's on-device rules for now."
         case .languageUnsupported:
             return "Enhanced interpretation isn't available in your language yet."
         case .disabledByUser:

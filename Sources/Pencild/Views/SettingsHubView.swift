@@ -304,7 +304,7 @@ struct SettingsHubView: View {
                         navigate(.privacyCenter)
                     } label: {
                         HStack(spacing: 4) {
-                            Text("Learn how Pencil'd handles scans")
+                            Text("Learn how Pencil’d handles scans")
                             Image(systemName: "arrow.right")
                         }
                         .font(PDFont.labelMD)

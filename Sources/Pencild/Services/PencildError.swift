@@ -13,7 +13,7 @@ public enum PencildError: LocalizedError, Sendable, CustomStringConvertible {
     case general(String)
 
     public var description: String {
-        errorDescription ?? "An unknown Pencil'd error occurred."
+        errorDescription ?? "An unknown Pencil’d error occurred."
     }
 
     public var errorDescription: String? {
@@ -73,7 +73,7 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied, .accessRestricted, .limitedAccess:
-            return "Open Pencil'd Settings or iOS System Settings to grant full Photo Library permissions."
+            return "Open Pencil’d Settings or iOS System Settings to grant full Photo Library permissions."
         case .assetNotFound, .imageConversionFailed:
             return "Please ensure the screenshot exists in your Photos app and try again."
         case .smartAlbumNotFound:
@@ -165,7 +165,7 @@ public enum CalendarError: LocalizedError, Sendable {
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied:
-            return "Go to iOS Settings > Pencil'd > Calendars and select 'Full Access'."
+            return "Go to iOS Settings > Pencil’d > Calendars and select 'Full Access'."
         case .noWritableCalendarFound:
             return "Ensure you have at least one editable calendar in the Apple Calendar app."
         default:
@@ -190,14 +190,14 @@ public enum ReminderError: LocalizedError, Sendable {
         case .reminderCreationFailed(let reason):
             return "Failed to save reminder in Apple Reminders: \(reason)"
         case .maxOffsetsExceeded:
-            return "Pencil'd supports a maximum of 3 staggered reminder offsets per event."
+            return "Pencil’d supports a maximum of 3 staggered reminder offsets per event."
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied:
-            return "Go to iOS Settings > Pencil'd > Reminders and grant full access."
+            return "Go to iOS Settings > Pencil’d > Reminders and grant full access."
         default:
             return "Verify your Reminders lists in the Apple Reminders app."
         }
@@ -224,7 +224,7 @@ public enum NotificationError: LocalizedError, Sendable {
     public var recoverySuggestion: String? {
         switch self {
         case .accessDenied:
-            return "Enable notifications in iOS Settings > Notifications > Pencil'd."
+            return "Enable notifications in iOS Settings > Notifications > Pencil’d."
         default:
             return "Ensure the reminder time is in the future."
         }

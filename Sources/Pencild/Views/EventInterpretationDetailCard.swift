@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// Cards and sections displaying why Pencil'd interpreted an event's date and time,
+/// Cards and sections displaying why Pencil’d interpreted an event's date and time,
 /// including engine route badges, user correction indicators, and evidence quotes.
 struct EventInterpretationDetailCard: View {
     let candidate: EventCandidate?

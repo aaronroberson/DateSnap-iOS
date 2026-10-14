@@ -81,7 +81,7 @@ struct PrivacyCenterView: View {
                             PDListRow(
                                 icon: "arrow.counterclockwise.circle.fill",
                                 tint: .pdError,
-                                title: "Reset Pencil'd Data & History",
+                                title: "Reset Pencil’d Data & History",
                                 subtitle: "Calendar and Reminders items remain in Apple apps"
                             ) {
                                 Image(systemName: "chevron.right")
@@ -112,13 +112,13 @@ struct PrivacyCenterView: View {
         }
         .background(Color.pdSurface.ignoresSafeArea())
         .confirmationDialog(
-            "Reset Pencil'd data and history?",
+            "Reset Pencil’d data and history?",
             isPresented: $confirmReset,
             titleVisibility: .visible
         ) {
             Button("Erase Everything", role: .destructive) {
                 let result = SavedEventActions(services: services, modelContext: modelContext).eraseAllLocalData()
-                report(result, success: "Pencil'd data and history erased") {
+                report(result, success: "Pencil’d data and history erased") {
                     appState.clearSourceImages()
                 }
             }

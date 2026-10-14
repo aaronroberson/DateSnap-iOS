@@ -35,7 +35,7 @@ struct ReminderScheduleEditorView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
                     PDTopBar(title: "Reminder schedule")
-                    PDScreenIntro(eyebrow: "REMINDER ALERTS", title: "Reminder Schedule", subtitle: "Choose when Pencil'd should remind you about this event.")
+                    PDScreenIntro(eyebrow: "REMINDER ALERTS", title: "Reminder Schedule", subtitle: "Choose when Pencil’d should remind you about this event.")
                     summary
                     presets
                     VStack(alignment: .leading, spacing: PDSpacing.sm) {
@@ -64,7 +64,7 @@ struct ReminderScheduleEditorView: View {
                     PDCard {
                         HStack(alignment: .top, spacing: PDSpacing.sm) {
                             PDIconTile(systemName: "info.circle", tint: .pdInfo)
-                            Text(isAllDay ? "All-day alerts use 9:00 AM local time on the offset day. Times that have already passed will not create new Pencil'd notifications." : "Alert times follow the event start. Times that have already passed will not create new Pencil'd notifications.")
+                            Text(isAllDay ? "All-day alerts use 9:00 AM local time on the offset day. Times that have already passed will not create new Pencil’d notifications." : "Alert times follow the event start. Times that have already passed will not create new Pencil’d notifications.")
                                 .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
                         }
                     }

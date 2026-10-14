@@ -238,10 +238,10 @@ struct MockDataCleanupTests {
 
         #expect(statusResult == .failure(MutationFailure(InjectedServiceFailure.persistence)))
         #expect(cacheResult == .failure(MutationFailure(message: "Could not clear the scan cache: Injected SwiftData failure")))
-        #expect(eraseResult == .failure(MutationFailure(message: "Could not erase local Pencil'd data: Injected SwiftData failure")))
+        #expect(eraseResult == .failure(MutationFailure(message: "Could not erase local Pencil’d data: Injected SwiftData failure")))
     }
 
-    @Test("Failed Calendar and Reminder cleanup retains the Pencil'd record and identifiers")
+    @Test("Failed Calendar and Reminder cleanup retains the Pencil’d record and identifiers")
     func externalCleanupFailureIsPartial() throws {
         let container = try modelContainer()
         let candidate = EventCandidate(title: "Keep cleanup record", startDate: testFutureDate)

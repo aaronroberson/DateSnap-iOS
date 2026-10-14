@@ -24,7 +24,7 @@ public enum ConfidenceTier: String, CaseIterable, Sendable {
         }
     }
 
-    /// Color tokens from Pencil'd Design System (Success #46E39A, Warning #FFBE55, Error #FF6B7A)
+    /// Color tokens from Pencil’d Design System (Success #46E39A, Warning #FFBE55, Error #FF6B7A)
     public var hexColor: String {
         switch self {
         case .high: return "46E39A"

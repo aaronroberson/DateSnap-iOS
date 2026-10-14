@@ -71,7 +71,7 @@ public final class EventReviewViewModel: ObservableObject {
     /// Saved or pending events that may be the same event from another screenshot.
     @Published public var duplicateMatches: [EventSimilarityService.Match] = []
     let calendarRecommender = CalendarRecommendationService()
-    /// Reads the user's Pencil'd-wide default calendar choice (Settings → Destinations).
+    /// Reads the user's Pencil’d-wide default calendar choice (Settings → Destinations).
     let defaultCalendarStore = DefaultCalendarStore()
 
     /// The candidate being reviewed. Edits are written back to it on save.
@@ -420,9 +420,9 @@ public final class EventReviewViewModel: ObservableObject {
         do {
             try persist(modelContext, using: saveOperation)
         } catch {
-            errorMessage = "Calendar and reminder changes were made, but Pencil'd could not save the event: \(error.localizedDescription)"
+            errorMessage = "Calendar and reminder changes were made, but Pencil’d could not save the event: \(error.localizedDescription)"
             isSavedSuccessfully = false
-            return .failure(MutationFailure(message: errorMessage ?? "Pencil'd could not save the event."))
+            return .failure(MutationFailure(message: errorMessage ?? "Pencil’d could not save the event."))
         }
 
         isDraftOnly = false
@@ -454,7 +454,7 @@ public final class EventReviewViewModel: ObservableObject {
             // outcome and where to fix it instead of echoing an infra error.
             notificationsSkipped = true
             return .failure(MutationFailure(
-                message: "Notifications are denied. Enable them in iOS Settings > Notifications > Pencil'd."
+                message: "Notifications are denied. Enable them in iOS Settings > Notifications > Pencil’d."
             ))
         } catch {
             notificationsSkipped = true

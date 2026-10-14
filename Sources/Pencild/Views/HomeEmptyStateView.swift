@@ -7,10 +7,10 @@ import VisionKit
 
 enum HomeBrandCopy {
     static let captureHeading = "Turn Schedules Into Events"
-    static let captureSubtitle = "Scan flyers, import syllabi, or let Pencil'd Plus spot events in your new screenshots."
-    static let photoLibraryPermissionMessage = "Pencil'd needs Photo Library access to find your recent screenshots. You can still pick individual photos without it."
-    static let premiumFileImportAccessibilityHint = "Requires Pencil'd Premium"
-    static let plusScreenshotExplanation = "Pencil'd Plus checks new screenshots on your device and highlights likely events. Nothing is saved until you review it."
+    static let captureSubtitle = "Scan flyers, import syllabi, or let Pencil’d Plus spot events in your new screenshots."
+    static let photoLibraryPermissionMessage = "Pencil’d needs Photo Library access to find your recent screenshots. You can still pick individual photos without it."
+    static let premiumFileImportAccessibilityHint = "Requires Pencil’d Premium"
+    static let plusScreenshotExplanation = "Pencil’d Plus checks new screenshots on your device and highlights likely events. Nothing is saved until you review it."
     static let privacyHeading = "Private & On-Device Intelligence"
     static let privacyBody = "Your photos, screenshots, and documents are processed on this device. Review every detected event before saving."
 }
@@ -41,7 +41,7 @@ struct HomeEmptyStateView: View {
     @State private var showDocumentCamera: Bool = false
     @AppStorage(AutoDetectPreference.key) private var autoDetectPreferred = true
 
-    /// Screenshots the library observer has seen that Pencil'd has not scanned yet.
+    /// Screenshots the library observer has seen that Pencil’d has not scanned yet.
     private var newScreenshots: [PHAsset] {
         let scanned = Set(scannedAssets.map(\.assetIdentifier))
         let unscanned = homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }

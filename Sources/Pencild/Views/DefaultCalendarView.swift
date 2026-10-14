@@ -3,7 +3,7 @@ import EventKit
 
 // MARK: - Default Calendar View
 /// Mirrors Stitch design `.stitch/Settings-Functional-Sub-Screens/Settings/Default-Calendar/design.html`.
-/// Connects directly to EventKit via Pencil'd Services and `DefaultCalendarStore`.
+/// Connects directly to EventKit via Pencil’d Services and `DefaultCalendarStore`.
 struct DefaultCalendarView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.services) private var services

@@ -34,7 +34,7 @@ struct NoDatesFoundView: View {
                     PDScreenIntro(
                         eyebrow: "No dates found",
                         title: "Couldn't find any dates",
-                        subtitle: "Pencil'd read this image on your device, but didn't find a date or time to review. Try a clearer image or enter the details yourself."
+                        subtitle: "Pencil’d read this image on your device, but didn't find a date or time to review. Try a clearer image or enter the details yourself."
                     )
 
                     PDCard {
@@ -83,7 +83,7 @@ struct NoDatesFoundView: View {
                             )
                             diagnosticRow(
                                 icon: "calendar", title: "Check for a date or time",
-                                description: "An announcement without a date may need manual entry. Review the detected words below to see what Pencil'd could read."
+                                description: "An announcement without a date may need manual entry. Review the detected words below to see what Pencil’d could read."
                             )
                         }
                     }

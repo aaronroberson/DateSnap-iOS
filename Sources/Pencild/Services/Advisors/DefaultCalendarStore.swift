@@ -2,8 +2,8 @@ import Foundation
 import EventKit
 
 // MARK: - Default Calendar Store
-/// Persists the user's Pencil'd-wide default destination calendar (e.g. "Home" instead of
-/// whatever iOS happens to hand back). On-device only, like every other Pencil'd setting.
+/// Persists the user's Pencil’d-wide default destination calendar (e.g. "Home" instead of
+/// whatever iOS happens to hand back). On-device only, like every other Pencil’d setting.
 public struct DefaultCalendarStore: Sendable {
     public static let defaultsKey = "settings.defaultCalendarIdentifier"
     private let defaultsSuiteName: String?
@@ -17,7 +17,7 @@ public struct DefaultCalendarStore: Sendable {
     }
 
     /// The saved default calendar identifier, or `nil` when the user has not chosen one
-    /// (Pencil'd then follows the iOS system default).
+    /// (Pencil’d then follows the iOS system default).
     public func defaultCalendarIdentifier() -> String? {
         defaults.string(forKey: Self.defaultsKey)
     }
@@ -43,16 +43,16 @@ public struct DefaultCalendarStore: Sendable {
         }
     }
 
-    /// Clears the choice; Pencil'd follows the iOS system default again.
+    /// Clears the choice; Pencil’d follows the iOS system default again.
     public func reset() {
         setDefaultCalendarIdentifier(nil)
     }
 }
 
 // MARK: - Destination Calendar Resolver
-/// The order in which Pencil'd preselects a destination calendar for a calendar entry:
+/// The order in which Pencil’d preselects a destination calendar for a calendar entry:
 /// 1. The calendar already saved for this event (editing a saved event keeps its destination).
-/// 2. The user's Pencil'd default calendar (Settings → Destinations), e.g. "Home".
+/// 2. The user's Pencil’d default calendar (Settings → Destinations), e.g. "Home".
 /// 3. The learned per-category choice (`CalendarRecommendationService`).
 /// 4. The iOS system default calendar.
 /// 5. The first writable calendar (deterministic fallback).

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Pencil'd "Luminous Precision" design tokens, taken from the Stitch design
+/// Pencil’d "Luminous Precision" design tokens, taken from the Stitch design
 /// system (`.stitch/Brand-Onboarding/Home-Screen/DESIGN.md`). This file is the
 /// single source of truth; the legacy `ds*` names in `Colors.swift` alias these.
 extension Color {
@@ -154,7 +154,7 @@ struct PDCheckmark: View {
     }
 }
 
-/// Month/day badge in the Pencil'd style.
+/// Month/day badge in the Pencil’d style.
 struct PDDateBadge: View {
     let month: String
     let day: String

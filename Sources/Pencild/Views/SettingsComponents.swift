@@ -1,7 +1,7 @@
 import SwiftUI
 
 // Shared building blocks for the Settings cluster screens.
-// Wraps the canonical Pencil'd design system components in `PencilComponents.swift`
+// Wraps the canonical Pencil’d design system components in `PencilComponents.swift`
 // while keeping existing call sites working.
 
 // MARK: - Screen header with optional custom back button (pushed screens)

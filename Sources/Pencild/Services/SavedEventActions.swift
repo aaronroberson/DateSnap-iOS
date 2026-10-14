@@ -123,7 +123,7 @@ struct SavedEventActions {
         }
     }
 
-    /// Deletes the Pencil'd record. When `removeFromCalendar` is set, the Calendar event and reminder are removed too.
+    /// Deletes the Pencil’d record. When `removeFromCalendar` is set, the Calendar event and reminder are removed too.
     func delete(_ saved: SavedEvent, removeFromCalendar: Bool) -> MutationResult {
         services.notifications.removePendingNotifications(identifiers: saved.scheduledNotificationIds)
         saved.scheduledNotificationIds = []
@@ -177,7 +177,7 @@ struct SavedEventActions {
         }
     }
 
-    /// Erases every scan, candidate and saved record Pencil'd holds (Calendar and Reminders entries are kept).
+    /// Erases every scan, candidate and saved record Pencil’d holds (Calendar and Reminders entries are kept).
     func eraseAllLocalData() -> MutationResult {
         var saved: [SavedEvent] = []
         var candidates: [EventCandidate] = []
@@ -201,7 +201,7 @@ struct SavedEventActions {
             for item in saved { modelContext.insert(item) }
             for asset in assets { modelContext.insert(asset) }
             for item in interpretations { modelContext.insert(item) }
-            return .failure(MutationFailure(message: "Could not erase local Pencil'd data: \(error.localizedDescription)"))
+            return .failure(MutationFailure(message: "Could not erase local Pencil’d data: \(error.localizedDescription)"))
         }
     }
 

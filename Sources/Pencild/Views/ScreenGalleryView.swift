@@ -170,7 +170,7 @@ struct ScreenGalleryView: View {
             id: 18,
             title: "User Profile",
             stitchId: "80ec0320a47a4f6f9ff8c98bec1e6a5d",
-            description: "Profile persona, productivity velocity bento, credentials and Pencil'd Pro spotlight.",
+            description: "Profile persona, productivity velocity bento, credentials and Pencil’d Pro spotlight.",
             category: "Account & Security",
             modal: .userProfile,
             settingsRoute: .userProfile

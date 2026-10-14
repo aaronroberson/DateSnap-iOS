@@ -24,10 +24,10 @@ The core flyer analysis, date inference, Calendar, and Reminders workflow can be
 
 4. IN-APP PURCHASES & SUBSCRIPTIONS:
 - Free plan: 10 scans per month (only scans that find a new event count) and 1 alert per event. There is no history limit.
-- Auto-renewable subscriptions in the "Pencil'd Memberships" group. Each has a 1-week free trial for eligible users:
-  * Pencil'd Plus (Monthly & Annual): unlimited scans, up to 3 alerts per event, automatic detection of new event screenshots, and highlighting of screenshots that look like events.
-  * Pencil'd Premium (Monthly & Annual): everything in Plus, plus PDF and file import (every page), work schedules and multi-date flyers as separate events, tailored alert plans and RSVP-deadline reminders, and grouping of likely duplicates.
-- Lifetime (non-consumable, one-time purchase): Pencil'd Plus Lifetime and Pencil'd Premium Lifetime unlock the same features permanently. They are an introductory offer shown through April 13, 2027.
+- Auto-renewable subscriptions in the "Pencil’d Memberships" group. Each has a 1-week free trial for eligible users:
+  * Pencil’d Plus (Monthly & Annual): unlimited scans, up to 3 alerts per event, automatic detection of new event screenshots, and highlighting of screenshots that look like events.
+  * Pencil’d Premium (Monthly & Annual): everything in Plus, plus PDF and file import (every page), work schedules and multi-date flyers as separate events, tailored alert plans and RSVP-deadline reminders, and grouping of likely duplicates.
+- Lifetime (non-consumable, one-time purchase): Pencil’d Plus Lifetime and Pencil’d Premium Lifetime unlock the same features permanently. They are an introductory offer shown through April 13, 2027.
 - Paid features stay visible on every plan. Tapping one without the plan opens the Plus or Premium paywall instead of running it.
 - Restore Purchases, the privacy policy, and the terms of use are available in each paywall and in the Settings tab.
 
@@ -41,10 +41,10 @@ If you encounter any questions or require additional details during review, plea
 
 | Field | Value / Guidance |
 |---|---|
-| **App Name** | Pencil'd: Photo to Calendar *(27/30)* |
+| **App Name** | Pencil’d: Photo to Calendar *(27/30)* |
 | **Subtitle** | Flyers & screenshots to events *(30/30)* |
 | **Keywords** | `picture,image,scan,work,schedule,shift,invite,ticket,pdf,import,file,reminder,date,party,camera` *(95/100; singular, no spaces, no words repeated from name or subtitle)* |
-| **Promotional Text** | Turn flyers, work schedules, invites, photos, and screenshots into calendar events and reminders. Snap or import on your iPhone, approve, and Pencil'd does the rest. *(165/170)* |
+| **Promotional Text** | Turn flyers, work schedules, invites, photos, and screenshots into calendar events and reminders. Snap or import on your iPhone, approve, and Pencil’d does the rest. *(165/170)* |
 | **Primary Category** | Productivity |
 | **Secondary Category** | Utilities |
 | **Content Rights** | Contains no third-party content requiring explicit license. |

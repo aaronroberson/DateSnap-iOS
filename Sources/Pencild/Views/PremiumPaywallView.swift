@@ -16,7 +16,7 @@ struct PremiumPaywallView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     PDScreenIntro(
-                        eyebrow: "Pencil'd Premium",
+                        eyebrow: "Pencil’d Premium",
                         title: "Upgrade to Premium",
                         subtitle: "Turn flyers and files into plans. Import PDFs and images from Files, review the extracted dates, and choose what to save."
                     )

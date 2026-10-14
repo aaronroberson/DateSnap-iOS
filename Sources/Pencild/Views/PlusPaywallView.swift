@@ -17,7 +17,7 @@ struct PlusPaywallView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     PDScreenIntro(
-                        eyebrow: "Pencil'd Plus",
+                        eyebrow: "Pencil’d Plus",
                         title: "Upgrade to Plus",
                         subtitle: "Find the dates worth keeping. Plus surfaces new screenshots on Home and highlights the ones that look like events."
                     )

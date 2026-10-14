@@ -1,4 +1,4 @@
-# Pencil'd Production Readiness & Codebase Architecture Audit
+# Pencil’d Production Readiness & Codebase Architecture Audit
 
 **Date:** 2026-10-11  
 **Scope:** Architecture, Design System Conformance, Rebranding Integrity, API Feasibility, Component Reusability, and Decomposition Targets  
@@ -18,7 +18,7 @@ because the GitHub API was unreachable.
 
 ## 1. Executive Summary
 
-This audit assesses the Pencil'd codebase across seven key dimensions:
+This audit assesses the Pencil’d codebase across seven key dimensions:
 1. **Stitch Design Feasibility & API Boundaries** (documenting features in Stitch mockups that cannot or should not be implemented due to iOS sandbox, hardware, or privacy constraints).
 2. **Rebranding Migration Integrity** (verifying that there is no unsupported product-facing legacy UI).
 3. **Design System & Token Conformance** (measuring adherence to Luminous Precision tokens vs. remaining legacy `DS*` aliases and hard-coded values).
@@ -52,7 +52,7 @@ The automated pre-commit brand check (`./scripts/hooks/pre-commit` running `scri
 - **Residual String Check:** No unsupported product-facing legacy branding exists in [`Sources/`](../../Sources/), [`Config/`](../../Config/), or [`Assets.xcassets/`](../../Assets.xcassets/).
 - **App Bundle & Display Identity:**
   - `PRODUCT_BUNDLE_IDENTIFIER`: `com.pencild.app`
-  - `INFOPLIST_KEY_CFBundleDisplayName`: `Pencil'd`
+  - `INFOPLIST_KEY_CFBundleDisplayName`: `Pencil’d`
   - StoreKit configuration: [`Pencild.storekit`](../../Pencild.storekit) with canonical identifiers:
     - `com.pencild.plus.monthly`
     - `com.pencild.plus.annual`
@@ -331,7 +331,7 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
 - All three screens use one section order: needs-attention items (duplicates,
   questions, ambiguous dates); **Event details**; alternative readings and
   **Suggestions**; **Calendar & reminders** (with Alerts); **On the flyer**;
-  the primary action; then the source and "Why Pencil'd chose these details".
+  the primary action; then the source and "Why Pencil’d chose these details".
 - Fixed: Event Review placed the "Calendar & reminders" heading below the
   destination card, above the suggestions. On iPhone, scan details sat above
   Save. Saved Event Detail put the source between destinations and alerts.

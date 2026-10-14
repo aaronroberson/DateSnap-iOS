@@ -840,7 +840,7 @@
 				DEVELOPMENT_TEAM = WGKKDYY866;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Pencil'd";
+				INFOPLIST_KEY_CFBundleDisplayName = "Pencil’d";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pencild.app;
 				SDKROOT = iphoneos;
@@ -929,7 +929,7 @@
 				DEVELOPMENT_TEAM = WGKKDYY866;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Pencil'd";
+				INFOPLIST_KEY_CFBundleDisplayName = "Pencil’d";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pencild.app;
 				SDKROOT = iphoneos;

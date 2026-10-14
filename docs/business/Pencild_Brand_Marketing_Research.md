@@ -12,10 +12,10 @@ original research. The live values are maintained in
 
 | Field | Decision |
 |---|---|
-| **App Name** | Pencil'd: Photo to Calendar *(27/30)* |
+| **App Name** | Pencil’d: Photo to Calendar *(27/30)* |
 | **Subtitle** | Flyers & screenshots to events *(30/30)* |
 | **Keywords** | `picture,image,scan,work,schedule,shift,invite,ticket,pdf,import,file,reminder,date,party,camera` *(95/100)* |
-| **Promotional Text** | Turn flyers, work schedules, invites, photos, and screenshots into calendar events and reminders. Snap or import on your iPhone, approve, and Pencil'd does the rest. *(165/170)* |
+| **Promotional Text** | Turn flyers, work schedules, invites, photos, and screenshots into calendar events and reminders. Snap or import on your iPhone, approve, and Pencil’d does the rest. *(165/170)* |
 | **Primary / Secondary Category** | Productivity / Utilities |
 | **Copyright** | 2026 LiminalForge, LLC |
 | **Seller** | LiminalForge, LLC (organization enrollment, D-U-N-S number required) |
@@ -364,7 +364,7 @@ Based on comparable apps and Adapty benchmarks for productivity utilities, the o
 | **Plus** | $4.99/mo | $29.99/yr (~$2.49/mo) | 7 days | Unlimited photo/screenshot scans; multi-stage reminders; Apple Calendar sync; 90-day history |
 | **Premium** | $7.99/mo | $49.99/yr (~$4.16/mo) | 7 days | All Plus; Files/PDF import; multi-page PDF; batch scanning; unlimited history |
 
-**Current pricing decision (updated 2026-10-13):** The decision record at the top of the [Launch Monetization & Packaging Strategy](Pencild-Monetization-Strategy.md) is the single current source: Pencil'd Plus $3.99/month, $24.99/year, or $39.99 lifetime; Pencil'd Premium $6.99/month, $39.99/year, or $79.99 lifetime; 1-week free trials on monthly and annual plans; lifetime offered through 2027-04-13; free plan of 10 scans a month and 1 alert per event, with no history limit. The October 7 values above are retained only to preserve the research history. This is a local product decision, not confirmation that App Store Connect is configured to match.
+**Current pricing decision (updated 2026-10-13):** The decision record at the top of the [Launch Monetization & Packaging Strategy](Pencild-Monetization-Strategy.md) is the single current source: Pencil’d Plus $3.99/month, $24.99/year, or $39.99 lifetime; Pencil’d Premium $6.99/month, $39.99/year, or $79.99 lifetime; 1-week free trials on monthly and annual plans; lifetime offered through 2027-04-13; free plan of 10 scans a month and 1 alert per event, with no history limit. The October 7 values above are retained only to preserve the research history. This is a local product decision, not confirmation that App Store Connect is configured to match.
 
 **Rationale:**
 - Historical October 7 reasoning only: its Plus annual price was $29.99 with an effective monthly display of $2.49.

@@ -3,8 +3,8 @@ import SwiftUI
 // MARK: - Auto-detect Settings (Automatic Capture)
 /// Stitch reference: `.stitch/Settings-Functional-Sub-Screens/Settings/Automatic-Capture/design.html`.
 ///
-/// Pencil'd does not scan in the background. iOS does not let an app read the photo library while
-/// it is closed, so auto-detect runs only while Pencil'd is open: it looks at the newest
+/// Pencil’d does not scan in the background. iOS does not let an app read the photo library while
+/// it is closed, so auto-detect runs only while Pencil’d is open: it looks at the newest
 /// screenshots, ranks the likely events, and waits for the user to review. Every control here
 /// has a runtime consumer (`AutoDetectPreference`, `IntelligencePolicy`).
 struct AutomationSettingsView: View {

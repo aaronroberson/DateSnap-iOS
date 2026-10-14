@@ -3,7 +3,7 @@ import SwiftData
 import AuthenticationServices
 
 // MARK: - Profile
-/// Account-light profile. Pencil'd has no server, so identity is exactly what Sign in with Apple
+/// Account-light profile. Pencil’d has no server, so identity is exactly what Sign in with Apple
 /// returns (Apple verifies the Apple ID and its email), stored on this device. There are no
 /// email/phone verification steps. Plan comes from StoreKit; activity is counted from saved events.
 struct UserProfileFlowView: View {

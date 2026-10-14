@@ -2,7 +2,7 @@ import SwiftUI
 import EventKit
 
 // MARK: - Default Calendar Section (Settings → Destinations)
-/// Lets the user pick the Pencil'd-wide default destination calendar (e.g. "Home" instead
+/// Lets the user pick the Pencil’d-wide default destination calendar (e.g. "Home" instead
 /// of "Work" or "Shared"). New events reviewed from screenshots are preselected into this
 /// calendar, so the user no longer has to change the drop-down every time.
 struct DefaultCalendarSection: View {

@@ -133,8 +133,8 @@ struct HistoryArchiveView: View {
                 titleVisibility: .visible,
                 presenting: pendingDelete
             ) { saved in
-                Button("Delete from Pencil'd Only", role: .destructive) {
-                    reportMutation(actions.delete(saved, removeFromCalendar: false), success: "Removed from Pencil'd history")
+                Button("Delete from Pencil’d Only", role: .destructive) {
+                    reportMutation(actions.delete(saved, removeFromCalendar: false), success: "Removed from Pencil’d history")
                 }
                 if saved.externalCalendarEventId != nil || !saved.externalReminderIds.isEmpty || saved.deadlineReminderId != nil {
                     Button("Delete from Calendar & Reminders Too", role: .destructive) {
@@ -142,7 +142,7 @@ struct HistoryArchiveView: View {
                     }
                 }
             } message: { _ in
-                Text("Pending Pencil'd alerts for this event will be cancelled.")
+                Text("Pending Pencil’d alerts for this event will be cancelled.")
             }
         }
     }
@@ -174,7 +174,7 @@ struct HistoryArchiveView: View {
                     Text("Local scan history").font(PDFont.labelLG).foregroundStyle(Color.pdOnSurface)
                     Text("\(retainedScanCount) scan\(retainedScanCount == 1 ? "" : "s") linked to \(savedEvents.count) event\(savedEvents.count == 1 ? "" : "s")")
                         .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
-                    Text("Deleting a Pencil'd record removes it from this history. Original images remain in Photos when available.")
+                    Text("Deleting a Pencil’d record removes it from this history. Original images remain in Photos when available.")
                         .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
                 }
                 Spacer(minLength: 0)

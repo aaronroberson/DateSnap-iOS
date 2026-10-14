@@ -7,13 +7,13 @@ enum SplashTiming {
 }
 
 enum SplashCopy {
-    static let slogan = "Scanned. Reviewed. Pencil'd."
+    static let slogan = "Scanned. Reviewed. Pencil’d."
     static let welcomeLead = "Scanned. Reviewed. "
-    static let welcomeAccent = "Pencil'd."
+    static let welcomeAccent = "Pencil’d."
     static let welcomeBody = "Select screenshots, physical flyers, invites, tickets, or PDFs. Review the detected details before saving to your calendar."
     static let scanCTA = "Scan screenshot or flyer"
     static let importCTA = "Import PDF or file"
-    static let privacyBody = "Pencil'd detects screenshots containing dates, venues, or meeting links directly on your phone."
+    static let privacyBody = "Pencil’d detects screenshots containing dates, venues, or meeting links directly on your phone."
     static let privacyLine = "Your scans are processed on this device."
 }
 
@@ -135,9 +135,9 @@ private struct SplashBrandPage: View {
                             .stroke(Color.white.opacity(0.14), lineWidth: 1)
                     )
                     .shadow(color: Color.pdOrange.opacity(0.35), radius: 36, y: 10)
-                    .accessibilityLabel("Pencil'd app icon")
+                    .accessibilityLabel("Pencil’d app icon")
 
-                Text("Pencil'd")
+                Text("Pencil’d")
                     .font(PDFont.jakarta(42, .heavy, relativeTo: .largeTitle))
                     .tracking(-1)
                     .foregroundStyle(LinearGradient.pdHeadline)

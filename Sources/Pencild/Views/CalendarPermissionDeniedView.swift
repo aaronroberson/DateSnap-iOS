@@ -19,7 +19,7 @@ struct CalendarPermissionDeniedView: View {
                                 Text("Review first. Save when you're ready.")
                                     .font(PDFont.headlineSM)
                                     .foregroundStyle(Color.pdOnSurface)
-                                Text("Pencil'd requests permission to add the events you approve. Scanning and reviewing don't require Calendar access.")
+                                Text("Pencil’d requests permission to add the events you approve. Scanning and reviewing don't require Calendar access.")
                                     .font(PDFont.bodyMD)
                                     .foregroundStyle(Color.pdOnSurfaceVariant)
                             }
@@ -30,15 +30,15 @@ struct CalendarPermissionDeniedView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             abilityRow(icon: "doc.text.viewfinder", title: "Scan and review", description: "Read dates from an image and edit the extracted details on your device.")
                             abilityRow(icon: "tray.full", title: "Keep a draft", description: "Leave the event in Review and come back when you're ready to save.")
-                            abilityRow(icon: "checklist", title: "Other destinations", description: "Apple Reminders and Pencil'd alerts use their own permissions. Calendar access does not control them.")
+                            abilityRow(icon: "checklist", title: "Other destinations", description: "Apple Reminders and Pencil’d alerts use their own permissions. Calendar access does not control them.")
                         }
                     }
                     PDCard {
                         VStack(alignment: .leading, spacing: 12) {
                             PDSectionHeader(title: "Enable Calendar access")
                             stepRow(number: "1", text: "Open iOS Settings.")
-                            stepRow(number: "2", text: "Select Pencil'd, then Calendars.")
-                            stepRow(number: "3", text: "Choose Add Events Only or Full Access, then return to Pencil'd.")
+                            stepRow(number: "2", text: "Select Pencil’d, then Calendars.")
+                            stepRow(number: "3", text: "Choose Add Events Only or Full Access, then return to Pencil’d.")
                         }
                     }
                     VStack(spacing: 12) {

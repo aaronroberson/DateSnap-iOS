@@ -1,7 +1,7 @@
 import Foundation
 
 /// Counts scans that found a new event, per calendar month, on this device. Backs the free
-/// plan's monthly scan allowance; stored locally like everything else in Pencil'd.
+/// plan's monthly scan allowance; stored locally like everything else in Pencil’d.
 public final class ScanUsageStore: @unchecked Sendable {
     public static let shared = ScanUsageStore(defaults: .standard)
 

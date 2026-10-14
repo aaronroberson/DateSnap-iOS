@@ -6,7 +6,7 @@ import FoundationModels
 // MARK: - Apple Intelligence Capability
 
 /// Maps `SystemLanguageModel` availability (OS, device, Apple Intelligence setting, model readiness and
-/// language) to Pencil'd's capability. Queried per scan; never cached.
+/// language) to Pencil’d's capability. Queried per scan; never cached.
 @available(iOS 26.0, macOS 26.0, *)
 struct AppleIntelligenceCapabilityProvider: IntelligenceCapabilityProviding {
     func currentCapability(for locale: Locale) -> IntelligenceCapability {

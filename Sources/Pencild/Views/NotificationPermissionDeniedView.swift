@@ -20,25 +20,25 @@ struct NotificationPermissionDeniedView: View {
                             .accessibilityHidden(true)
                         PDScreenIntro(
                             eyebrow: "Notification permission",
-                            title: "Pencil'd Alerts Are Turned Off",
+                            title: "Pencil’d Alerts Are Turned Off",
                             subtitle: "Allow notifications to receive the local alerts you choose for your saved events. Your Calendar events are still available."
                         )
                     }
                     PDCard(highlighted: true) {
-                        benefitRow(icon: "bell.badge", title: "A reminder before your event", description: "Choose alert times while reviewing an event or editing its reminder schedule. Pencil'd schedules those alerts on your device.")
+                        benefitRow(icon: "bell.badge", title: "A reminder before your event", description: "Choose alert times while reviewing an event or editing its reminder schedule. Pencil’d schedules those alerts on your device.")
                     }
-                    PDSectionHeader(title: "What still works without Pencil'd alerts")
+                    PDSectionHeader(title: "What still works without Pencil’d alerts")
                     PDCard {
                         VStack(alignment: .leading, spacing: 16) {
                             benefitRow(icon: "calendar", title: "Apple Calendar", description: "Saved Calendar events stay in Apple Calendar. Calendar alarms follow your Calendar settings and permissions.")
                             benefitRow(icon: "checklist", title: "Apple Reminders", description: "Tasks saved to Apple Reminders remain there. Their notifications follow the Reminders app's settings.")
-                            benefitRow(icon: "doc.text.viewfinder", title: "Scan and review", description: "Read an image, review its dates, and choose what to save without enabling Pencil'd notifications.")
+                            benefitRow(icon: "doc.text.viewfinder", title: "Scan and review", description: "Read an image, review its dates, and choose what to save without enabling Pencil’d notifications.")
                         }
                     }
                     PDCard {
                         VStack(alignment: .leading, spacing: 8) {
                             PDSectionHeader(title: "Enable notifications")
-                            Text("Open iOS Settings, select Pencil'd → Notifications, and turn on Allow Notifications.")
+                            Text("Open iOS Settings, select Pencil’d → Notifications, and turn on Allow Notifications.")
                                 .font(PDFont.bodyMD)
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
                         }
@@ -51,10 +51,10 @@ struct NotificationPermissionDeniedView: View {
                         }
                         .buttonStyle(PDPrimaryButtonStyle())
                         Button {
-                            appState.showToast("Pencil'd local alerts remain muted")
+                            appState.showToast("Pencil’d local alerts remain muted")
                             dismiss()
                         } label: {
-                            Text("Keep Pencil'd Alerts Muted")
+                            Text("Keep Pencil’d Alerts Muted")
                         }
                         .buttonStyle(PDSecondaryButtonStyle())
                     }

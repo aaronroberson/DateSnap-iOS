@@ -38,7 +38,7 @@ enum AlertChannel: String, CaseIterable, Identifiable, Sendable {
     case notification = "Local Push Alert"
     case reminders = "Apple Reminders"
     case calendar = "Calendar Alarm"
-    case push = "Pencil'd Priority Push"
+    case push = "Pencil’d Priority Push"
     
     var id: String { rawValue }
     

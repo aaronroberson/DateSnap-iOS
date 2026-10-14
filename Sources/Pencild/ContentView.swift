@@ -164,7 +164,7 @@ struct ContentView: View {
                     .frame(width: 38, height: 38)
                     .overlay(Image(systemName: "pencil.and.outline").foregroundStyle(Color.pdSurface))
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Pencil'd")
+                    Text("Pencil’d")
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(Color.pdOnSurface)
                     Text("SCANNED. REVIEWED.")
@@ -251,7 +251,7 @@ struct ContentView: View {
         }
         guard let eventId = DeepLinkInbox.shared.consume() else { return }
         guard let candidate = SavedEventActions.candidate(id: eventId, in: modelContext) else {
-            appState.showToast("That event is no longer in Pencil'd")
+            appState.showToast("That event is no longer in Pencil’d")
             return
         }
         Task { @MainActor in

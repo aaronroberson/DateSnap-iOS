@@ -3,7 +3,7 @@
 
 PRODUCT_NAME = Pencild
 PRODUCT_BUNDLE_IDENTIFIER = com.pencild.app
-INFOPLIST_KEY_CFBundleDisplayName = Pencil'd
+INFOPLIST_KEY_CFBundleDisplayName = Pencil’d
 INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.productivity
 MARKETING_VERSION = 1.0.0
 CURRENT_PROJECT_VERSION = 1

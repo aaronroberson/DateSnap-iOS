@@ -101,7 +101,7 @@ struct EventReviewFieldsCard: View {
             }
 
             if viewModel.yearAssumed {
-                Label("Year wasn't on the flyer — Pencil'd picked the next upcoming one.", systemImage: "info.circle")
+                Label("Year wasn't on the flyer — Pencil’d picked the next upcoming one.", systemImage: "info.circle")
                     .font(PDFont.bodySM)
                     .foregroundStyle(Color.pdWarning)
                     .frame(maxWidth: .infinity, alignment: .leading)

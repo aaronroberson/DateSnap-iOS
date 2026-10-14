@@ -8,7 +8,7 @@ struct MarketingKitView: View {
     @EnvironmentObject private var appState: AppState
 
     let subjectLine = "Stop losing dates in your camera roll 📸 ➔ 🗓️"
-    let previewText = "Pencil'd's on-device AI turns your flyers and screenshots into Apple Calendar events in seconds."
+    let previewText = "Pencil’d's on-device AI turns your flyers and screenshots into Apple Calendar events in seconds."
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -44,7 +44,7 @@ struct MarketingKitView: View {
                     .rotationEffect(.degrees(9))
                     .offset(x: 82, y: 14)
                 VStack(spacing: 4) {
-                    Text("Pencil'd")
+                    Text("Pencil’d")
                         .font(PDFont.display)
                         .foregroundStyle(Color.pdOnSurface)
                     Text("Precision Temporal AI")
@@ -80,7 +80,7 @@ struct MarketingKitView: View {
             VStack(spacing: 14) {
                 copyBlock("Headline Hook", "X / Instagram",
                           quote: "“Your camera roll is where event plans go to die. We fixed that.”",
-                          body: "Pencil'd reads dates from concert posters, festival lineups, and group chats like a human. 0.12s on-device OCR, zero cloud lag, zero privacy compromises.")
+                          body: "Pencil’d reads dates from concert posters, festival lineups, and group chats like a human. 0.12s on-device OCR, zero cloud lag, zero privacy compromises.")
                 Divider().overlay(Color.pdOutlineVariant)
                 copyBlock("Feature Spotlight", "LinkedIn / Tech",
                           quote: "“Introducing Temporal AI: Instant Natural Language Extraction on iOS.”",
@@ -190,14 +190,14 @@ struct MarketingKitView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Hey there,")
                     Text("How many times have you screenshotted a festival flyer, a party invitation, or a ticket drop date... only to completely forget about it until the day after?")
-                    Text("We built Pencil'd to end that frustration forever. Using local CoreML and Apple's Neural Engine, Pencil'd scans any screenshot in 0.12 seconds, extracts relative dates like \"Next Friday at 9\", and schedules 3-tier custom alerts across Apple Calendar and Reminders.")
+                    Text("We built Pencil’d to end that frustration forever. Using local CoreML and Apple's Neural Engine, Pencil’d scans any screenshot in 0.12 seconds, extracts relative dates like \"Next Friday at 9\", and schedules 3-tier custom alerts across Apple Calendar and Reminders.")
                     Text("✨ What you get:")
                     VStack(alignment: .leading, spacing: 5) {
                         emailBullet("100% On-Device Privacy", "Zero cloud uploads, zero telemetry. Your photos stay strictly in local memory.")
                         emailBullet("3-Tier Staggered Alerts", "24h outfit/ticket prep, departure transit alarms, and gate-opening push pings.")
                         emailBullet("Zero Manual Typing", "Automatic titles, locations, links, and auto-purged screenshot storage.")
                     }
-                    Text("Download Pencil'd on the iOS App Store today and experience seamless screenshot-to-calendar superpowers.")
+                    Text("Download Pencil’d on the iOS App Store today and experience seamless screenshot-to-calendar superpowers.")
                 }
                 .font(PDFont.bodySM)
                 .foregroundStyle(Color.pdOnSurfaceVariant)
@@ -206,7 +206,7 @@ struct MarketingKitView: View {
                     appState.showToast("App Store campaign link opened")
                 } label: {
                     HStack {
-                        Text("Get Pencil'd on the App Store")
+                        Text("Get Pencil’d on the App Store")
                         Image(systemName: "arrow.right")
                     }
                 }

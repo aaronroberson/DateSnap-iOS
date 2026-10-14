@@ -40,7 +40,7 @@ struct ManagePlanView: View {
                 if tier != .premium { upsell }
                 controls
                 SettingsFooterNote(
-                    lines: ["Apple manages subscription billing through your Apple ID. Pencil'd does not receive or store payment credentials."],
+                    lines: ["Apple manages subscription billing through your Apple ID. Pencil’d does not receive or store payment credentials."],
                     systemImage: "info.circle.fill"
                 )
                 footerLinks
@@ -185,7 +185,7 @@ struct ManagePlanView: View {
                     recordCount(icon: "doc.text.viewfinder", title: "Stored scans", count: scannedAssets.count)
                 }
             }
-            Text("Counts reflect the records currently kept by Pencil'd on this device.")
+            Text("Counts reflect the records currently kept by Pencil’d on this device.")
                 .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
         }
     }
@@ -256,7 +256,7 @@ struct ManagePlanView: View {
     private var upsell: some View {
         PDCard(highlighted: true) {
             VStack(alignment: .leading, spacing: 12) {
-                PDEyebrow(text: "Pencil'd Premium")
+                PDEyebrow(text: "Pencil’d Premium")
                 Text("Bring your documents into the plan.")
                     .font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
                 Text(PremiumFeature.documentImport.upgradeReason)
@@ -328,7 +328,7 @@ struct ManagePlanView: View {
             .frame(minHeight: 44)
             if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
                let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                Text("Pencil'd \(version) (\(build))")
+                Text("Pencil’d \(version) (\(build))")
                     .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
             }
         }

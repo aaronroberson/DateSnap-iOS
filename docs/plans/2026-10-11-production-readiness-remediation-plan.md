@@ -1,4 +1,4 @@
-# Pencil'd production-readiness remediation plan
+# Pencil’d production-readiness remediation plan
 
 Date: 2026-10-11  
 Scope: `Pencild` visual refresh and production-readiness follow-up

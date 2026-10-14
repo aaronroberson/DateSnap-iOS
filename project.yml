@@ -43,7 +43,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.pencild.app
         INFOPLIST_FILE: Info.plist
-        INFOPLIST_KEY_CFBundleDisplayName: "Pencil'd"
+        INFOPLIST_KEY_CFBundleDisplayName: "Pencil’d"
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
         CODE_SIGN_ENTITLEMENTS: Pencild.entitlements
         CODE_SIGN_IDENTITY: "Apple Development"

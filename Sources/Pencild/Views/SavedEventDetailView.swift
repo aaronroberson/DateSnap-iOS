@@ -113,7 +113,7 @@ struct SavedEventDetailView: View {
     @ViewBuilder
     private var saveStatus: some View {
         if saved?.status == .archived {
-            PDStatusBadge(text: "Archived in Pencil'd", icon: "archivebox.fill")
+            PDStatusBadge(text: "Archived in Pencil’d", icon: "archivebox.fill")
         } else if hasCalendarRecord {
             PDStatusBadge(text: "Saved to Apple Calendar", icon: "checkmark.circle.fill", tone: .success)
         } else {
@@ -211,7 +211,7 @@ struct SavedEventDetailView: View {
                         }
                     }
                     if let saved {
-                        Text(saved.status == .archived ? "Pencil'd notifications were cancelled when this event was archived. Calendar and Reminders entries remain." : "\(saved.scheduledNotificationIds.count) Pencil'd notification\(saved.scheduledNotificationIds.count == 1 ? "" : "s") scheduled when this event was saved.")
+                        Text(saved.status == .archived ? "Pencil’d notifications were cancelled when this event was archived. Calendar and Reminders entries remain." : "\(saved.scheduledNotificationIds.count) Pencil’d notification\(saved.scheduledNotificationIds.count == 1 ? "" : "s") scheduled when this event was saved.")
                             .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
                     }
                 }

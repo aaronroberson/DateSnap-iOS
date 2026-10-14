@@ -1,4 +1,4 @@
-# Pencil'd full visual refresh — implementation plan
+# Pencil’d full visual refresh — implementation plan
 
 Companion to [`2026-10-10-pencild-redesign-plan.md`](2026-10-10-pencild-redesign-plan.md) (spec + traceability matrix). This plan executes its Phase 1–3 reskin.
 
@@ -112,7 +112,7 @@ Consequences for this plan:
 - **NoDatesFound:** Stitch copy, scan meta, "Quick tips", the three actions, raw OCR drawer.
 - **Saved Event Detail:**
   - "Saved to Apple Calendar" status, date/time/location cards, Directions.
-  - Source artifact image (from `ScannedAsset`), "Why Pencil'd chose this date" (stored interpretation provenance).
+  - Source artifact image (from `ScannedAsset`), "Why Pencil’d chose this date" (stored interpretation provenance).
   - Active reminders; actions Open in Calendar / Edit / Alerts / Share / Archive (existing archive).
 - **Reminder Schedule Editor:** event summary card; preset cards (existing presets); multi-tier alert list, add custom alert. No SMS and no channel picker.
 - **Agenda:** Stitch idiom with grouped day sections and event cards; keep its accessibility IDs.
@@ -217,7 +217,7 @@ user chooses its deselect action, so the free-plan recovery path is actionable.
 
 ## Context
 
-At the start of this refresh, only `HomeEmptyStateView` and `PencilSplashView` used the Pencil'd `pd*` tokens (`Theme/PencilTokens.swift`); every other view used the legacy theme. That legacy theme consisted of:
+At the start of this refresh, only `HomeEmptyStateView` and `PencilSplashView` used the Pencil’d `pd*` tokens (`Theme/PencilTokens.swift`); every other view used the legacy theme. That legacy theme consisted of:
 - `Color.ds*` from `Theme/Colors.swift`: cyan `#7CFFEA` on `#050816`
 - `DSTypography` from `Theme/Typography.swift`: SF system font
 - glass card, orb background, cyan buttons and confidence pill from `Theme/GlassModifiers.swift`
