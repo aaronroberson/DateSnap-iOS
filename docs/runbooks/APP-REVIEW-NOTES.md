@@ -58,8 +58,8 @@ If you encounter any questions or require additional details during review, plea
 > names. The name takes the most-searched phrase; the subtitle and keywords cover the
 > other phrasings ("screenshot", "flyer", "event", "scan", "picture", "image",
 > "pdf"), which Apple likely combines across fields. "work" + "schedule" target the
-> heavily searched "work schedule" terms; they ship now, with improved work-schedule
-> and multi-date flyer support as the fast-follow update. Productivity is the
-> accurate primary category and the one most direct competitors use; Apple counts the
+> heavily searched "work schedule" terms. Work schedules and multi-date flyers are
+> read as one event per shift or date (Premium; lower plans see the paywall).
+> Productivity is the accurate primary category and the one most direct competitors use; Apple counts the
 > primary category as a search match. Name, subtitle, and keywords change only with a
 > new version; promotional text can change anytime.
