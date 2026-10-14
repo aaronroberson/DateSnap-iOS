@@ -48,3 +48,5 @@ If you encounter any questions or require additional details during review, plea
 | **Privacy Policy URL** | `https://getpencild.com/privacy` *(Must be live and valid)* |
 | **Support URL** | `https://getpencild.com/support` *(Must be live and valid)* |
 | **Marketing URL** | `https://getpencild.com` |
+| **Copyright** | `2026 LiminalForge, LLC` (matches `NSHumanReadableCopyright` in `Info.plist`) |
+| **Seller** | LiminalForge, LLC: requires Apple Developer Program enrollment as an organization (D-U-N-S number) |
