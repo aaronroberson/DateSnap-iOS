@@ -25,13 +25,14 @@ struct PDEyebrow: View {
 
 // MARK: - Screen intro (eyebrow, display title, subtitle)
 struct PDScreenIntro: View {
-    let eyebrow: String
+    /// Omit when it would only repeat the title.
+    let eyebrow: String?
     let title: String
     var subtitle: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: PDSpacing.xs) {
-            PDEyebrow(text: eyebrow)
+            if let eyebrow { PDEyebrow(text: eyebrow) }
             Text(title)
                 .font(PDFont.headlineXL)
                 .foregroundStyle(Color.pdOnSurface)
@@ -47,33 +48,69 @@ struct PDScreenIntro: View {
     }
 }
 
-// MARK: - Top bar (back circle, title, optional trailing)
+// MARK: - Top bar (labeled back button, optional title, optional trailing)
+/// Name of the screen a pushed screen returns to, set by the navigation stack that pushes it
+/// (e.g. "Settings", "Agenda"). Unset in sheets and anywhere the origin can vary, so the back
+/// button falls back to the generic "Back".
+private struct PDBackLabelKey: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    var pdBackLabel: String? {
+        get { self[PDBackLabelKey.self] }
+        set { self[PDBackLabelKey.self] = newValue }
+    }
+}
+
 struct PDTopBar<Trailing: View>: View {
     let title: String
     var showsBack: Bool = true
+    var onBack: (() -> Void)? = nil
+    /// Overrides the environment's back label for this bar only.
+    var backLabel: String? = nil
+    /// Off by default: almost every screen opens with a `PDScreenIntro` heading right below, and a
+    /// second copy of the title in the bar is redundant. Turn on for screens without an intro.
+    var showsTitle = false
     @ViewBuilder var trailing: () -> Trailing
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.pdBackLabel) private var environmentBackLabel
+
+    private var resolvedBackLabel: String { backLabel ?? environmentBackLabel ?? "Back" }
 
     var body: some View {
         HStack(spacing: PDSpacing.sm) {
             if showsBack {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Color.pdOnSurface)
-                        .frame(width: 44, height: 44)
-                        .background(Circle().fill(Color.pdSurfaceContainer))
-                        .contentShape(Circle())
+                Button {
+                    if let onBack { onBack() } else { dismiss() }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 13, weight: .bold))
+                        Text(resolvedBackLabel.uppercased())
+                            .font(PDFont.labelMD)
+                            .tracking(0.6)
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(Color.pdOnSurface)
+                    .padding(.leading, 10)
+                    .padding(.trailing, 12)
+                    .frame(minHeight: 44)
+                    .background(Capsule().fill(Color.pdSurfaceContainer))
+                    .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Back")
+                .fixedSize()
+                .accessibilityLabel(resolvedBackLabel == "Back" ? "Back" : "Back to \(resolvedBackLabel)")
             }
-            Text(title)
-                .font(PDFont.headlineSM)
-                .foregroundStyle(Color.pdOnSurface)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-                .accessibilityAddTraits(.isHeader)
+            if showsTitle {
+                Text(title)
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .accessibilityAddTraits(.isHeader)
+            }
             Spacer(minLength: 0)
             trailing()
         }
@@ -82,8 +119,8 @@ struct PDTopBar<Trailing: View>: View {
 }
 
 extension PDTopBar where Trailing == EmptyView {
-    init(title: String, showsBack: Bool = true) {
-        self.init(title: title, showsBack: showsBack) { EmptyView() }
+    init(title: String, showsBack: Bool = true, onBack: (() -> Void)? = nil, showsTitle: Bool = false) {
+        self.init(title: title, showsBack: showsBack, onBack: onBack, showsTitle: showsTitle) { EmptyView() }
     }
 }
 
@@ -110,11 +147,17 @@ struct PDInterstitialHeader: View {
 struct PDPlanOption: View {
     let title: String
     var badge: String? = nil
+    /// Angled purple tag (e.g. "Intro offer") that starts at the middle of the title, just above it,
+    /// and rises past the top edge of the option.
+    var ribbon: String? = nil
     let detail: String
     let price: String
     var showsPerMonth = false
     let isSelected: Bool
+    /// The plan the user already has: shown with a "Current plan" badge and not selectable.
+    var isCurrent = false
     let action: () -> Void
+    @State private var titleWidth: CGFloat = 0
 
     private var primaryText: Color { isSelected ? .pdOnPrimaryFixed : .pdOnSurface }
     private var secondaryText: Color { isSelected ? .pdOnPrimaryFixed.opacity(0.75) : .pdOnSurfaceVariant }
@@ -127,7 +170,16 @@ struct PDPlanOption: View {
                         Text(title)
                             .font(PDFont.labelLG)
                             .foregroundStyle(primaryText)
-                        if let badge {
+                            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { titleWidth = $0 }
+                        if isCurrent {
+                            Text("CURRENT PLAN")
+                                .font(PDFont.labelSM)
+                                .tracking(0.4)
+                                .foregroundStyle(Color.pdOnSurface)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Capsule().fill(Color.pdSurfaceHighest))
+                        } else if let badge {
                             Text(badge)
                                 .font(PDFont.labelSM)
                                 .foregroundStyle(isSelected ? Color.pdPrimary : Color.pdOnPrimaryFixed)
@@ -157,15 +209,42 @@ struct PDPlanOption: View {
                     .padding(.leading, 8)
                     .accessibilityHidden(true)
             }
-            .padding(16)
+            .padding(Self.contentPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: PDRadius.plan)
                     .fill(isSelected ? AnyShapeStyle(LinearGradient.pdAction) : AnyShapeStyle(Color.pdSurfaceLow))
             )
+            .overlay(alignment: .topLeading) {
+                if let ribbon, !isCurrent { ribbonTag(ribbon) }
+            }
         }
         .buttonStyle(.plain)
+        .disabled(isCurrent)
+        .opacity(isCurrent ? 0.6 : 1)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityValue(isCurrent ? "Current plan" : "")
+        .accessibilityHint(isCurrent ? "" : (ribbon ?? ""))
+    }
+
+    private static let contentPadding: CGFloat = 16
+
+    private func ribbonTag(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(PDFont.labelSM)
+            .tracking(0.6)
+            .foregroundStyle(Color.white)
+            .lineLimit(1)
+            .fixedSize()
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(Color.pdSecondaryContainer))
+            .shadow(color: Color.pdSecondaryContainer.opacity(0.45), radius: 6, y: 2)
+            .rotationEffect(.degrees(-10), anchor: .bottomLeading)
+            // Pinned to the option's top-left, then moved so its bottom-left corner sits just above the
+            // title at its horizontal middle; the tilt carries it past the option's top edge.
+            .offset(x: Self.contentPadding + titleWidth / 2, y: -10)
+            .accessibilityHidden(true)
     }
 }
 
@@ -372,6 +451,8 @@ struct PDChip: View {
     let text: String
     var icon: String? = nil
     var selected: Bool = false
+    /// The plan that unlocks this control. Paid chips get the `pdPaidFeature` wash and a tier tag.
+    var paidTier: SubscriptionTier? = nil
 
     var body: some View {
         HStack(spacing: 4) {
@@ -379,16 +460,77 @@ struct PDChip: View {
                 Image(systemName: icon).font(.system(size: 11, weight: .bold))
             }
             Text(text).font(PDFont.labelMD)
+            if let paidTier {
+                PDTierTag(tier: paidTier)
+            }
         }
         .foregroundStyle(selected ? Color.pdPrimary : Color.pdOnSurfaceVariant)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(
-            Capsule().fill(selected ? AnyShapeStyle(Color.pdPrimary.opacity(0.15)) : AnyShapeStyle(Color.pdSurfaceHighest))
+            Capsule().fill(selected ? AnyShapeStyle(Color.pdPrimary.opacity(0.15))
+                           : paidTier != nil ? AnyShapeStyle(LinearGradient.pdPaidFeature)
+                           : AnyShapeStyle(Color.pdSurfaceHighest))
         )
         .frame(minHeight: 44)
         .contentShape(Capsule())
         .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+}
+
+// MARK: - Search field
+/// Shared search input (Agenda, History & Archive, Help & Support). At least 48pt tall so it is
+/// never shorter than the 44pt filter chips beside it, with or without the clear button.
+struct PDSearchField: View {
+    @Binding var text: String
+    let prompt: String
+    var accessibilityIdentifier: String? = nil
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+                .accessibilityHidden(true)
+            TextField(prompt, text: $text)
+                .font(PDFont.jakarta(14, .medium, relativeTo: .subheadline))
+                .foregroundStyle(Color.pdOnSurface)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
+                .accessibilityIdentifier(accessibilityIdentifier ?? "")
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .padding(.leading, 14)
+        .padding(.vertical, 4)
+        .frame(minHeight: 48)
+        .background(
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .fill(Color.pdSurfaceContainer)
+        )
+    }
+}
+
+// MARK: - Tier tag
+/// Small "PLUS" / "PREMIUM" label on paid controls, so the tier is never shown by color alone.
+struct PDTierTag: View {
+    let tier: SubscriptionTier
+
+    var body: some View {
+        Text(tier.badgeText)
+            .font(PDFont.labelSM)
+            .tracking(0.4)
+            .foregroundStyle(Color.pdLavender)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 1)
+            .background(Capsule().fill(Color.pdLavender.opacity(0.18)))
     }
 }
 

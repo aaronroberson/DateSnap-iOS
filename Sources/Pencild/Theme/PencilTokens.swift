@@ -116,6 +116,14 @@ extension LinearGradient {
         endPoint: .bottomTrailing
     )
 
+    /// Cool lavender wash marking Plus/Premium controls (filters, chips), distinct from the warm
+    /// `pdSelected` wash so a paid control and a selected one never look alike.
+    static let pdPaidFeature = LinearGradient(
+        colors: [Color.pdLavender.opacity(0.30), Color.pdTertiaryContainer.opacity(0.16)],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
     /// Highlight card surface (today's events, hero cards).
     static let pdHighlightCard = LinearGradient(
         colors: [Color.pdSurfaceContainerHigh, Color.pdSurfaceContainer],
