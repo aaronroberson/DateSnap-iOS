@@ -71,8 +71,59 @@ enum ReminderPreset: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+extension ReminderPreset {
+    /// The alerts this preset applies, or `nil` for Custom.
+    var offsets: [ReminderOffset]? {
+        switch self {
+        case .defaultPreset: return ReminderOffset.defaultStaggered
+        case .travelHeavy: return [.twoDaysBefore, .threeHoursBefore, .fortyFiveMinutesBefore]
+        case .dayOfOnly: return [.twoHoursBefore]
+        case .custom: return nil
+        }
+    }
+
+    /// Standard is the built-in default, so it is available on every plan (trimmed to the plan's
+    /// alert limit). Any other preset with more alerts than the plan allows needs Plus. Used by the
+    /// per-event editor and Default Reminders alike.
+    func isLocked(maxAlerts: Int) -> Bool {
+        self != .defaultPreset && (offsets?.count ?? 0) > maxAlerts
+    }
+
+    /// The preset's alerts trimmed to the plan's limit.
+    func offsets(limitedTo maxAlerts: Int) -> [ReminderOffset]? {
+        offsets.map { Array($0.prefix(maxAlerts)) }
+    }
+
+    /// Presets that can be the default for new events (Custom has no fixed alerts).
+    static let defaultChoices: [ReminderPreset] = [.defaultPreset, .travelHeavy, .dayOfOnly]
+
+    /// Short name for Settings.
+    var settingsTitle: String {
+        switch self {
+        case .defaultPreset: return "Standard"
+        case .travelHeavy: return "Travel"
+        case .dayOfOnly: return "Day-of only"
+        case .custom: return "Custom"
+        }
+    }
+
+    var settingsDetail: String {
+        switch self {
+        case .defaultPreset: return "A day-before reminder and a two-hour heads-up. Works for most events."
+        case .travelHeavy: return "Time to pack, get to the airport, and leave for the gate."
+        case .dayOfOnly: return "One alert two hours before. Keeps notifications to a minimum."
+        case .custom: return ""
+        }
+    }
+}
+
 // MARK: - Pencild Event Model
 struct PencildEvent: Identifiable, Hashable, Sendable {
+    /// Shown in place of a location when an event has none.
+    static let locationPlaceholder = "Location TBA"
+    /// Title used for an event saved without one (also shown while a batch event has none).
+    static let untitledTitle = "Untitled event"
+
     var id: String
     var title: String
     var month: String

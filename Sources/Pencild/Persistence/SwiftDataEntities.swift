@@ -155,6 +155,8 @@ public final class EventCandidate {
     public var rsvpDeadline: Date? = nil
     /// `RecurrenceSignal.Kind` raw value, set only when the user chooses to repeat the event in Calendar.
     public var recurrenceRaw: String? = nil
+    /// Created with Enter Manually rather than a scan: no source image or extraction evidence.
+    public var isManualEntry: Bool = false
 
     /// Alternatives, evidence and provenance from the scan that produced this candidate.
     @Relationship(deleteRule: .cascade, inverse: \InterpretationRecord.candidate)
@@ -352,6 +354,13 @@ public final class SavedEvent {
 
 // MARK: - Convenience Conversions with PencildEvent UI Struct
 extension EventCandidate {
+    /// Waiting on the user: never saved, or saved as a draft. A blank Enter Manually event that
+    /// hasn't been saved yet is excluded (it is either saved or deleted when its form closes).
+    /// The single definition behind the Review tab, its badge, Home, and the Add events sheet.
+    var needsReview: Bool {
+        (savedEvent == nil && !isManualEntry) || savedEvent?.status == .draft
+    }
+
     func toPencildEvent() -> PencildEvent {
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "MMM"
@@ -390,7 +399,7 @@ extension EventCandidate {
             year: yearFormatter.string(from: startDate),
             dayOfWeek: weekdayFormatter.string(from: startDate),
             timeWindow: timeWindow,
-            locationName: venueName ?? (location ?? "Location TBA"),
+            locationName: venueName ?? (location ?? PencildEvent.locationPlaceholder),
             locationAddress: location ?? "",
             confidenceScore: Int(confidenceScore * 100),
             confidenceLabel: tier.label,

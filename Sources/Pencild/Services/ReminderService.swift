@@ -46,13 +46,17 @@ public struct ReminderOffset: Sendable, Hashable, Identifiable {
         return ReminderOffset(timeInterval: interval, label: "\(minutes) minutes before")
     }
 
-    /// When this alert fires for an event. All-day events anchor alerts to 9:00 AM local on the offset day.
+    /// Local hour that alerts for all-day events (and dated deadlines) fire at.
+    public static let allDayAlertHour = 9
+
+    /// When this alert fires for an event. All-day events anchor alerts to `allDayAlertHour` local
+    /// on the offset day.
     public func triggerDate(forEventStart start: Date, isAllDay: Bool, calendar: Calendar = .current) -> Date {
         guard isAllDay else { return start.addingTimeInterval(timeInterval) }
         let dayStart = calendar.startOfDay(for: start)
         let offsetDays = Int((timeInterval / 86400).rounded(.down))
         let alertDay = calendar.date(byAdding: .day, value: offsetDays, to: dayStart) ?? dayStart
-        return calendar.date(bySettingHour: 9, minute: 0, second: 0, of: alertDay) ?? alertDay
+        return calendar.date(bySettingHour: Self.allDayAlertHour, minute: 0, second: 0, of: alertDay) ?? alertDay
     }
 
     /// Relative offset (from the event start) that EventKit alarms should use so they match `triggerDate`.

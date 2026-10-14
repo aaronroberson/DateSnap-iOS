@@ -39,6 +39,13 @@ public final class EventReviewViewModel: ObservableObject {
     @Published public var availableCalendars: [EKCalendar] = []
     @Published public var availableReminderLists: [EKCalendar] = []
     @Published public var selectedCalendar: EKCalendar? = nil
+    /// Settings is on "Ask every time" and this event had no calendar of its own.
+    @Published public private(set) var calendarChoiceRequired = false
+    /// Save stays blocked until a calendar is picked. With no calendars loaded yet (access not
+    /// granted), saving requests access first, so nothing is required here.
+    public var needsCalendarChoice: Bool {
+        calendarChoiceRequired && selectedCalendar == nil && !availableCalendars.isEmpty
+    }
     @Published public var selectedReminderList: EKCalendar? = nil
     @Published public var selectedOffsets: [ReminderOffset] = ReminderOffset.defaultStaggered
 
@@ -85,6 +92,14 @@ public final class EventReviewViewModel: ObservableObject {
         candidate.savedEvent?.status == .saved && candidate.savedEvent?.externalCalendarEventId != nil
     }
 
+    /// Created with Enter Manually: no source image, confidence, or scan details to show.
+    public var isManualEntry: Bool { candidate.isManualEntry }
+
+    /// A manual event needs a title before it can be saved (a scan falls back to `PencildEvent.untitledTitle`).
+    public var needsTitle: Bool {
+        isManualEntry && title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     // MARK: - Initializer
     public init(candidate: EventCandidate, services: ServiceContainer, sourceImage: UIImage? = nil) {
         self.candidate = candidate
@@ -120,6 +135,7 @@ public final class EventReviewViewModel: ObservableObject {
             // Questions stay open until answered, and only for events not yet saved.
             self.openQuestions = candidate.savedEvent == nil ? stored.understanding.questions : []
         }
+        self.selectedOffsets = ReminderDefaultsStore().defaultOffsets()
         if let saved = candidate.savedEvent, !saved.alertOffsets.isEmpty {
             self.selectedOffsets = saved.alertOffsets.map { ReminderOffset.forInterval($0) }
         }
@@ -166,13 +182,24 @@ public final class EventReviewViewModel: ObservableObject {
         let recommendedID = calendarRecommender.suggestedCalendarIdentifier(
             for: category, available: availableCalendars.map(\.calendarIdentifier)
         )
-        self.selectedCalendar = DestinationCalendarResolver.select(
-            availableCalendars,
-            savedTitle: savedTitle,
-            userDefaultIdentifier: defaultCalendarStore.defaultCalendarIdentifier(),
-            recommendedIdentifier: recommendedID,
-            systemDefault: calendarService.defaultCalendar()
-        )
+        // "Ask every time": a new event keeps no calendar until the user picks one.
+        // An event that already has a calendar (a saved event or a draft) keeps it.
+        let savedMatch = availableCalendars.first { $0.title == savedTitle }
+        self.calendarChoiceRequired = defaultCalendarStore.asksEveryTime() && savedMatch == nil
+        if calendarChoiceRequired {
+            if let current = selectedCalendar,
+               !availableCalendars.contains(where: { $0.calendarIdentifier == current.calendarIdentifier }) {
+                self.selectedCalendar = nil
+            }
+        } else {
+            self.selectedCalendar = DestinationCalendarResolver.select(
+                availableCalendars,
+                savedTitle: savedTitle,
+                userDefaultIdentifier: defaultCalendarStore.defaultCalendarIdentifier(),
+                recommendedIdentifier: recommendedID,
+                systemDefault: calendarService.defaultCalendar()
+            )
+        }
 
         self.availableReminderLists = reminderService.fetchReminderLists()
         let savedList = candidate.savedEvent?.targetRemindersList
@@ -209,7 +236,7 @@ public final class EventReviewViewModel: ObservableObject {
 
     // MARK: - Apply Edits
     private func applyEdits() {
-        candidate.title = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled Event" : title
+        candidate.title = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? PencildEvent.untitledTitle : title
         candidate.startDate = startDate
         candidate.endDate = isAllDay ? nil : max(endDate, startDate)
         candidate.isAllDay = isAllDay
@@ -256,7 +283,9 @@ public final class EventReviewViewModel: ObservableObject {
         }
         applyEdits()
         let record = savedEventRecord(in: modelContext)
-        if record.status != .saved {
+        // Not in Calendar yet means a draft. (A new record defaults to "Saved", so checking the
+        // status here used to file a never-saved event's draft as Saved.)
+        if record.externalCalendarEventId == nil {
             record.status = .draft
         }
         record.alertOffsets = selectedOffsets.map(\.timeInterval)
@@ -315,6 +344,16 @@ public final class EventReviewViewModel: ObservableObject {
 
         guard let modelContext else {
             let message = "Local event storage is unavailable."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
+        guard !needsTitle else {
+            let message = "Add a title for this event."
+            errorMessage = message
+            return .failure(MutationFailure(message: message))
+        }
+        guard !needsCalendarChoice else {
+            let message = "Choose a calendar for this event."
             errorMessage = message
             return .failure(MutationFailure(message: message))
         }

@@ -52,9 +52,9 @@ public enum ReminderStrategyService {
 
         var deadlineReminder: Date? = nil
         if let deadline = rsvpDeadline {
-            let dayBefore = calendar.date(byAdding: .day, value: -1, to: calendar.startOfDay(for: deadline))
-                .flatMap { calendar.date(bySettingHour: 9, minute: 0, second: 0, of: $0) }
-            if let dayBefore, dayBefore > now {
+            // The day before the deadline, at the all-day alert hour (same rule as all-day alerts).
+            let dayBefore = ReminderOffset.oneDayBefore.triggerDate(forEventStart: deadline, isAllDay: true, calendar: calendar)
+            if dayBefore > now {
                 deadlineReminder = dayBefore
             } else if deadline > now {
                 deadlineReminder = deadline

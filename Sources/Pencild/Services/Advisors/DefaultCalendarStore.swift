@@ -6,6 +6,9 @@ import EventKit
 /// whatever iOS happens to hand back). On-device only, like every other Pencil’d setting.
 public struct DefaultCalendarStore: Sendable {
     public static let defaultsKey = "settings.defaultCalendarIdentifier"
+    /// "Ask every time": new events start with no calendar and need one picked in review.
+    /// (A new key; the earlier `settings.askEveryTimeCalendar` toggle never had a consumer.)
+    public static let askEveryTimeKey = "settings.calendarAskEveryTime"
     private let defaultsSuiteName: String?
 
     public init(defaultsSuiteName: String? = nil) {
@@ -32,6 +35,7 @@ public struct DefaultCalendarStore: Sendable {
     /// Persists the chosen default calendar. `title` is a convenience mirror so Settings
     /// can show the choice without Calendar access.
     public func setDefaultCalendarIdentifier(_ identifier: String?, title: String? = nil) {
+        defaults.removeObject(forKey: Self.askEveryTimeKey)
         if let identifier {
             defaults.set(identifier, forKey: Self.defaultsKey)
             if let title {
@@ -43,16 +47,28 @@ public struct DefaultCalendarStore: Sendable {
         }
     }
 
-    /// Clears the choice; Pencil’d follows the iOS system default again.
+    /// Clears the choice; Pencil’d uses the automatic priority order again.
     public func reset() {
         setDefaultCalendarIdentifier(nil)
+    }
+
+    /// Whether new events must have their calendar picked in review.
+    public func asksEveryTime() -> Bool {
+        defaults.bool(forKey: Self.askEveryTimeKey)
+    }
+
+    /// Switches to "Ask every time" (clearing any chosen calendar).
+    public func setAsksEveryTime() {
+        setDefaultCalendarIdentifier(nil)
+        defaults.set(true, forKey: Self.askEveryTimeKey)
     }
 }
 
 // MARK: - Destination Calendar Resolver
 /// The order in which Pencil’d preselects a destination calendar for a calendar entry:
 /// 1. The calendar already saved for this event (editing a saved event keeps its destination).
-/// 2. The user's Pencil’d default calendar (Settings → Destinations), e.g. "Home".
+/// 2. The user's Pencil’d default calendar (Settings → Default Calendar), e.g. "Home". When set it
+///    overrides the automatic order below. With "Ask every time", new events skip steps 2–5.
 /// 3. The learned per-category choice (`CalendarRecommendationService`).
 /// 4. The iOS system default calendar.
 /// 5. The first writable calendar (deterministic fallback).

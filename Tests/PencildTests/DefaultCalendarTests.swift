@@ -40,6 +40,26 @@ struct DefaultCalendarStoreTests {
         store.setDefaultCalendarIdentifier(nil)
         #expect(store.defaultCalendarIdentifier() == nil)
     }
+
+    @Test("Ask every time is off by default and is exclusive with a chosen calendar")
+    func askEveryTimeModes() {
+        let store = store()
+        #expect(store.asksEveryTime() == false)
+
+        store.setDefaultCalendarIdentifier("cal-home", title: "Home")
+        store.setAsksEveryTime()
+        #expect(store.asksEveryTime())
+        #expect(store.defaultCalendarIdentifier() == nil)
+
+        store.setDefaultCalendarIdentifier("cal-work", title: "Work")
+        #expect(store.asksEveryTime() == false)
+        #expect(store.defaultCalendarIdentifier() == "cal-work")
+
+        store.setAsksEveryTime()
+        store.reset()
+        #expect(store.asksEveryTime() == false)
+        #expect(store.defaultCalendarIdentifier() == nil)
+    }
 }
 
 @Suite("Destination calendar resolution")
