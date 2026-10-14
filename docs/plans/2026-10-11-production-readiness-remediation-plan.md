@@ -375,4 +375,6 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - Free plan: 10 scans/month (scans that find a new event) and 1 alert per
   event; paid plans: unlimited scans and 3 alerts. No history limit.
 - Gated actions open the paywall instead of being hidden or disabled.
+- Batch scans now check the allowance before starting and prompt to
+  deselect, upgrade, or discard, instead of skipping items.
 

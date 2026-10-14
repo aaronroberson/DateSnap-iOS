@@ -294,9 +294,20 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   being checked, paid allowances apply.
 - **Every Plus and Premium feature stays visible to all users.** Attempting a
   feature without the entitlement opens the paywall instead of running it:
-  - Scanning past the allowance opens the Plus paywall. A batch that runs out
-    with nothing found goes straight to it; a partial batch shows an upgrade
-    row in Batch Review.
+  - Scanning past the allowance opens the Plus paywall.
+  - Batch scans are checked before they start, so items are never skipped
+    silently. If the selection is larger than the free scans left, the user is
+    asked to **deselect** the excess, **upgrade to Plus**, or **discard** the
+    selection; nothing is scanned until they choose.
+    - In the in-app screenshot grid, Deselect keeps selection mode with a live
+      "Deselect N more" hint, and the paywall opens over the grid so the
+      selection survives.
+    - From the Photos picker, Deselect reopens it with the selection intact.
+    - From the document camera, the trim option is "Scan First N Pages".
+    - After upgrading from Home, the chosen batch runs automatically.
+    - A batch can't use more scans than it has items, so one that passes this
+      check can't run out partway through. The in-batch upgrade row stays only
+      as a safety net.
   - In the reminder schedule editor, adding an alert past the limit or picking
     a multi-alert preset opens the Plus paywall. These controls are no longer
     disabled.
