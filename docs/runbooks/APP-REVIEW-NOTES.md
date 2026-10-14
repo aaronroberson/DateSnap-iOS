@@ -19,14 +19,17 @@ Pencild is a privacy-first utility that processes screenshots and event flyers o
 The core flyer analysis, date inference, Calendar, and Reminders workflow can be tested with Airplane Mode enabled. StoreKit purchases and user-initiated links to policies, Apple Maps, or event websites require the corresponding Apple or web service.
 
 3. DEMO ASSETS & WALKTHROUGH:
-- To test the extraction engine immediately without granting camera roll access, tap "Try Sample Flyer" on the Home tab.
-- To test with sample images, you can save any concert flyer, conference ticket, or wedding invitation into the Photos app on the review device and tap "Scan Recent Screenshots" or "Choose from Photo Library".
+- To test the extraction engine immediately without granting photo library access, tap "Try sample flyer" on the Home tab.
+- To test with your own images, save a concert flyer, conference ticket, or wedding invitation to Photos on the review device, then tap "Recent screenshots" or "Photo library" on the Home tab.
 
 4. IN-APP PURCHASES & SUBSCRIPTIONS:
-- Pencild includes auto-renewable subscriptions in the "Pencild Memberships" group:
-  * Pencild Plus (Monthly & Annual): Unlocks automated screenshot scanning. Includes a 7-day free trial.
-  * Pencild Premium (Monthly & Annual): Unlocks full automation, document import, and unlimited archive triage.
-- Subscription terms, privacy policy, and terms of use are accessible directly in the paywall footer and in the Settings tab.
+- Free plan: 10 scans per month (only scans that find a new event count) and 1 alert per event. There is no history limit.
+- Auto-renewable subscriptions in the "Pencil'd Memberships" group. Each has a 1-week free trial for eligible users:
+  * Pencil'd Plus (Monthly & Annual): unlimited scans, up to 3 alerts per event, automatic detection of new event screenshots, and highlighting of screenshots that look like events.
+  * Pencil'd Premium (Monthly & Annual): everything in Plus, plus PDF and file import (every page), work schedules and multi-date flyers as separate events, tailored alert plans and RSVP-deadline reminders, and grouping of likely duplicates.
+- Lifetime (non-consumable, one-time purchase): Pencil'd Plus Lifetime and Pencil'd Premium Lifetime unlock the same features permanently. They are an introductory offer shown through April 13, 2027.
+- Paid features stay visible on every plan. Tapping one without the plan opens the Plus or Premium paywall instead of running it.
+- Restore Purchases, the privacy policy, and the terms of use are available in each paywall and in the Settings tab.
 
 5. REVIEWER CONTACT:
 If you encounter any questions or require additional details during review, please reach out via phone or email directly.
