@@ -58,6 +58,9 @@ original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.
 
 ## Executive Recommendation
 
+> **Superseded 2026-10-13:** the free tier (7 scans, images only, 30-day history), the shared comparison paywall, and the $59.99/$99.99 90-day lifetime below are original research. See the Decision Record at the top of this document for what shipped.
+
+
 - **Three-tier model: Free / Pencild Plus / Pencild Premium.** Free limits by scan volume and file type; Plus serves everyday screenshot/flyer users; Premium serves PDF and document-heavy workflows.
 - **Plus pricing: $3.99/month or $24.99/year** (~$2.08/mo annualized, 48% savings). Competitive with and above direct image-to-calendar competitors while being clearly affordable for individual users.
 - **Premium pricing: $6.99/month or $39.99/year** (~$3.33/mo annualized, 52% savings). Positioned between direct competitors and OCR/document scanning apps (Genius Scan $39.99/yr, PDF Expert ~$49.99/yr). The existing $8.99/month concept is above launch evidence — reduce it.
@@ -104,6 +107,9 @@ original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.
 
 ## Recommended Plans
 
+> **Superseded 2026-10-13:** monthly and annual prices below still match; lifetime ($39.99/$79.99 through 2027-04-13), the free-plan limits, and the history rows do not. See the Decision Record at the top of this document for what shipped.
+
+
 | Feature | 🆓 Free | ⭐ Pencild Plus | 💎 Pencild Premium |
 |---|---|---|---|
 | **Monthly price** | $0 | $3.99 | $6.99 |
@@ -143,6 +149,9 @@ original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.
 - Show the monthly equivalent on all annual plan displays (e.g., "Just $2.08/month").
 
 ### Lifetime Pricing (Launch Promotion Only — 90 days)
+
+> **Superseded 2026-10-13:** lifetime shipped at $39.99 (Plus) and $79.99 (Premium), offered through 2027-04-13. See the Decision Record at the top of this document for what shipped.
+
 - **Plus Lifetime: $59.99** — approximately 2.4× annual price; 15× monthly. Positioned as the obvious "never pay again" deal for early adopters.
 - **Premium Lifetime: $99.99** — approximately 2.5× annual price; 14.3× monthly. Strong early-adopter signal, manageable CAC recovery.
 - **Do not make lifetime permanent.** RevenueCat data shows lifetime offers work best as limited-time promotions. Permanent lifetime pricing cannibalizes high-LTV subscribers and is unattractive to investors. After 90 days, withdraw the offer and re-evaluate at Day 180 if churn data warrants a second promotion.
@@ -185,6 +194,9 @@ original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.
 ## Conversion Strategy
 
 ### Paywall Structure
+
+> **Superseded 2026-10-13:** the app uses separate Plus and Premium interstitial paywalls, opened from the feature the user tried, not one shared comparison paywall. See the Decision Record at the top of this document for what shipped.
+
 **One shared comparison paywall** showing all three plans side-by-side. Do not build two separate paywalls (one for Free→Plus, one for Plus→Premium). A single comparison paywall:
 - Lets users self-select into Premium without a two-step upgrade journey
 - Creates natural anchoring (Premium makes Plus look like a deal)
@@ -194,6 +206,9 @@ original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.
 Layout recommendation: plan cards in order Free | Plus | Premium, with Plus highlighted as "Most Popular." Annual billing as default toggle state. Monthly toggle available but not default.
 
 ### Paywall Triggers
+
+> **Superseded 2026-10-13:** the free limit is 10 scans a month, so the hard gate is the 11th scan; every paid control also opens the paywall when tapped without the plan. See the Decision Record at the top of this document for what shipped.
+
 
 | Trigger | Upgrade Path | Moment | Recommended Copy |
 |---|---|---|---|
@@ -312,6 +327,9 @@ Layout recommendation: plan cards in order Free | Plus | Premium, with Plus high
 ---
 
 ## Final Launch Configuration
+
+> **Superseded 2026-10-13:** the configuration below was the original proposal. Shipped: free plan of 10 scans a month (only scans that find a new event), 1 alert per event, no history limit, and no per-session save cap; lifetime $39.99/$79.99 through 2027-04-13; 1-week trials on monthly and annual plans; Premium adds work schedules and multi-date flyers. See the Decision Record at the top of this document for what shipped.
+
 
 ### Free Tier
 - 7 image/screenshot scans per month
