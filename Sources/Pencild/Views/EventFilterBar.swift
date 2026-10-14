@@ -109,6 +109,7 @@ struct EventSearchFilterBar: View {
     /// `nil` shows every status (Agenda's All); no status chip is selected then.
     @Binding var status: SavedEventStatus?
     @Binding var smartFilter: EventSmartFilter?
+    @State private var pendingFilterAfterPurchase: EventSmartFilter?
     let counts: [SavedEventStatus: Int]
     var excludedSmartFilters: Set<EventSmartFilter> = []
     var idPrefix: String = "events"
@@ -134,6 +135,18 @@ struct EventSearchFilterBar: View {
                         smartFilterChip(filter)
                     }
                 }
+            }
+        }
+        .onChange(of: appState.entitlementSnapshot.effectiveTier) { _, _ in
+            guard let pendingFilterAfterPurchase,
+                  let feature = pendingFilterAfterPurchase.requiredFeature,
+                  appState.isEntitled(to: feature) else { return }
+            smartFilter = pendingFilterAfterPurchase
+            self.pendingFilterAfterPurchase = nil
+        }
+        .onChange(of: appState.activeModal?.id) { _, newID in
+            if newID == nil, pendingFilterAfterPurchase != nil {
+                pendingFilterAfterPurchase = nil
             }
         }
     }
@@ -181,6 +194,9 @@ struct EventSearchFilterBar: View {
         return Button {
             if let feature, locked {
                 appState.showToast(feature.upgradeReason)
+                // Hold the request until entitlement changes; cancelling the paywall must not
+                // silently activate a locked filter.
+                pendingFilterAfterPurchase = filter
                 Task { await appState.present(.paywall(for: feature)) }
             } else {
                 smartFilter = isSelected ? nil : filter

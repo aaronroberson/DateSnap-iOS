@@ -116,3 +116,20 @@ xcrun altool --upload-app \
    - Attach the 4 subscription products (`com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, `com.pencild.premium.annual`) to the version submission.
 3. **Phased Release:**
    - Enable 7-day automatic phased release to minimize blast radius for unanticipated edge-case issues.
+
+### Lifetime offer retirement
+
+The Plus Lifetime and Premium Lifetime introductory products are available
+through April 13, 2027. Before the first App Store Connect release after that
+date, the release owner must retire both lifetime products from sale and verify
+that the paywall no longer presents them. This is an App Store Connect
+operation, not an automatic in-app database migration:
+
+1. Confirm the current product IDs are `com.pencild.plus.lifetime` and
+   `com.pencild.premium.lifetime`.
+2. In App Store Connect, remove both products from sale effective April 14,
+   2027, after confirming no active entitlement is being revoked.
+3. Record the operation timestamp, account/team, product IDs, and a screenshot
+   of the resulting availability state in the release evidence.
+4. Verify the app's `LifetimeIntroOffer` boundary remains April 13, 2027 and
+   that existing lifetime owners retain access.

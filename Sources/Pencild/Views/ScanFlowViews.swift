@@ -21,6 +21,7 @@ struct RecentScreenshotsView: View {
     @State private var isSelecting = false
     @State private var selectedAssetIDs: Set<String> = []
     @State private var likelyOnly = false
+    @State private var pendingLikelyFilterAfterPurchase = false
     @State private var batchOverLimit: BatchOverLimit?
     @State private var showPlusPaywall = false
 
@@ -70,7 +71,10 @@ struct RecentScreenshotsView: View {
                             }
                             Button {
                                 if appState.isEntitled(to: .likelyEventTriage) { likelyOnly = true }
-                                else { Task { await appState.present(.paywall(opening: .plus)) } }
+                                else {
+                                    pendingLikelyFilterAfterPurchase = true
+                                    Task { await appState.present(.paywall(for: .likelyEventTriage)) }
+                                }
                             } label: {
                                 PDChip(text: "Likely events", icon: appState.isEntitled(to: .likelyEventTriage) ? "sparkles" : "lock.fill", selected: likelyOnly && appState.isEntitled(to: .likelyEventTriage), paidTier: PremiumFeature.likelyEventTriage.requiredTier)
                             }
@@ -164,6 +168,18 @@ struct RecentScreenshotsView: View {
             .onChange(of: homeViewModel.recentScreenshots.map(\.localIdentifier)) { _, _ in
                 if appState.isEntitled(to: .likelyEventTriage) {
                     homeViewModel.triageLikelyEvents(scannedIDs: scannedIds)
+                }
+            }
+            .onChange(of: appState.entitlementSnapshot.effectiveTier) { _, _ in
+                if pendingLikelyFilterAfterPurchase,
+                   appState.isEntitled(to: .likelyEventTriage) {
+                    likelyOnly = true
+                    pendingLikelyFilterAfterPurchase = false
+                }
+            }
+            .onChange(of: appState.activeModal?.id) { _, newID in
+                if newID == nil, !appState.isEntitled(to: .likelyEventTriage) {
+                    pendingLikelyFilterAfterPurchase = false
                 }
             }
         }
@@ -514,8 +530,12 @@ struct ReviewQueueView: View {
                     .font(PDFont.bodyMD)
                     .foregroundStyle(Color.pdOnSurfaceVariant)
                     .multilineTextAlignment(.center)
-                Button(pending.isEmpty ? "Go to scanner" : "Show all scans") {
-                    if pending.isEmpty { appState.selectedTab = .home } else { highConfidenceOnly = false }
+                Button(pending.isEmpty ? "Capture new event" : "Show all scans") {
+                    if pending.isEmpty {
+                        Task { await appState.present(.captureSources) }
+                    } else {
+                        highConfidenceOnly = false
+                    }
                 }
                 .buttonStyle(PDSecondaryButtonStyle())
             }

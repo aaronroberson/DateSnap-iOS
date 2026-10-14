@@ -4,22 +4,48 @@ import StoreKitTest
 import Testing
 @testable import Pencild
 
+private final class StoreKitBundleToken {}
+
+private let storeKitCatalogURL: URL = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent() // PencildTests
+    .deletingLastPathComponent() // Tests
+    .deletingLastPathComponent() // repository root
+    .appendingPathComponent("Pencild.storekit")
+
+private var resolvedStoreKitCatalogURL: URL? {
+    if let url = Bundle(for: StoreKitBundleToken.self).url(forResource: "Pencild", withExtension: "storekit") {
+        return url
+    }
+    if let url = Bundle.main.url(forResource: "Pencild", withExtension: "storekit") {
+        return url
+    }
+    if FileManager.default.fileExists(atPath: storeKitCatalogURL.path) {
+        return storeKitCatalogURL
+    }
+    return nil
+}
+
+private var isStoreKitCatalogAvailable: Bool {
+    resolvedStoreKitCatalogURL != nil
+}
+
 /// Drives the real `SubscriptionService` against the repository's local StoreKit catalog
 /// through `SKTestSession`, so the positive restore path is exercised without depending on
 /// the scheme's launch-time catalog synchronization. The catalog is loaded from the
 /// checkout (simulator test runs share the host file system); no products or prices are
 /// fabricated in production code.
 @MainActor
-@Suite("StoreKit local catalog restore integration", .serialized)
+@Suite(
+    "StoreKit local catalog restore integration",
+    .serialized,
+    .enabled(if: isStoreKitCatalogAvailable, "StoreKit catalog requires host file system access (available on simulator and macOS test runs)")
+)
 struct StoreKitRestoreIntegrationTests {
-    private static let catalogURL = URL(fileURLWithPath: #filePath)
-        .deletingLastPathComponent() // PencildTests
-        .deletingLastPathComponent() // Tests
-        .deletingLastPathComponent() // repository root
-        .appendingPathComponent("Pencild.storekit")
-
     private func makeSession() throws -> SKTestSession {
-        let session = try SKTestSession(contentsOf: Self.catalogURL)
+        guard let catalogURL = resolvedStoreKitCatalogURL else {
+            try Test.cancel("StoreKit catalog requires host file system access (available on simulator and macOS test runs)")
+        }
+        let session = try SKTestSession(contentsOf: catalogURL)
         session.resetToDefaultState()
         session.disableDialogs = true
         session.clearTransactions()
@@ -71,12 +97,16 @@ struct StoreKitRestoreIntegrationTests {
         try await drainAndClear(session)
     }
 
-    @Test("Restore after an out-of-band purchase unlocks the purchased tier", .serialized, arguments: [
-        ("com.pencild.plus.monthly", SubscriptionTier.plus),
-        ("com.pencild.premium.annual", SubscriptionTier.premium),
-        ("com.pencild.plus.lifetime", SubscriptionTier.plus),
-        ("com.pencild.premium.lifetime", SubscriptionTier.premium),
-    ])
+    @Test(
+        "Restore after an out-of-band purchase unlocks the purchased tier",
+        .serialized,
+        arguments: [
+            ("com.pencild.plus.monthly", SubscriptionTier.plus),
+            ("com.pencild.premium.annual", SubscriptionTier.premium),
+            ("com.pencild.plus.lifetime", SubscriptionTier.plus),
+            ("com.pencild.premium.lifetime", SubscriptionTier.premium),
+        ]
+    )
     func positiveRestoreUnlocksPurchasedTier(productID: String, expected: SubscriptionTier) async throws {
         let session = try makeSession()
 

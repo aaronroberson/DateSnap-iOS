@@ -35,29 +35,12 @@ struct HomeEmptyStateView: View {
     @State private var isTrimmingPhotoSelection = false
     @State private var batchOverLimit: BatchOverLimit?
     @State private var pendingBatch: PendingBatch?
+    /// Keeps a file-import request alive while the Premium paywall is open.
+    @State private var pendingFileImportAfterPurchase = false
     @State private var showPhotoPicker: Bool = false
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
     @State private var showDocumentCamera: Bool = false
-    @AppStorage(AutoDetectPreference.key) private var autoDetectPreferred = true
-
-    /// Screenshots the library observer has seen that Pencil’d has not scanned yet.
-    private var newScreenshots: [PHAsset] {
-        let scanned = Set(scannedAssets.map(\.assetIdentifier))
-        let unscanned = homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }
-        guard appState.isEntitled(to: .likelyEventTriage) else { return unscanned }
-        return PhotoCandidateRanker.rank(unscanned, scannedIDs: scanned, likelyEventIDs: homeViewModel.likelyEventIDs)
-    }
-
-    /// Candidates waiting on the user, same definition as the Review tab.
-    private var needingReviewCount: Int {
-        candidates.filter(\.needsReview).count
-    }
-
-    private var photosAuthorized: Bool {
-        homeViewModel.photoAuthorizationStatus.access.isUsable
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
@@ -104,9 +87,14 @@ struct HomeEmptyStateView: View {
             )
             .onChange(of: appState.subscriptionTier) { _, tier in
                 // Upgraded from the prompt: run the batch the user had chosen.
-                guard tier != .starter, let pending = pendingBatch else { return }
-                pendingBatch = nil
-                run(pending)
+                if tier != .starter, let pending = pendingBatch {
+                    pendingBatch = nil
+                    run(pending)
+                }
+                if tier == .premium, pendingFileImportAfterPurchase {
+                    pendingFileImportAfterPurchase = false
+                    showFileImporter = true
+                }
             }
             .onChange(of: appState.requestPhotoPicker) { _, requested in
                 if requested {
@@ -130,6 +118,14 @@ struct HomeEmptyStateView: View {
                 if requested {
                     appState.requestFileImporter = false
                     openFileImport()
+                }
+            }
+            .onChange(of: appState.activeModal?.id) { _, newID in
+                // A successful purchase can dismiss the paywall before the entitlement publisher
+                // delivers its tier change. Keep the intent through that handoff, but discard it
+                // when the user simply closes the paywall without gaining access.
+                if newID == nil, !appState.isEntitled(to: .documentImport) {
+                    pendingFileImportAfterPurchase = false
                 }
             }
             .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.pdf, .image], allowsMultipleSelection: false) { result in
@@ -238,76 +234,15 @@ struct HomeEmptyStateView: View {
     // MARK: - Source cards
 
     private var recentScreenshotsCard: some View {
-        let entitledToAutoDetect = appState.isEntitled(to: .automaticScreenshotDetection)
-        let autoDetect = entitledToAutoDetect && autoDetectPreferred
-        return CaptureScreenshotsCard(isDisabled: scanViewModel.isProcessing, action: scanRecentScreenshots) {
-            if photosAuthorized && !newScreenshots.isEmpty {
-                HStack(spacing: -8) {
-                    ForEach(newScreenshots.prefix(3), id: \.localIdentifier) { asset in
-                        Button {
-                            runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext) }
-                        } label: {
-                            AssetThumbnail(asset: asset, height: 56)
-                                .frame(width: 48)
-                                .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
-                                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
-                                .frame(minWidth: 44, minHeight: 44)
-                        }
-                        .disabled(scanViewModel.isProcessing)
-                        .accessibilityLabel("Scan screenshot from \(asset.creationDate?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")")
-                    }
-                    if newScreenshots.count > 3 {
-                        Text("+\(newScreenshots.count - 3)")
-                            .font(PDFont.labelMD)
-                            .foregroundStyle(Color.pdOnSurface)
-                            .frame(width: 48, height: 56)
-                            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(LinearGradient(colors: [.pdSurfaceBright, .pdSurfaceHighest], startPoint: .topLeading, endPoint: .bottomTrailing)))
-                    }
-                    Spacer(minLength: 0)
+        CaptureScreenshotsCard(isDisabled: scanViewModel.isProcessing, action: scanRecentScreenshots) {
+            CaptureScreenshotsFooter(
+                onScanAsset: { asset in
+                    runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext) }
+                },
+                onReview: {
+                    withAnimation(.easeInOut(duration: 0.2)) { appState.selectedTab = .review }
                 }
-                .task(id: homeViewModel.recentScreenshots.map(\.localIdentifier)) {
-                    if appState.isEntitled(to: .likelyEventTriage) {
-                        homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)))
-                    }
-                }
-            }
-
-            if autoDetect && !photosAuthorized {
-                Text("Allow Photos access and Pencil\u{2019}d will check your newest screenshots whenever you open the app.")
-                    .font(PDFont.bodySM)
-                    .foregroundStyle(Color.pdOnSurfaceVariant)
-            }
-
-            HStack(spacing: 10) {
-                if needingReviewCount > 0 {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) { appState.selectedTab = .review }
-                    } label: {
-                        reviewPill(needingReviewCount)
-                    }
-                }
-                Spacer(minLength: 0)
-                if autoDetect {
-                    Label("Screenshot detection enabled", systemImage: "checkmark")
-                        .labelStyle(TrailingIconLabelStyle())
-                        .font(PDFont.labelMD)
-                        .foregroundStyle(Color.pdPrimary)
-                } else if entitledToAutoDetect {
-                    Label("Auto-detect is off", systemImage: "pause.circle")
-                        .font(PDFont.labelMD)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                } else {
-                    Button {
-                        Task { await appState.present(.paywall(opening: .plus)) }
-                    } label: {
-                        Label("Auto-detect with Plus", systemImage: "lock.fill")
-                            .font(PDFont.labelMD)
-                            .foregroundStyle(Color.pdPrimary)
-                            .frame(minHeight: 44)
-                    }
-                    .accessibilityHint(HomeBrandCopy.plusScreenshotExplanation)
-                }
-            }
+            )
         }
     }
 
@@ -316,24 +251,38 @@ struct HomeEmptyStateView: View {
     private var scanAllowanceBanner: some View {
         if PlanLimits.limitsScans(services.subscription.entitlementSnapshot) {
             let remaining = services.scanUsage.remainingFreeScans()
-            HStack(spacing: PDSpacing.sm) {
-                Image(systemName: remaining == 0 ? "exclamationmark.circle.fill" : "sparkle")
-                    .foregroundStyle(remaining == 0 ? Color.pdWarning : Color.pdPrimary)
-                    .accessibilityHidden(true)
-                Text(remaining == 0
-                     ? "No free scans left this month"
-                     : "\(remaining) of \(PlanLimits.freeScansPerMonth) free scans left this month")
-                    .font(PDFont.labelLG)
-                    .foregroundStyle(Color.pdOnSurface)
-                Spacer(minLength: PDSpacing.sm)
-                Button("Upgrade") { Task { await appState.present(.paywall(opening: .plus)) } }
-                    .font(PDFont.labelLG)
-                    .foregroundStyle(Color.pdPrimary)
-                    .frame(minHeight: 44)
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: PDSpacing.sm) {
+                    Image(systemName: remaining == 0 ? "exclamationmark.circle.fill" : "sparkle")
+                        .foregroundStyle(remaining == 0 ? Color.pdWarning : Color.pdPrimary)
+                        .accessibilityHidden(true)
+                    Text(remaining == 0
+                         ? "No free scans left this month"
+                         : remaining == 1
+                            ? "1 free scan left this month"
+                            : "\(remaining) of \(PlanLimits.freeScansPerMonth) free scans left this month")
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdOnSurface)
+                    Spacer(minLength: PDSpacing.sm)
+                    Button("Upgrade") { Task { await appState.present(.paywall(opening: .plus)) } }
+                        .font(PDFont.labelLG)
+                        .foregroundStyle(Color.pdPrimary)
+                        .frame(minHeight: 44)
+                }
+                if remaining == 1 {
+                    Text("Only scans that find a new event count. Upgrade for unlimited scanning.")
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .padding(.leading, 28)
+                        .padding(.bottom, 8)
+                }
             }
             .padding(.horizontal, PDSpacing.md)
             .padding(.vertical, PDSpacing.xs)
-            .background(Color.pdSurfaceContainer.opacity(0.85), in: RoundedRectangle(cornerRadius: PDRadius.card))
+            .background(
+                (remaining == 1 ? Color.pdWarning.opacity(0.14) : Color.pdSurfaceContainer.opacity(0.85)),
+                in: RoundedRectangle(cornerRadius: PDRadius.card)
+            )
             .accessibilityElement(children: .combine)
         }
     }
@@ -463,26 +412,14 @@ struct HomeEmptyStateView: View {
             .background(RoundedRectangle(cornerRadius: PDRadius.card).fill(fill))
     }
 
-    private func reviewPill(_ count: Int) -> some View {
-        HStack(spacing: PDSpacing.xs) {
-            Circle().fill(Color.pdPrimary).frame(width: 6, height: 6)
-            Text("\(count) Needing Review")
-        }
-        .font(PDFont.labelMD)
-        .foregroundStyle(Color.pdPrimary)
-        .padding(.horizontal, PDSpacing.sm)
-        .padding(.vertical, 4)
-        .background(Capsule().fill(Color.pdPrimaryContainer.opacity(0.2)))
-        .frame(minHeight: 44)
-    }
-
     // MARK: - Actions
 
     private func openFileImport() {
         if appState.isEntitled(to: .documentImport) {
             showFileImporter = true
         } else {
-            Task { await appState.present(.paywall(opening: .premium)) }
+            pendingFileImportAfterPurchase = true
+            Task { await appState.present(.paywall(for: .documentImport)) }
         }
     }
 
@@ -624,7 +561,7 @@ struct PressScaleButtonStyle: ButtonStyle {
     }
 }
 
-private struct TrailingIconLabelStyle: LabelStyle {
+struct TrailingIconLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 2) {
             configuration.title

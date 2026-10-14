@@ -28,6 +28,7 @@ struct BatchReviewView: View {
     @State private var openedDuplicate: PencildEvent? = nil
     /// Tab the paywall opens on; `nil` when no paywall is shown.
     @State private var paywallTab: PurchaseViewModel.Plan?
+    @State private var isRetryingLockedItems = false
 
     init(session: BatchReviewSession) {
         _session = StateObject(wrappedValue: session)
@@ -64,6 +65,17 @@ struct BatchReviewView: View {
                 await session.prepareDestinations()
                 for event in session.events {
                     event.review.findDuplicates(in: modelContext)
+                }
+            }
+            .onChange(of: appState.entitlementSnapshot.effectiveTier) { _, _ in
+                guard let feature = session.lockedFeature,
+                      appState.isEntitled(to: feature),
+                      !isRetryingLockedItems else { return }
+                isRetryingLockedItems = true
+                Task {
+                    await session.retryLockedItems(services: services, modelContext: modelContext)
+                    await session.prepareDestinations()
+                    isRetryingLockedItems = false
                 }
             }
             .sheet(item: $openedDuplicate) { event in
@@ -223,10 +235,14 @@ struct BatchReviewView: View {
             VStack(alignment: .leading, spacing: PDSpacing.sm) {
                 PDSectionHeader(title: "Skipped screenshots", trailing: "\(session.skipped.count)")
                 if let feature = session.lockedFeature {
-                    Button { paywallTab = .premium } label: {
+                    Button { Task { await appState.present(.paywall(for: feature)) } } label: {
                         HStack(spacing: PDSpacing.sm) {
-                            Image(systemName: "sparkle").foregroundStyle(Color.pdPrimary)
-                            Text(feature.upgradeReason)
+                            if isRetryingLockedItems {
+                                ProgressView().tint(Color.pdPrimary)
+                            } else {
+                                Image(systemName: "sparkle").foregroundStyle(Color.pdPrimary)
+                            }
+                            Text(isRetryingLockedItems ? "Retrying skipped screenshots…" : feature.upgradeReason)
                                 .font(PDFont.bodySM)
                                 .foregroundStyle(Color.pdOnSurface)
                                 .multilineTextAlignment(.leading)

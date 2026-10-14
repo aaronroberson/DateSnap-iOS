@@ -63,6 +63,8 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     public static let productIdentifiers: Set<String> = SubscriptionCatalog.productIdentifiers
 
     private var updateListenerTask: Task<Void, Error>? = nil
+    /// Completes purchases started from an App Store promoted-product surface.
+    private var purchaseIntentTask: Task<Void, Never>? = nil
     /// Entitlement refreshes run one at a time in request order, so a later refresh always
     /// reads StoreKit after an earlier one finished and can never be overwritten by it.
     private var refreshQueue: Task<Void, Never>? = nil
@@ -81,6 +83,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
     init(observesTransactionUpdates: Bool) {
         if observesTransactionUpdates {
             updateListenerTask = listenForTransactions()
+            purchaseIntentTask = listenForPurchaseIntents()
         }
 
         // Enqueue the launch refresh synchronously so it runs before any refresh requested later.
@@ -93,6 +96,24 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
 
     deinit {
         updateListenerTask?.cancel()
+        purchaseIntentTask?.cancel()
+    }
+
+    // MARK: - Promoted purchases
+    /// StoreKit delivers a PurchaseIntent when a user starts one of our products from the
+    /// App Store. Completing it here is required before enabling promoted products in App Store
+    /// Connect; the normal transaction listener then resolves the entitlement.
+    private func listenForPurchaseIntents() -> Task<Void, Never> {
+        Task { [weak self] in
+            for await intent in PurchaseIntent.intents {
+                guard !Task.isCancelled else { break }
+                do {
+                    _ = try await self?.purchase(product: intent.product)
+                } catch {
+                    Self.logger.error("Promoted purchase could not be completed: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     // MARK: - Transaction Listener

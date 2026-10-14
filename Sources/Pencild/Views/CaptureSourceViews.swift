@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Photos
 
 // MARK: - Capture sources
 /// The ways to add an event, in display order. Home and the "Add events" sheet both list these, so
@@ -181,8 +182,7 @@ struct CaptureSourceGrid: View {
     }
 
     private let columns = [
-        GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)
+        GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)
     ]
 
     var body: some View {
@@ -218,13 +218,14 @@ struct CaptureSourceGrid: View {
             .padding(.horizontal, 4)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(source.requiredFeature != nil ? AnyShapeStyle(LinearGradient.pdPaidFeature) : AnyShapeStyle(Color.pdSurfaceLow))
+                    .fill(Color.pdSurfaceLow)
             )
             .contentShape(RoundedRectangle(cornerRadius: 16))
             .overlay(alignment: .topTrailing) {
                 if let feature = source.requiredFeature {
                     PDTierTag(tier: feature.requiredTier)
                         .padding(6)
+                        .offset(x: 4, y: -8)
                 }
             }
         }
@@ -292,6 +293,116 @@ struct CaptureScreenshotsCard<Footer: View>: View {
     }
 }
 
+/// The stateful footer shared by the Home screenshots card and the Capture sheet.
+struct CaptureScreenshotsFooter: View {
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @EnvironmentObject private var scanViewModel: ScanViewModel
+    @Query private var scannedAssets: [ScannedAsset]
+    @Query(sort: \EventCandidate.createdAt, order: .reverse) private var candidates: [EventCandidate]
+    @AppStorage(AutoDetectPreference.key) private var autoDetectPreferred = true
+
+    let onScanAsset: (PHAsset) -> Void
+    let onReview: () -> Void
+
+    private var newScreenshots: [PHAsset] {
+        let scanned = Set(scannedAssets.map(\.assetIdentifier))
+        let unscanned = homeViewModel.recentScreenshots.filter { !scanned.contains($0.localIdentifier) }
+        guard appState.isEntitled(to: .likelyEventTriage) else { return unscanned }
+        return PhotoCandidateRanker.rank(unscanned, scannedIDs: scanned, likelyEventIDs: homeViewModel.likelyEventIDs)
+    }
+
+    private var needingReviewCount: Int {
+        candidates.filter(\.needsReview).count
+    }
+
+    private var photosAuthorized: Bool {
+        homeViewModel.photoAuthorizationStatus.access.isUsable
+    }
+
+    var body: some View {
+        let entitledToAutoDetect = appState.isEntitled(to: .automaticScreenshotDetection)
+        let autoDetect = entitledToAutoDetect && autoDetectPreferred
+
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            if photosAuthorized && !newScreenshots.isEmpty {
+                HStack(spacing: -8) {
+                    ForEach(newScreenshots.prefix(3), id: \.localIdentifier) { asset in
+                        Button { onScanAsset(asset) } label: {
+                            AssetThumbnail(asset: asset, height: 56)
+                                .frame(width: 48)
+                                .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
+                                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
+                                .frame(minWidth: 44, minHeight: 44)
+                        }
+                        .disabled(scanViewModel.isProcessing)
+                        .accessibilityLabel("Scan screenshot from \(asset.creationDate?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")")
+                    }
+                    if newScreenshots.count > 3 {
+                        Text("+\(newScreenshots.count - 3)")
+                            .font(PDFont.labelMD)
+                            .foregroundStyle(Color.pdOnSurface)
+                            .frame(width: 48, height: 56)
+                            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(LinearGradient(colors: [.pdSurfaceBright, .pdSurfaceHighest], startPoint: .topLeading, endPoint: .bottomTrailing)))
+                    }
+                    Spacer(minLength: 0)
+                }
+                .task(id: homeViewModel.recentScreenshots.map(\.localIdentifier)) {
+                    if appState.isEntitled(to: .likelyEventTriage) {
+                        homeViewModel.triageLikelyEvents(scannedIDs: Set(scannedAssets.map(\.assetIdentifier)))
+                    }
+                }
+            }
+
+            if autoDetect && !photosAuthorized {
+                Text("Allow Photos access and Pencil\u{2019}d will check your newest screenshots whenever you open the app.")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+
+            HStack(spacing: 10) {
+                if needingReviewCount > 0 {
+                    Button(action: onReview) { reviewPill(needingReviewCount) }
+                }
+                Spacer(minLength: 0)
+                if autoDetect {
+                    Label("Screenshot detection enabled", systemImage: "checkmark")
+                        .labelStyle(TrailingIconLabelStyle())
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdPrimary)
+                } else if entitledToAutoDetect {
+                    Label("Auto-detect is off", systemImage: "pause.circle")
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                } else {
+                    Button {
+                        Task { await appState.present(.paywall(opening: .plus)) }
+                    } label: {
+                        Label("Auto-detect with Plus", systemImage: "lock.fill")
+                            .font(PDFont.labelMD)
+                            .foregroundStyle(Color.pdPrimary)
+                            .frame(minHeight: 44)
+                    }
+                    .accessibilityHint(HomeBrandCopy.plusScreenshotExplanation)
+                }
+            }
+        }
+    }
+
+    private func reviewPill(_ count: Int) -> some View {
+        HStack(spacing: PDSpacing.xs) {
+            Circle().fill(Color.pdPrimary).frame(width: 6, height: 6)
+            Text("\(count) Needing Review")
+        }
+        .font(PDFont.labelMD)
+        .foregroundStyle(Color.pdPrimary)
+        .padding(.horizontal, PDSpacing.sm)
+        .padding(.vertical, 4)
+        .background(Capsule().fill(Color.pdPrimaryContainer.opacity(0.2)))
+        .frame(minHeight: 44)
+    }
+}
+
 // MARK: - Add events sheet
 /// The Add events sheet (formerly the launch carousel's second page): brand header, every capture
 /// source as a tile, and the newest scan waiting for review. Scan sources hand off to Home, which
@@ -308,6 +419,9 @@ struct CaptureSourceSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var scanViewModel: ScanViewModel
+    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @Environment(\.services) private var services
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -316,29 +430,33 @@ struct CaptureSourceSheet: View {
                     Spacer()
                     PDCloseButton(accessibilityLabel: "Close")
                 }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("CAPTURE")
-                        .font(PDFont.labelSM)
-                        .tracking(1.2)
-                        .foregroundStyle(Color.pdSecondary)
-                    Text("Create New Event")
-                        .font(PDFont.headlineXL)
-                        .foregroundStyle(Color.pdOnSurface)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                PDScreenIntro(
+                    eyebrow: "Capture",
+                    title: "Create New Event",
+                    subtitle: CaptureSheetCopy.welcomeBody
+                )
                 .padding(.top, 16)
 
                 VStack(spacing: 10) {
-                    CaptureScreenshotsCard(action: { choose(.screenshots) }) { EmptyView() }
+                    CaptureScreenshotsCard(action: { choose(.screenshots) }) {
+                        CaptureScreenshotsFooter(
+                            onScanAsset: { asset in
+                                Task {
+                                    await scanViewModel.scanAsset(asset, modelContext: modelContext)
+                                    await appState.handleScanOutcome(scanViewModel, services: services)
+                                }
+                            },
+                            onReview: {
+                                dismiss()
+                                appState.selectedTab = .review
+                            }
+                        )
+                    }
 
-                    CaptureSourceGrid(sources: [.photoLibrary, .fileImport, .documentScanner]) { choose($0) }
+                    CaptureSourceGrid(sources: [.photoLibrary, .fileImport, .documentScanner, .manual]) { choose($0) }
                 }
                 .frame(maxWidth: 380)
                 .padding(.top, 28)
-
-                CaptureSourceRow(source: .manual) { choose(.manual) }
-                    .frame(maxWidth: 380)
-                    .padding(.top, 24)
             }
             .padding(.horizontal, 20)
             .padding(.top, PDSpacing.sm)

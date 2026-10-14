@@ -163,7 +163,7 @@
 		125C831D5863E17E9EDBEC03 /* EventReviewEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReviewEditView.swift; sourceTree = "<group>"; };
 		16C57127AB7B208570033B0F /* PlusJakartaSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-ExtraBold.ttf"; sourceTree = "<group>"; };
 		1956429E5FD2E74C17C0152E /* EventUnderstandingPipelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingPipelineTests.swift; sourceTree = "<group>"; };
-		1AD8AF758C6012D0F221B6DD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1AD8AF758C6012D0F221B6DD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		234ABCB4322768CC2B0E7580 /* FeatureEntitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureEntitlements.swift; sourceTree = "<group>"; };
 		2384633515D0D150329210B9 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
 		24017AE659CF18A0E620D2A2 /* SubscriptionEntitlementResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEntitlementResolver.swift; sourceTree = "<group>"; };
@@ -214,14 +214,14 @@
 		5E16BCD77632A49197293C7B /* EventReviewFieldsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReviewFieldsCard.swift; sourceTree = "<group>"; };
 		5EEFE6BF52E31AEA357AE53F /* InterpretationReviewViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpretationReviewViews.swift; sourceTree = "<group>"; };
 		6035826CBC5AA6BD20970A91 /* Pencild.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pencild.swift; sourceTree = "<group>"; };
-		6120EE28A0FB1C40018B8F28 /* PencildTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PencildTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6120EE28A0FB1C40018B8F28 /* PencildTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PencildTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6260479541721F9A7EE51D55 /* CaptureSourceViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSourceViews.swift; sourceTree = "<group>"; };
 		62A8AF9C60AE3E1BDEF1E9D9 /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
 		63A875E83E7597E9C1BCAB6C /* EventUnderstandingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingModels.swift; sourceTree = "<group>"; };
 		6413BFF2135A5FEDD9D128D0 /* GlassModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassModifiers.swift; sourceTree = "<group>"; };
 		690CA1C8F5A6E4D90025DCF2 /* EventInterpretationDetailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventInterpretationDetailCard.swift; sourceTree = "<group>"; };
 		6AAE454E9940EBB014B3E0CA /* AppleFoundationModelInterpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationModelInterpreter.swift; sourceTree = "<group>"; };
-		6AE77CBE74FBB39E2FB173A2 /* Pencild.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Pencild.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AE77CBE74FBB39E2FB173A2 /* Pencild.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pencild.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B8B2795BB8562F51FA10D5F /* ReminderScheduleEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduleEditorView.swift; sourceTree = "<group>"; };
 		6CD5218095E1D76EF8C66721 /* EventReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReviewViewModel.swift; sourceTree = "<group>"; };
 		6F3AF6B689B97F0EF29F6D7D /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -813,7 +813,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				OTHER_SWIFT_FLAGS = "-strict-concurrency=complete";
+				OTHER_SWIFT_FLAGS = "-strict-concurrency=complete -Xcc -Wno-deprecated-declarations";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pencild.app.tests;
 				SDKROOT = iphoneos;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -833,7 +833,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				OTHER_SWIFT_FLAGS = "-strict-concurrency=complete";
+				OTHER_SWIFT_FLAGS = "-strict-concurrency=complete -Xcc -Wno-deprecated-declarations";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pencild.app.tests;
 				SDKROOT = iphoneos;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;

@@ -360,4 +360,42 @@ final class BatchReviewSession: ObservableObject, Identifiable {
         events.removeAll { $0.id == event.id }
         return true
     }
+
+    /// Re-runs only the screenshots that were blocked by the session's missing feature.
+    /// The retained display image is sufficient for the same on-device extraction path and
+    /// keeps a cancelled paywall from changing the review state.
+    func retryLockedItems(services: ServiceContainer, modelContext: ModelContext?) async {
+        guard let feature = lockedFeature else { return }
+        let retryable = skipped.filter { item in
+            guard case .failed(let message) = item.stage else { return false }
+            return message == feature.upgradeReason && item.image != nil
+        }
+        guard !retryable.isEmpty else { return }
+
+        let scanner = BatchScanViewModel(services: services)
+        let sources = retryable.compactMap { item in
+            item.image.map { BatchScanSource.loaded(id: item.id.uuidString, image: $0) }
+        }
+        await scanner.scan(sources, modelContext: modelContext)
+
+        for (original, retried) in zip(retryable, scanner.items) {
+            skipped.removeAll { $0.id == original.id }
+            if retried.isSuccess {
+                for candidate in retried.candidates {
+                    events.append(BatchEventItem(
+                        candidate: candidate,
+                        screenshotID: original.id,
+                        screenshotLabel: original.label,
+                        screenshotImage: original.image,
+                        services: services
+                    ))
+                }
+            } else {
+                skipped.append(retried)
+            }
+        }
+
+        lockedFeature = scanner.lockedFeature
+        hitScanLimit = scanner.hitScanLimit
+    }
 }

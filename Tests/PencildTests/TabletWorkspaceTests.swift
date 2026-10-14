@@ -73,7 +73,7 @@ private final class TabletTestSubscriptionService: SubscriptionServiceProtocol {
 @MainActor
 struct TabletWorkspaceTests {
     /// Retained screenshot evidence for the populated regular-width workspaces.
-    private static let evidenceDirectory = URL(fileURLWithPath: "/private/tmp/pencild-ipad-smoke", isDirectory: true)
+    private static let evidenceDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("pencild-ipad-smoke", isDirectory: true)
 
     private func modelContainer() throws -> ModelContainer {
         try ModelContainer(
@@ -111,7 +111,10 @@ struct TabletWorkspaceTests {
         host.traitOverrides.horizontalSizeClass = sizeClass
         window.rootViewController = host
         window.makeKeyAndVisible()
-        defer { window.isHidden = true }
+        defer {
+            window.rootViewController = nil
+            window.isHidden = true
+        }
 
         for _ in 0..<10 {
             window.layoutIfNeeded()
@@ -119,7 +122,7 @@ struct TabletWorkspaceTests {
         }
 
         let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
-            _ = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+            _ = window.drawHierarchy(in: window.bounds, afterScreenUpdates: false)
         }
         let data = try #require(image.pngData())
         try FileManager.default.createDirectory(at: Self.evidenceDirectory, withIntermediateDirectories: true)
@@ -333,7 +336,7 @@ struct TabletWorkspaceTests {
         #expect(home.recentScreenshots.isEmpty)
     }
 
-    @Test("Paywall interstitials render with the close button pinned top-right")
+    @Test("Paywall interstitials render with the close button pinned top-right", .timeLimit(.minutes(2)))
     func paywallInterstitialsRender() async throws {
         let services = services()
         for (size, sizeClass, suffix) in [

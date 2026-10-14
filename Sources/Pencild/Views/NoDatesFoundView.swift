@@ -95,9 +95,7 @@ struct NoDatesFoundView: View {
                         .buttonStyle(PDPrimaryButtonStyle())
 
                         Button {
-                            dismiss()
-                            appState.selectedTab = .home
-                            appState.requestPhotoPicker = true
+                            Task { await appState.present(.captureSources) }
                         } label: {
                             Label("Try Another Image", systemImage: "photo.badge.plus")
                         }

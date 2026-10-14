@@ -30,8 +30,6 @@ targets:
       - path: Sources/Pencild
       - path: Assets.xcassets
         buildPhase: resources
-      - path: Pencild.icon
-        buildPhase: resources
       - path: PrivacyInfo.xcprivacy
         buildPhase: resources
       - path: Resources/Fonts
@@ -50,7 +48,7 @@ targets:
         "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Development"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: WGKKDYY866
-        ASSETCATALOG_COMPILER_APPICON_NAME: Pencild
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: NO
@@ -72,5 +70,5 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         # StoreKitTest's SDK header uses an API deprecated in iOS 18; under warnings-as-errors
         # its precompiled module fails to build. The app target keeps the strict gate.
-        OTHER_SWIFT_FLAGS: "-strict-concurrency=complete"
+        OTHER_SWIFT_FLAGS: "-strict-concurrency=complete -Xcc -Wno-deprecated-declarations"
         SWIFT_TREAT_WARNINGS_AS_ERRORS: NO

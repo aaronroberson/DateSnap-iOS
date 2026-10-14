@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import EventKit
+import StoreKit
 
 /// Entry point for reviewing a scanned (or saved) event. Resolves the persisted candidate behind the
 /// `PencildEvent` and hands it to a form bound to `EventReviewViewModel`.
@@ -46,6 +47,7 @@ struct EventReviewForm: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.services) private var services
     @EnvironmentObject private var appState: AppState
+    @Environment(\.requestReview) private var requestReview
 
     @StateObject private var viewModel: EventReviewViewModel
 
@@ -554,10 +556,26 @@ struct EventReviewForm: View {
         case .success:
             break
         }
+        await requestReviewIfEligible(wasUpdate: wasUpdate)
         withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { showSuccessToast = true }
         try? await Task.sleep(for: .seconds(1.1))
         appState.showToast(wasUpdate ? "Calendar event updated" : "Event saved to Calendar")
         await appState.present(.savedEventDetail(viewModel.candidate.toPencildEvent()))
+    }
+
+    private func requestReviewIfEligible(wasUpdate: Bool) async {
+        guard !wasUpdate else { return }
+        let defaults = UserDefaults.standard
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
+        let requestedVersionKey = "reviewPrompt.requestedVersion"
+        guard defaults.string(forKey: requestedVersionKey) != version else { return }
+        let saveCountKey = "reviewPrompt.successfulSaveCount"
+        let count = defaults.integer(forKey: saveCountKey) + 1
+        defaults.set(count, forKey: saveCountKey)
+        guard count == 3 else { return }
+        defaults.set(version, forKey: requestedVersionKey)
+        try? await Task.sleep(for: .seconds(1.5))
+        requestReview()
     }
 
     private var successToast: some View {

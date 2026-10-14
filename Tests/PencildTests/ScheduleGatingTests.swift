@@ -124,4 +124,23 @@ struct ScheduleGatingTests {
         #expect(session.lockedFeature == .scheduleImport)
         #expect(session.events.isEmpty)
     }
+
+    @Test("A Premium upgrade retries retained locked batch screenshots in the review session")
+    func batchRetryAfterUpgrade() async throws {
+        let plusServices = services(.verified(.plus, provenance: .storeKit), usage: .forTesting())
+        let scanner = BatchScanViewModel(services: plusServices)
+        let container = try makeContainer()
+
+        await scanner.scan([.loaded(id: "schedule", image: scheduleImage())], modelContext: container.mainContext)
+        let session = BatchReviewSession(scan: scanner, services: plusServices)
+        #expect(session.lockedFeature == .scheduleImport)
+        #expect(session.skipped.count == 1)
+
+        let premiumServices = services(.verified(.premium, provenance: .storeKit), usage: .forTesting())
+        await session.retryLockedItems(services: premiumServices, modelContext: container.mainContext)
+
+        #expect(session.lockedFeature == nil)
+        #expect(session.skipped.isEmpty)
+        #expect(session.events.count == 3)
+    }
 }

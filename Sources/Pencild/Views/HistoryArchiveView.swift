@@ -78,10 +78,10 @@ struct HistoryArchiveView: View {
                     HStack(alignment: .top, spacing: PDSpacing.md) {
                         PDScreenIntro(eyebrow: "ON YOUR DEVICE", title: "History & Archive", subtitle: "Your saved events, drafts, and archived scans.")
                         Spacer(minLength: 0)
-                        Button { appState.selectedTab = .home } label: {
+                        Button { Task { await appState.present(.captureSources) } } label: {
                             PDIconTile(systemName: "camera.viewfinder", size: .large)
                         }
-                        .accessibilityLabel("Scan a new screenshot")
+                        .accessibilityLabel("Capture a new event")
                     }
                     EventSearchFilterBar(
                         searchText: $searchText,
@@ -156,8 +156,8 @@ struct HistoryArchiveView: View {
                 Text("Try a different filter or scan a screenshot to add an event.")
                     .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
                     .multilineTextAlignment(.center)
-                Button { appState.selectedTab = .home } label: {
-                    Label("Scan a screenshot", systemImage: "camera.viewfinder")
+                Button { Task { await appState.present(.captureSources) } } label: {
+                    Label("Capture new event", systemImage: "camera.viewfinder")
                 }
                 .buttonStyle(PDPrimaryButtonStyle())
             }

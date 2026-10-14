@@ -1,29 +1,93 @@
 {
-  "fill" : {
-    "linear-gradient" : [
-      "extended-gray:1.00000,1.00000",
-      "extended-gray:0.75000,1.00000"
-    ]
-  },
+  "fill" : "automatic",
   "groups" : [
     {
       "layers" : [
         {
+          "image-name" : "Pencil_tip_app_icon_design_2K_20261007190041.jpg",
+          "name" : "Pencil_tip_app_icon_design_2K_20261007190041",
+          "position-specializations" : [
+            {
+              "idiom" : "square",
+              "value" : {
+                "scale" : 0.5,
+                "translation-in-points" : [
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "idiom" : "watchOS",
+              "value" : {
+                "scale" : 0.5299999999999999,
+                "translation-in-points" : [
+                  0,
+                  0
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
+        {
+          "hidden" : true,
+          "image-name" : "pencild-arch-cal-full-mid-compact-trans.png",
+          "name" : "pencild-arch-cal-full-mid-compact-trans",
+          "position-specializations" : [
+            {
+              "idiom" : "square",
+              "value" : {
+                "scale" : 0.42,
+                "translation-in-points" : [
+                  0,
+                  0
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
+        {
+          "blend-mode" : "normal",
           "fill" : "none",
           "glass" : true,
           "hidden-specializations" : [
             {
               "idiom" : "square",
-              "value" : false
+              "value" : true
             }
           ],
           "image-name" : "pencild-logo-darker.png",
           "name" : "pencild-logo-darker",
+          "opacity" : 1,
           "position-specializations" : [
             {
               "idiom" : "square",
               "value" : {
-                "scale" : 1.2000000000000002,
+                "scale" : 1.2300000000000002,
                 "translation-in-points" : [
                   0,
                   0

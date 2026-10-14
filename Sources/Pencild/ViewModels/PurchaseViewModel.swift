@@ -98,6 +98,16 @@ final class PurchaseViewModel: ObservableObject {
         }
     }
 
+    /// One unambiguous sentence for the purchase CTA, using only StoreKit's localized price and
+    /// introductory-offer period. `nil` means this product has no eligible free trial.
+    func trialDisclosure(_ plan: Plan, _ period: BillingPeriod) -> String? {
+        guard let trial = trialDescription(plan, period),
+              let price = displayPrice(plan, period),
+              period != .lifetime else { return nil }
+        let billingUnit = period == .annual ? "year" : "month"
+        return "\(trial) free, then \(price)/\(billingUnit). Renews until cancelled."
+    }
+
     /// Purchases the plan. Returns the resulting tier, or nil if cancelled / failed (with `errorMessage` set on failure).
     func purchase(_ plan: Plan, _ period: BillingPeriod) async -> SubscriptionTier? {
         guard let subscription, let product = product(plan, period) else {

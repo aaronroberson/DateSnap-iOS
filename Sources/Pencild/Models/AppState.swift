@@ -64,6 +64,7 @@ enum AgendaDateFilter: String, CaseIterable, Identifiable {
 enum AppModalScreen: Identifiable, Sendable {
     /// The paywall, opening on the given plan's tab.
     case paywall(opening: PurchaseViewModel.Plan)
+    case paywallFor(feature: PremiumFeature)
     case calendarPermissionDenied
     case notificationPermissionDenied
     case noDatesFound
@@ -78,17 +79,19 @@ enum AppModalScreen: Identifiable, Sendable {
     
     var isPaywall: Bool {
         if case .paywall = self { return true }
+        if case .paywallFor = self { return true }
         return false
     }
 
     /// The paywall opened on the tab of the plan `feature` needs.
     static func paywall(for feature: PremiumFeature) -> AppModalScreen {
-        .paywall(opening: feature.requiredTier == .premium ? .premium : .plus)
+        .paywallFor(feature: feature)
     }
 
     var id: String {
         switch self {
         case .paywall(let plan): return plan == .premium ? "paywall-premium" : "paywall-plus"
+        case .paywallFor(let feature): return feature.requiredTier == .premium ? "paywall-premium" : "paywall-plus"
         case .calendarPermissionDenied: return "calendarPermissionDenied"
         case .notificationPermissionDenied: return "notificationPermissionDenied"
         case .noDatesFound: return "noDatesFound"

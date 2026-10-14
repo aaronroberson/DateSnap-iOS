@@ -76,6 +76,11 @@ struct ContentView: View {
                 switch modal {
                 case .paywall(let plan):
                     PaywallView(initialPlan: plan)
+                case .paywallFor(let feature):
+                    PaywallView(
+                        initialPlan: feature.requiredTier == .premium ? .premium : .plus,
+                        contextualFeature: feature
+                    )
                 case .calendarPermissionDenied:
                     CalendarPermissionDeniedView()
                 case .notificationPermissionDenied:

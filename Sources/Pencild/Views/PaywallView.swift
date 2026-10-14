@@ -12,6 +12,7 @@ struct PaywallView: View {
     @StateObject private var purchases = PurchaseViewModel()
 
     let initialPlan: PurchaseViewModel.Plan
+    let contextualFeature: PremiumFeature?
 
     @State private var plan: PurchaseViewModel.Plan
     @State private var selectedPeriod: BillingPeriod = .annual
@@ -21,8 +22,9 @@ struct PaywallView: View {
     @State private var currentProduct: SubscriptionProductID?
     @State private var isLoadingCurrent = false
 
-    init(initialPlan: PurchaseViewModel.Plan) {
+    init(initialPlan: PurchaseViewModel.Plan, contextualFeature: PremiumFeature? = nil) {
         self.initialPlan = initialPlan
+        self.contextualFeature = contextualFeature
         _plan = State(initialValue: initialPlan)
     }
 
@@ -61,6 +63,14 @@ struct PaywallView: View {
 
                     if showsTabs {
                         planTabs
+                            .padding(.horizontal)
+                    }
+
+                    if let contextualFeature {
+                        Text(contextualHeadline(for: contextualFeature))
+                            .font(PDFont.headlineSM)
+                            .foregroundStyle(Color.pdPrimary)
+                            .multilineTextAlignment(.center)
                             .padding(.horizontal)
                     }
 
@@ -272,7 +282,7 @@ struct PaywallView: View {
     }
 
     private var controlCard: some View {
-        PDCard(surface: .pdSurfaceContainer, shadowOpacity: 0.08, shadowRadius: 4, shadowY: 1) {
+        PDCard(surface: .pdSurfaceContainer, shadowOpacity: 0, shadowRadius: 0, shadowY: 0) {
             HStack(alignment: .top, spacing: 12) {
                 PDIconTile(systemName: "checkmark.shield", tint: .pdSecondary, size: .large)
                 VStack(alignment: .leading, spacing: 4) {
@@ -284,6 +294,17 @@ struct PaywallView: View {
                         .foregroundStyle(Color.pdOnSurfaceVariant)
                 }
             }
+        }
+    }
+
+    private func contextualHeadline(for feature: PremiumFeature) -> String {
+        switch feature {
+        case .automaticScreenshotDetection: return "Let Pencil’d surface new event screenshots."
+        case .likelyEventTriage: return "See which screenshots look like events first."
+        case .documentImport: return "Import every page from PDFs and Files."
+        case .scheduleImport: return "Turn every shift into its own event."
+        case .duplicateClusters: return "Find likely duplicates across your archive."
+        case .advancedReminderPlans: return "Get reminder timing designed for the event."
         }
     }
 
@@ -318,6 +339,9 @@ struct PaywallView: View {
                 : ""
             return "\(price) once. Lifetime is a one-time purchase and never renews.\(cancelNote)"
         }
+        if let disclosure = trialDisclosure {
+            return disclosure
+        }
         return "Renews at \(price)/\(selectedPeriod == .annual ? "yr" : "mo") until cancelled. Cancel anytime in Settings › Apple ID › Subscriptions."
     }
 
@@ -325,6 +349,12 @@ struct PaywallView: View {
         guard let product = purchases.product(plan, period),
               trialEligibleProductIDs.contains(product.id) else { return nil }
         return purchases.trialDescription(plan, period)
+    }
+
+    private var trialDisclosure: String? {
+        guard let product = purchases.product(plan, selectedPeriod),
+              trialEligibleProductIDs.contains(product.id) else { return nil }
+        return purchases.trialDisclosure(plan, selectedPeriod)
     }
 
     private var priceUnavailableText: String {
