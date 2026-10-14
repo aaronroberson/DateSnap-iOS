@@ -460,7 +460,7 @@ struct ReviewQueueView: View {
                         Button {
                             presentHighConfidenceReview()
                         } label: {
-                            Label("Review high confidence (\(highConfidence.count))", systemImage: "checkmark.seal")
+                            Label("Confirm all suggested (\(highConfidence.count))", systemImage: "checkmark.seal")
                         }
                         .buttonStyle(PDPrimaryButtonStyle())
                         .disabled(highConfidence.isEmpty)
