@@ -45,6 +45,6 @@ If you encounter any questions or require additional details during review, plea
 | **Content Rights** | Contains no third-party content requiring explicit license. |
 | **Age Rating** | 4+ (No unrestricted web access, no user-generated content). |
 | **Data Nutrition Label** | "Data Not Collected" across all data categories. |
-| **Privacy Policy URL** | `https://pencild.app/privacy` *(Must be live and valid)* |
-| **Support URL** | `https://pencild.app/support` *(Must be live and valid)* |
-| **Marketing URL** | `https://pencild.app` |
+| **Privacy Policy URL** | `https://getpencild.com/privacy` *(Must be live and valid)* |
+| **Support URL** | `https://getpencild.com/support` *(Must be live and valid)* |
+| **Marketing URL** | `https://getpencild.com` |

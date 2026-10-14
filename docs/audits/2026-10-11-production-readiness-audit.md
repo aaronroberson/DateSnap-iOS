@@ -108,7 +108,7 @@ The monolithic views identified in earlier passes have been decomposed into focu
   - [`PurchaseViewModel.swift#L119-L134`](../../Sources/Pencild/ViewModels/PurchaseViewModel.swift#L119-L134): Static URLs initialized with `preconditionFailure`:
     ```swift
     static let privacyPolicy: URL = {
-        guard let url = URL(string: "https://pencild.app/privacy") else {
+        guard let url = URL(string: "https://getpencild.com/privacy") else {
             preconditionFailure("Invalid Privacy Policy URL")
         }
         return url
