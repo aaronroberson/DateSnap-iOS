@@ -148,11 +148,11 @@ Consequences for this plan:
 - Phases 2–3 split across a few subagents working on disjoint view files. Each gets this plan, the token/component API, and its Stitch HTML paths. Shared files (`AppState`, `ContentView`, `PencilComponents`) are only touched by the main session.
 - Commit per feature chunk (Conventional Commits). Run the brand pre-commit hook (`./scripts/install-hooks.sh`).
 
-## Current verification record (2026-10-11)
+## Recorded verification evidence (2026-10-11; historical artifacts)
 
-The in-scope implementation is present on `main` and has passed the current
-build, test, accessibility, and production-artifact checks recorded in the
-companion remediation plan:
+The in-scope implementation had passed the build, test, accessibility, and
+production-artifact checks recorded in the companion remediation plan at that
+point in the checkout history:
 
 - XcodeGen output, Debug builds, and Release build succeed for the supported
   iPhone 17 and iPad Pro 11-inch simulator destinations.
@@ -166,6 +166,12 @@ companion remediation plan:
 - Dynamic Type XL, Reduce Motion, VoiceOver labels, and 44-point controls were
   exercised; the regular-size tablet workspace structure and touch metadata are
   covered by `TabletWorkspaceTests.swift`.
+
+These artifacts are historical evidence, not a fresh pass for the current
+working tree. Newer generic-device and simulator attempts have stopped during
+asset processing because CoreSimulatorService and `simdiskimaged` are
+unavailable; no current Swift compilation or simulator test result is claimed
+until that host-level service is restored.
 
 The following plan checks remain environment-limited and are recorded without
 invented evidence: a positive local StoreKit restore could not be completed
