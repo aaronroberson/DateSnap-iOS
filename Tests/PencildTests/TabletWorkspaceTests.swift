@@ -187,6 +187,17 @@ struct TabletWorkspaceTests {
         )
         #expect(reviewImage.size.width == 1194)
 
+        // Full-length phone renders, so every section's order is visible below the fold.
+        _ = try await render(
+            EventReviewEditView(event: candidate.toPencildEvent())
+                .environmentObject(appState)
+                .pencildServices(services)
+                .modelContainer(container),
+            size: CGSize(width: 402, height: 3400),
+            sizeClass: .compact,
+            name: "10-compact-review-full"
+        )
+
         // 3. Review-state checks on the same candidate: no duplicates yet, ambiguity swap is reversible.
         let review = EventReviewViewModel(candidate: candidate, services: services, sourceImage: scan.currentProcessingImage)
         review.findDuplicates(in: context)
@@ -218,6 +229,15 @@ struct TabletWorkspaceTests {
             size: CGSize(width: 1194, height: 834),
             sizeClass: .regular,
             name: "02-ipad-saved-detail"
+        )
+        _ = try await render(
+            SavedEventDetailView(event: candidate.toPencildEvent())
+                .environmentObject(appState)
+                .pencildServices(services)
+                .modelContainer(container),
+            size: CGSize(width: 402, height: 2600),
+            sizeClass: .compact,
+            name: "11-compact-detail-full"
         )
         let actions = SavedEventActions(services: services, modelContext: context)
         #expect(actions.setStatus(.archived, for: saved).isSuccess)

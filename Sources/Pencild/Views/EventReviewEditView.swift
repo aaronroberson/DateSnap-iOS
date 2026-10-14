@@ -153,10 +153,10 @@ struct EventReviewForm: View {
                         ambiguityBanner
                     }
                     formSection
-                    scanDetails
-                        .id("scanDetails")
                     actions(scrollProxy: proxy)
                         .padding(.horizontal)
+                    scanDetails
+                        .id("scanDetails")
                 }
             }
         }
@@ -312,11 +312,6 @@ struct EventReviewForm: View {
 
     private var scanDetails: some View {
         VStack(spacing: PDSpacing.md) {
-            if !viewModel.visibleAlternatives.isEmpty {
-                AlternativeInterpretationsCard(alternatives: viewModel.visibleAlternatives) { alternative in
-                    withAnimation { viewModel.apply(alternative) }
-                }
-            }
             if !viewModel.whyThisRows.isEmpty {
                 WhyThisSection(rows: viewModel.whyThisRows, expandOnRequest: scanDetailsRequests)
             }
@@ -328,15 +323,22 @@ struct EventReviewForm: View {
     // MARK: - Editable Form
     private var formSection: some View {
         VStack(spacing: 14) {
-            PDSectionHeader(title: "Extracted fields", trailing: "Tap any field to refine")
+            // Order shared with Batch Review and Saved Event Detail: details, suggestions,
+            // calendar & reminders, then what's on the flyer.
+            PDSectionHeader(title: "Event details", trailing: "Tap any field to refine")
             EventReviewFieldsCard(viewModel: viewModel, onOpenURL: { openURL($0) })
-            destinationCard
-            PDSectionHeader(title: "CALENDAR & REMINDERS", trailing: "")
+            if !viewModel.visibleAlternatives.isEmpty {
+                AlternativeInterpretationsCard(alternatives: viewModel.visibleAlternatives) { alternative in
+                    withAnimation { viewModel.apply(alternative) }
+                }
+            }
             ReviewSuggestionsCard(
                 viewModel: viewModel,
                 isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
                 onUpgrade: { Task { await appState.present(.premiumPaywall) } }
             )
+            PDSectionHeader(title: "Calendar & reminders")
+            destinationCard
             if !viewModel.actions.isEmpty {
                 EventActionsChecklist(
                     actions: viewModel.actions,

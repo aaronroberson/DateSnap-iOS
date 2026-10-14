@@ -170,7 +170,7 @@ struct WhyThisSection: View {
             } label: {
                 HStack {
                     Image(systemName: "text.magnifyingglass").foregroundStyle(Color.pdSecondary)
-                    Text("Why Pencil’d chose these fields")
+                    Text("Why Pencil’d chose these details")
                         .font(PDFont.labelMD)
                         .foregroundStyle(Color.pdOnSurface)
                     Spacer()
@@ -256,66 +256,66 @@ struct EventActionsChecklist: View {
     @Environment(\.openURL) private var openURL
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("ON THE FLYER")
-                .font(PDFont.labelSM)
-                .foregroundStyle(Color.pdOnSurfaceVariant)
-            ForEach(actions) { action in
-                HStack(spacing: 10) {
-                    Image(systemName: icon(for: action.kind))
-                        .foregroundStyle(Color.pdSecondary)
-                        .frame(width: 20)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(action.title)
-                            .font(PDFont.bodyMD)
-                            .foregroundStyle(Color.pdOnSurface)
-                        if let deadline = action.deadline {
-                            Text("By \(deadline.formatted(date: .abbreviated, time: .omitted))")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdWarning)
-                        }
-                        if !action.target.isEmpty {
-                            Text(action.target)
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .lineLimit(1)
-                        }
-                    }
-                    Spacer()
-                    if let url = url(for: action) {
-                        Button("Open") { openURL(url) }
-                            .font(PDFont.labelMD)
-                            .foregroundStyle(Color.pdPrimary)
-                            .frame(minWidth: 44, minHeight: 44)
-                    }
-                }
-            }
-            if let deadlineReminderDate {
-                PDRowDivider()
-                if isEntitledToDeadlineReminders {
-                    Toggle(isOn: $deadlineReminderEnabled) {
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Remind me to RSVP")
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "On the flyer")
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(actions) { action in
+                    HStack(spacing: 10) {
+                        Image(systemName: icon(for: action.kind))
+                            .foregroundStyle(Color.pdSecondary)
+                            .frame(width: 20)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(action.title)
                                 .font(PDFont.bodyMD)
                                 .foregroundStyle(Color.pdOnSurface)
-                            Text(deadlineReminderDate.formatted(date: .abbreviated, time: .shortened))
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                            if let deadline = action.deadline {
+                                Text("By \(deadline.formatted(date: .abbreviated, time: .omitted))")
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdWarning)
+                            }
+                            if !action.target.isEmpty {
+                                Text(action.target)
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                                    .lineLimit(1)
+                            }
+                        }
+                        Spacer()
+                        if let url = url(for: action) {
+                            Button("Open") { openURL(url) }
+                                .font(PDFont.labelMD)
+                                .foregroundStyle(Color.pdPrimary)
+                                .frame(minWidth: 44, minHeight: 44)
                         }
                     }
-                    .toggleStyle(PDToggleStyle())
-                } else {
-                    Button(action: onUpgrade) {
-                        Label("RSVP-deadline reminders with Premium", systemImage: "lock.fill")
-                            .font(PDFont.bodySM)
-                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                            .frame(minHeight: 44)
+                }
+                if let deadlineReminderDate {
+                    PDRowDivider()
+                    if isEntitledToDeadlineReminders {
+                        Toggle(isOn: $deadlineReminderEnabled) {
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("Remind me to RSVP")
+                                    .font(PDFont.bodyMD)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                Text(deadlineReminderDate.formatted(date: .abbreviated, time: .shortened))
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                            }
+                        }
+                        .toggleStyle(PDToggleStyle())
+                    } else {
+                        Button(action: onUpgrade) {
+                            Label("RSVP-deadline reminders with Premium", systemImage: "lock.fill")
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .frame(minHeight: 44)
+                        }
                     }
                 }
             }
+            .padding(14)
+            .pdGlassCard(cornerRadius: PDRadius.card)
         }
-        .padding(14)
-        .pdGlassCard(cornerRadius: PDRadius.card)
     }
 
     private func icon(for kind: ActionSuggestion.Kind) -> String {
@@ -358,64 +358,81 @@ struct EventActionsChecklist: View {
 }
 
 // MARK: - Suggestions
-/// Editable suggestions: duration, reminder plan, and an opt-in repeat.
+/// Editable suggestions: duration, reminder plan, and an opt-in repeat. Renders nothing (no
+/// heading) when there is nothing to suggest for this event.
 struct ReviewSuggestionsCard: View {
     @ObservedObject var viewModel: EventReviewViewModel
     let isEntitledToReminderPlans: Bool
     let onUpgrade: () -> Void
 
-    var body: some View {
+    /// A reminder plan worth offering: non-empty and different from the alerts already chosen.
+    private var suggestedPlan: ReminderPlan? {
         let plan = viewModel.reminderPlan
-        let planDiffers = plan.offsets.map(\.timeInterval) != viewModel.selectedOffsets.map(\.timeInterval)
-        if viewModel.suggestedDuration != nil || planDiffers || viewModel.recurrenceSignal != nil {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("SUGGESTIONS")
-                    .font(PDFont.labelSM)
-                    .foregroundStyle(Color.pdOnSurfaceVariant)
+        guard !plan.offsets.isEmpty,
+              plan.offsets.map(\.timeInterval) != viewModel.selectedOffsets.map(\.timeInterval) else { return nil }
+        return plan
+    }
 
-                if let duration = viewModel.suggestedDuration {
-                    suggestionRow(
-                        icon: "clock.arrow.circlepath",
-                        title: "Suggested duration: \(Duration.seconds(duration).formatted(.units(allowed: [.hours, .minutes], width: .wide)))",
-                        detail: "Based on the \(viewModel.category.displayName.lowercased()) category; please review.",
-                        actionTitle: "Use"
-                    ) { viewModel.applySuggestedDuration() }
-                }
-
-                if planDiffers && !plan.offsets.isEmpty {
-                    if isEntitledToReminderPlans {
+    var body: some View {
+        let duration = viewModel.suggestedDuration
+        let plan = suggestedPlan
+        let signal = viewModel.recurrenceSignal
+        if duration != nil || plan != nil || signal != nil {
+            VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                PDSectionHeader(title: "Suggestions", trailing: "Nothing changes until you tap")
+                VStack(alignment: .leading, spacing: 12) {
+                    if let duration {
                         suggestionRow(
-                            icon: "bell.badge",
-                            title: "Suggested alerts: " + plan.offsets.map(\.label).joined(separator: ", "),
-                            detail: plan.rationale,
+                            icon: "clock.arrow.circlepath",
+                            title: "End at \(viewModel.startDate.addingTimeInterval(duration).formatted(date: .omitted, time: .shortened))",
+                            detail: "\(viewModel.category.displayName) events usually run \(Duration.seconds(duration).formatted(.units(allowed: [.hours, .minutes], width: .wide))). Use sets the end time.",
                             actionTitle: "Use"
-                        ) { viewModel.applyReminderPlan() }
+                        ) { viewModel.applySuggestedDuration() }
                     }
-                }
 
-                if let signal = viewModel.recurrenceSignal, signal.kind != .series {
-                    Toggle(isOn: Binding(
-                        get: { viewModel.repeatSelection == signal.kind },
-                        set: { viewModel.repeatSelection = $0 ? signal.kind : nil }
-                    )) {
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Repeat \(signal.kind == .weekly ? "weekly" : "monthly") in Calendar")
-                                .font(PDFont.bodyMD)
-                                .foregroundStyle(Color.pdOnSurface)
-                            Text("Source says “\(signal.phrase)”. Off saves a single event.")
-                                .font(PDFont.bodySM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                    if let plan {
+                        if isEntitledToReminderPlans {
+                            suggestionRow(
+                                icon: "bell.badge",
+                                title: "Alerts: " + plan.offsets.map(\.label).joined(separator: ", "),
+                                detail: plan.rationale + " Use replaces your current alerts.",
+                                actionTitle: "Use"
+                            ) { viewModel.applyReminderPlan() }
+                        } else {
+                            suggestionRow(
+                                icon: "bell.badge",
+                                title: "Tailored alerts for this event",
+                                detail: "Premium suggests an alert plan based on the kind of event.",
+                                actionTitle: "Premium",
+                                action: onUpgrade
+                            )
                         }
                     }
-                    .toggleStyle(PDToggleStyle())
-                } else if let signal = viewModel.recurrenceSignal {
-                    Label("Part of a series (“\(signal.phrase)”). Saved as a single event.", systemImage: "square.stack.3d.up")
-                        .font(PDFont.bodySM)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
+
+                    if let signal, signal.kind != .series {
+                        Toggle(isOn: Binding(
+                            get: { viewModel.repeatSelection == signal.kind },
+                            set: { viewModel.repeatSelection = $0 ? signal.kind : nil }
+                        )) {
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("Repeat \(signal.kind == .weekly ? "weekly" : "monthly") in Calendar")
+                                    .font(PDFont.bodyMD)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                Text("Source says “\(signal.phrase)”. Off saves a single event.")
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                            }
+                        }
+                        .toggleStyle(PDToggleStyle())
+                    } else if let signal {
+                        Label("Part of a series (“\(signal.phrase)”). Saved as a single event.", systemImage: "square.stack.3d.up")
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
                 }
+                .padding(14)
+                .pdGlassCard(cornerRadius: PDRadius.card)
             }
-            .padding(14)
-            .pdGlassCard(cornerRadius: PDRadius.card)
         }
     }
 

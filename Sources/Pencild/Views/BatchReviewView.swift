@@ -25,6 +25,7 @@ struct BatchReviewView: View {
     /// root can present only one sheet and leaving would discard the batch's unsaved edits.
     @State private var openedDuplicate: PencildEvent? = nil
     @State private var showPlusPaywall = false
+    @State private var showPremiumPaywall = false
 
     init(session: BatchReviewSession) {
         _session = StateObject(wrappedValue: session)
@@ -68,6 +69,9 @@ struct BatchReviewView: View {
             }
             .sheet(isPresented: $showPlusPaywall) {
                 PlusPaywallView()
+            }
+            .sheet(isPresented: $showPremiumPaywall) {
+                PremiumPaywallView()
             }
             .sheet(isPresented: $showNotificationRecovery, onDismiss: {
                 if pendingFailureAlert {
@@ -157,7 +161,8 @@ struct BatchReviewView: View {
                 onToggle: { toggle(event.id) },
                 onDiscard: { showDiscardConfirmFor = event },
                 onNotificationsDenied: { showNotificationRecovery = true },
-                onOpenDuplicate: { openedDuplicate = $0 }
+                onOpenDuplicate: { openedDuplicate = $0 },
+                onUpgradeToPremium: { showPremiumPaywall = true }
             )
         }
     }
@@ -351,6 +356,7 @@ struct BatchReviewView: View {
 private struct BatchEventCard: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.services) private var services
+    @EnvironmentObject private var appState: AppState
     @ObservedObject var event: BatchEventItem
     /// The card reads editable state through the review VM, so observe it directly too.
     @ObservedObject private var review: EventReviewViewModel
@@ -361,6 +367,7 @@ private struct BatchEventCard: View {
     let onDiscard: () -> Void
     let onNotificationsDenied: () -> Void
     let onOpenDuplicate: (PencildEvent) -> Void
+    let onUpgradeToPremium: () -> Void
 
     init(
         event: BatchEventItem,
@@ -370,7 +377,8 @@ private struct BatchEventCard: View {
         onToggle: @escaping () -> Void,
         onDiscard: @escaping () -> Void,
         onNotificationsDenied: @escaping () -> Void,
-        onOpenDuplicate: @escaping (PencildEvent) -> Void
+        onOpenDuplicate: @escaping (PencildEvent) -> Void,
+        onUpgradeToPremium: @escaping () -> Void
     ) {
         _event = ObservedObject(wrappedValue: event)
         _review = ObservedObject(wrappedValue: event.review)
@@ -381,6 +389,7 @@ private struct BatchEventCard: View {
         self.onDiscard = onDiscard
         self.onNotificationsDenied = onNotificationsDenied
         self.onOpenDuplicate = onOpenDuplicate
+        self.onUpgradeToPremium = onUpgradeToPremium
     }
 
     var body: some View {
@@ -515,6 +524,12 @@ private struct BatchEventCard: View {
                 tone: review.confidenceTier == .high ? .success : .warning
             )
             editableFields
+            ReviewSuggestionsCard(
+                viewModel: review,
+                isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
+                onUpgrade: onUpgradeToPremium
+            )
+            PDSectionHeader(title: "Calendar & reminders")
             BatchDestinationsEditor(viewModel: event.review)
             if let issue = review.errorMessage {
                 Label(issue, systemImage: "exclamationmark.triangle.fill")
@@ -527,7 +542,7 @@ private struct BatchEventCard: View {
 
     private var editableFields: some View {
         VStack(alignment: .leading, spacing: PDSpacing.sm) {
-            PDSectionHeader(title: "Extracted fields")
+            PDSectionHeader(title: "Event details")
             PDGroupedList {
                 BatchTitledField(title: "EVENT TITLE", text: $review.title, placeholder: "Enter event name…", icon: "textformat", iconColor: .pdPrimary)
                     .padding(PDSpacing.md)

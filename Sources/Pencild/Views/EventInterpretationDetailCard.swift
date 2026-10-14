@@ -23,7 +23,7 @@ struct EventInterpretationDetailCard: View {
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                     }
 
-                    Text("Why Pencil'd chose this date")
+                    Text("Why Pencil’d chose these details")
                         .font(PDFont.headlineSM)
                         .foregroundStyle(Color.pdOnSurface)
 

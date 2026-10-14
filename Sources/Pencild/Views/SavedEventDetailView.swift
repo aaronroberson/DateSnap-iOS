@@ -59,12 +59,13 @@ struct SavedEventDetailView: View {
                 PDTopBar(title: "Event details", showsBack: false) {
                     PDCloseButton(accessibilityLabel: "Close event details")
                 }
+                // Same order as Event Review: details, calendar & reminders, actions, then the source.
                 saveStatus
                 hero
                 destinations
-                source
                 reminders
                 actions
+                source
             }
             .padding(PDSpacing.md)
             .padding(.bottom, PDSpacing.lg)
@@ -166,7 +167,7 @@ struct SavedEventDetailView: View {
 
     private var destinations: some View {
         VStack(alignment: .leading, spacing: PDSpacing.sm) {
-            PDSectionHeader(title: "Saved destinations")
+            PDSectionHeader(title: "Calendar & reminders")
             PDGroupedList {
                 PDListRow(icon: "calendar", title: "Apple Calendar", subtitle: saved?.targetCalendar) {
                     PDStatusBadge(text: hasCalendarRecord ? "Saved" : "Not saved", icon: hasCalendarRecord ? "checkmark.circle" : "minus.circle", tone: hasCalendarRecord ? .success : .neutral)
@@ -185,7 +186,7 @@ struct SavedEventDetailView: View {
 
     private var reminders: some View {
         VStack(alignment: .leading, spacing: PDSpacing.sm) {
-            PDSectionHeader(title: "Configured alerts", trailing: "\(offsets.count) alert\(offsets.count == 1 ? "" : "s")")
+            PDSectionHeader(title: "Alerts", trailing: "\(offsets.count) alert\(offsets.count == 1 ? "" : "s")")
             PDCard {
                 VStack(alignment: .leading, spacing: PDSpacing.md) {
                     if offsets.isEmpty {
