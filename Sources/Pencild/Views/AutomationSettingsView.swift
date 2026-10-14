@@ -16,6 +16,20 @@ struct AutomationSettingsView: View {
 
     private var includedInPlan: Bool { appState.isEntitled(to: .automaticScreenshotDetection) }
 
+    /// Free users see the switch off; turning it on opens the Plus paywall instead.
+    private var autoDetectBinding: Binding<Bool> {
+        Binding(
+            get: { includedInPlan && autoDetectEnabled },
+            set: { isOn in
+                guard includedInPlan else {
+                    if isOn { Task { await appState.present(.plusPaywall) } }
+                    return
+                }
+                autoDetectEnabled = isOn
+            }
+        )
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
@@ -49,7 +63,7 @@ struct AutomationSettingsView: View {
 
                             Spacer()
 
-                            Toggle("Check new screenshots", isOn: $autoDetectEnabled)
+                            Toggle("Check new screenshots", isOn: autoDetectBinding)
                                 .labelsHidden()
                                 .toggleStyle(PDToggleStyle())
                         }
