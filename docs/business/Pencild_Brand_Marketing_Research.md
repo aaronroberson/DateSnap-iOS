@@ -1,5 +1,5 @@
 # Pencild: Brand & Marketing Research Spike
-**Prepared:** October 7, 2026 | **For:** TinyByte Labs / Aaron | **Status:** Pre-launch
+**Prepared:** October 7, 2026 | **For:** LiminalForge, LLC / Aaron | **Status:** Pre-launch (listing decided 2026-10-13; see the Decision Record below)
 
 ---
 
@@ -364,7 +364,7 @@ Based on comparable apps and Adapty benchmarks for productivity utilities, the o
 | **Plus** | $4.99/mo | $29.99/yr (~$2.49/mo) | 7 days | Unlimited photo/screenshot scans; multi-stage reminders; Apple Calendar sync; 90-day history |
 | **Premium** | $7.99/mo | $49.99/yr (~$4.16/mo) | 7 days | All Plus; Files/PDF import; multi-page PDF; batch scanning; unlimited history |
 
-**Current pricing decision (2026-10-10):** Use the more recent [October 2026 Launch Monetization & Packaging Strategy](Pencild-Monetization-Strategy.md) as the single current internal source: Pencil'd Plus $3.99/month or $24.99/year; Pencil'd Premium $6.99/month or $39.99/year; seven-day free trials. The October 7 values above are retained only to preserve the research history. This is a local product decision, not confirmation that App Store Connect is configured to match.
+**Current pricing decision (updated 2026-10-13):** The decision record at the top of the [Launch Monetization & Packaging Strategy](Pencild-Monetization-Strategy.md) is the single current source: Pencil'd Plus $3.99/month, $24.99/year, or $39.99 lifetime; Pencil'd Premium $6.99/month, $39.99/year, or $79.99 lifetime; 1-week free trials on monthly and annual plans; lifetime offered through 2027-04-13; free plan of 10 scans a month and 1 alert per event, with no history limit. The October 7 values above are retained only to preserve the research history. This is a local product decision, not confirmation that App Store Connect is configured to match.
 
 **Rationale:**
 - Historical October 7 reasoning only: its Plus annual price was $29.99 with an effective monthly display of $2.49.
