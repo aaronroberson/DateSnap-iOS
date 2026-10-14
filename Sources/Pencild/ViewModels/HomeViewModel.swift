@@ -60,21 +60,17 @@ public final class HomeViewModel: ObservableObject {
     // MARK: - Permissions & Status Refresh
     public func refreshStatus() {
         self.photoAuthorizationStatus = photoLibraryService.authorizationStatus(for: .readWrite)
-        let calStatus = calendarService.authorizationStatus()
-        if #available(iOS 17.0, *) {
-            self.isCalendarAuthorized = (calStatus == .fullAccess)
-        } else {
-            self.isCalendarAuthorized = (calStatus == .authorized)
-        }
+        // Saving events works with full or add-only access (`PermissionAccess`).
+        self.isCalendarAuthorized = calendarService.authorizationStatus().access.isUsable
         self.currentSubscriptionTier = subscriptionService.currentTier
 
         Task { [weak self] in
             guard let self else { return }
             let notifStatus = await notificationService.authorizationStatus()
-            self.isNotificationsAuthorized = (notifStatus == .authorized || notifStatus == .provisional)
+            self.isNotificationsAuthorized = notifStatus.access.isUsable
         }
 
-        if photoAuthorizationStatus == .authorized || photoAuthorizationStatus == .limited {
+        if photoAuthorizationStatus.access.isUsable {
             _ = loadAutomaticallyDetectedScreenshots()
         }
     }
@@ -83,20 +79,20 @@ public final class HomeViewModel: ObservableObject {
     public func requestPhotoAccess() async {
         let status = await photoLibraryService.requestAuthorization(for: .readWrite)
         self.photoAuthorizationStatus = status
-        if status == .authorized || status == .limited {
+        if status.access.isUsable {
             loadRecentScreenshots()
         }
     }
 
     /// Ensures Photo Library read access, prompting the first time. Returns false when denied or restricted.
     public func ensurePhotoAccess() async -> Bool {
-        switch photoLibraryService.authorizationStatus(for: .readWrite) {
-        case .authorized, .limited:
+        switch photoLibraryService.authorizationStatus(for: .readWrite).access {
+        case .granted, .partial:
             photoAuthorizationStatus = photoLibraryService.authorizationStatus(for: .readWrite)
             return true
-        case .notDetermined:
+        case .notAsked:
             await requestPhotoAccess()
-            return photoAuthorizationStatus == .authorized || photoAuthorizationStatus == .limited
+            return photoAuthorizationStatus.access.isUsable
         default:
             photoAuthorizationStatus = photoLibraryService.authorizationStatus(for: .readWrite)
             return false
@@ -127,7 +123,7 @@ public final class HomeViewModel: ObservableObject {
 
     // MARK: - Load Screenshots
     public func loadRecentScreenshots(limit: Int = 10) {
-        guard photoAuthorizationStatus == .authorized || photoAuthorizationStatus == .limited else {
+        guard photoAuthorizationStatus.access.isUsable else {
             return
         }
 
@@ -171,7 +167,7 @@ public final class HomeViewModel: ObservableObject {
         let candidates = recentScreenshots
             .filter { !scannedIDs.contains($0.localIdentifier) && !assessedIDs.contains($0.localIdentifier) }
             .prefix(PhotoCandidateRanker.assessmentBudget)
-        let granted = IntelligenceUsagePolicy().consume(.likelyEventTriage, count: candidates.count, tier: snapshot.tier)
+        let granted = IntelligenceUsagePolicy().consume(.likelyEventTriage, count: candidates.count, tier: snapshot.effectiveTier)
         let pending = candidates.prefix(granted)
         guard !pending.isEmpty else { return .allowed }
         let photos = photoLibraryService

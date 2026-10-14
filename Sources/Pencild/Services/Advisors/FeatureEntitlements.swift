@@ -63,6 +63,8 @@ public enum EntitlementProvenance: String, Sendable, CaseIterable, Equatable {
     case purchase
     case restore
     case sceneActivation
+    /// Re-requested at a gate because an earlier check never resolved (see `AppState.present`).
+    case gateRetry
 }
 
 // MARK: - Entitlement Snapshot
@@ -75,6 +77,14 @@ public struct EntitlementSnapshot: Sendable, Equatable {
     public var state: EntitlementResolutionState
     public var evaluatedAt: Date
     public var provenance: EntitlementProvenance
+
+    /// The tier every decision uses: the resolved tier once StoreKit has verified it, otherwise
+    /// free. Checking, unverified and unavailable snapshots all count as free (deny by default);
+    /// `EntitlementProviding.resolveBeforeUpsell()` re-requests them before any paywall.
+    public var effectiveTier: SubscriptionTier { state == .verified ? tier : .starter }
+
+    /// StoreKit hasn't returned a verified answer yet.
+    public var isUnresolved: Bool { state != .verified }
 
     public static func == (lhs: EntitlementSnapshot, rhs: EntitlementSnapshot) -> Bool {
         lhs.tier == rhs.tier && lhs.state == rhs.state && lhs.evaluatedAt == rhs.evaluatedAt && lhs.provenance == rhs.provenance
@@ -183,6 +193,28 @@ public protocol EntitlementProviding: Sendable {
     func refreshEntitlements(_ provenance: EntitlementProvenance) async
 }
 
+/// The single place callers ask entitlement questions. Every answer derives from
+/// `entitlementSnapshot` through `FeatureAccessPolicy` / `PlanLimits`, so an unresolved StoreKit
+/// check means "free" everywhere, and only `resolveBeforeUpsell()` retries it.
+public extension EntitlementProviding {
+    var effectiveTier: SubscriptionTier { entitlementSnapshot.effectiveTier }
+
+    func isEntitled(to feature: PremiumFeature) -> Bool {
+        FeatureAccessPolicy.decision(for: feature, snapshot: entitlementSnapshot) == .allowed
+    }
+
+    /// Call before selling anything: if StoreKit never verified the entitlement, ask again so a
+    /// subscriber isn't shown a paywall (or held to free limits) because an earlier check failed.
+    /// Each call retries while unresolved, so the user is never stuck on free for the session.
+    @discardableResult
+    func resolveBeforeUpsell() async -> EntitlementSnapshot {
+        if entitlementSnapshot.isUnresolved {
+            await refreshEntitlements(.gateRetry)
+        }
+        return entitlementSnapshot
+    }
+}
+
 // MARK: - Subscription Product ID
 
 /// A typed, hashable identifier for a StoreKit product. Raw values are the exact product
@@ -221,8 +253,9 @@ public struct SubscriptionProductID: Sendable, Hashable {
     }
 }
 
-/// Free-plan allowances; any paid tier lifts them. While entitlements are still being checked,
-/// paid allowances apply so a subscriber is never blocked by a slow StoreKit read.
+/// Free-plan allowances; a verified paid tier lifts them. Like `FeatureAccessPolicy`, an unresolved
+/// snapshot counts as free; the paywall re-requests it first (`resolveBeforeUpsell()`), so a
+/// subscriber whose check was slow is not left on free.
 public enum PlanLimits {
     /// Scans that find a new event, per calendar month, on the free plan.
     public static let freeScansPerMonth = 10
@@ -230,11 +263,11 @@ public enum PlanLimits {
     public static let paidAlertsPerEvent = 3
 
     public static func limitsScans(_ snapshot: EntitlementSnapshot) -> Bool {
-        snapshot.state != .checking && snapshot.tier == .starter
+        snapshot.effectiveTier == .starter
     }
 
     public static func maxAlertsPerEvent(_ snapshot: EntitlementSnapshot) -> Int {
-        snapshot.state != .checking && snapshot.tier == .starter ? freeAlertsPerEvent : paidAlertsPerEvent
+        snapshot.effectiveTier == .starter ? freeAlertsPerEvent : paidAlertsPerEvent
     }
 
     /// How many selected items exceed the free allowance (0 when the batch can run in full).
@@ -242,6 +275,12 @@ public enum PlanLimits {
     public static func batchExcess(selecting count: Int, snapshot: EntitlementSnapshot, remaining: Int) -> Int {
         guard limitsScans(snapshot) else { return 0 }
         return max(0, count - remaining)
+    }
+
+    /// Whether a plan with this alert limit can buy more alerts (false at the paid maximum, so a
+    /// Plus or Premium member is never offered an upgrade for alerts).
+    public static func canUpgradeAlerts(from maxAlerts: Int) -> Bool {
+        maxAlerts < paidAlertsPerEvent
     }
 
     public static var scanLimitMessage: String {

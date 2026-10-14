@@ -43,15 +43,20 @@ struct PlanLimitsTests {
         #expect(usage.remainingFreeScans(at: date(2026, 11, 1), calendar: testCalendar) == 10)
     }
 
-    @Test("Only the free plan is limited, and never while entitlements are still being checked")
+    @Test("Only a verified paid plan lifts the limits; an unresolved check is the free plan")
     func whoIsLimited() {
+        let unverifiedPremium = EntitlementSnapshot(tier: .premium, state: .unverified, provenance: .storeKit)
+        let unavailable = EntitlementSnapshot(tier: .plus, state: .unavailable, provenance: .storeKit)
         #expect(PlanLimits.limitsScans(.verified(.starter, provenance: .storeKit)))
         #expect(!PlanLimits.limitsScans(.verified(.plus, provenance: .storeKit)))
-        #expect(!PlanLimits.limitsScans(.checking()))
+        #expect(PlanLimits.limitsScans(.checking()))
+        #expect(PlanLimits.limitsScans(unverifiedPremium))
+        #expect(PlanLimits.limitsScans(unavailable))
         #expect(PlanLimits.maxAlertsPerEvent(.verified(.starter, provenance: .storeKit)) == 1)
         #expect(PlanLimits.maxAlertsPerEvent(.verified(.plus, provenance: .storeKit)) == 3)
         #expect(PlanLimits.maxAlertsPerEvent(.verified(.premium, provenance: .storeKit)) == 3)
-        #expect(PlanLimits.maxAlertsPerEvent(.checking()) == 3)
+        #expect(PlanLimits.maxAlertsPerEvent(.checking()) == 1)
+        #expect(PlanLimits.maxAlertsPerEvent(unverifiedPremium) == 1)
     }
 
     private func services(_ snapshot: EntitlementSnapshot, usage: ScanUsageStore) -> ServiceContainer {
@@ -148,7 +153,7 @@ struct PlanLimitsTests {
         #expect(PlanLimits.batchExcess(selecting: 3, snapshot: free, remaining: 3) == 0)
         #expect(PlanLimits.batchExcess(selecting: 4, snapshot: free, remaining: 0) == 4)
         #expect(PlanLimits.batchExcess(selecting: 40, snapshot: .verified(.plus, provenance: .storeKit), remaining: 0) == 0)
-        #expect(PlanLimits.batchExcess(selecting: 40, snapshot: .checking(), remaining: 0) == 0)
+        #expect(PlanLimits.batchExcess(selecting: 40, snapshot: .checking(), remaining: 0) == 40)
     }
 
     @Test("The over-limit prompt states the selection, what's left, and how many to deselect")

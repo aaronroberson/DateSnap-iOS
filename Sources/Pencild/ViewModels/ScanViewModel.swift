@@ -334,13 +334,10 @@ public final class ScanViewModel: ObservableObject {
         }
     }
 
-    /// Allowed while entitlements are still being checked, so a subscriber is never blocked by a
-    /// slow StoreKit read (matching `PlanLimits`).
+    /// Same rule as every other gate (`EntitlementProviding.isEntitled`): an unresolved check is the
+    /// free plan. The paywall that follows re-requests the entitlement before selling anything.
     private func isAllowed(_ feature: PremiumFeature) -> Bool {
-        switch FeatureAccessPolicy.decision(for: feature, snapshot: entitlements.entitlementSnapshot) {
-        case .allowed, .denied(.checkingEntitlements): return true
-        case .denied: return false
-        }
+        entitlements.isEntitled(to: feature)
     }
 
     /// Runs Vision OCR; if the text is hard to read, retries once on a contrast-enhanced grayscale copy

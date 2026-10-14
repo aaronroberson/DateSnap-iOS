@@ -242,7 +242,7 @@ public final class SubscriptionService: ObservableObject, SubscriptionServicePro
 
     private func publish(_ resolution: SubscriptionEntitlementResolution) {
         purchasedProductIDs = resolution.activeProductIDs
-        currentTier = resolution.snapshot.tier
+        currentTier = resolution.snapshot.effectiveTier
         entitlementSnapshot = resolution.snapshot
     }
 
