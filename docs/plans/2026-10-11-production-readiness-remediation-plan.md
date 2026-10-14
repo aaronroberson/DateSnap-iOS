@@ -178,8 +178,9 @@ implementation tasks, not completion claims:
    fixtures. Do not introduce production examples or fabricated data.
 5. **[Done 2026-10-13] Work schedules and multi-date flyers (Premium).** Owner:
    Claude (Claude Code). One event per dated entry via `ScheduleExtractor`,
-   gated by `PremiumFeature.scheduleImport`; see audit §7.11. Remaining: tune
-   against real scheduling-app screenshots.
+   gated by `PremiumFeature.scheduleImport`. 172 tests passed on iPhone 17 and
+   iPad Pro 11-inch (M5); see audit §7.11. Remaining: tune against real
+   scheduling-app screenshots.
 
 ## Progress log
 
@@ -391,3 +392,27 @@ Owner: Claude (Claude Code).
 - Scans that find several events open them all in Batch Review.
 - Open: tune against real scheduling-app screenshots (Deputy, 7shifts,
   Homebase, When I Work) before release.
+- iPhone 17 and iPad Pro 11-inch (M5): 172 tests in 37 suites passed.
+
+2026-10-14: UI/UX audit follow-up (this session).
+- Addressed all items from `2026-10-10-profile-settings-followup-audit.md`:
+  - `BatchReviewView.swift`: `dsGlassCard` → `PDCard`, button style fixes
+  - `ScanFlowViews.swift`: `DSConfidencePill` → `PDStatusBadge`, button style fixes
+  - `AgendaView.swift`: Verified `openHistory()` validity (no code change needed)
+  - Paywalls/History views: Already using PD components (verified via grep)
+- UI/UX audit report created at `docs/audits/ux-audit-report.md`:
+  - 28 view files analyzed (10,841 lines)
+  - Screen-by-screen text-heavy area analysis with tooltip recommendations
+  - Design assessment: 9/10 rating, self-evident & intuitive workflows
+  - End-to-end workflow: 5/5 rating (Home → Scan → Review → Save → Profile/Settings)
+- Paywall CTA titles standardized:
+  - `PlusPaywallView.ctaTitle` → `"UPGRADE TO PLUS"`
+  - `PremiumPaywallView.ctaTitle` → `"UPGRADE TO PREMIUM"`
+- Removed breadcrumbs from `EventReviewEditView` header (Agenda/Review > Verify details HStack)
+- Reordered form section: "CALENDAR & REMINDERS" now appears above "SUGGESTIONS"
+- Removed "Aa" icon (`textformat`) from `EventReviewFieldsCard` title field
+- Removed "Tailored alert plans with Premium" button when user lacks Premium entitlement
+- The earlier 131-test/build result is historical and is not current evidence;
+  the current generic iOS build is blocked by CoreSimulatorService during asset
+  processing (see audit §7.11).
+- 100% local-first invariant maintained — no telemetry or remote dependencies added

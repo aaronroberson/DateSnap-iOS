@@ -373,3 +373,27 @@ Owner: Claude (Claude Code). Status: implemented and tested; Premium.
   "work schedule" keywords (`docs/runbooks/APP-REVIEW-NOTES.md`).
 - Tests: `ScheduleExtractionTests` (8), `ScheduleGatingTests` (5, real Vision
   OCR on a rendered schedule), and 2 routing tests in `AppStateNavigationTests`.
+- Verified 2026-10-13 (commit `9d5f325`): full suite, 172 tests in 37 suites,
+  passed on iPhone 17 and iPad Pro 11-inch (M5) simulators; brand gate and
+  `git diff --check` passed. A later run in another session could not build
+  because CoreSimulatorService was unavailable on that host. That was an
+  environment failure, not a test failure; re-run where the simulator is
+  available.
+- Open: tune the parser against real scheduling-app screenshots.
+
+2026-10-14: UI/UX audit follow-up (this session).
+- All items from `2026-10-10-profile-settings-followup-audit.md` addressed:
+  - `BatchReviewView.swift`: `dsGlassCard` → `PDCard`, button style fixes
+  - `ScanFlowViews.swift`: `DSConfidencePill` → `PDStatusBadge`, button style fixes
+  - `AgendaView.swift`: Verified `openHistory()` validity (no code change needed)
+  - Paywalls/History views: Already using PD components (verified via grep)
+- UI/UX audit report at `docs/audits/ux-audit-report.md` covers 28 view files
+  (10,841 lines) with 9/10 design rating, 5/5 end-to-end workflow rating,
+  and priority-ranked tooltip recommendations.
+- Paywall CTA titles standardized to `"UPGRADE TO PLUS"` / `"UPGRADE TO PREMIUM"`.
+- Removed breadcrumbs from `EventReviewEditView` header; reordered form to
+  place "CALENDAR & REMINDERS" above "SUGGESTIONS"; removed "Aa" icon from
+  title field; removed "Tailored alert plans" button for non-entitled users.
+- The earlier 131-test/build claim is historical and is not current evidence;
+  the current generic iOS build is blocked by CoreSimulatorService during asset
+  processing (see §7.11). No current test pass is claimed.
