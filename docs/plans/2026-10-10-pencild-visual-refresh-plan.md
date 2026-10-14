@@ -1,19 +1,11 @@
-# Pencil’d full visual refresh — implementation plan
+# Pencil'd full visual refresh — implementation plan
 
 Companion to [`2026-10-10-pencild-redesign-plan.md`](2026-10-10-pencild-redesign-plan.md) (spec + traceability matrix). This plan executes its Phase 1–3 reskin.
 
-## Work ownership (concurrent agents, 2026-10-10)
-
-| Owner | Scope |
-|---|---|
-| Freebuff | iPad screens / adaptive layouts |
-| Claude (other session) | Local-first hardening; iCloud sync and social sharing as **opt-in only**; Settings and Profile surfaces |
-| This plan | Everything outside Profile, Settings, and iPad screens |
-
-Consequences for this plan:
-- Phase 3 Settings items (Settings root, Default Calendar, Reminder Presets, Privacy, Help, AutomationSettings, User Profile) are **owned by the other session**. This plan only supplies shared tokens/components they can adopt.
-- Shared files (`Theme/*`, `ContentView.swift`, `Models/AppState.swift`, `project.yml`) already carry uncommitted edits from other agents. Edit them minimally and additively; never revert foreign changes.
-- iPad-specific Stitch screens are out of scope here.
+The full visual-refresh scope now includes Settings/Profile surfaces and
+iPad/adaptive layouts alongside the core flows below. Implementation work has
+landed in the shared checkout; this plan records the integrated state and the
+verification still required.
 
 **Decisions (user, 2026-10-10)**
 - **Scope:** reskin every screen, plus build the Stitch screens that existing services can honestly back.
@@ -112,7 +104,7 @@ Consequences for this plan:
 - **NoDatesFound:** Stitch copy, scan meta, "Quick tips", the three actions, raw OCR drawer.
 - **Saved Event Detail:**
   - "Saved to Apple Calendar" status, date/time/location cards, Directions.
-  - Source artifact image (from `ScannedAsset`), "Why Pencil’d chose this date" (stored interpretation provenance).
+  - Source artifact image (from `ScannedAsset`), "Why Pencil'd chose this date" (stored interpretation provenance).
   - Active reminders; actions Open in Calendar / Edit / Alerts / Share / Archive (existing archive).
 - **Reminder Schedule Editor:** event summary card; preset cards (existing presets); multi-tier alert list, add custom alert. No SMS and no channel picker.
 - **Agenda:** Stitch idiom with grouped day sections and event cards; keep its accessibility IDs.
@@ -144,8 +136,8 @@ Consequences for this plan:
 - **DEBUG views:** `ScreenGallery` / `MarketingKit` / `Diagnostics` get token restyling only.
 
 ## Execution notes
-- Phase 1 runs serially in the main session.
-- Phases 2–3 split across a few subagents working on disjoint view files. Each gets this plan, the token/component API, and its Stitch HTML paths. Shared files (`AppState`, `ContentView`, `PencilComponents`) are only touched by the main session.
+- The Phase 1–3 implementation is integrated in the shared checkout.
+- Keep shared files additive and preserve the behavior and data guarantees recorded below.
 - Commit per feature chunk (Conventional Commits). Run the brand pre-commit hook (`./scripts/install-hooks.sh`).
 
 ## Recorded verification evidence (2026-10-11; historical artifacts)
@@ -179,7 +171,7 @@ because the CLI simulator did not synchronize the local catalog, and populated
 iPad dual-pane Event Review/Saved Event Detail smoke was not exercised with a
 live record. See
 [`2026-10-11-production-readiness-remediation-plan.md`](2026-10-11-production-readiness-remediation-plan.md)
-for the full evidence and ownership notes.
+for the full evidence and integrated-state notes.
 
 ### Active implementation handoff (2026-10-13)
 
@@ -190,12 +182,55 @@ single-event segmentation path. The schedule parser is intentionally not marked
 complete until its tests and a supported build environment pass. The regular
 date-inference path remains the fallback for single flyers and unsupported
 patterns. Codebase-memory MCP was refreshed against the current checkout
-(20,348 nodes / 31,146 edges; status ready) and includes the new extraction call
-path and tests. A current generic iOS build reached Swift compilation setup but
+(20,369 nodes / 31,211 edges; status indexed) and includes the new extraction call path and tests.
+
+Host recheck after disk cleanup (2026-10-14): `/` reports 39 GiB available at
+24% capacity. `simdiskimaged` is registered and running, but the per-user
+`com.apple.CoreSimulator.CoreSimulatorService` launchd job is absent;
+`xcrun simctl list runtimes` still returns connection refused. A macOS reboot
+or administrator-level CoreSimulator service recovery is still required before
+simulator build/test evidence can be collected.
+A current generic iOS build reached Swift compilation setup but
 failed during asset-catalog processing because CoreSimulatorService and
 `simdiskimaged` are unavailable; no current build or test pass is claimed.
 The Recent Screenshots allowance prompt now trims the selected batch when the
 user chooses its deselect action, so the free-plan recovery path is actionable.
+A repeat with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` and
+derived data at `/private/tmp/pencild-current-build-continued` exited 65 at
+`CompileAssetCatalogVariant`; the same CoreSimulatorService/`simdiskimaged`
+failure remains the current build boundary.
+The earlier host diagnosis found the data volume at 97% (about 28 GB free);
+an unprivileged `launchctl kickstart` could not restart the system
+`com.apple.CoreSimulator.simdiskimaged` job. Free disk space and a host restart
+or administrator-level service restart were required before retrying runtime
+verification.
+The current static scan across `Sources/Pencild/Views` finds no `ds*` styling
+aliases or legacy `#0A0E1E`/`#7CFFEA` literals. Plus Jakarta Sans Regular,
+Medium, SemiBold, Bold, and ExtraBold files plus `Resources/Fonts/OFL.txt` are
+bundled and referenced by the generated project.
+An Xcode `swiftc -parse` sweep also passed for all 116 Swift files under
+`Sources/Pencild` and `Tests/PencildTests`; this is syntax evidence only and
+does not replace the blocked build or runtime checks.
+
+### UX review follow-up (2026-10-14)
+
+[`docs/audits/ux-review-report.md`](../audits/ux-review-report.md) is now part
+of this plan's acceptance scope. Its current-source reconciliation confirms
+that free-scan visibility, over-limit deselection, discard confirmation,
+detailed batch failure messages, per-card destination summaries, and
+on-device progress messaging are implemented. Remaining UX work is:
+
+- add an explicit confirmation step before bulk `Save All`;
+- make actionable versus total event counts explicit;
+- provide a consolidated destination summary before insertion;
+- warn before dismissing a review with unsaved edits; and
+- complete runtime VoiceOver checks for status badges and failure states.
+
+The audit's merge-duplicate recommendation remains intentionally deferred;
+the current “Keep separate” behavior preserves user control. Batch Review now
+also confirms Save All with the actionable/total count and destination summary.
+Remaining UX follow-up is runtime VoiceOver verification for status badges and
+failure states; Batch Review now warns before dismissing unsaved work.
 
 ## Verification
 - `xcodegen generate --spec project.yml`, then:
@@ -217,7 +252,7 @@ user chooses its deselect action, so the free-plan recovery path is actionable.
 
 ## Context
 
-At the start of this refresh, only `HomeEmptyStateView` and `PencilSplashView` used the Pencil’d `pd*` tokens (`Theme/PencilTokens.swift`); every other view used the legacy theme. That legacy theme consisted of:
+At the start of this refresh, only `HomeEmptyStateView` and `PencilSplashView` used the Pencil'd `pd*` tokens (`Theme/PencilTokens.swift`); every other view used the legacy theme. That legacy theme consisted of:
 - `Color.ds*` from `Theme/Colors.swift`: cyan `#7CFFEA` on `#050816`
 - `DSTypography` from `Theme/Typography.swift`: SF system font
 - glass card, orb background, cyan buttons and confidence pill from `Theme/GlassModifiers.swift`
@@ -306,15 +341,18 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - Screenshot Triage → `RecentScreenshotsView`: implemented; visual runtime comparison remains pending.
 - No Dates Found → `NoDatesFoundView`: implemented; runtime visual comparison remains pending.
 - Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: implemented with live StoreKit pricing, purchase, and restore paths; runtime visual comparison remains pending. Keep StoreKit prices. Lifetime is offered through 2027-04-13 (audit §7.8).
-- Settings root → `SettingsHubView`: very different (Stitch: Pro card, System Permissions, App Defaults, Privacy, Support & Legal).
-- Default Calendar → `DefaultCalendarSection`: partial; Stitch shows it as a pushed screen.
-- Privacy → `PrivacyCenterView`: partial.
-- Help → `HelpFeedbackView`: partial.
-- Reminder Presets / Notification Preferences → `ReminderSettingsView`: very different.
-- Permission denied (calendar, notifications) → the respective views: partial–close.
+- Settings root → `SettingsHubView`: implemented; runtime visual comparison remains pending.
+- Default Calendar → `DefaultCalendarSection`: implemented as a pushed screen; runtime visual comparison remains pending.
+- Privacy → `PrivacyCenterView`: implemented; runtime visual comparison remains pending.
+- Help → `HelpFeedbackView`: implemented; runtime visual comparison remains pending.
+- Reminder Presets / Notification Preferences → `ReminderSettingsView`: implemented; runtime visual comparison remains pending.
+- Automatic Capture → `AutomationSettingsView`: implemented with entitlement gating; runtime visual comparison remains pending.
+- Permission denied (calendar, notifications) → the respective views: implemented; runtime visual comparison remains pending.
+- User Profile → `UserProfileFlowView`: implemented; runtime visual comparison remains pending.
+- iPad/adaptive Event Review and Saved Detail workspaces: implemented; runtime visual comparison remains pending.
 - Agenda → `AgendaView`: implemented by analogy; runtime visual comparison remains pending.
-- Stitch-only, no backing feature: User Profile and verification flow, Camera viewfinder, Manual crop, Share extension, Conflict resolver, PDF page picker, App Preferences, Smart Suggestions, Source Preferences, Automatic Capture radar, SMS alerts, Family Sharing.
-- Tabs: the app has 5 (Home, Agenda, Review, History, Settings). The newest Stitch Home has 4 (Home, Agenda, Review, Settings).
+- Stitch-only, no backing feature: verification flow, Camera viewfinder, Manual crop, Share extension, Conflict resolver, PDF page picker, App Preferences, Smart Suggestions, Source Preferences, Automatic Capture radar, SMS alerts, Family Sharing.
+- Tabs: the app has 4 (Home, Agenda, Review, Settings). History is pushed from Agenda, matching the current `AppState.openHistory()` route and the newest Stitch Home.
 
 ## Behaviors that must survive (from inventory)
 
