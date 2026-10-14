@@ -290,9 +290,9 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - Edit Event / Event Review & Edit → `EventReviewEditView` + `InterpretationReviewViews`: partial.
 - Reminder Schedule Editor → `ReminderScheduleEditorView`: partial.
 - History & Archive → `HistoryArchiveView`: partial.
-- Automatic Review → `ScanFlowViews.ReviewQueueView`: very different.
-- Batch Scan Queue / Scan Processing Progress → `ScanFlowViews` overlays: very different.
-- Screenshot Triage → `RecentScreenshotsView`: very different.
+- Automatic Review → `ScanFlowViews.ReviewQueueView`: implemented; visual runtime comparison remains pending.
+- Batch Scan Queue / Scan Processing Progress → `ScanFlowViews` overlays: implemented; visual runtime comparison remains pending.
+- Screenshot Triage → `RecentScreenshotsView`: implemented; visual runtime comparison remains pending.
 - No Dates Found → `NoDatesFoundView`: partial–close.
 - Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: partial; keep StoreKit prices, no Lifetime.
 - Settings root → `SettingsHubView`: very different (Stitch: Pro card, System Permissions, App Defaults, Privacy, Support & Legal).
