@@ -218,6 +218,31 @@ public struct SubscriptionProductID: Sendable, Hashable {
     }
 }
 
+/// Free-plan allowances; any paid tier lifts them. While entitlements are still being checked,
+/// paid allowances apply so a subscriber is never blocked by a slow StoreKit read.
+public enum PlanLimits {
+    /// Scans that find a new event, per calendar month, on the free plan.
+    public static let freeScansPerMonth = 10
+    public static let freeAlertsPerEvent = 1
+    public static let paidAlertsPerEvent = 3
+
+    public static func limitsScans(_ snapshot: EntitlementSnapshot) -> Bool {
+        snapshot.state != .checking && snapshot.tier == .starter
+    }
+
+    public static func maxAlertsPerEvent(_ snapshot: EntitlementSnapshot) -> Int {
+        snapshot.state != .checking && snapshot.tier == .starter ? freeAlertsPerEvent : paidAlertsPerEvent
+    }
+
+    public static var scanLimitMessage: String {
+        "You've used this month's \(freeScansPerMonth) free scans. Upgrade to Plus for unlimited scans."
+    }
+
+    public static var alertLimitMessage: String {
+        "The free plan includes \(freeAlertsPerEvent) alert per event. Upgrade to Plus for up to \(paidAlertsPerEvent)."
+    }
+}
+
 /// Lifetime purchases are an introductory promotion, offered for six months from launch. Owners
 /// keep their entitlement after the window closes; only the offer stops being shown.
 public enum LifetimeIntroOffer {

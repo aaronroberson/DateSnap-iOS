@@ -64,7 +64,7 @@ struct PremiumPaywallView: View {
                                 Text("You stay in control")
                                     .font(PDFont.headlineSM)
                                     .foregroundStyle(Color.pdOnSurface)
-                                Text("Review every date before saving to Apple Calendar. Single-image scanning and manual review remain available on the Free plan.")
+                                Text("Review every date before saving to Apple Calendar. The free plan includes \(PlanLimits.freeScansPerMonth) scans a month and \(PlanLimits.freeAlertsPerEvent) alert per event.")
                                     .font(PDFont.bodyMD)
                                     .foregroundStyle(Color.pdOnSurfaceVariant)
                             }

@@ -155,6 +155,12 @@ final class AppState: ObservableObject {
         isBatchScanning = false
 
         let session = BatchReviewSession(scan: scanner, services: services)
+        // Out of free scans before finding anything: offer Plus instead of an empty review.
+        if session.hitScanLimit && session.events.isEmpty {
+            showToast(PlanLimits.scanLimitMessage)
+            await present(.plusPaywall)
+            return
+        }
         await presentBatchReview(session)
     }
 
@@ -235,6 +241,9 @@ final class AppState: ObservableObject {
             await dismissPresentedSheets()
             showToast(count == 1 ? "Already saved — find it in History" : "All \(count) events are already saved")
             openHistory()
+        case .scanLimitReached:
+            showToast(PlanLimits.scanLimitMessage)
+            await present(.plusPaywall)
         case .failed(let message):
             await dismissPresentedSheets()
             showToast(message)

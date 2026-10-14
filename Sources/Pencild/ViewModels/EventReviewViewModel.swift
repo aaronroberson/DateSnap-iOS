@@ -123,6 +123,7 @@ public final class EventReviewViewModel: ObservableObject {
         if let saved = candidate.savedEvent, !saved.alertOffsets.isEmpty {
             self.selectedOffsets = saved.alertOffsets.map { ReminderOffset.forInterval($0) }
         }
+        self.selectedOffsets = Array(selectedOffsets.prefix(maxAlerts))
 
         loadCalendarData()
     }
@@ -202,21 +203,9 @@ public final class EventReviewViewModel: ObservableObject {
         loadCalendarData()
     }
 
-    // MARK: - Alert Offset Management (Max 3)
-    public func addOffset(_ offset: ReminderOffset) {
-        guard selectedOffsets.count < 3 else {
-            errorMessage = "A maximum of 3 reminder alerts can be scheduled per event."
-            return
-        }
-        if !selectedOffsets.contains(where: { $0.timeInterval == offset.timeInterval }) {
-            selectedOffsets.append(offset)
-        }
-    }
-
-    public func removeOffset(at index: Int) {
-        guard index < selectedOffsets.count else { return }
-        selectedOffsets.remove(at: index)
-    }
+    // MARK: - Alert Limit
+    /// Alerts allowed per event on the user's plan: 1 on the free plan, 3 on Plus and Premium.
+    public var maxAlerts: Int { PlanLimits.maxAlertsPerEvent(entitlements.entitlementSnapshot) }
 
     // MARK: - Apply Edits
     private func applyEdits() {
@@ -330,7 +319,7 @@ public final class EventReviewViewModel: ObservableObject {
             return .failure(MutationFailure(message: message))
         }
         applyEdits()
-        let offsets = selectedOffsets
+        let offsets = Array(selectedOffsets.prefix(maxAlerts))
         let alarmIntervals = offsets.map { $0.alarmOffset(forEventStart: candidate.startDate, isAllDay: candidate.isAllDay) }
         let existing = candidate.savedEvent
 

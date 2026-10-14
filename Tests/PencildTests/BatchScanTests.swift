@@ -154,7 +154,8 @@ struct BatchScanTests {
             reminders: reminders,
             notifications: BatchTestNotificationService(),
             subscription: BatchTestSubscriptionService(),
-            understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar)
+            understanding: EventUnderstandingPipeline.rulesOnly(calendar: testCalendar),
+            scanUsage: .forTesting()
         )
     }
 

@@ -94,6 +94,8 @@ final class BatchScanViewModel: ObservableObject {
     @Published private(set) var isProcessing = false
     /// The label of the screenshot currently being scanned ("Screenshot 2 of 5").
     @Published private(set) var currentLabel: String = ""
+    /// True when the free plan's monthly scans ran out partway through this batch.
+    @Published private(set) var hitScanLimit = false
 
     private let services: ServiceContainer
 
@@ -118,6 +120,7 @@ final class BatchScanViewModel: ObservableObject {
         guard !sources.isEmpty, !isProcessing else { return }
         isProcessing = true
         items = sources.enumerated().map { BatchScanItem(label: Self.label(forIndex: $0.offset + 1)) }
+        hitScanLimit = false
         defer {
             isProcessing = false
             currentLabel = ""
@@ -197,6 +200,9 @@ final class BatchScanViewModel: ObservableObject {
             item.complete(candidates: [])
         case .alreadySaved(let count):
             item.markAlreadySaved(count)
+        case .scanLimitReached:
+            hitScanLimit = true
+            item.fail(PlanLimits.scanLimitMessage)
         case .failed(let message):
             item.fail(message)
         case .idle, .fetchingImage, .processingOCR, .extractingEvents, .interpreting:
@@ -267,11 +273,14 @@ final class BatchReviewSession: ObservableObject, Identifiable {
     @Published private(set) var skipped: [BatchScanItem] = []
     @Published private(set) var isSaving = false
     @Published private(set) var lastSummary: BatchSaveSummary? = nil
+    /// Some screenshots weren't scanned because the free plan's monthly scans ran out.
+    private(set) var hitScanLimit = false
 
     var actionableCount: Int { events.filter(\.isActionable).count }
 
     /// Builds the review session from a finished batch scan (production path).
     init(scan: BatchScanViewModel, services: ServiceContainer) {
+        hitScanLimit = scan.hitScanLimit
         for item in scan.items {
             guard item.isSuccess else {
                 skipped.append(item)

@@ -121,7 +121,7 @@ extension EventReviewViewModel {
     }
 
     public func applyReminderPlan() {
-        selectedOffsets = reminderPlan.offsets
+        selectedOffsets = Array(reminderPlan.offsets.prefix(maxAlerts))
     }
 
     /// When the accepted deadline reminder will fire.

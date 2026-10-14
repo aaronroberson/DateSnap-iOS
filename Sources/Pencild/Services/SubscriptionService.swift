@@ -6,7 +6,7 @@ import StoreKit
 public enum SubscriptionTier: String, CaseIterable, Identifiable, Sendable {
     case starter = "Starter" // Free: manual review, single scans
     case plus = "Plus"       // Screenshot & photo auto-detection
-    case premium = "Premium" // Full automation, files/PDF import, unlimited history
+    case premium = "Premium" // Everything in Plus, PDF & Files import, duplicates, tailored alert plans
 
     public var id: String { rawValue }
 

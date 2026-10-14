@@ -24,6 +24,7 @@ struct BatchReviewView: View {
     /// A possible-duplicate saved event opened from a card. Shown from this sheet because the
     /// root can present only one sheet and leaving would discard the batch's unsaved edits.
     @State private var openedDuplicate: PencildEvent? = nil
+    @State private var showPlusPaywall = false
 
     init(session: BatchReviewSession) {
         _session = StateObject(wrappedValue: session)
@@ -64,6 +65,9 @@ struct BatchReviewView: View {
             }
             .sheet(item: $openedDuplicate) { event in
                 SavedEventDetailView(event: event)
+            }
+            .sheet(isPresented: $showPlusPaywall) {
+                PlusPaywallView()
             }
             .sheet(isPresented: $showNotificationRecovery, onDismiss: {
                 if pendingFailureAlert {
@@ -179,6 +183,24 @@ struct BatchReviewView: View {
         if !session.skipped.isEmpty {
             VStack(alignment: .leading, spacing: PDSpacing.sm) {
                 PDSectionHeader(title: "Skipped screenshots", trailing: "\(session.skipped.count)")
+                if session.hitScanLimit {
+                    Button { showPlusPaywall = true } label: {
+                        HStack(spacing: PDSpacing.sm) {
+                            Image(systemName: "sparkle").foregroundStyle(Color.pdPrimary)
+                            Text(PlanLimits.scanLimitMessage)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurface)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right").foregroundStyle(Color.pdOnSurfaceVariant)
+                        }
+                        .padding(PDSpacing.md)
+                        .frame(minHeight: 44)
+                        .background(Color.pdSurfaceContainer.opacity(0.85), in: RoundedRectangle(cornerRadius: PDRadius.card))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Opens upgrade options")
+                }
                 PDGroupedList {
                     ForEach(Array(session.skipped.enumerated()), id: \.element.id) { index, item in
                         if index > 0 { PDRowDivider() }

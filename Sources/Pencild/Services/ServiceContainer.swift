@@ -12,6 +12,8 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
     public let subscription: SubscriptionServiceProtocol
     /// OCR → deterministic extraction → optional on-device interpretation → validated review bundle.
     public let understanding: EventUnderstandingProviding
+    /// Monthly count of scans that found a new event, for the free plan's allowance.
+    public let scanUsage: ScanUsageStore
 
     public init(
         photoLibrary: PhotoLibraryServiceProtocol,
@@ -21,7 +23,8 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
         reminders: ReminderServiceProtocol,
         notifications: NotificationServiceProtocol,
         subscription: SubscriptionServiceProtocol,
-        understanding: EventUnderstandingProviding = EventUnderstandingPipeline.rulesOnly()
+        understanding: EventUnderstandingProviding = EventUnderstandingPipeline.rulesOnly(),
+        scanUsage: ScanUsageStore
     ) {
         self.photoLibrary = photoLibrary
         self.ocr = ocr
@@ -31,6 +34,7 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
         self.notifications = notifications
         self.subscription = subscription
         self.understanding = understanding
+        self.scanUsage = scanUsage
     }
 
     // MARK: - Live Production Container
@@ -52,7 +56,8 @@ public final class ServiceContainer: ObservableObject, @unchecked Sendable {
             reminders: reminderService,
             notifications: notificationService,
             subscription: subscriptionService,
-            understanding: IntelligenceComposition.liveUnderstanding()
+            understanding: IntelligenceComposition.liveUnderstanding(),
+            scanUsage: .shared
         )
     }
 

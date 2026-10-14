@@ -91,7 +91,8 @@ struct TabletWorkspaceTests {
             reminders: TabletTestReminderService(),
             notifications: TabletTestNotificationService(),
             subscription: TabletTestSubscriptionService(),
-            understanding: EventUnderstandingPipeline.rulesOnly(calendar: .current)
+            understanding: EventUnderstandingPipeline.rulesOnly(calendar: .current),
+            scanUsage: .forTesting()
         )
     }
 

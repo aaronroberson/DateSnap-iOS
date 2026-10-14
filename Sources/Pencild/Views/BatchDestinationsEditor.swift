@@ -87,7 +87,8 @@ struct BatchDestinationsEditor: View {
                 title: viewModel.title,
                 eventStart: viewModel.startDate,
                 isAllDay: viewModel.isAllDay,
-                initialOffsets: viewModel.selectedOffsets
+                initialOffsets: viewModel.selectedOffsets,
+                maxAlerts: viewModel.maxAlerts
             ) { offsets in
                 viewModel.selectedOffsets = offsets
                 return .success

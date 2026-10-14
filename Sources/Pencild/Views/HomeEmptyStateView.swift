@@ -130,6 +130,7 @@ struct HomeEmptyStateView: View {
             VStack(alignment: .leading, spacing: 18) {
                 topBar
                 titleBlock
+                scanAllowanceBanner
                 recentScreenshotsCard
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], alignment: .leading, spacing: 16) {
                     photoLibraryCard
@@ -149,6 +150,7 @@ struct HomeEmptyStateView: View {
             VStack(alignment: .leading, spacing: 16) {
                 topBar
                 titleBlock
+                scanAllowanceBanner
                 recentScreenshotsCard
                 photoLibraryCard
                 fileImportCard
@@ -313,6 +315,33 @@ struct HomeEmptyStateView: View {
             .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
             .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
         )
+    }
+
+    /// Free plan only: how many of this month's scans remain, with a path to Plus.
+    @ViewBuilder
+    private var scanAllowanceBanner: some View {
+        if PlanLimits.limitsScans(services.subscription.entitlementSnapshot) {
+            let remaining = services.scanUsage.remainingFreeScans()
+            HStack(spacing: PDSpacing.sm) {
+                Image(systemName: remaining == 0 ? "exclamationmark.circle.fill" : "sparkle")
+                    .foregroundStyle(remaining == 0 ? Color.pdWarning : Color.pdPrimary)
+                    .accessibilityHidden(true)
+                Text(remaining == 0
+                     ? "No free scans left this month"
+                     : "\(remaining) of \(PlanLimits.freeScansPerMonth) free scans left this month")
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
+                Spacer(minLength: PDSpacing.sm)
+                Button("Upgrade") { Task { await appState.present(.plusPaywall) } }
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdPrimary)
+                    .frame(minHeight: 44)
+            }
+            .padding(.horizontal, PDSpacing.md)
+            .padding(.vertical, PDSpacing.xs)
+            .background(Color.pdSurfaceContainer.opacity(0.85), in: RoundedRectangle(cornerRadius: PDRadius.card))
+            .accessibilityElement(children: .combine)
+        }
     }
 
     private var photoLibraryCard: some View {

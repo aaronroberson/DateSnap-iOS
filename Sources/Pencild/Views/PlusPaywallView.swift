@@ -38,6 +38,16 @@ struct PlusPaywallView: View {
                                 title: "Find likely event screenshots",
                                 subtitle: PremiumFeature.likelyEventTriage.upgradeReason
                             )
+                            featureRow(
+                                icon: "infinity", iconColor: .pdPrimary,
+                                title: "Unlimited scans",
+                                subtitle: "The free plan includes \(PlanLimits.freeScansPerMonth) scans a month."
+                            )
+                            featureRow(
+                                icon: "bell.badge", iconColor: .pdPrimary,
+                                title: "Up to \(PlanLimits.paidAlertsPerEvent) alerts per event",
+                                subtitle: "The free plan includes \(PlanLimits.freeAlertsPerEvent) alert per event."
+                            )
                         }
                     }
                     .padding(.horizontal)
@@ -49,7 +59,7 @@ struct PlusPaywallView: View {
                                 Text("You stay in control")
                                     .font(PDFont.headlineSM)
                                     .foregroundStyle(Color.pdOnSurface)
-                                Text("Review every date before saving to Apple Calendar. Single-image scanning and manual review remain available on the Free plan.")
+                                Text("Review every date before saving to Apple Calendar. The free plan includes \(PlanLimits.freeScansPerMonth) scans a month and \(PlanLimits.freeAlertsPerEvent) alert per event.")
                                     .font(PDFont.bodyMD)
                                     .foregroundStyle(Color.pdOnSurfaceVariant)
                             }

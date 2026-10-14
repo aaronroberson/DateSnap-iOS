@@ -24,11 +24,13 @@ public final class ScanViewModel: ObservableObject {
         case noDatesFound(rawText: String)
         /// Every detected event is already saved in History.
         case alreadySaved(count: Int)
+        /// The free plan's monthly scan allowance is used up; nothing was scanned.
+        case scanLimitReached
         case failed(String)
 
         public static func == (lhs: ScanStage, rhs: ScanStage) -> Bool {
             switch (lhs, rhs) {
-            case (.idle, .idle), (.fetchingImage, .fetchingImage), (.processingOCR, .processingOCR), (.extractingEvents, .extractingEvents), (.interpreting, .interpreting):
+            case (.idle, .idle), (.fetchingImage, .fetchingImage), (.processingOCR, .processingOCR), (.extractingEvents, .extractingEvents), (.interpreting, .interpreting), (.scanLimitReached, .scanLimitReached):
                 return true
             case (.complete(let a), .complete(let b)):
                 return a.map(\.id) == b.map(\.id)
@@ -60,11 +62,14 @@ public final class ScanViewModel: ObservableObject {
     /// The in-flight on-device interpretation, cancellable from the progress overlay.
     private var interpretationTask: Task<EventUnderstandingResult, Never>? = nil
 
+    private let scanUsage: ScanUsageStore
+
     public init(services: ServiceContainer) {
         self.photoLibraryService = services.photoLibrary
         self.ocrService = services.ocr
         self.understanding = services.understanding
         self.entitlements = services.subscription
+        self.scanUsage = services.scanUsage
     }
 
     // MARK: - Scan PHAsset Pipeline
@@ -157,6 +162,11 @@ public final class ScanViewModel: ObservableObject {
 
     // MARK: - Shared OCR → Extraction → Dedupe Pipeline
     private func scanPages(_ pages: [UIImage], assetIdentifier: String, modelContext: ModelContext?) async {
+        if PlanLimits.limitsScans(entitlements.entitlementSnapshot), scanUsage.remainingFreeScans() == 0 {
+            stage = .scanLimitReached
+            isProcessing = false
+            return
+        }
         isCancelling = false
         isProcessing = true
         currentProcessingImage = pages.first
@@ -293,8 +303,11 @@ public final class ScanViewModel: ObservableObject {
                 }
             }
             validCandidates += newCandidates
+            // Only a scan that finds a new event counts toward the free allowance.
+            if !newCandidates.isEmpty { scanUsage.recordScan() }
         } else {
             validCandidates = rawCandidates
+            if !rawCandidates.isEmpty { scanUsage.recordScan() }
         }
 
         self.extractedCandidates = validCandidates

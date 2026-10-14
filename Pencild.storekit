@@ -118,7 +118,7 @@
           },
           "localizations" : [
             {
-              "description" : "Monthly auto-detection from camera roll and screenshots.",
+              "description" : "Auto-find event screenshots on Home",
               "displayName" : "Pencil'd Plus Monthly",
               "locale" : "en_US"
             }
@@ -148,7 +148,7 @@
           },
           "localizations" : [
             {
-              "description" : "Annual auto-detection from camera roll and screenshots.",
+              "description" : "Auto-find event screenshots on Home",
               "displayName" : "Pencil'd Plus Annual",
               "locale" : "en_US"
             }
@@ -178,7 +178,7 @@
           },
           "localizations" : [
             {
-              "description" : "Full automation, file/PDF import, and unlimited event history.",
+              "description" : "PDF import, duplicates, deadline alerts",
               "displayName" : "Pencil'd Premium Monthly",
               "locale" : "en_US"
             }
@@ -208,7 +208,7 @@
           },
           "localizations" : [
             {
-              "description" : "Full automation, file/PDF import, and unlimited event history.",
+              "description" : "PDF import, duplicates, deadline alerts",
               "displayName" : "Pencil'd Premium Annual",
               "locale" : "en_US"
             }
