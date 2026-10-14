@@ -35,8 +35,8 @@ struct PencildSmokeTests {
 
     @Test("PencildLinks URLs are valid")
     func testPencildLinks() {
-        #expect(PencildLinks.support.absoluteString == "https://pencild.app/support")
-        #expect(PencildLinks.privacyPolicy.absoluteString == "https://pencild.app/privacy")
+        #expect(PencildLinks.support.absoluteString == "https://getpencild.com/support")
+        #expect(PencildLinks.privacyPolicy.absoluteString == "https://getpencild.com/privacy")
         #expect(PencildLinks.termsOfUse.absoluteString == "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
         #expect(PencildLinks.support == PencildLinks.support)
     }

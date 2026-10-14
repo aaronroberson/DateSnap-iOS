@@ -117,14 +117,14 @@ final class PurchaseViewModel: ObservableObject {
 // MARK: - Legal Links
 enum PencildLinks {
     static let privacyPolicy: URL = {
-        guard let url = URL(string: "https://pencild.app/privacy") else {
+        guard let url = URL(string: "https://getpencild.com/privacy") else {
             preconditionFailure("Invalid Privacy Policy URL")
         }
         return url
     }()
 
     static let support: URL = {
-        guard let url = URL(string: "https://pencild.app/support") else {
+        guard let url = URL(string: "https://getpencild.com/support") else {
             preconditionFailure("Invalid Support URL")
         }
         return url

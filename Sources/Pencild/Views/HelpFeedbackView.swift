@@ -292,7 +292,7 @@ struct HelpFeedbackView: View {
 
             PDGroupedList {
                 Button {
-                    if let url = URL(string: "mailto:support@pencild.app?subject=Pencil'd%20Support%20Request") {
+                    if let url = URL(string: "mailto:support@getpencild.com?subject=Pencil'd%20Support%20Request") {
                         UIApplication.shared.open(url)
                     }
                 } label: {
@@ -300,7 +300,7 @@ struct HelpFeedbackView: View {
                         icon: "envelope.fill",
                         tint: .pdPrimary,
                         title: "Send Message to Support",
-                        subtitle: "Email support@pencild.app"
+                        subtitle: "Email support@getpencild.com"
                     ) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold))
@@ -314,7 +314,7 @@ struct HelpFeedbackView: View {
                 Button {
                     topicGuide = SupportTopic(id: "bugReport", icon: "ant.fill", title: "Submit a Bug Report",
                                               subtitle: "Attach sanitized diagnostic capture logs",
-                                              body: "Email support@pencild.app with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
+                                              body: "Email support@getpencild.com with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
                 } label: {
                     PDListRow(
                         icon: "ant.fill",
@@ -334,7 +334,7 @@ struct HelpFeedbackView: View {
                 Button {
                     topicGuide = SupportTopic(id: "featureRequest", icon: "lightbulb.fill", title: "Request a Feature",
                                               subtitle: "Help shape our next scheduled release",
-                                              body: "Feature requests go straight to the engineering backlog. Send your idea to support@pencild.app with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
+                                              body: "Feature requests go straight to the engineering backlog. Send your idea to support@getpencild.com with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
                 } label: {
                     PDListRow(
                         icon: "lightbulb.fill",
