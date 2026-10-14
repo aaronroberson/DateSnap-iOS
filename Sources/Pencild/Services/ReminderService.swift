@@ -138,13 +138,7 @@ public final class ReminderService: ReminderServiceProtocol, @unchecked Sendable
         }
 
         let status = authorizationStatus()
-        let isAuthorized: Bool
-        if #available(iOS 17.0, *) {
-            isAuthorized = (status == .fullAccess)
-        } else {
-            isAuthorized = (status == .authorized)
-        }
-        if !isAuthorized {
+        if !status.access.isUsable {
             let granted = try await requestReminderAccess()
             guard granted else {
                 throw PencildError.reminders(.accessDenied)

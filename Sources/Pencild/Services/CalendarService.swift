@@ -106,13 +106,8 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
         alarms: [TimeInterval] = [-86400, -7200]
     ) async throws -> String {
         let status = authorizationStatus()
-        let isAuthorized: Bool
-        if #available(iOS 17.0, *) {
-            isAuthorized = (status == .fullAccess)
-        } else {
-            isAuthorized = (status == .authorized)
-        }
-        if !isAuthorized {
+        // Add-only access can save events (`PermissionAccess.partial`); only ask when unusable.
+        if !status.access.isUsable {
             let granted = try await requestEventAccess()
             guard granted else {
                 throw PencildError.calendar(.accessDenied)

@@ -104,7 +104,7 @@ public final class NotificationService: NSObject, NotificationServiceProtocol, U
         actionURL: String? = nil
     ) async throws -> [String] {
         let status = await authorizationStatus()
-        if status != .authorized && status != .provisional {
+        if !status.access.isUsable {
             let granted = try await requestAuthorization()
             guard granted else {
                 throw PencildError.notifications(.accessDenied)

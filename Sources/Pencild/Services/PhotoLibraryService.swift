@@ -43,7 +43,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
     // MARK: - Fetch Recent Screenshots
     public func fetchRecentScreenshots(limit: Int = 20) async throws -> [PHAsset] {
         let currentStatus = authorizationStatus(for: .readWrite)
-        guard currentStatus == .authorized || currentStatus == .limited else {
+        guard currentStatus.access.isUsable else {
             throw PencildError.photoLibrary(.accessDenied)
         }
 
