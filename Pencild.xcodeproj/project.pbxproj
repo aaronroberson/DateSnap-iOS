@@ -28,7 +28,6 @@
 		1C7AA698AC63B2E46C765A2B /* ScanFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7E916DB82363595107B192 /* ScanFlowViews.swift */; };
 		1D0B49C6F25886A02A581A7B /* BatchAllowancePrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336456EBDA1C45D042E45EF4 /* BatchAllowancePrompt.swift */; };
 		208DC5EB4AAF14063B45240D /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BFCA41890EB292C786BCC21 /* OCRService.swift */; };
-		26D414B490132B580FA03C28 /* Pencild.icon in Resources */ = {isa = PBXBuildFile; fileRef = B917CD2393B33C973D723130 /* Pencild.icon */; };
 		294E5B06D645269456BA4455 /* SharedRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A967F592C099D5717DBC028 /* SharedRulesTests.swift */; };
 		295E3410707C6658DF39E50F /* AppStateToastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3566FF6E109E84BBE7C2F418 /* AppStateToastTests.swift */; };
 		2D4818E288303129C2B94F53 /* SubscriptionEntitlementResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24017AE659CF18A0E620D2A2 /* SubscriptionEntitlementResolver.swift */; };
@@ -48,6 +47,8 @@
 		47E4D8BF2D8DBF5EFDD76445 /* PlusJakartaSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0906B1F32CB0F552A14CDB93 /* PlusJakartaSans-Regular.ttf */; };
 		49DA78CE0478255A6B3C2140 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEF1907FEC910EDB41E467C /* PaywallView.swift */; };
 		4C0E8BD0A3C7FC12AE47BD71 /* EventUnderstandingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A875E83E7597E9C1BCAB6C /* EventUnderstandingModels.swift */; };
+		4D09D42DD404B2408231B5E4 /* AppleAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1C2818E1C0026E7B93DFA8 /* AppleAccountTests.swift */; };
+		4DE4E5A5468259A7F338868A /* AppleAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCFC7A9D6F30F2E5935BCC2 /* AppleAccount.swift */; };
 		524D837291C97CA041110FBF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D50D2A3D89AD4B726CC4A4E /* ContentView.swift */; };
 		5525DFD4873FAE5E62D8635F /* EventModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFE26C5E268E8D088E1CD07 /* EventModels.swift */; };
 		559F5E606918F57B15CF011B /* BatchDestinationsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF7C8FC0FE13209CDF279AA /* BatchDestinationsEditor.swift */; };
@@ -169,6 +170,7 @@
 		259585107E7798E0DE84ADB3 /* ExtractionEvaluationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractionEvaluationTests.swift; sourceTree = "<group>"; };
 		2688312181E3B1C33519C1AF /* IntelligenceCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceCapabilities.swift; sourceTree = "<group>"; };
 		29BD7CA154F2FB7AB6902BAB /* MutationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutationResult.swift; sourceTree = "<group>"; };
+		2BCFC7A9D6F30F2E5935BCC2 /* AppleAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleAccount.swift; sourceTree = "<group>"; };
 		2C8DCE7B3178535421F97496 /* IntelligenceUsagePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceUsagePolicy.swift; sourceTree = "<group>"; };
 		2CD23486207B3B11B8C53060 /* SampleFlyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleFlyer.swift; sourceTree = "<group>"; };
 		2E47E0FFFA041407CF61B155 /* ScanImageEnhancer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanImageEnhancer.swift; sourceTree = "<group>"; };
@@ -251,7 +253,6 @@
 		B5A22311FC54DFC2AEF98273 /* AppleIntelligenceLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceLiveTests.swift; sourceTree = "<group>"; };
 		B678C391C0039971EEC763C1 /* ManagePlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagePlanView.swift; sourceTree = "<group>"; };
 		B86D6CBB6FEA95850DCB56EE /* PhotoCandidateRanker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCandidateRanker.swift; sourceTree = "<group>"; };
-		B917CD2393B33C973D723130 /* Pencild.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = Pencild.icon; sourceTree = "<group>"; };
 		B94DFE55456408A8679E0CC6 /* HelpFeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpFeedbackView.swift; sourceTree = "<group>"; };
 		BC8926A0631C0A2903EB8165 /* DefaultCalendarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCalendarTests.swift; sourceTree = "<group>"; };
 		BDCE6A8CF00E2DC2CAA68FD0 /* StoreKitRestoreIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitRestoreIntegrationTests.swift; sourceTree = "<group>"; };
@@ -270,6 +271,7 @@
 		D6FC1FC6F45CF4A131A57F4C /* PencilSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilSplashView.swift; sourceTree = "<group>"; };
 		D7DCD0443D487343C17A5B6D /* EvidenceValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceValidationTests.swift; sourceTree = "<group>"; };
 		DA774ACAD6A8FE42ED25B028 /* ReminderDefaultsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderDefaultsStore.swift; sourceTree = "<group>"; };
+		DC1C2818E1C0026E7B93DFA8 /* AppleAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleAccountTests.swift; sourceTree = "<group>"; };
 		DD413ED6E52FCBC1508294CE /* SavedEventActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedEventActions.swift; sourceTree = "<group>"; };
 		DDD20E01E31725A3C1C06617 /* ScheduleExtractionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleExtractionTests.swift; sourceTree = "<group>"; };
 		DEE942F563C85F010026D90B /* PencildError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencildError.swift; sourceTree = "<group>"; };
@@ -356,6 +358,7 @@
 		2403CD77181F4FD64D22B6BC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2BCFC7A9D6F30F2E5935BCC2 /* AppleAccount.swift */,
 				2384633515D0D150329210B9 /* CalendarService.swift */,
 				5C40F2FD6925B1B1DF909476 /* EventExtractionService.swift */,
 				29BD7CA154F2FB7AB6902BAB /* MutationResult.swift */,
@@ -479,6 +482,7 @@
 			isa = PBXGroup;
 			children = (
 				0911D523FB0E047E4531F065 /* AdvisorTests.swift */,
+				DC1C2818E1C0026E7B93DFA8 /* AppleAccountTests.swift */,
 				B5A22311FC54DFC2AEF98273 /* AppleIntelligenceLiveTests.swift */,
 				CEF77E02F1FF3A14BAFA47FA /* AppStateImageStateTests.swift */,
 				07902642A2FE9DCF839079C6 /* AppStateNavigationTests.swift */,
@@ -528,7 +532,6 @@
 			isa = PBXGroup;
 			children = (
 				97CB2BACBE2A5163DB93305F /* Assets.xcassets */,
-				B917CD2393B33C973D723130 /* Pencild.icon */,
 				1AD8AF758C6012D0F221B6DD /* PrivacyInfo.xcprivacy */,
 				F040FC03D5FC4492CE426D2C /* Config */,
 				1D52B7C00CA1100FD7B19A4A /* Resources */,
@@ -639,7 +642,6 @@
 			files = (
 				02AEC0CC528534824E3953F5 /* Assets.xcassets in Resources */,
 				EB2BAC77D8E26FD181695ECA /* OFL.txt in Resources */,
-				26D414B490132B580FA03C28 /* Pencild.icon in Resources */,
 				46E9FED2EAE95E6A359330DA /* PlusJakartaSans-Bold.ttf in Resources */,
 				0C6E414F0E712AEF46EC0BB3 /* PlusJakartaSans-ExtraBold.ttf in Resources */,
 				BCF8AE5B260176D4E8EDD86E /* PlusJakartaSans-Medium.ttf in Resources */,
@@ -658,6 +660,7 @@
 			files = (
 				7A05C1B1A8E4F7C65EBB48A4 /* AgendaView.swift in Sources */,
 				0EE33558BF012640E2B7835A /* AppState.swift in Sources */,
+				4DE4E5A5468259A7F338868A /* AppleAccount.swift in Sources */,
 				4771CCAC645C68BE66FE3C79 /* AppleFoundationModelInterpreter.swift in Sources */,
 				EBA37C4B750AECDA4AA9B7AE /* AutomationSettingsView.swift in Sources */,
 				1D0B49C6F25886A02A581A7B /* BatchAllowancePrompt.swift in Sources */,
@@ -756,6 +759,7 @@
 				1315FB5436EF32CE62F8F64E /* AppStateImageStateTests.swift in Sources */,
 				08834263B88E79F5EFD5AD92 /* AppStateNavigationTests.swift in Sources */,
 				295E3410707C6658DF39E50F /* AppStateToastTests.swift in Sources */,
+				4D09D42DD404B2408231B5E4 /* AppleAccountTests.swift in Sources */,
 				E4B0AC3CD16CCC20F5D7AD77 /* AppleIntelligenceLiveTests.swift in Sources */,
 				7C14D465C7871D7B7278B49C /* BatchScanTests.swift in Sources */,
 				8B7AF2BE12A188F375761312 /* CalendarServiceTests.swift in Sources */,
@@ -842,7 +846,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 81599BD0CFEA7EF0B9D97165 /* Pencild-Release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = Pencild;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Pencild.entitlements;
@@ -931,7 +935,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BEB3D98D52AB4EF8BF195F56 /* Pencild-Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = Pencild;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Pencild.entitlements;

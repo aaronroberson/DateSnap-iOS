@@ -12,10 +12,10 @@ struct UserProfileFlowView: View {
     @EnvironmentObject private var settings: SettingsState
     @Query(sort: \SavedEvent.createdAt, order: .reverse) private var savedEvents: [SavedEvent]
 
-    @AppStorage("account.appleUserID") private var appleUserID = ""
-    @AppStorage("account.displayName") private var displayName = ""
-    @AppStorage("account.email") private var email = ""
-    @AppStorage("account.linkedAt") private var linkedAt: Double = 0
+    @AppStorage(AppleAccount.userIDKey) private var appleUserID = ""
+    @AppStorage(AppleAccount.displayNameKey) private var displayName = ""
+    @AppStorage(AppleAccount.emailKey) private var email = ""
+    @AppStorage(AppleAccount.linkedAtKey) private var linkedAt: Double = 0
     @AppStorage(AutoDetectPreference.key) private var autoCaptureEnabled = true
 
     private enum EditField: String, Identifiable {
@@ -105,38 +105,16 @@ struct UserProfileFlowView: View {
     }
 
     private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) {
-        switch result {
-        case .success(let authorization):
-            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
-            appleUserID = credential.user
-            linkedAt = Date().timeIntervalSince1970
-            if let components = credential.fullName {
-                let formatted = PersonNameComponentsFormatter().string(from: components)
-                if !formatted.isEmpty { displayName = formatted }
-            }
-            // Apple only returns name/email on the first authorization.
-            if let appleEmail = credential.email, !appleEmail.isEmpty {
-                email = appleEmail
-            }
-        case .failure(let error):
-            if (error as? ASAuthorizationError)?.code != .canceled {
-                appState.showToast("Sign in with Apple didn’t complete")
-            }
-        }
+        if let message = AppleAccount.handle(result) { appState.showToast(message) }
     }
 
     private func signOut() {
-        appleUserID = ""
-        displayName = ""
-        email = ""
-        linkedAt = 0
+        AppleAccount.signOut()
     }
 
     /// If the person revoked Pencil’d in Apple ID settings, drop the stale link.
     private func validateAppleCredential() async {
-        guard !appleUserID.isEmpty else { return }
-        let state = try? await ASAuthorizationAppleIDProvider().credentialState(forUserID: appleUserID)
-        if state == .revoked || state == .notFound { signOut() }
+        await AppleAccount.validate()
     }
 
     private var initials: String {
@@ -240,6 +218,7 @@ struct UserProfileFlowView: View {
                         .font(PDFont.bodySM)
                         .foregroundStyle(Color.pdOnSurfaceVariant)
                 } else {
+                    if AppleAccount.isSignInAvailable {
                     SignInWithAppleButton(.continue) { request in
                         request.requestedScopes = [.fullName, .email]
                     } onCompletion: { result in
@@ -250,6 +229,11 @@ struct UserProfileFlowView: View {
                     Text("Optional. Pencil’d works without an account; signing in shows your Apple ID name and email here.")
                         .font(PDFont.bodySM)
                         .foregroundStyle(Color.pdOnSurfaceVariant)
+                    } else {
+                    Text("Apple sign-in will be available after the organization account is configured.")
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
                 }
             }
         }
