@@ -139,7 +139,7 @@ Consequences for this plan:
 - **AutomationSettings:** restyle as a Stitch toggle card.
 - **Paywalls and Manage Plan:** Stitch layout and feature cards using real entitlements and StoreKit prices, no Lifetime. Manage Plan adds a stats card only from real counts (saved events, scans).
 - **Permission-denied screens:** Stitch layouts.
-  - Wire the orphaned `notificationPermissionDenied` sheet where reminders are muted on save; it currently shows only a toast.
+  - The `notificationPermissionDenied` recovery sheet is wired for single-event and batch saves when local alerts are denied. It explains the fallback and opens iOS Settings while preserving Calendar, Reminders, and scan/review behavior.
   - Keep the existing fallbacks.
 - **DEBUG views:** `ScreenGallery` / `MarketingKit` / `Diagnostics` get token restyling only.
 
@@ -174,6 +174,17 @@ iPad dual-pane Event Review/Saved Event Detail smoke was not exercised with a
 live record. See
 [`2026-10-11-production-readiness-remediation-plan.md`](2026-10-11-production-readiness-remediation-plan.md)
 for the full evidence and ownership notes.
+
+### Active implementation handoff (2026-10-13)
+
+Schedule extraction is in progress in the shared extraction path. The current
+working tree adds `ScheduleExtractor.swift`, its focused tests, and the Xcode
+project references; `EventExtractionCore.extract` invokes it before the regular
+single-event segmentation path. The schedule parser is intentionally not marked
+complete until its tests and a supported build environment pass. The regular
+date-inference path remains the fallback for single flyers and unsupported
+patterns. Codebase-memory MCP was refreshed against the current checkout and
+includes the new extraction call path and tests.
 
 ## Verification
 - `xcodegen generate --spec project.yml`, then:
