@@ -1,206 +1,168 @@
 import SwiftUI
 
-// MARK: - Reminder Settings View (Presets & Preview)
+// MARK: - Reminder Settings View (Default Reminders)
 /// Mirrors Stitch design `.stitch/Settings-Functional-Sub-Screens/Settings/Reminder-Presets/design.html`.
+/// Picks the preset every new event starts with (`ReminderDefaultsStore`). The presets are the same
+/// ones the per-event Reminder Schedule editor offers; each event can still be changed before saving.
 struct ReminderSettingsView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.services) private var services
+    @EnvironmentObject private var appState: AppState
     @State private var previewEventStart: Date = Calendar.current.date(byAdding: .day, value: 7, to: .now) ?? .now
-    @State private var selectedPresetId: String = "standard"
+    @State private var selectedPreset: ReminderPreset = .defaultPreset
 
-    struct PresetBundle: Identifiable {
-        let id: String
-        let title: String
-        let timing: String
-        let description: String
-        let offsets: [ReminderOffset]
-        let tint: Color
-    }
+    private let store = ReminderDefaultsStore()
 
-    private let presets: [PresetBundle] = [
-        PresetBundle(
-            id: "standard",
-            title: "Standard Smart",
-            timing: "24h before + 2h before",
-            description: "Balanced safety net for everyday appointments and social events.",
-            offsets: ReminderOffset.defaultStaggered,
-            tint: .pdPrimary
-        ),
-        PresetBundle(
-            id: "travel",
-            title: "Travel Ready",
-            timing: "48h + 24h + 3h airport buffer",
-            description: "Built for boarding passes, hotel check-ins, and flight departures.",
-            offsets: [
-                .twoDaysBefore,
-                .oneDayBefore,
-                .threeHoursBefore
-            ],
-            tint: .pdSecondary
-        ),
-        PresetBundle(
-            id: "minimal",
-            title: "Minimal Focus",
-            timing: "1h before only",
-            description: "Clean calendar with single departure ping right before starting.",
-            offsets: [
-                .oneHourBefore
-            ],
-            tint: .pdTertiary
-        ),
-        PresetBundle(
-            id: "neverMiss",
-            title: "Never Miss It",
-            timing: "1 week + 2 days + 4 hours",
-            description: "Multi-tier alerts for high-stakes exams, weddings, and ticket drops.",
-            offsets: [
-                .oneWeekBefore,
-                .twoDaysBefore,
-                ReminderOffset(timeInterval: -14400, label: "4 hours before")
-            ],
-            tint: .pdPrimary
-        )
-    ]
+    private var maxAlerts: Int { PlanLimits.maxAlertsPerEvent(services.subscription.entitlementSnapshot) }
 
+    /// The alerts a new event gets on this plan: the preset, trimmed to the plan's alert limit.
     private var activeOffsets: [ReminderOffset] {
-        presets.first(where: { $0.id == selectedPresetId })?.offsets ?? ReminderOffset.defaultStaggered
+        selectedPreset.offsets(limitedTo: maxAlerts) ?? Array(ReminderOffset.defaultStaggered.prefix(maxAlerts))
     }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                PDTopBar(title: "Reminder Presets", showsBack: true) {
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color.pdOnPrimary)
-                        .frame(width: 32, height: 32)
-                        .background(Circle().fill(Color.pdPrimary))
-                        .accessibilityHidden(true)
-                }
+                PDTopBar(title: "Default Reminders", showsBack: true)
 
                 PDScreenIntro(
                     eyebrow: "Settings",
-                    title: "Reminder Presets",
-                    subtitle: "Configure default notification offset templates automatically applied when events are extracted."
+                    title: "Default Reminders",
+                    subtitle: "Choose the alerts every new event starts with. You can change them on any event before saving."
                 )
 
-                // Automated Contextual Timing Hero Card
-                PDCard {
-                    VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                        HStack(spacing: PDSpacing.sm) {
-                            PDIconTile(systemName: "bell.badge.fill", tint: .pdPrimary, size: .large)
+                presetList
 
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Automated Contextual Timing")
-                                    .font(PDFont.headlineSM)
-                                    .foregroundStyle(Color.pdOnSurface)
-                                PDStatusBadge(text: "Smart Presets", icon: "sparkles", tone: .info)
-                            }
-                        }
-
-                        Text("Pencil’d suggests alert timing for each event based on its type. You can adjust the alerts on any event before saving.")
-                            .font(PDFont.bodySM)
-                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                            .lineSpacing(2)
-                    }
-                }
-
-                // Quick Preset Bundles Section
-                VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                    PDSectionHeader(title: "Quick Preset Bundles", trailing: "Tap to apply pattern")
-
-                    ForEach(presets) { preset in
-                        let isSelected = preset.id == selectedPresetId
-                        Button {
-                            selectedPresetId = preset.id
-                        } label: {
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(preset.title)
-                                            .font(PDFont.labelLG)
-                                            .foregroundStyle(Color.pdOnSurface)
-                                        Text(preset.timing)
-                                            .font(PDFont.bodySM)
-                                            .foregroundStyle(preset.tint)
-                                    }
-                                    Spacer()
-                                    if isSelected {
-                                        ZStack {
-                                            Circle()
-                                                .fill(Color.pdPrimaryContainer)
-                                                .frame(width: 24, height: 24)
-                                            Image(systemName: "checkmark")
-                                                .font(.system(size: 12, weight: .bold))
-                                                .foregroundStyle(Color.pdOnPrimary)
-                                        }
-                                    }
-                                }
-
-                                Text(preset.description)
-                                    .font(PDFont.bodySM)
-                                    .foregroundStyle(Color.pdOnSurfaceVariant)
-                                    .lineLimit(2)
-                            }
-                            .padding(PDSpacing.md)
-                            .background(
-                                RoundedRectangle(cornerRadius: PDRadius.card)
-                                    .fill(isSelected ? AnyShapeStyle(LinearGradient.pdSelected) : AnyShapeStyle(Color.pdSurfaceLow.opacity(0.9)))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: PDRadius.card)
-                                    .stroke(isSelected ? Color.pdPrimary.opacity(0.4) : Color.clear, lineWidth: 1)
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-
-                // Interactive Event Timing Preview Section
-                VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                    PDSectionHeader(title: "Live Timing Preview")
-
+                if PlanLimits.canUpgradeAlerts(from: maxAlerts) {
                     PDCard {
-                        VStack(alignment: .leading, spacing: PDSpacing.md) {
-                            DatePicker(
-                                "Simulated Event",
-                                selection: $previewEventStart,
-                                in: Date.now...,
-                                displayedComponents: [.date, .hourAndMinute]
-                            )
-                            .font(PDFont.bodyMD)
-                            .tint(Color.pdPrimary)
-
-                            Rectangle()
-                                .fill(Color.pdSurfaceHighest.opacity(0.6))
-                                .frame(height: 1)
-
-                            ForEach(activeOffsets) { offset in
-                                HStack(spacing: 12) {
-                                    Image(systemName: "bell.fill")
-                                        .font(.system(size: 14))
-                                        .foregroundStyle(Color.pdPrimary)
-                                        .frame(width: 24)
-
-                                    Text(offset.label.capitalized)
-                                        .font(PDFont.bodyMD.weight(.semibold))
-                                        .foregroundStyle(Color.pdOnSurface)
-
-                                    Spacer()
-
-                                    Text(offset.triggerDate(forEventStart: previewEventStart, isAllDay: false)
-                                        .formatted(date: .abbreviated, time: .shortened))
-                                        .font(PDFont.bodySM)
-                                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                                }
-                            }
+                        HStack(alignment: .top, spacing: PDSpacing.sm) {
+                            PDIconTile(systemName: "bell.badge.fill", tint: .pdSecondary)
+                            Text(PlanLimits.alertLimitMessage)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
+
+                timingPreview
             }
             .padding(.horizontal, PDSpacing.margin)
             .padding(.top, PDSpacing.sm)
             .padding(.bottom, PDSpacing.xl)
         }
         .background(Color.pdSurface.ignoresSafeArea())
+        .onAppear { selectedPreset = store.preset() }
+    }
+
+    // MARK: - Presets
+    private var presetList: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Presets")
+
+            ForEach(ReminderPreset.defaultChoices) { preset in
+                let isSelected = preset == selectedPreset
+                let offsets = preset.offsets ?? []
+                Button {
+                    choose(preset)
+                } label: {
+                    HStack(alignment: .top, spacing: 12) {
+                        PDIconTile(systemName: preset.icon, tint: .pdPrimary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(preset.settingsTitle)
+                                    .font(PDFont.labelLG)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                if isLocked(preset) {
+                                    PDStatusBadge(text: "Plus", icon: "lock.fill", tone: .info)
+                                }
+                            }
+                            Text(offsets.map(\.label).joined(separator: " · "))
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdPrimary)
+                            Text(preset.settingsDetail)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer()
+                        if isSelected {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 22))
+                                .foregroundStyle(Color.pdPrimary)
+                                .accessibilityHidden(true)
+                        }
+                    }
+                    .padding(PDSpacing.md)
+                    .frame(minHeight: 44)
+                    .background(
+                        RoundedRectangle(cornerRadius: PDRadius.card)
+                            .fill(isSelected ? AnyShapeStyle(LinearGradient.pdSelected) : AnyShapeStyle(Color.pdSurfaceLow.opacity(0.9)))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: PDRadius.card)
+                            .stroke(isSelected ? Color.pdPrimary.opacity(0.4) : Color.clear, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+            }
+        }
+    }
+
+    private func isLocked(_ preset: ReminderPreset) -> Bool {
+        preset.isLocked(maxAlerts: maxAlerts)
+    }
+
+    private func choose(_ preset: ReminderPreset) {
+        guard !isLocked(preset) else {
+            Task { await appState.present(.paywall(opening: .plus)) }
+            return
+        }
+        selectedPreset = preset
+        store.setPreset(preset)
+    }
+
+    // MARK: - Preview
+    private var timingPreview: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Preview")
+
+            PDCard {
+                VStack(alignment: .leading, spacing: PDSpacing.md) {
+                    DatePicker(
+                        "Example event",
+                        selection: $previewEventStart,
+                        in: Date.now...,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                    .font(PDFont.bodyMD)
+                    .tint(Color.pdPrimary)
+
+                    Rectangle()
+                        .fill(Color.pdSurfaceHighest.opacity(0.6))
+                        .frame(height: 1)
+
+                    ForEach(activeOffsets) { offset in
+                        HStack(spacing: 12) {
+                            Image(systemName: "bell.fill")
+                                .font(.system(size: 14))
+                                .foregroundStyle(Color.pdPrimary)
+                                .frame(width: 24)
+
+                            Text(offset.label.capitalized)
+                                .font(PDFont.bodyMD.weight(.semibold))
+                                .foregroundStyle(Color.pdOnSurface)
+
+                            Spacer()
+
+                            Text(offset.triggerDate(forEventStart: previewEventStart, isAllDay: false)
+                                .formatted(date: .abbreviated, time: .shortened))
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurfaceVariant)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

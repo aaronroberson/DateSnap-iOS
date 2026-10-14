@@ -25,9 +25,14 @@ struct EventReviewDestinationCard: View {
             PDIconTile(systemName: "calendar", tint: .pdPrimary)
 
             VStack(alignment: .leading, spacing: 1) {
-                Text("Saving To Calendar")
-                    .font(PDFont.bodySM)
-                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                HStack(spacing: 6) {
+                    Text("Saving To Calendar")
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                    if viewModel.needsCalendarChoice {
+                        PDStatusBadge(text: "Required", icon: "exclamationmark.circle.fill", tone: .warning)
+                    }
+                }
                 if viewModel.availableCalendars.isEmpty {
                     Text("Default calendar (access requested on save)")
                         .font(PDFont.bodyMD)
@@ -39,13 +44,14 @@ struct EventReviewDestinationCard: View {
                         }
                     } label: {
                         HStack(spacing: 4) {
-                            Text(viewModel.selectedCalendar?.title ?? "Choose calendar")
+                            Text(viewModel.selectedCalendar?.title ?? "Choose a calendar")
                             Image(systemName: "chevron.up.chevron.down").font(.system(size: 10))
                         }
                         .font(PDFont.bodyMD)
-                        .foregroundStyle(Color.pdOnSurface)
+                        .foregroundStyle(viewModel.needsCalendarChoice ? Color.pdWarning : Color.pdOnSurface)
                         .frame(minHeight: 44)
                     }
+                    .accessibilityLabel(viewModel.selectedCalendar.map { "Calendar, \($0.title)" } ?? "Calendar, required. Choose a calendar")
                 }
             }
 

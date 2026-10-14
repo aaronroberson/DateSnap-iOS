@@ -13,7 +13,7 @@ struct MarketingKitView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 18) {
-                SettingsScreenHeader(title: "Marketing Kit", showBack: true)
+                SettingsScreenHeader(title: "Marketing Kit", showBack: true, showsTitle: true)
                 hero
                 socialAngles
                 adHeadlines

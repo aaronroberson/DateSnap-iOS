@@ -12,6 +12,9 @@ struct SettingsHubView: View {
     @StateObject private var purchases = PurchaseViewModel()
 
     @AppStorage(AutoDetectPreference.key) private var autoCaptureEnabled = true
+    @AppStorage(IntelligencePolicy.userDefaultsKey) private var enhancedInterpretation = true
+    /// Observed so the Default Reminders value updates on return from that screen.
+    @AppStorage(ReminderDefaultsStore.defaultsKey) private var defaultReminderRaw = ReminderPreset.defaultPreset.rawValue
     @State private var store = DefaultCalendarStore()
     @State private var restoring = false
     @Environment(\.scenePhase) private var scenePhase
@@ -39,6 +42,7 @@ struct SettingsHubView: View {
                         }
                         VStack(spacing: 20) {
                             defaultsSection
+                            historySection
                             privacySection
                             supportSection
                         }
@@ -47,6 +51,7 @@ struct SettingsHubView: View {
                     subscriptionSection
                     permissionsSection
                     defaultsSection
+                    historySection
                     privacySection
                     supportSection
                 }
@@ -64,23 +69,13 @@ struct SettingsHubView: View {
 
     // MARK: - Live permission state
     private func refreshPermissions() async {
-        switch services.photoLibrary.authorizationStatus(for: .readWrite) {
-        case .authorized: photosStatus = .init(text: "Full Access", granted: true)
-        case .limited: photosStatus = .init(text: "Limited", granted: true)
-        case .notDetermined: photosStatus = .init(text: "Not Asked", granted: false)
-        default: photosStatus = .init(text: "Off", granted: false)
-        }
-        switch services.calendar.authorizationStatus() {
-        case .fullAccess: calendarStatus = .init(text: "Full Access", granted: true)
-        case .writeOnly: calendarStatus = .init(text: "Add Only", granted: true)
-        case .notDetermined: calendarStatus = .init(text: "Not Asked", granted: false)
-        default: calendarStatus = .init(text: "Off", granted: false)
-        }
-        switch await services.notifications.authorizationStatus() {
-        case .authorized, .provisional, .ephemeral: notificationsStatus = .init(text: "On", granted: true)
-        case .notDetermined: notificationsStatus = .init(text: "Not Asked", granted: false)
-        default: notificationsStatus = .init(text: "Off", granted: false)
-        }
+        // Labels and meaning come from `PermissionAccess`, shared with Home and the services.
+        let photos = services.photoLibrary.authorizationStatus(for: .readWrite)
+        photosStatus = .init(text: photos.settingsLabel, granted: photos.access.isUsable)
+        let calendar = services.calendar.authorizationStatus()
+        calendarStatus = .init(text: calendar.settingsLabel, granted: calendar.access.isUsable)
+        let notifications = await services.notifications.authorizationStatus()
+        notificationsStatus = .init(text: notifications.settingsLabel, granted: notifications.access.isUsable)
     }
 
     private var planSummary: String {
@@ -112,8 +107,8 @@ struct SettingsHubView: View {
     private var screenIntro: some View {
         PDScreenIntro(
             eyebrow: "Settings",
-            title: "Settings",
-            subtitle: "Manage permissions, default calendars, reminder rules, and Pencil’d Pro subscription."
+            title: "Make it yours",
+            subtitle: "Manage permissions, default calendars, reminder rules, and your Pencil’d plan."
         )
     }
 
@@ -125,7 +120,7 @@ struct SettingsHubView: View {
                         PDIconTile(systemName: "sparkles", tint: .pdPrimary, size: .large)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(tier == .starter ? "Pencil’d Free" : "Pencil’d \(tier.displayName)")
+                            Text(tier.displayName)
                                 .font(PDFont.headlineSM)
                                 .foregroundStyle(Color.pdOnSurface)
                             Text(tier == .starter ? "Free plan" : "Subscription active")
@@ -234,7 +229,7 @@ struct SettingsHubView: View {
                         tint: .pdPrimary,
                         title: "Default Calendar"
                     ) {
-                        PDValueChevron(value: store.defaultCalendarTitle() ?? "iOS default")
+                        PDValueChevron(value: store.asksEveryTime() ? "Ask every time" : (store.defaultCalendarTitle() ?? "Automatic"))
                     }
                 }
                 .buttonStyle(PDRowButtonStyle())
@@ -249,7 +244,7 @@ struct SettingsHubView: View {
                         tint: .pdSecondary,
                         title: "Default Reminders"
                     ) {
-                        PDValueChevron(value: "Smart, by event type")
+                        PDValueChevron(value: defaultReminderTitle)
                     }
                 }
                 .buttonStyle(PDRowButtonStyle())
@@ -262,9 +257,9 @@ struct SettingsHubView: View {
                     PDListRow(
                         icon: "camera.filters",
                         tint: .pdTertiaryContainer,
-                        title: "Source Preferences"
+                        title: "Scanning Options"
                     ) {
-                        PDValueChevron(value: "Screenshots, PDFs, Photos")
+                        PDValueChevron(value: enhancedInterpretation ? "Apple Intelligence on" : "Apple Intelligence off")
                     }
                 }
                 .buttonStyle(PDRowButtonStyle())
@@ -312,6 +307,34 @@ struct SettingsHubView: View {
                     }
                     .padding(.top, 4)
                 }
+            }
+        }
+    }
+
+    private var defaultReminderTitle: String {
+        _ = defaultReminderRaw
+        return ReminderDefaultsStore().preset().settingsTitle
+    }
+
+    private var historySection: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            PDSectionHeader(title: "Your Events")
+
+            PDGroupedList {
+                Button {
+                    appState.openHistory()
+                } label: {
+                    PDListRow(
+                        icon: "clock.arrow.circlepath",
+                        tint: .pdPrimary,
+                        title: "Event History",
+                        subtitle: "Saved, draft, and archived events"
+                    ) {
+                        PDValueChevron()
+                    }
+                }
+                .buttonStyle(PDRowButtonStyle())
+                .accessibilityIdentifier("settings.history")
             }
         }
     }

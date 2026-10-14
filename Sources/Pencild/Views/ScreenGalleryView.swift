@@ -29,7 +29,7 @@ struct ScreenGalleryView: View {
             stitchId: "6c145dff8ec540b9a51f806629e55c70",
             description: "Files & Cloud Drive import, multi-page PDF scanning, batch docs & advanced rules.",
             category: "Monetization",
-            modal: .premiumPaywall
+            modal: .paywall(opening: .premium)
         ),
         ScreenItem(
             id: 2,
@@ -37,7 +37,7 @@ struct ScreenGalleryView: View {
             stitchId: "df7a78364bd54941ad1d7bb6ca34d449",
             description: "Unlimited screenshot scans, up to 3 reminders per event & triple-destination sync.",
             category: "Monetization",
-            modal: .plusPaywall
+            modal: .paywall(opening: .plus)
         ),
         ScreenItem(
             id: 3,
@@ -219,7 +219,7 @@ struct ScreenGalleryView: View {
             id: 24,
             title: "Default Calendar",
             stitchId: "f3d0483edc2a43438cfa34e37205fecd",
-            description: "Seamless Zero-Conflict Sync, iCloud & Google calendar account groupings, and Ask Every Time toggle.",
+            description: "Seamless Zero-Conflict Sync, iCloud & Google calendar account groupings, and a note that each event can override the default.",
             category: "Settings",
             modal: .defaultCalendar,
             settingsRoute: .defaultCalendar

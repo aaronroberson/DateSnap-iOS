@@ -22,7 +22,7 @@ struct AutomationSettingsView: View {
             get: { includedInPlan && autoDetectEnabled },
             set: { isOn in
                 guard includedInPlan else {
-                    if isOn { Task { await appState.present(.plusPaywall) } }
+                    if isOn { Task { await appState.present(.paywall(opening: .plus)) } }
                     return
                 }
                 autoDetectEnabled = isOn
@@ -33,7 +33,7 @@ struct AutomationSettingsView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                PDTopBar(title: "Auto-detect", showsBack: true)
+                PDTopBar(title: "Scanning Options", showsBack: true)
 
                 PDScreenIntro(
                     eyebrow: "Settings",

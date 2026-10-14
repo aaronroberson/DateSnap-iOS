@@ -56,7 +56,7 @@ struct ReminderScheduleEditorView: View {
                                 .background(Color.pdSurfaceLow, in: RoundedRectangle(cornerRadius: PDRadius.card))
                         }
                         .opacity(offsets.count >= maxAlerts ? 0.6 : 1)
-                        Text(maxAlerts < PlanLimits.paidAlertsPerEvent
+                        Text(PlanLimits.canUpgradeAlerts(from: maxAlerts)
                              ? "\(PlanLimits.alertLimitMessage) Choosing no alerts removes the current schedule."
                              : "Up to \(maxAlerts) alerts per event. Choosing no alerts removes the current schedule.")
                             .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
@@ -78,7 +78,7 @@ struct ReminderScheduleEditorView: View {
             .toolbar(.hidden, for: .navigationBar)
         }
         .sheet(isPresented: $showPlusPaywall) {
-            PlusPaywallView()
+            PaywallView(initialPlan: .plus)
         }
         .alert("Reminder schedule", isPresented: Binding(
             get: { resultMessage != nil }, set: { if !$0 { resultMessage = nil } }
@@ -110,7 +110,7 @@ struct ReminderScheduleEditorView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: PDSpacing.sm) {
                     ForEach(ReminderPreset.allCases) { preset in
-                        let isLocked = (Self.offsets(for: preset)?.count ?? 0) > maxAlerts
+                        let isLocked = preset.isLocked(maxAlerts: maxAlerts)
                         Button { applyPreset(preset) } label: {
                             PDCard(highlighted: selectedPreset == preset) {
                                 VStack(alignment: .leading, spacing: PDSpacing.sm) {
@@ -124,7 +124,7 @@ struct ReminderScheduleEditorView: View {
                                         Label("Plus", systemImage: "lock.fill")
                                             .font(PDFont.labelSM).foregroundStyle(Color.pdPrimary)
                                     }
-                                    Text(Self.offsets(for: preset)?.map(\.label).joined(separator: " · ") ?? "Edit each alert timing")
+                                    Text(preset.offsets?.map(\.label).joined(separator: " · ") ?? "Edit each alert timing")
                                         .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -139,7 +139,7 @@ struct ReminderScheduleEditorView: View {
                     }
                 }
             }
-            if let presetOffsets = Self.offsets(for: selectedPreset) {
+            if let presetOffsets = selectedPreset.offsets {
                 Text(presetOffsets.map(\.label).joined(separator: " · "))
                     .font(PDFont.bodySM).foregroundStyle(Color.pdOnSurfaceVariant)
             } else {
@@ -231,35 +231,26 @@ struct ReminderScheduleEditorView: View {
         return fire < Date() ? "\(text) (passed)" : text
     }
 
-    private static func offsets(for preset: ReminderPreset) -> [ReminderOffset]? {
-        switch preset {
-        case .defaultPreset: return ReminderOffset.defaultStaggered
-        case .travelHeavy: return [.twoDaysBefore, .threeHoursBefore, .fortyFiveMinutesBefore]
-        case .dayOfOnly: return [.twoHoursBefore]
-        case .custom: return nil
-        }
-    }
-
     private static func preset(matching offsets: [ReminderOffset]) -> ReminderPreset {
         let intervals = offsets.map(\.timeInterval).sorted()
         for preset in ReminderPreset.allCases {
-            if let presetOffsets = Self.offsets(for: preset), presetOffsets.map(\.timeInterval).sorted() == intervals { return preset }
+            if let presetOffsets = preset.offsets, presetOffsets.map(\.timeInterval).sorted() == intervals { return preset }
         }
         return .custom
     }
 
     private func applyPreset(_ preset: ReminderPreset) {
-        if let presetOffsets = Self.offsets(for: preset), presetOffsets.count > maxAlerts {
-            showPlusPaywall = true
+        if preset.isLocked(maxAlerts: maxAlerts) {
+            if PlanLimits.canUpgradeAlerts(from: maxAlerts) { showPlusPaywall = true }
             return
         }
         selectedPreset = preset
-        if let presetOffsets = Self.offsets(for: preset) { offsets = presetOffsets }
+        if let presetOffsets = preset.offsets(limitedTo: maxAlerts) { offsets = presetOffsets }
     }
 
     private func addNextAlert() {
         guard offsets.count < maxAlerts else {
-            showPlusPaywall = true
+            if PlanLimits.canUpgradeAlerts(from: maxAlerts) { showPlusPaywall = true }
             return
         }
         let used = Set(offsets.map(\.timeInterval))

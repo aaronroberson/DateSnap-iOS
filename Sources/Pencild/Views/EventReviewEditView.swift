@@ -76,7 +76,7 @@ struct EventReviewForm: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                if horizontalSizeClass == .regular {
+                if horizontalSizeClass == .regular && !viewModel.isManualEntry {
                     iPadDualPaneContent
                 } else {
                     iPhoneSingleColumnContent
@@ -84,6 +84,8 @@ struct EventReviewForm: View {
 
                 if showSuccessToast { successToast }
             }
+            .frame(maxWidth: viewModel.isManualEntry && horizontalSizeClass == .regular ? 720 : .infinity)
+            .frame(maxWidth: .infinity)
             .pdScreenBackground()
             .navigationBarHidden(true)
             .sheet(isPresented: $showScheduleEditor) {
@@ -121,6 +123,13 @@ struct EventReviewForm: View {
             } message: {
                 Text("It will be removed from your review queue. Nothing was added to your calendar.")
             }
+            .onDisappear {
+                // A manual event closed without a save or draft is removed, not left in Review.
+                let candidate = viewModel.candidate
+                if !candidate.isDeleted {
+                    ManualEventFactory.discardIfUnused(candidate, in: modelContext)
+                }
+            }
             .task {
                 viewModel.findDuplicates(in: modelContext)
                 await viewModel.prepareDestinations()
@@ -134,7 +143,9 @@ struct EventReviewForm: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: PDSpacing.lg) {
                     header
-                    sourceCard
+                    if !viewModel.isManualEntry {
+                        sourceCard
+                    }
                     if !viewModel.duplicateMatches.isEmpty && !duplicatesDismissed {
                         PossibleDuplicateBanner(
                             matches: viewModel.duplicateMatches,
@@ -155,8 +166,10 @@ struct EventReviewForm: View {
                     formSection
                     actions(scrollProxy: proxy)
                         .padding(.horizontal)
-                    scanDetails
-                        .id("scanDetails")
+                    if !viewModel.isManualEntry {
+                        scanDetails
+                            .id("scanDetails")
+                    }
                 }
             }
         }
@@ -225,12 +238,21 @@ struct EventReviewForm: View {
     // MARK: - Header
     private var header: some View {
         VStack(alignment: .leading, spacing: PDSpacing.md) {
-            PDTopBar(title: viewModel.isEditingSavedEvent ? "Edit event" : "Review event")
-            PDScreenIntro(
-                eyebrow: viewModel.isEditingSavedEvent ? "Saved event" : "Verification stage",
-                title: viewModel.isEditingSavedEvent ? "Edit event" : "Review before saving",
-                subtitle: "Refine the timing, venue, and reminders before saving to your calendar."
-            )
+            if viewModel.isManualEntry && !viewModel.isEditingSavedEvent {
+                PDTopBar(title: "New event")
+                PDScreenIntro(
+                    eyebrow: "Enter manually",
+                    title: "Add an event",
+                    subtitle: "Your default calendar and reminders are already applied. Change anything before saving."
+                )
+            } else {
+                PDTopBar(title: viewModel.isEditingSavedEvent ? "Edit event" : "Review event")
+                PDScreenIntro(
+                    eyebrow: viewModel.isEditingSavedEvent ? "Saved event" : "Verification stage",
+                    title: viewModel.isEditingSavedEvent ? "Edit event" : "Review before saving",
+                    subtitle: "Refine the timing, venue, and reminders before saving to your calendar."
+                )
+            }
         }
         .padding(.horizontal)
         .padding(.top, PDSpacing.sm)
@@ -335,7 +357,7 @@ struct EventReviewForm: View {
             ReviewSuggestionsCard(
                 viewModel: viewModel,
                 isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
-                onUpgrade: { Task { await appState.present(.premiumPaywall) } }
+                onUpgrade: { Task { await appState.present(.paywall(opening: .premium)) } }
             )
             PDSectionHeader(title: "Calendar & reminders")
             destinationCard
@@ -345,7 +367,7 @@ struct EventReviewForm: View {
                     deadlineReminderDate: viewModel.deadlineReminderDate,
                     deadlineReminderEnabled: $viewModel.deadlineReminderEnabled,
                     isEntitledToDeadlineReminders: appState.isEntitled(to: .advancedReminderPlans),
-                    onUpgrade: { Task { await appState.present(.premiumPaywall) } }
+                    onUpgrade: { Task { await appState.present(.paywall(opening: .premium)) } }
                 )
             }
             #if DEBUG
@@ -422,7 +444,21 @@ struct EventReviewForm: View {
                 }
             }
             .buttonStyle(PDGradientButtonStyle())
-            .disabled(viewModel.isSaving || isCommitting)
+            .disabled(viewModel.isSaving || isCommitting || viewModel.needsCalendarChoice || viewModel.needsTitle)
+
+            if viewModel.needsTitle {
+                Label("Add a title to save this event.", systemImage: "character.cursor.ibeam")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+
+            if viewModel.needsCalendarChoice {
+                Label("Choose a calendar above to save this event.", systemImage: "calendar.badge.exclamationmark")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdWarning)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
 
             if !viewModel.whyThisRows.isEmpty || !viewModel.visibleAlternatives.isEmpty || !rawLines.isEmpty {
                 Button {

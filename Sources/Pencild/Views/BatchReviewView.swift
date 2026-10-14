@@ -18,14 +18,16 @@ struct BatchReviewView: View {
     @State private var expandedIDs: Set<UUID> = []
     @State private var dismissedDuplicateWarnings: Set<UUID> = []
     @State private var showDiscardConfirmFor: BatchEventItem? = nil
+    @State private var showSaveAllConfirmation = false
+    @State private var showDismissConfirmation = false
     @State private var showFailureAlert = false
     @State private var pendingFailureAlert = false
     @State private var showNotificationRecovery = false
     /// A possible-duplicate saved event opened from a card. Shown from this sheet because the
     /// root can present only one sheet and leaving would discard the batch's unsaved edits.
     @State private var openedDuplicate: PencildEvent? = nil
-    @State private var showPlusPaywall = false
-    @State private var showPremiumPaywall = false
+    /// Tab the paywall opens on; `nil` when no paywall is shown.
+    @State private var paywallTab: PurchaseViewModel.Plan?
 
     init(session: BatchReviewSession) {
         _session = StateObject(wrappedValue: session)
@@ -67,11 +69,8 @@ struct BatchReviewView: View {
             .sheet(item: $openedDuplicate) { event in
                 SavedEventDetailView(event: event)
             }
-            .sheet(isPresented: $showPlusPaywall) {
-                PlusPaywallView()
-            }
-            .sheet(isPresented: $showPremiumPaywall) {
-                PremiumPaywallView()
+            .sheet(item: $paywallTab) { plan in
+                PaywallView(initialPlan: plan)
             }
             .sheet(isPresented: $showNotificationRecovery, onDismiss: {
                 if pendingFailureAlert {
@@ -102,6 +101,28 @@ struct BatchReviewView: View {
             } message: {
                 Text("It will be removed from your review queue. Nothing was added to your calendar.")
             }
+            .confirmationDialog(
+                "Save \(session.actionableCount) event\(session.actionableCount == 1 ? "" : "s")?",
+                isPresented: $showSaveAllConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Save \(session.actionableCount) event\(session.actionableCount == 1 ? "" : "s")") {
+                    Task { await saveAll() }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text(saveDestinationSummary)
+            }
+            .confirmationDialog(
+                "Discard this review?",
+                isPresented: $showDismissConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Discard review", role: .destructive) { dismiss() }
+                Button("Keep reviewing", role: .cancel) {}
+            } message: {
+                Text("Your unsaved events will remain available in the review queue.")
+            }
         }
     }
 
@@ -109,11 +130,24 @@ struct BatchReviewView: View {
         session.lastSummary?.failedMessages.joined(separator: "\n") ?? ""
     }
 
+    private var saveDestinationSummary: String {
+        let actionable = session.events.filter(\.isActionable)
+        let calendars = Set(actionable.map { $0.review.selectedCalendar?.title ?? "Default calendar" }).sorted()
+        let reminders = Set(actionable.map { $0.review.selectedReminderList?.title ?? "No reminders list" }).sorted()
+        return "Calendar: \(calendars.joined(separator: ", "))\nReminders: \(reminders.joined(separator: ", "))"
+    }
+
     // MARK: Header
 
     private var header: some View {
         VStack(alignment: .leading, spacing: PDSpacing.md) {
-            PDTopBar(title: "Batch review")
+            PDTopBar(title: "Batch review", onBack: {
+                if session.actionableCount > 0 {
+                    showDismissConfirmation = true
+                } else {
+                    dismiss()
+                }
+            })
             PDScreenIntro(
                 eyebrow: "Verification stage",
                 title: "Review your events",
@@ -162,7 +196,7 @@ struct BatchReviewView: View {
                 onDiscard: { showDiscardConfirmFor = event },
                 onNotificationsDenied: { showNotificationRecovery = true },
                 onOpenDuplicate: { openedDuplicate = $0 },
-                onUpgradeToPremium: { showPremiumPaywall = true }
+                onUpgradeToPremium: { paywallTab = .premium }
             )
         }
     }
@@ -189,7 +223,7 @@ struct BatchReviewView: View {
             VStack(alignment: .leading, spacing: PDSpacing.sm) {
                 PDSectionHeader(title: "Skipped screenshots", trailing: "\(session.skipped.count)")
                 if let feature = session.lockedFeature {
-                    Button { showPremiumPaywall = true } label: {
+                    Button { paywallTab = .premium } label: {
                         HStack(spacing: PDSpacing.sm) {
                             Image(systemName: "sparkle").foregroundStyle(Color.pdPrimary)
                             Text(feature.upgradeReason)
@@ -207,7 +241,7 @@ struct BatchReviewView: View {
                     .accessibilityHint("Opens upgrade options")
                 }
                 if session.hitScanLimit {
-                    Button { showPlusPaywall = true } label: {
+                    Button { paywallTab = .plus } label: {
                         HStack(spacing: PDSpacing.sm) {
                             Image(systemName: "sparkle").foregroundStyle(Color.pdPrimary)
                             Text(PlanLimits.scanLimitMessage)
@@ -311,8 +345,28 @@ struct BatchReviewView: View {
                 }
             }
 
+            if session.actionableCount > 0 {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(session.actionableCount) of \(session.events.count) events ready to save")
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdOnSurface)
+                    Text(saveDestinationSummary)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+            }
+
             Button {
-                Task { await saveAll() }
+                let missing = session.events.filter { $0.isActionable && $0.review.needsCalendarChoice }
+                if missing.isEmpty {
+                    showSaveAllConfirmation = true
+                } else {
+                    // "Ask every time": open the events that still need a calendar instead of saving.
+                    withAnimation(.easeInOut(duration: 0.2)) { expandedIDs.formUnion(missing.map(\.id)) }
+                    appState.showToast("Choose a calendar for \(missing.count) event\(missing.count == 1 ? "" : "s") before saving")
+                }
             } label: {
                 HStack(spacing: 8) {
                     if session.isSaving {
@@ -320,7 +374,7 @@ struct BatchReviewView: View {
                         Text("Saving events…")
                     } else {
                         Image(systemName: "calendar.badge.plus")
-                        Text("Save All (\(session.actionableCount))")
+                        Text("Save All (\(session.actionableCount) of \(session.events.count))")
                         Image(systemName: "arrow.right")
                     }
                 }
@@ -448,14 +502,15 @@ private struct BatchEventCard: View {
                 HStack(spacing: 12) {
                     screenshotThumb
                     VStack(alignment: .leading, spacing: PDSpacing.xxs) {
-                        Text(review.title.isEmpty ? "Untitled event" : review.title)
+                        Text(review.title.isEmpty ? PencildEvent.untitledTitle : review.title)
                             .font(PDFont.labelLG)
                             .foregroundStyle(Color.pdOnSurface)
                             .lineLimit(1)
                             .multilineTextAlignment(.leading)
-                        Label(review.selectedCalendar?.title ?? "Default calendar", systemImage: "calendar")
+                        Label(review.selectedCalendar?.title ?? (review.needsCalendarChoice ? "Choose a calendar" : "Default calendar"),
+                              systemImage: review.needsCalendarChoice ? "calendar.badge.exclamationmark" : "calendar")
                             .font(PDFont.bodySM)
-                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                            .foregroundStyle(review.needsCalendarChoice ? Color.pdWarning : Color.pdOnSurfaceVariant)
                             .lineLimit(1)
                         Text(review.startDate.formatted(date: .abbreviated, time: review.isAllDay ? .omitted : .shortened))
                             .font(PDFont.bodySM)
@@ -471,7 +526,7 @@ private struct BatchEventCard: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("\(event.screenshotLabel), \(review.title), saving to \(review.selectedCalendar?.title ?? "default calendar")")
+            .accessibilityLabel("\(event.screenshotLabel), \(review.title), saving to \(review.selectedCalendar?.title ?? (review.needsCalendarChoice ? "no calendar yet, choose one" : "default calendar"))")
             .accessibilityHint(isExpanded ? "Collapse" : "Expand to edit details")
             if !review.duplicateMatches.isEmpty && !duplicateWarningDismissed {
                 PossibleDuplicateBanner(
@@ -640,7 +695,7 @@ private struct BatchEventCard: View {
                 }
             }
             .buttonStyle(PDGradientButtonStyle())
-            .disabled(event.review.isSaving || !event.isActionable)
+            .disabled(event.review.isSaving || !event.isActionable || review.needsCalendarChoice)
         }
     }
 }

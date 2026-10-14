@@ -176,32 +176,12 @@ struct NoDatesFoundView: View {
         }
     }
 
-    /// Creates an unsaved review carrying the scan text. The current time is an editable starting value.
+    /// Opens the review form prefilled from this scan (`ManualEventFactory`); the flyer stays visible.
     private func createManualEvent() {
-        let start = Date()
-        let candidate = EventCandidate(
-            title: rawFragments.first ?? "",
-            startDate: start,
-            endDate: EventDurationPolicy.fallbackEnd(for: start),
-            confidenceScore: 0,
-            rawTextSnippet: appState.lastScanRawText,
-            confidenceTierRaw: ConfidenceTier.low.rawValue
-        )
-        let result = MutationResult.perform {
-            modelContext.insert(candidate)
-            try modelContext.save()
-        }
-        guard case .success = result else {
-            modelContext.delete(candidate)
-            if case .failure(let error) = result {
-                appState.showToast(error.localizedDescription)
-            }
-            return
-        }
-        appState.rememberSourceImage(appState.lastScanImage, for: [candidate])
-        Task { await appState.present(.eventReviewEdit(candidate.toPencildEvent())) }
+        let prefill = ManualEventFactory.ScanPrefill(title: rawFragments.first ?? "", rawText: appState.lastScanRawText)
+        Task { await appState.startManualEntry(in: modelContext, prefill: prefill, sourceImage: appState.lastScanImage) }
     }
-    
+
     private func diagnosticRow(icon: String, title: String, description: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             PDIconTile(systemName: icon, tint: .pdPrimary)

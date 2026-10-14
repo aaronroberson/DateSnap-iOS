@@ -85,7 +85,7 @@ struct HistoryArchiveView: View {
                     }
                     EventSearchFilterBar(
                         searchText: $searchText,
-                        status: $selectedFilter,
+                        status: Binding(get: { selectedFilter }, set: { if let status = $0 { selectedFilter = status } }),
                         smartFilter: $smartFilter,
                         counts: Dictionary(uniqueKeysWithValues: SavedEventStatus.allCases.map { ($0, count($0)) }),
                         idPrefix: "history",

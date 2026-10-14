@@ -61,10 +61,7 @@ struct ContentView: View {
         .overlay {
             if showSplash {
                 PencilSplashView(
-                    onFinish: { withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.4)) { showSplash = false } },
-                    onScan: { appState.requestPhotoPicker = true },
-                    onImport: { appState.requestFileImporter = true },
-                    onReview: { appState.selectedTab = .review }
+                    onFinish: { withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.4)) { showSplash = false } }
                 )
                 .transition(.opacity)
                 .zIndex(1)
@@ -77,10 +74,8 @@ struct ContentView: View {
         .sheet(item: $appState.activeModal) { modal in
             Group {
                 switch modal {
-                case .premiumPaywall:
-                    PremiumPaywallView()
-                case .plusPaywall:
-                    PlusPaywallView()
+                case .paywall(let plan):
+                    PaywallView(initialPlan: plan)
                 case .calendarPermissionDenied:
                     CalendarPermissionDeniedView()
                 case .notificationPermissionDenied:
@@ -95,6 +90,10 @@ struct ContentView: View {
                     SavedEventScheduleEditor(event: event)
                 case .recentScreenshots:
                     RecentScreenshotsView()
+                case .captureSources:
+                    CaptureSourceSheet()
+                        .presentationDetents([.large])
+                        .presentationDragIndicator(.visible)
                 case .screenGallery:
                     #if DEBUG
                     ScreenGalleryView()
@@ -149,6 +148,7 @@ struct ContentView: View {
                     .navigationDestination(isPresented: $appState.showHistory) {
                         HistoryArchiveView()
                             .toolbar(.hidden, for: .navigationBar)
+                            .environment(\.pdBackLabel, "Agenda")
                     }
             }
         case .review: ReviewQueueView()
@@ -259,9 +259,9 @@ struct ContentView: View {
         }
     }
     
-    /// Candidates waiting on the user, same definition as the Review tab.
+    /// Candidates waiting on the user (`EventCandidate.needsReview`).
     private var needsReview: Bool {
-        candidates.contains { $0.savedEvent == nil || $0.savedEvent?.status == .draft }
+        candidates.contains(where: \.needsReview)
     }
 
     // MARK: - Docked Tab Bar (Stitch bottom nav)

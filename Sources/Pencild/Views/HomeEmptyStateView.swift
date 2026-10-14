@@ -51,11 +51,11 @@ struct HomeEmptyStateView: View {
 
     /// Candidates waiting on the user, same definition as the Review tab.
     private var needingReviewCount: Int {
-        candidates.filter { $0.savedEvent == nil || $0.savedEvent?.status == .draft }.count
+        candidates.filter(\.needsReview).count
     }
 
     private var photosAuthorized: Bool {
-        homeViewModel.photoAuthorizationStatus == .authorized || homeViewModel.photoAuthorizationStatus == .limited
+        homeViewModel.photoAuthorizationStatus.access.isUsable
     }
 
     var body: some View {
@@ -99,7 +99,7 @@ struct HomeEmptyStateView: View {
                     return "Deselect \(info.excess)"
                 },
                 onDeselect: { info in trimPendingBatch(to: info.remaining) },
-                onUpgrade: { Task { await appState.present(.plusPaywall) } },
+                onUpgrade: { Task { await appState.present(.paywall(opening: .plus)) } },
                 onDiscard: { pendingBatch = nil }
             )
             .onChange(of: appState.subscriptionTier) { _, tier in
@@ -112,6 +112,18 @@ struct HomeEmptyStateView: View {
                 if requested {
                     appState.requestPhotoPicker = false
                     showPhotoPicker = true
+                }
+            }
+            .onChange(of: appState.requestDocumentScanner) { _, requested in
+                if requested {
+                    appState.requestDocumentScanner = false
+                    openDocumentScanner()
+                }
+            }
+            .onChange(of: appState.requestScreenshotPicker) { _, requested in
+                if requested {
+                    appState.requestScreenshotPicker = false
+                    scanRecentScreenshots()
                 }
             }
             .onChange(of: appState.requestFileImporter) { _, requested in
@@ -152,10 +164,7 @@ struct HomeEmptyStateView: View {
                 scanAllowanceBanner
                 recentScreenshotsCard
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], alignment: .leading, spacing: 16) {
-                    photoLibraryCard
-                    fileImportCard
-                    documentCameraCard
-                    createEventCard
+                    sourceCards
                     sampleFlyerCard
                 }
                 privacyFooter
@@ -171,9 +180,7 @@ struct HomeEmptyStateView: View {
                 titleBlock
                 scanAllowanceBanner
                 recentScreenshotsCard
-                photoLibraryCard
-                fileImportCard
-                createEventCard
+                sourceCards
                 sampleFlyerCard
                 privacyFooter
                 Color.clear.frame(height: 90)
@@ -236,12 +243,12 @@ struct HomeEmptyStateView: View {
         return VStack(alignment: .leading, spacing: 14) {
             Button(action: scanRecentScreenshots) {
                 HStack(alignment: .top, spacing: PDSpacing.md) {
-                    sourceIcon("rectangle.dashed.badge.record", tint: .pdPrimary)
+                    sourceIcon(CaptureSource.screenshots.icon, tint: CaptureSource.screenshots.tint)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Recent screenshots")
+                        Text(CaptureSource.screenshots.title)
                             .font(PDFont.headlineSM)
                             .foregroundStyle(Color.pdOnSurface)
-                        Text("Find event flyers, tickets, and invitations in the screenshots you choose.")
+                        Text(CaptureSource.screenshots.detail)
                             .font(PDFont.bodyMD)
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                             .multilineTextAlignment(.leading)
@@ -310,7 +317,7 @@ struct HomeEmptyStateView: View {
                         .foregroundStyle(Color.pdOnSurfaceVariant)
                 } else {
                     Button {
-                        Task { await appState.present(.plusPaywall) }
+                        Task { await appState.present(.paywall(opening: .plus)) }
                     } label: {
                         Label("Auto-detect with Plus", systemImage: "lock.fill")
                             .font(PDFont.labelMD)
@@ -351,7 +358,7 @@ struct HomeEmptyStateView: View {
                     .font(PDFont.labelLG)
                     .foregroundStyle(Color.pdOnSurface)
                 Spacer(minLength: PDSpacing.sm)
-                Button("Upgrade") { Task { await appState.present(.plusPaywall) } }
+                Button("Upgrade") { Task { await appState.present(.paywall(opening: .plus)) } }
                     .font(PDFont.labelLG)
                     .foregroundStyle(Color.pdPrimary)
                     .frame(minHeight: 44)
@@ -363,76 +370,33 @@ struct HomeEmptyStateView: View {
         }
     }
 
-    private var photoLibraryCard: some View {
-        sourceRow(
-            icon: "photo.on.rectangle",
-            tint: .pdSecondary,
-            title: "Photo library",
-            detail: "Choose from your saved photos, whiteboards, or custom albums.",
-            chips: ["Albums", "Camera Roll", "Favorites"]
-        ) {
-            showPhotoPicker = true
+    /// Every capture source after Screenshots (which has its own richer card above), in the shared
+    /// `CaptureSource` order and labels used by the Add events sheet and the welcome screen.
+    @ViewBuilder
+    private var sourceCards: some View {
+        ForEach(CaptureSource.allCases.filter { $0 != .screenshots }) { source in
+            CaptureSourceRow(source: source) { start(source) }
+                .disabled(scanViewModel.isProcessing && source != .manual)
         }
     }
 
-    private var fileImportCard: some View {
-        let entitled = appState.isEntitled(to: .documentImport)
-        return sourceRow(
-            icon: entitled ? "doc" : "lock.fill",
-            tint: .pdTertiary,
-            title: "PDF or file import",
-            detail: "Multi-page conference schedules, syllabi, flight itineraries & documents.",
-            chips: entitled ? [".PDF", "Images", "iCloud Drive"] : [".PDF", "Images", "Premium"],
-            hint: entitled ? "Scan a PDF or image from Files" : HomeBrandCopy.premiumFileImportAccessibilityHint
-        ) {
-            openFileImport()
+    private func start(_ source: CaptureSource) {
+        switch source {
+        case .screenshots: scanRecentScreenshots()
+        case .photoLibrary: showPhotoPicker = true
+        case .fileImport: openFileImport()
+        case .documentScanner: openDocumentScanner()
+        case .manual:
+            Task { await appState.startManualEntry(in: modelContext) }
         }
     }
 
-    private var documentCameraCard: some View {
-        sourceRow(
-            icon: "doc.viewfinder",
-            tint: .pdSecondary,
-            title: "Scan a paper flyer",
-            detail: "Capture and straighten multi-page paper documents, then review detected events before saving.",
-            chips: ["Camera", "Multi-page", "On-device"],
-            hint: "Opens the document camera"
-        ) {
-            guard VNDocumentCameraViewController.isSupported else {
-                appState.showToast("Document scanning needs a device with a camera.")
-                return
-            }
-            showDocumentCamera = true
+    private func openDocumentScanner() {
+        guard VNDocumentCameraViewController.isSupported else {
+            appState.showToast("Document scanning needs a device with a camera.")
+            return
         }
-    }
-
-    private var createEventCard: some View {
-        Button {
-            if let url = URL(string: "calshow://") { openURL(url) }
-        } label: {
-            HStack(spacing: PDSpacing.md) {
-                sourceIcon("calendar.badge.plus", tint: .pdPrimary)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Create an event")
-                        .font(PDFont.headlineSM)
-                        .foregroundStyle(Color.pdOnSurface)
-                    Text("Opens the Calendar app for manually creating events and notifications.")
-                        .font(PDFont.bodyMD)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                        .multilineTextAlignment(.leading)
-                }
-                Spacer(minLength: 0)
-                Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(Color.pdPrimary)
-                    .frame(width: 48, height: 48)
-                    .background(Circle().fill(Color.pdSurfaceHighest))
-            }
-            .padding(PDSpacing.lg)
-            .cardBackground()
-        }
-        .buttonStyle(PressScaleButtonStyle())
-        .accessibilityHint("Opens the Calendar app")
+        showDocumentCamera = true
     }
 
     private var sampleFlyerCard: some View {
@@ -544,60 +508,13 @@ struct HomeEmptyStateView: View {
         .frame(minHeight: 44)
     }
 
-    private func sourceRow(
-        icon: String,
-        tint: Color,
-        title: String,
-        detail: String,
-        chips: [String],
-        hint: String? = nil,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(alignment: .top, spacing: PDSpacing.md) {
-                sourceIcon(icon, tint: tint)
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(title)
-                            .font(PDFont.headlineSM)
-                            .foregroundStyle(Color.pdOnSurface)
-                        Spacer(minLength: 0)
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(Color.pdOnSurfaceVariant)
-                    }
-                    Text(detail)
-                        .font(PDFont.bodyMD)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                        .multilineTextAlignment(.leading)
-                    HStack(spacing: PDSpacing.xs) {
-                        ForEach(chips, id: \.self) { chip in
-                            Text(chip)
-                                .font(PDFont.labelSM)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                                .padding(.horizontal, PDSpacing.xs)
-                                .padding(.vertical, 2)
-                                .background(Capsule().fill(Color.pdSurfaceHighest))
-                        }
-                    }
-                    .padding(.top, PDSpacing.xs)
-                }
-            }
-            .padding(PDSpacing.lg)
-            .cardBackground()
-        }
-        .buttonStyle(PressScaleButtonStyle())
-        .disabled(scanViewModel.isProcessing)
-        .accessibilityHint(hint ?? "")
-    }
-
     // MARK: - Actions
 
     private func openFileImport() {
         if appState.isEntitled(to: .documentImport) {
             showFileImporter = true
         } else {
-            Task { await appState.present(.premiumPaywall) }
+            Task { await appState.present(.paywall(opening: .premium)) }
         }
     }
 

@@ -23,15 +23,12 @@ struct SavedEventDetailView: View {
     private var offsets: [ReminderOffset] { (saved?.alertOffsets ?? []).map(ReminderOffset.forInterval).sorted { $0.timeInterval < $1.timeInterval } }
 
     private var mapsURL: URL? {
-        let query = [event.locationName, event.locationAddress]
-            .filter { !$0.isEmpty && $0 != "Location TBA" }.joined(separator: ", ")
-        guard !query.isEmpty, let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
-        return URL(string: "https://maps.apple.com/?q=\(encoded)")
+        PencildLinks.maps([event.locationName, event.locationAddress])
     }
 
     private var shareText: String {
         var lines = [event.title, "\(event.dayOfWeek), \(event.month) \(event.day), \(event.year) · \(event.timeWindow)"]
-        if event.locationName != "Location TBA" { lines.append(event.locationName) }
+        if event.locationName != PencildEvent.locationPlaceholder { lines.append(event.locationName) }
         if !event.locationAddress.isEmpty && event.locationAddress != event.locationName { lines.append(event.locationAddress) }
         if !event.notes.isEmpty { lines.append(event.notes) }
         return lines.joined(separator: "\n")
@@ -56,7 +53,7 @@ struct SavedEventDetailView: View {
     private var iPhoneLayout: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                PDTopBar(title: "Event details", showsBack: false) {
+                PDTopBar(title: "Event details", showsBack: false, showsTitle: true) {
                     PDCloseButton(accessibilityLabel: "Close event details")
                 }
                 // Same order as Event Review: details, calendar & reminders, actions, then the source.
@@ -74,7 +71,7 @@ struct SavedEventDetailView: View {
 
     private var iPadLayout: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PDTopBar(title: "Event details", showsBack: false) {
+            PDTopBar(title: "Event details", showsBack: false, showsTitle: true) {
                 PDCloseButton(accessibilityLabel: "Close event details")
             }
             .padding(.horizontal, PDSpacing.lg)
@@ -305,7 +302,7 @@ struct PDScanSourceThumbnail: View {
         guard appState.sourceImages[candidate.id] == nil,
               let identifier = candidate.scannedAsset?.assetIdentifier else { return }
         let authorization = services.photoLibrary.authorizationStatus(for: .readWrite)
-        guard authorization == .authorized || authorization == .limited,
+        guard authorization.access.isUsable,
               let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else { return }
         loading = true
         defer { loading = false }

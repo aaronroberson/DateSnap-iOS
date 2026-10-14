@@ -10,7 +10,8 @@ struct AgendaView: View {
 
     @State private var searchText = ""
     @State private var selectedFilter: AgendaDateFilter = .upcoming
-    @State private var selectedStatus: SavedEventStatus = .saved
+    /// `nil` while All is selected: saved, draft, and archived events together.
+    @State private var selectedStatus: SavedEventStatus? = .saved
     @State private var smartFilter: EventSmartFilter? = nil
 
     private var agendaEvents: [SavedEvent] {
@@ -18,7 +19,7 @@ struct AgendaView: View {
             ? EventSmartFilter.duplicateIDs(in: savedEvents, services: services)
             : []
         return savedEvents
-            .filter { $0.status == selectedStatus && $0.candidate != nil }
+            .filter { (selectedStatus == nil || $0.status == selectedStatus) && $0.candidate != nil }
             .filter { saved in
                 guard let candidate = saved.candidate else { return false }
                 if let smartFilter, !smartFilter.matches(saved, candidate: candidate, duplicates: duplicates) { return false }
@@ -35,27 +36,6 @@ struct AgendaView: View {
 
     private var hasActiveFilters: Bool {
         !searchText.isEmpty || smartFilter != nil
-    }
-
-    private var todayEvents: [SavedEvent] {
-        agendaEvents.filter { saved in
-            guard let date = saved.candidate?.startDate else { return false }
-            return Calendar.current.isDateInToday(date)
-        }
-    }
-
-    private var upcomingEvents: [SavedEvent] {
-        agendaEvents.filter { saved in
-            guard let date = saved.candidate?.startDate else { return false }
-            return !Calendar.current.isDateInToday(date) && date >= Calendar.current.startOfDay(for: Date())
-        }
-    }
-
-    private var pastEvents: [SavedEvent] {
-        agendaEvents.filter { saved in
-            guard let date = saved.candidate?.startDate else { return false }
-            return date < Calendar.current.startOfDay(for: Date())
-        }
     }
 
     private func groupedDays(_ events: [SavedEvent]) -> [(date: Date, events: [SavedEvent])] {
@@ -81,16 +61,11 @@ struct AgendaView: View {
                 if agendaEvents.isEmpty {
                     emptyState
                 } else {
-                    if !todayEvents.isEmpty {
-                        eventSection("Today\u{2019}s events", events: todayEvents, highlighted: true)
-                    }
-                    if !upcomingEvents.isEmpty {
-                        ForEach(groupedDays(upcomingEvents), id: \.date) { day in
-                            eventSection(day.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), events: day.events, highlighted: false)
-                        }
-                    }
-                    if !pastEvents.isEmpty {
-                        ForEach(groupedDays(pastEvents), id: \.date) { day in
+                    // One chronological list, earliest date first; today keeps its highlight.
+                    ForEach(groupedDays(agendaEvents), id: \.date) { day in
+                        if Calendar.current.isDateInToday(day.date) {
+                            eventSection("Today\u{2019}s events", events: day.events, highlighted: true)
+                        } else {
                             eventSection(day.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), events: day.events, highlighted: false)
                         }
                     }
@@ -141,7 +116,7 @@ struct AgendaView: View {
     /// Docked primary action; sits above the custom tab bar.
     private var captureCTA: some View {
         Button {
-            appState.selectedTab = .home
+            Task { await appState.present(.captureSources) }
         } label: {
             Label("Capture new events", systemImage: "plus")
         }
@@ -179,11 +154,23 @@ struct AgendaView: View {
             Text("Agenda")
                 .font(PDFont.jakarta(34, .heavy, relativeTo: .largeTitle))
                 .foregroundStyle(Color.pdOnSurface)
-            Text("Review today\u{2019}s and upcoming saved events captured with Pencil\u{2019}d.")
+            Text("Review today\u{2019}s Pencil\u{2019}d events.")
                 .font(PDFont.jakarta(14, .regular, relativeTo: .subheadline))
                 .foregroundStyle(Color.pdOnSurfaceVariant)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// All clears every other selection (status, smart filter) and includes saved, draft, and
+    /// archived events. Leaving All returns to Saved if no status was picked meanwhile.
+    private func selectFilter(_ filter: AgendaDateFilter) {
+        selectedFilter = filter
+        if filter == .all {
+            selectedStatus = nil
+            smartFilter = nil
+        } else if selectedStatus == nil {
+            selectedStatus = .saved
+        }
     }
 
     private var dateFilters: some View {
@@ -192,7 +179,7 @@ struct AgendaView: View {
                 ForEach(AgendaDateFilter.allCases) { filter in
                     let selected = filter == selectedFilter
                     Button {
-                        selectedFilter = filter
+                        selectFilter(filter)
                     } label: {
                         Text(filter.rawValue)
                             .font(PDFont.jakarta(13, .semibold, relativeTo: .footnote))
@@ -241,6 +228,7 @@ struct AgendaView: View {
         case .draft: return "No draft events"
         case .archived: return "No archived events"
         case .saved: return selectedFilter == .past ? "No past events" : "Your agenda is clear"
+        case nil: return "No events yet"
         }
     }
 
@@ -252,6 +240,7 @@ struct AgendaView: View {
             return selectedFilter == .past
                 ? "Past events will appear here when you choose the Past filter."
                 : "Events you review and save will appear here."
+        case nil: return "Saved, draft, and archived events will appear here."
         }
     }
 

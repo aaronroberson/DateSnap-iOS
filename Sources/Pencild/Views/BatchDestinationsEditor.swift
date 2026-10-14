@@ -24,12 +24,12 @@ struct BatchDestinationsEditor: View {
                         }
                     } label: {
                         HStack(spacing: 4) {
-                            Text(viewModel.selectedCalendar?.title ?? "Choose calendar")
+                            Text(viewModel.selectedCalendar?.title ?? "Choose a calendar (required)")
                                 .lineLimit(1)
                             Image(systemName: "chevron.up.chevron.down").font(.system(size: 9))
                         }
                         .font(PDFont.bodyMD)
-                        .foregroundStyle(Color.pdOnSurface)
+                        .foregroundStyle(viewModel.needsCalendarChoice ? Color.pdWarning : Color.pdOnSurface)
                         .frame(minHeight: 44)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }

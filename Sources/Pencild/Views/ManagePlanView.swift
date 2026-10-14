@@ -166,7 +166,7 @@ struct ManagePlanView: View {
                     }
                 }
                 if tier == .starter {
-                    Button { Task { await appState.present(.plusPaywall) } } label: {
+                    Button { Task { await appState.present(.paywall(opening: .plus)) } } label: {
                         Label("See Plus & Premium Plans", systemImage: "arrow.up.right")
                     }
                     .buttonStyle(PDSecondaryButtonStyle(minHeight: 44))
@@ -261,7 +261,7 @@ struct ManagePlanView: View {
                     .font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
                 Text(PremiumFeature.documentImport.upgradeReason)
                     .font(PDFont.bodyMD).foregroundStyle(Color.pdOnSurfaceVariant)
-                Button { Task { await appState.present(.premiumPaywall) } } label: {
+                Button { Task { await appState.present(.paywall(opening: .premium)) } } label: {
                     Label(tier == .starter ? "Explore Premium" : "Upgrade to Premium", systemImage: "arrow.up.right")
                 }
                 .buttonStyle(PDPrimaryButtonStyle(minHeight: 44))
