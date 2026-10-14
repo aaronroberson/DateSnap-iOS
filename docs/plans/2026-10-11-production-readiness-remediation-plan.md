@@ -176,6 +176,10 @@ implementation tasks, not completion claims:
 4. **[Kept by decision] Provenance-comment review.** Keep the 15 `stitch-id` comments unless the
    mock-data checker is changed to distinguish provenance metadata from runtime
    fixtures. Do not introduce production examples or fabricated data.
+5. **[Done 2026-10-13] Work schedules and multi-date flyers (Premium).** Owner:
+   Claude (Claude Code). One event per dated entry via `ScheduleExtractor`,
+   gated by `PremiumFeature.scheduleImport`; see audit §7.11. Remaining: tune
+   against real scheduling-app screenshots.
 
 ## Progress log
 
@@ -378,3 +382,12 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
 - Batch scans now check the allowance before starting and prompt to
   deselect, upgrade, or discard, instead of skipping items.
 
+2026-10-13: Work schedules and multi-date flyers (see audit §7.11).
+Owner: Claude (Claude Code).
+- `ScheduleExtractor` turns a schedule screenshot into one event per dated
+  entry (shifts, roster rows, multi-date flyers, syllabus lines).
+- Premium feature `scheduleImport`: lower plans see the Premium paywall when a
+  schedule is detected; nothing is saved and no free scan is used.
+- Scans that find several events open them all in Batch Review.
+- Open: tune against real scheduling-app screenshots (Deputy, 7shifts,
+  Homebase, When I Work) before release.

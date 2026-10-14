@@ -345,3 +345,31 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
 - Verified with full-length renders: `10-compact-review-full` and
   `11-compact-detail-full` in `TabletWorkspaceTests`.
 
+### 7.11 Work Schedules and Multi-Date Flyers (2026-10-13)
+Owner: Claude (Claude Code). Status: implemented and tested; Premium.
+- New `ScheduleExtractor` (`Sources/Pencild/Services/ScheduleExtractor.swift`)
+  runs in `EventExtractionCore.extract` before block segmentation. When a
+  screenshot has two or more dated entries, it returns one event per entry
+  instead of one event for the whole image.
+- Reads scheduling-app layouts (date line, then time range, then role),
+  one-line roster rows ("Mon 9/7 9a-5p"), 24-hour day-first rotas, "Week of"
+  headers with weekday-only rows, multi-date flyers ("Fridays: Sep 11, Sep 18,
+  Sep 25 · 7 PM"), and dated syllabus lines. Days off are skipped; overnight
+  shifts end the next day; a bare "9-5" with no minutes or AM/PM is not read
+  as a time. Date ranges defer to the existing single-event path.
+- Titles: work schedules become "Work shift · <role>"; other entries keep
+  their own label ("Quiz 1") or the flyer headline.
+- **Premium gate (paywall-on-attempt, §7.9):** `PremiumFeature.scheduleImport`
+  is checked in `ScanViewModel` right after OCR, before any event is created.
+  Starter and Plus get the Premium paywall; nothing is saved and no free scan
+  is used. Batch scans flag the item and offer the upgrade in Batch Review.
+  While entitlements are still being checked the scan is allowed, matching
+  the scan limits.
+- An allowed scan that finds several events opens them all in Batch Review
+  instead of opening the first and leaving the rest in Review.
+- The Premium paywall and Manage Plan list "Work schedules & multi-date
+  flyers".
+- This backs the "work schedules" claim in the promotional text and the
+  "work schedule" keywords (`docs/runbooks/APP-REVIEW-NOTES.md`).
+- Tests: `ScheduleExtractionTests` (8), `ScheduleGatingTests` (5, real Vision
+  OCR on a rendered schedule), and 2 routing tests in `AppStateNavigationTests`.
