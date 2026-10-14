@@ -188,6 +188,24 @@ struct BatchReviewView: View {
         if !session.skipped.isEmpty {
             VStack(alignment: .leading, spacing: PDSpacing.sm) {
                 PDSectionHeader(title: "Skipped screenshots", trailing: "\(session.skipped.count)")
+                if let feature = session.lockedFeature {
+                    Button { showPremiumPaywall = true } label: {
+                        HStack(spacing: PDSpacing.sm) {
+                            Image(systemName: "sparkle").foregroundStyle(Color.pdPrimary)
+                            Text(feature.upgradeReason)
+                                .font(PDFont.bodySM)
+                                .foregroundStyle(Color.pdOnSurface)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right").foregroundStyle(Color.pdOnSurfaceVariant)
+                        }
+                        .padding(PDSpacing.md)
+                        .frame(minHeight: 44)
+                        .background(Color.pdSurfaceContainer.opacity(0.85), in: RoundedRectangle(cornerRadius: PDRadius.card))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Opens upgrade options")
+                }
                 if session.hitScanLimit {
                     Button { showPlusPaywall = true } label: {
                         HStack(spacing: PDSpacing.sm) {

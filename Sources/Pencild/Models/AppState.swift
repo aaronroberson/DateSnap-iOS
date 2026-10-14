@@ -161,6 +161,11 @@ final class AppState: ObservableObject {
             await present(.plusPaywall)
             return
         }
+        if let feature = session.lockedFeature, session.events.isEmpty {
+            showToast(feature.upgradeReason)
+            await present(feature.requiredTier == .premium ? .premiumPaywall : .plusPaywall)
+            return
+        }
         await presentBatchReview(session)
     }
 
@@ -224,15 +229,26 @@ final class AppState: ObservableObject {
     }
 
     /// Routes a finished scan to review, the no-dates recovery screen, or an error toast.
-    func handleScanOutcome(_ scan: ScanViewModel) async {
+    /// Several events from one scan (a work schedule or multi-date flyer) open together in Batch Review.
+    func handleScanOutcome(_ scan: ScanViewModel, services: ServiceContainer) async {
         switch scan.stage {
         case .complete(let candidates):
             rememberSourceImage(scan.currentProcessingImage, for: candidates)
             guard let first = candidates.first else { return }
-            await present(.eventReviewEdit(first.toPencildEvent()))
-            if candidates.count > 1 {
-                showToast("\(candidates.count - 1) more event\(candidates.count == 2 ? "" : "s") waiting in Review")
+            guard candidates.count > 1 else {
+                await present(.eventReviewEdit(first.toPencildEvent()))
+                return
             }
+            let events = candidates.map { candidate in
+                BatchEventItem(
+                    candidate: candidate,
+                    screenshotID: UUID(),
+                    screenshotLabel: candidate.startDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()),
+                    screenshotImage: scan.currentProcessingImage,
+                    services: services
+                )
+            }
+            await presentBatchReview(BatchReviewSession(events: events))
         case .noDatesFound(let rawText):
             lastScanRawText = rawText
             lastScanImage = scan.currentProcessingImage
@@ -244,6 +260,9 @@ final class AppState: ObservableObject {
         case .scanLimitReached:
             showToast(PlanLimits.scanLimitMessage)
             await present(.plusPaywall)
+        case .requiresUpgrade(let feature):
+            showToast(feature.upgradeReason)
+            await present(feature.requiredTier == .premium ? .premiumPaywall : .plusPaywall)
         case .failed(let message):
             await dismissPresentedSheets()
             showToast(message)

@@ -26,6 +26,8 @@ public final class ScanViewModel: ObservableObject {
         case alreadySaved(count: Int)
         /// The free plan's monthly scan allowance is used up; nothing was scanned.
         case scanLimitReached
+        /// The scan needs a feature the plan doesn't include (e.g. a work schedule); nothing was saved.
+        case requiresUpgrade(PremiumFeature)
         case failed(String)
 
         public static func == (lhs: ScanStage, rhs: ScanStage) -> Bool {
@@ -37,6 +39,8 @@ public final class ScanViewModel: ObservableObject {
             case (.noDatesFound(let a), .noDatesFound(let b)):
                 return a == b
             case (.alreadySaved(let a), .alreadySaved(let b)):
+                return a == b
+            case (.requiresUpgrade(let a), .requiresUpgrade(let b)):
                 return a == b
             case (.failed(let a), .failed(let b)):
                 return a == b
@@ -209,6 +213,13 @@ public final class ScanViewModel: ObservableObject {
             texts.append(ocrResult.fullText)
             confidences.append(ocrResult.meanConfidence)
 
+            // Work schedules and multi-date flyers are Premium: check before creating any events.
+            if !isAllowed(.scheduleImport),
+               ScheduleExtractor.detects(ocrResult, locale: .current, anchor: Date(), calendar: .current) {
+                stage = .requiresUpgrade(.scheduleImport)
+                return
+            }
+
             // Step 2: On-Device NaturalLanguage & Regex Event Extraction
             // Step 2: Deterministic extraction, then (when useful and available) on-device interpretation
             stage = .extractingEvents
@@ -320,6 +331,15 @@ public final class ScanViewModel: ObservableObject {
             stage = .alreadySaved(count: alreadySavedCount)
         } else {
             stage = .noDatesFound(rawText: fullText)
+        }
+    }
+
+    /// Allowed while entitlements are still being checked, so a subscriber is never blocked by a
+    /// slow StoreKit read (matching `PlanLimits`).
+    private func isAllowed(_ feature: PremiumFeature) -> Bool {
+        switch FeatureAccessPolicy.decision(for: feature, snapshot: entitlements.entitlementSnapshot) {
+        case .allowed, .denied(.checkingEntitlements): return true
+        case .denied: return false
         }
     }
 

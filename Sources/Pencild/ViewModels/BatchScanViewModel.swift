@@ -96,6 +96,8 @@ final class BatchScanViewModel: ObservableObject {
     @Published private(set) var currentLabel: String = ""
     /// True when the free plan's monthly scans ran out partway through this batch.
     @Published private(set) var hitScanLimit = false
+    /// A screenshot needed a feature the plan doesn't include (e.g. a work schedule).
+    @Published private(set) var lockedFeature: PremiumFeature?
 
     private let services: ServiceContainer
 
@@ -121,6 +123,7 @@ final class BatchScanViewModel: ObservableObject {
         isProcessing = true
         items = sources.enumerated().map { BatchScanItem(label: Self.label(forIndex: $0.offset + 1)) }
         hitScanLimit = false
+        lockedFeature = nil
         defer {
             isProcessing = false
             currentLabel = ""
@@ -203,6 +206,9 @@ final class BatchScanViewModel: ObservableObject {
         case .scanLimitReached:
             hitScanLimit = true
             item.fail(PlanLimits.scanLimitMessage)
+        case .requiresUpgrade(let feature):
+            lockedFeature = feature
+            item.fail(feature.upgradeReason)
         case .failed(let message):
             item.fail(message)
         case .idle, .fetchingImage, .processingOCR, .extractingEvents, .interpreting:
@@ -275,12 +281,15 @@ final class BatchReviewSession: ObservableObject, Identifiable {
     @Published private(set) var lastSummary: BatchSaveSummary? = nil
     /// Some screenshots weren't scanned because the free plan's monthly scans ran out.
     private(set) var hitScanLimit = false
+    /// A screenshot needed a feature the plan doesn't include.
+    private(set) var lockedFeature: PremiumFeature?
 
     var actionableCount: Int { events.filter(\.isActionable).count }
 
     /// Builds the review session from a finished batch scan (production path).
     init(scan: BatchScanViewModel, services: ServiceContainer) {
         hitScanLimit = scan.hitScanLimit
+        lockedFeature = scan.lockedFeature
         for item in scan.items {
             guard item.isSuccess else {
                 skipped.append(item)

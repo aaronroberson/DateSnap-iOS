@@ -59,7 +59,7 @@ struct AppStateNavigationTests {
         let scan = ScanViewModel(services: ServiceContainer.live())
         scan.stage = .alreadySaved(count: 2)
 
-        await appState.handleScanOutcome(scan)
+        await appState.handleScanOutcome(scan, services: ServiceContainer.live())
 
         #expect(appState.activeModal == nil)
         #expect(appState.selectedTab == .agenda)
@@ -73,10 +73,38 @@ struct AppStateNavigationTests {
         let scan = ScanViewModel(services: ServiceContainer.live())
         scan.stage = .noDatesFound(rawText: "Garage sale this weekend")
 
-        await appState.handleScanOutcome(scan)
+        await appState.handleScanOutcome(scan, services: ServiceContainer.live())
 
         #expect(appState.activeModal?.id == AppModalScreen.noDatesFound.id)
         #expect(appState.lastScanRawText == "Garage sale this weekend")
+    }
+
+    @Test("A schedule scan on a lower plan presents the Premium paywall")
+    func requiresUpgradeOutcomePresentsPremiumPaywall() async {
+        let appState = AppState()
+        let scan = ScanViewModel(services: ServiceContainer.live())
+        scan.stage = .requiresUpgrade(.scheduleImport)
+
+        await appState.handleScanOutcome(scan, services: ServiceContainer.live())
+
+        #expect(appState.activeModal?.id == AppModalScreen.premiumPaywall.id)
+        #expect(appState.toastMessage == PremiumFeature.scheduleImport.upgradeReason)
+    }
+
+    @Test("A scan that finds several events opens them all in Batch Review")
+    func multipleCandidatesOpenBatchReview() async {
+        let appState = AppState()
+        await appState.present(.recentScreenshots)
+        let scan = ScanViewModel(services: ServiceContainer.live())
+        scan.stage = .complete(candidates: [
+            EventCandidate(title: "Work shift", startDate: testAnchor),
+            EventCandidate(title: "Work shift", startDate: testAnchor.addingTimeInterval(86_400)),
+        ])
+
+        await appState.handleScanOutcome(scan, services: ServiceContainer.live())
+
+        #expect(appState.activeModal == nil)
+        #expect(appState.batchReviewSession?.events.count == 2)
     }
 
     @Test("Settings deep links are typed routes consumed by the Settings stack")

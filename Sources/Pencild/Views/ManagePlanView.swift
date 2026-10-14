@@ -227,6 +227,7 @@ struct ManagePlanView: View {
         case .documentImport: return "PDF & Files import"
         case .duplicateClusters: return "Possible duplicate grouping"
         case .advancedReminderPlans: return "Tailored reminder plans"
+        case .scheduleImport: return "Work schedules & multi-date flyers"
         }
     }
 
@@ -237,6 +238,7 @@ struct ManagePlanView: View {
         case .documentImport: return "doc.text"
         case .duplicateClusters: return "square.on.square"
         case .advancedReminderPlans: return "bell.badge"
+        case .scheduleImport: return "calendar.day.timeline.left"
         }
     }
 

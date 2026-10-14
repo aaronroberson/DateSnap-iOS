@@ -39,6 +39,11 @@ struct PremiumPaywallView: View {
                                 isHighlighted: true
                             )
                             featureRow(
+                                icon: "calendar.day.timeline.left", iconColor: .pdPrimary,
+                                title: "Work schedules & multi-date flyers",
+                                subtitle: PremiumFeature.scheduleImport.upgradeReason
+                            )
+                            featureRow(
                                 icon: "sparkles", iconColor: .pdPrimary,
                                 title: "Likely event triage",
                                 subtitle: PremiumFeature.likelyEventTriage.upgradeReason

@@ -150,7 +150,7 @@ struct RecentScreenshotsView: View {
             .batchAllowancePrompt(
                 $batchOverLimit,
                 deselectTitle: { "Deselect \($0.excess)" },
-                onDeselect: { _ in },
+                onDeselect: { info in trimSelection(to: info.remaining) },
                 onUpgrade: { showPlusPaywall = true },
                 onDiscard: {
                     selectedAssetIDs.removeAll()
@@ -238,11 +238,17 @@ struct RecentScreenshotsView: View {
         }
     }
 
+    /// Keeps the earliest selected screenshots when the free allowance prompt asks the user
+    /// to reduce the batch. The gallery order is the same order used to build `selectedAssets`.
+    private func trimSelection(to count: Int) {
+        selectedAssetIDs = Set(selectedAssets.prefix(max(0, count)).map(\.localIdentifier))
+    }
+
     private func scan(_ asset: PHAsset) {
         dismiss()
         Task {
             await scanViewModel.scanAsset(asset, modelContext: modelContext)
-            await appState.handleScanOutcome(scanViewModel)
+            await appState.handleScanOutcome(scanViewModel, services: services)
         }
     }
 

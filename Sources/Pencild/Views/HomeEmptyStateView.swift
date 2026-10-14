@@ -604,7 +604,7 @@ struct HomeEmptyStateView: View {
     private func runScan(_ work: @escaping @MainActor () async -> Void) {
         Task {
             await work()
-            await appState.handleScanOutcome(scanViewModel)
+            await appState.handleScanOutcome(scanViewModel, services: services)
         }
     }
 
@@ -614,7 +614,7 @@ struct HomeEmptyStateView: View {
         Task {
             _ = await scanViewModel.scanDocument(at: url, modelContext: modelContext)
             guard case .complete(let candidates) = scanViewModel.stage, candidates.count > 1 else {
-                await appState.handleScanOutcome(scanViewModel)
+                await appState.handleScanOutcome(scanViewModel, services: services)
                 return
             }
 

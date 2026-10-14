@@ -17,11 +17,13 @@ public enum PremiumFeature: String, CaseIterable, Sendable {
     case duplicateClusters
     /// Suggested reminder plans including RSVP-deadline reminders.
     case advancedReminderPlans
+    /// Work schedules and multi-date flyers split into one event per date.
+    case scheduleImport
 
     public var requiredTier: SubscriptionTier {
         switch self {
         case .automaticScreenshotDetection, .likelyEventTriage: return .plus
-        case .documentImport, .duplicateClusters, .advancedReminderPlans: return .premium
+        case .documentImport, .duplicateClusters, .advancedReminderPlans, .scheduleImport: return .premium
         }
     }
 
@@ -33,6 +35,7 @@ public enum PremiumFeature: String, CaseIterable, Sendable {
         case .documentImport: return "Premium scans PDFs and files, every page."
         case .duplicateClusters: return "Premium groups likely duplicates across your archive."
         case .advancedReminderPlans: return "Premium adds deadline reminders and tailored alert plans."
+        case .scheduleImport: return "Premium turns work schedules and multi-date flyers into separate events."
         }
     }
 }
