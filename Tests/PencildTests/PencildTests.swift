@@ -37,6 +37,7 @@ struct PencildSmokeTests {
     func testPencildLinks() {
         #expect(PencildLinks.support.absoluteString == "https://getpencild.com/support")
         #expect(PencildLinks.privacyPolicy.absoluteString == "https://getpencild.com/privacy")
+        #expect(Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String == "© 2026 LiminalForge, LLC")
         #expect(PencildLinks.termsOfUse.absoluteString == "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
         #expect(PencildLinks.support == PencildLinks.support)
     }

@@ -389,9 +389,20 @@ struct SettingsHubView: View {
                 .font(PDFont.bodySM)
                 .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
                 .frame(maxWidth: .infinity, alignment: .center)
+            if let copyright {
+                Text(copyright)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
         }
         .padding(.top, PDSpacing.xs)
         .padding(.bottom, PDSpacing.xl)
+    }
+
+    /// Copyright notice from Info.plist (`NSHumanReadableCopyright`).
+    private var copyright: String? {
+        Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String
     }
 
     private var appVersion: String {
