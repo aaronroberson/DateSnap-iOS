@@ -100,7 +100,7 @@ The workflow flow is logical and nearly seamless: **Home → Scan → Review →
 | `FAQTopic` answers (all 4) | Various (see code) | Info icon next to question that expands with brief key point |
 | `quickActions` "Troubleshoot OCR" subtitle | "Fix unread or blurred flyer dates" | "Try a clearer image with event details in focus. Check extracted date/time/location before saving." |
 | `privacyGuarantee` body | "Text recognition uses Apple Vision on this device..." | "Optional on-device Apple Intelligence interpretation available for ambiguous flyers." |
-| `humanSupport` "Submit a Bug Report" body | "Email support@pencild.app with your diagnostic summary..." | "Diagnostic captures are sanitized on-device — no photo content is ever attached." |
+| `humanSupport` "Submit a Bug Report" body | "Email support@getpencild.com with your diagnostic summary..." | "Diagnostic captures are sanitized on-device — no photo content is ever attached." |
 | `humanSupport` "Request a Feature" body | "Feature requests go straight to the engineering backlog." | "Roadmap shaped by most-requested items each release cycle." |
 
 **UI/UX Assessment**: ✅ **Self-evident** — The searchable FAQ structure is intuitive. The topic guide sheet with "Got it" button provides clear onboarding. The diagnostic summary copy is a helpful support touch. The privacy guarantee is clearly stated before support contacts.

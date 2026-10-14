@@ -18,8 +18,8 @@ Updated: 2026-10-10
 
 - Display name: `Pencil'd`
 - App bundle ID: `com.pencild.app`; test bundle ID: `com.pencild.app.tests`
-- Local subscription IDs: `com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, and `com.pencild.premium.annual`
-- Local StoreKit prices: Plus $3.99/month or $24.99/year; Premium $6.99/month or $39.99/year. The local file configures a seven-day introductory offer for all four products.
+- Local subscription IDs: `com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.premium.monthly`, and `com.pencild.premium.annual`; lifetime non-consumables `com.pencild.plus.lifetime` and `com.pencild.premium.lifetime` (added 2026-10-13)
+- Local StoreKit prices: Plus $3.99/month, $24.99/year, or $39.99 lifetime; Premium $6.99/month, $39.99/year, or $79.99 lifetime. The local file configures a seven-day introductory offer for the four subscriptions; lifetime is offered in the app through 2027-04-13.
 - These are repository-local values only. App Store Connect registration, live product/price/trial parity, legal name, domain ownership, and publication approval have not been verified.
 - The customer-facing tier labels are `Pencil'd Free`, `Pencil'd Plus`, and `Pencil'd Premium`.
 
@@ -46,6 +46,6 @@ Use `xcrun simctl list devices available` to choose an installed simulator. Upda
 ## Remaining owner/account checks
 
 - Confirm App Store Connect has the intended app record, bundle ID, subscription IDs, group, prices, and trials before release.
-- Confirm legal/support URLs and mailbox ownership; the current app still points to the existing `pencild.app` endpoints.
+- Confirm legal/support URLs and mailbox ownership: the app uses `https://getpencild.com/privacy`, `https://getpencild.com/support`, and `support@getpencild.com` (updated 2026-10-13; `pencild.com` and `pencild.app` belong to someone else). Those pages and the mailbox must be live before release.
 - Review resolved icon assets in the built app and test actual permission/review/purchase flows on supported simulator/device configurations.
 - Do not upload, deploy, or submit without separate explicit authorization.
