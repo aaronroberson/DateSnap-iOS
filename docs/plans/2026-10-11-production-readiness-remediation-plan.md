@@ -411,7 +411,10 @@ Owner: Claude (Claude Code).
 - Removed breadcrumbs from `EventReviewEditView` header (Agenda/Review > Verify details HStack)
 - Reordered form section: "CALENDAR & REMINDERS" now appears above "SUGGESTIONS"
 - Removed "Aa" icon (`textformat`) from `EventReviewFieldsCard` title field
-- Removed "Tailored alert plans with Premium" button when user lacks Premium entitlement
+- Correction (2026-10-13): the tailored-alerts control was not removed. Without
+  Premium it stays visible and opens the Premium paywall; the suggested plan is
+  not shown. Policy: Premium controls stay visible behind the paywall, and the
+  results of Premium operations are not shown without the entitlement.
 - The earlier 131-test/build result is historical and is not current evidence;
   the current generic iOS build is blocked by CoreSimulatorService during asset
   processing (see audit §7.11).

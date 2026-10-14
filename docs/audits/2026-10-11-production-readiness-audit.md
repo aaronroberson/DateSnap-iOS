@@ -293,7 +293,10 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
 - **Subscribers are never limited by mistake.** While entitlements are still
   being checked, paid allowances apply.
 - **Every Plus and Premium feature stays visible to all users.** Attempting a
-  feature without the entitlement opens the paywall instead of running it:
+  feature without the entitlement opens the paywall instead of running it.
+  The control is shown; the result of the Premium operation is not (for
+  example, the tailored-alerts row opens the paywall without revealing the
+  suggested plan, and a detected schedule creates no events):
   - Scanning past the allowance opens the Plus paywall.
   - Batch scans are checked before they start, so items are never skipped
     silently. If the selection is larger than the free scans left, the user is
@@ -393,7 +396,11 @@ Owner: Claude (Claude Code). Status: implemented and tested; Premium.
 - Paywall CTA titles standardized to `"UPGRADE TO PLUS"` / `"UPGRADE TO PREMIUM"`.
 - Removed breadcrumbs from `EventReviewEditView` header; reordered form to
   place "CALENDAR & REMINDERS" above "SUGGESTIONS"; removed "Aa" icon from
-  title field; removed "Tailored alert plans" button for non-entitled users.
+  title field. Correction (2026-10-13): the "Tailored alert plans" control was
+  not removed. Without Premium it stays visible as "Tailored alerts for this
+  event" and opens the Premium paywall; the suggested plan itself is not
+  shown. Policy: Premium controls stay visible and open the paywall; the
+  results of Premium operations are not shown without the entitlement.
 - The earlier 131-test/build claim is historical and is not current evidence;
   the current generic iOS build is blocked by CoreSimulatorService during asset
   processing (see §7.11). No current test pass is claimed.
