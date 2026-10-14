@@ -9,7 +9,7 @@ This runbook outlines the step-by-step procedures for building, archiving, valid
 1. **Apple Developer Account:** Active Apple Developer Program enrollment with App Manager or Admin role.
 2. **Xcode Toolchain:** Xcode 27 with Apple Swift 6.4. Record the exact versions with `xcodebuild -version` and `xcrun swift --version` in the release evidence.
 3. **App Store Connect API Key:** (Optional for CI/CD) An App Store Connect API Key with Admin or App Manager access (`AuthKey_XXXXXXXXXX.p8`).
-4. **Hardware Testing Devices:** Physical iPhone running iOS 18.0+ for verifying Camera Roll, EventKit, and StoreKit Sandbox flows.
+4. **Hardware Testing Devices:** Physical iPhone on the current iOS release for verifying Camera Roll, EventKit, and StoreKit Sandbox flows, plus an iOS 17 device or simulator runtime for the minimum-version smoke pass (the app supports iOS 17.0+; Apple Intelligence features need iOS 26).
 
 ---
 

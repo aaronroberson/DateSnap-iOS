@@ -1,6 +1,6 @@
 # TestFlight QA Verification Plan
 
-This checklist outlines the manual and automated validation procedures for TestFlight builds of Pencild on physical iOS 18+ hardware.
+This checklist outlines the manual and automated validation procedures for TestFlight builds of Pencil'd on physical iPhone hardware. The app supports iOS 17.0 and later (`deploymentTarget` in `project.yml`), so test on the current iOS release and on iOS 17.
 
 ---
 
@@ -34,13 +34,22 @@ This checklist outlines the manual and automated validation procedures for TestF
 
 ### 3. StoreKit 2 & Paywall Flows
 - [ ] **StoreKit Sandbox Account:** Log into Settings > Developer > Sandbox Apple Account.
-- [ ] **Product Loading:** Open `PlusPaywallView` and `PremiumPaywallView`. Verify prices reflect the Sandbox storefront ($4.99/mo, $39.99/yr, $8.99/mo, $69.99/yr).
-- [ ] **Free Trial Purchase:** Tap "Start 7-Day Free Trial" on Plus plan. Verify Apple StoreKit confirmation sheet displays correctly.
-- [ ] **Entitlement Activation:** Complete purchase. Verify app state immediately unlocks Plus badge and auto-detection features.
-- [ ] **Restore Purchases:** Reinstall app or launch on secondary sandbox device. Tap "Restore" and confirm active subscription is detected via `Transaction.currentEntitlements`.
+- [ ] **Product Loading:** Open `PlusPaywallView` and `PremiumPaywallView`. Verify the prices come from the Sandbox storefront and match App Store Connect. US prices: Plus $3.99/mo, $24.99/yr, $39.99 lifetime; Premium $6.99/mo, $39.99/yr, $79.99 lifetime. Annual is selected by default.
+- [ ] **Lifetime Offer Window:** Verify the Lifetime option and its end date ("Pay once · offer ends Apr 13, 2027") show on both paywalls, and that Manage Plan shows lifetime owners "Lifetime access".
+- [ ] **Free Trial Purchase:** On the Plus paywall with Annual or Monthly selected, tap the trial button (e.g. "Start 1-Week Free Trial" for an eligible account). Verify the Apple StoreKit confirmation sheet displays correctly.
+- [ ] **Entitlement Activation:** Complete purchase. Verify the plan unlocks immediately: Plus shows auto-detection; Premium also allows PDF import and work schedules.
+- [ ] **Lifetime Purchase:** Buy each lifetime product on a fresh sandbox account. Verify the matching tier unlocks and nothing renews.
+- [ ] **Restore Purchases:** Reinstall app or launch on secondary sandbox device. Tap "Restore Purchases" in a paywall or Manage Plan and confirm the subscription or lifetime purchase is detected via `Transaction.currentEntitlements`.
 - [ ] **Cancellation / Expiration:** In App Store Sandbox settings, accelerate subscription renewal to trigger expiration. Confirm app gracefully downgrades to `Starter` tier.
 
-### 4. On-Device Processing & Offline Assurance
+### 4. Free Plan Limits & Paywall-on-Attempt
+- [ ] **Scan Allowance:** On the free plan, Home shows "N of 10 free scans left this month". Rescanning a flyer that was already found does not use a scan. After 10 scans that found new events, the next scan opens the Plus paywall without scanning.
+- [ ] **Batch Allowance:** With fewer free scans left than selected screenshots, the app asks to deselect, upgrade, or discard before scanning. Nothing is skipped silently.
+- [ ] **Alerts:** On the free plan an event keeps 1 alert; adding another opens the paywall. Plus and Premium allow 3.
+- [ ] **Locked Controls Stay Visible:** On the free plan, PDF/file import, tailored alerts, RSVP-deadline reminders, and the duplicates filter are visible. Tapping each opens the matching paywall. No suggested alert plan or deadline date is revealed.
+- [ ] **Work Schedules (Premium):** Scan a screenshot of a work schedule on Free or Plus. Verify the Premium paywall opens and no events are created. On Premium, verify each shift becomes its own event and they open together in Batch Review.
+
+### 5. On-Device Processing & Offline Assurance
 - [ ] **Airplane Mode Scan:** Enable Airplane Mode (Wi-Fi and Cellular OFF).
 - [ ] Perform full workflow: Screenshot OCR -> Date Extraction -> Calendar Sync -> Reminder Creation.
 - [ ] Confirm the core scan, extraction, Calendar, and Reminders workflow succeeds without network connectivity. User-opened web/Maps links and StoreKit storefront operations are out of scope for this offline assertion.
@@ -50,10 +59,11 @@ This checklist outlines the manual and automated validation procedures for TestF
 ## Definition of Release Candidate (Gate Checklist)
 
 A build qualifies for App Store submission **ONLY IF**:
-1. All Critical and High test cases pass on physical iPhone hardware running iOS 18.
-2. Crash-free user sessions reach 100% in internal TestFlight testing.
-3. No memory leaks detected in Instruments during repeated Vision OCR cycles.
-4. No app-originated telemetry or product-data upload is observed via Instruments or a configured proxy. Record StoreKit/App Store system traffic and user-initiated web/Maps links separately rather than treating them as product-data uploads.
+1. All Critical and High test cases pass on physical iPhone hardware running the current iOS release.
+2. A smoke pass on iOS 17 (physical device or iOS 17 simulator runtime) passes: launch, sample flyer scan, Photo library scan, review and save to Calendar, one paywall purchase, and Restore Purchases. Apple Intelligence features are unavailable there, so the rules-based extraction path must work on its own.
+3. Crash-free user sessions reach 100% in internal TestFlight testing.
+4. No memory leaks detected in Instruments during repeated Vision OCR cycles.
+5. No app-originated telemetry or product-data upload is observed via Instruments or a configured proxy. Record StoreKit/App Store system traffic and user-initiated web/Maps links separately rather than treating them as product-data uploads.
 
 ## Evidence Record
 
