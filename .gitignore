@@ -10,6 +10,8 @@ DerivedData/
 .freebuff/
 lancedb/
 __pycache__/
+.vscode/
+.codebase-memory/
 
 # Graphify knowledge-graph generated output (regenerable; never source)
 graphify-out/
