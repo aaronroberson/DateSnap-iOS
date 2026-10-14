@@ -4,6 +4,58 @@
 
 ---
 
+## Decision Record: Plans, Limits, and Paywalls (2026-10-13)
+
+**Status:** Implemented as intended design. Supersedes conflicting
+recommendations below (7 free scans, 30-day history, images-only free tier,
+one shared comparison paywall, 90-day lifetime window), which are kept as the
+original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.md`
+§7.6, §7.8, §7.9, §7.11, and §7.12.
+
+**Plans and prices** (StoreKit `Product` prices; `Pencild.storekit` values shown):
+
+| Plan | Monthly | Annual | Lifetime (intro offer) |
+|---|---|---|---|
+| Plus | $3.99 | $24.99 | $39.99 |
+| Premium | $6.99 | $39.99 | $79.99 |
+
+- Monthly and annual plans carry a 1-week free trial. Annual is selected by
+  default on the paywall.
+- Lifetime is a non-consumable, offered for Plus and Premium through
+  2027-04-13, with the end date enforced in the app (`LifetimeIntroOffer`).
+
+**Free plan:**
+- 10 scans per month. Only scans that find a new event count, so rescanning
+  an unsaved flyer doesn't use a scan. Resets on the 1st.
+- 1 alert per event (paid plans: 3).
+- No history limit.
+- Paid plans: unlimited scans.
+
+**Feature tiers** (`PremiumFeature`):
+- **Plus:** automatic screenshot detection, likely-event triage.
+- **Premium:** PDF and file import, duplicate clusters, tailored reminder plans
+  and RSVP-deadline reminders, work schedules and multi-date flyers.
+
+**Paywall rules:**
+- **Paid controls stay visible to everyone.** Using one without the
+  entitlement opens the paywall instead of running the operation. Paid
+  controls are never hidden or removed.
+- **Paid results are never revealed without the entitlement.** For example,
+  the tailored-alerts row opens the paywall without showing the suggested
+  plan, and a detected work schedule creates no events and uses no free scan.
+- **Batches never skip items silently.** If a selection is bigger than the
+  free scans left, the user chooses to deselect, upgrade, or discard before
+  anything is scanned. An item that needs a higher plan is flagged in Batch
+  Review with an upgrade row.
+- **Subscribers are never blocked by a slow entitlement check.** While
+  StoreKit is still checking, limits and gated features are allowed.
+- **Paywalls are interstitials.** Separate Plus and Premium sheets can open
+  from anywhere, with a close button at the top right and an "Upgrade to …"
+  headline. Restore Purchases is in the paywall body, not the top bar, by
+  design.
+
+---
+
 ## Executive Recommendation
 
 - **Three-tier model: Free / Pencild Plus / Pencild Premium.** Free limits by scan volume and file type; Plus serves everyday screenshot/flyer users; Premium serves PDF and document-heavy workflows.

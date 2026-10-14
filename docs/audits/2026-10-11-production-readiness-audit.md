@@ -384,6 +384,23 @@ Owner: Claude (Claude Code). Status: implemented and tested; Premium.
   available.
 - Open: tune the parser against real scheduling-app screenshots.
 
+### 7.12 Implemented as Intended Design (2026-10-13)
+These behaviors are deliberate. They are not open findings and should not be
+"fixed" without a new product decision. Full detail, prices, and rationale are
+in the decision record in `docs/business/Pencild-Monetization-Strategy.md`.
+
+| Behavior | Where | Status |
+|---|---|---|
+| Paid controls stay visible; using one without the entitlement opens the paywall | Review suggestions, RSVP-deadline row, duplicate filter, file import, screenshot detection | Implemented as intended design |
+| Results of paid operations are not shown without the entitlement (tailored alert plan, events from a detected schedule) | `ReviewSuggestionsCard`, `EventActionsChecklist`, `ScanViewModel` schedule gate | Implemented as intended design |
+| Free plan: 10 scans/month (counting only scans that find a new event), 1 alert per event, no history limit | `PlanLimits`, `ScanUsageStore` | Implemented as intended design |
+| Batches never skip items: deselect / upgrade / discard prompt; items that need a higher plan are flagged in Batch Review | `BatchAllowancePrompt`, `BatchReviewView` | Implemented as intended design |
+| Entitlement-checking state is treated as allowed for limits and gates | `PlanLimits`, `ScanViewModel.isAllowed` | Implemented as intended design |
+| Work schedules and multi-date flyers are Premium and become one event per entry; multi-event scans open in Batch Review | `ScheduleExtractor`, `PremiumFeature.scheduleImport`, `AppState.handleScanOutcome` | Implemented as intended design |
+| Paywalls are interstitials with a top-right close button, an "Upgrade to …" headline, and Restore Purchases in the body (not the top bar) | `PlusPaywallView`, `PremiumPaywallView` | Implemented as intended design |
+| Lifetime purchase offered only through 2027-04-13 (date enforced in the app) | `LifetimeIntroOffer` | Implemented as intended design |
+| App Store listing: name, subtitle, keywords, promo text, categories | `docs/runbooks/APP-REVIEW-NOTES.md`, decision record in `Pencild_Brand_Marketing_Research.md` | Decided; ships with the release |
+
 2026-10-14: UI/UX audit follow-up (this session).
 - All items from `2026-10-10-profile-settings-followup-audit.md` addressed:
   - `BatchReviewView.swift`: `dsGlassCard` → `PDCard`, button style fixes

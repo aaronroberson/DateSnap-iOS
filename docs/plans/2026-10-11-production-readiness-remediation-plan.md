@@ -394,6 +394,11 @@ Owner: Claude (Claude Code).
   Homebase, When I Work) before release.
 - iPhone 17 and iPad Pro 11-inch (M5): 172 tests in 37 suites passed.
 
+2026-10-13: Plans, limits, and paywall rules marked as intended design.
+- Recorded in audit §7.12 and in the decision record in
+  `docs/business/Pencild-Monetization-Strategy.md`. These are deliberate
+  behaviors, not open findings.
+
 2026-10-14: UI/UX audit follow-up (this session).
 - Addressed all items from `2026-10-10-profile-settings-followup-audit.md`:
   - `BatchReviewView.swift`: `dsGlassCard` → `PDCard`, button style fixes
