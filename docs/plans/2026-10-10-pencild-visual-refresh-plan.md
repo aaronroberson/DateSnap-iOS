@@ -189,8 +189,13 @@ project references; `EventExtractionCore.extract` invokes it before the regular
 single-event segmentation path. The schedule parser is intentionally not marked
 complete until its tests and a supported build environment pass. The regular
 date-inference path remains the fallback for single flyers and unsupported
-patterns. Codebase-memory MCP was refreshed against the current checkout and
-includes the new extraction call path and tests.
+patterns. Codebase-memory MCP was refreshed against the current checkout
+(20,348 nodes / 31,146 edges; status ready) and includes the new extraction call
+path and tests. A current generic iOS build reached Swift compilation setup but
+failed during asset-catalog processing because CoreSimulatorService and
+`simdiskimaged` are unavailable; no current build or test pass is claimed.
+The Recent Screenshots allowance prompt now trims the selected batch when the
+user chooses its deselect action, so the free-plan recovery path is actionable.
 
 ## Verification
 - `xcodegen generate --spec project.yml`, then:
@@ -290,16 +295,16 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 
 ## Screen mapping (Stitch → Swift), status
 (Full detail: the §5 matrix in the docs plan.)
-- Home-Screen (newest) → `HomeEmptyStateView`: partial–close.
+- Home-Screen (newest) → `HomeEmptyStateView`: implemented; runtime visual comparison remains pending.
 - Splash, Home-Empty-State → `PencilSplashView`: close.
-- Event Details / Saved Event Detail → `SavedEventDetailView`: partial.
-- Edit Event / Event Review & Edit → `EventReviewEditView` + `InterpretationReviewViews`: partial.
-- Reminder Schedule Editor → `ReminderScheduleEditorView`: partial.
-- History & Archive → `HistoryArchiveView`: partial.
+- Event Details / Saved Event Detail → `SavedEventDetailView`: implemented; runtime visual comparison remains pending.
+- Edit Event / Event Review & Edit → `EventReviewEditView` + `InterpretationReviewViews`: implemented; runtime visual comparison remains pending.
+- Reminder Schedule Editor → `ReminderScheduleEditorView`: implemented; runtime visual comparison remains pending.
+- History & Archive → `HistoryArchiveView`: implemented; runtime visual comparison remains pending.
 - Automatic Review → `ScanFlowViews.ReviewQueueView`: implemented; visual runtime comparison remains pending.
 - Batch Scan Queue / Scan Processing Progress → `ScanFlowViews` overlays: implemented; visual runtime comparison remains pending.
 - Screenshot Triage → `RecentScreenshotsView`: implemented; visual runtime comparison remains pending.
-- No Dates Found → `NoDatesFoundView`: partial–close.
+- No Dates Found → `NoDatesFoundView`: implemented; runtime visual comparison remains pending.
 - Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: implemented with live StoreKit pricing, purchase, and restore paths; runtime visual comparison remains pending. Keep StoreKit prices and no Lifetime tier.
 - Settings root → `SettingsHubView`: very different (Stitch: Pro card, System Permissions, App Defaults, Privacy, Support & Legal).
 - Default Calendar → `DefaultCalendarSection`: partial; Stitch shows it as a pushed screen.
@@ -307,7 +312,7 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - Help → `HelpFeedbackView`: partial.
 - Reminder Presets / Notification Preferences → `ReminderSettingsView`: very different.
 - Permission denied (calendar, notifications) → the respective views: partial–close.
-- Agenda → `AgendaView`: no Stitch HTML; style by analogy.
+- Agenda → `AgendaView`: implemented by analogy; runtime visual comparison remains pending.
 - Stitch-only, no backing feature: User Profile and verification flow, Camera viewfinder, Manual crop, Share extension, Conflict resolver, PDF page picker, App Preferences, Smart Suggestions, Source Preferences, Automatic Capture radar, SMS alerts, Lifetime / Family Sharing.
 - Tabs: the app has 5 (Home, Agenda, Review, History, Settings). The newest Stitch Home has 4 (Home, Agenda, Review, Settings).
 
