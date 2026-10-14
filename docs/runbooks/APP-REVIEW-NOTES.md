@@ -39,9 +39,9 @@ If you encounter any questions or require additional details during review, plea
 | Field | Value / Guidance |
 |---|---|
 | **App Name** | Pencil'd: Photo to Calendar *(27/30)* |
-| **Subtitle** | Scan flyers & screenshots *(25/30)* |
-| **Keywords** | `picture,image,event,invite,ticket,pdf,import,file,reminder,date,party,concert,agenda,camera,scanner` *(99/100; singular, no spaces, no words repeated from name or subtitle)* |
-| **Promotional Text** | Turn event flyers, invites, photos, and screenshots into calendar events. Read on your iPhone and reviewed by you before anything is saved. *(139/170)* |
+| **Subtitle** | Flyers & screenshots to events *(30/30)* |
+| **Keywords** | `picture,image,scan,work,schedule,shift,invite,ticket,pdf,import,file,reminder,date,party,camera` *(95/100; singular, no spaces, no words repeated from name or subtitle)* |
+| **Promotional Text** | Turn flyers, work schedules, invites, photos, and screenshots into calendar events and reminders. Snap or import on your iPhone, approve, and Pencil'd does the rest. *(165/170)* |
 | **Primary Category** | Productivity |
 | **Secondary Category** | Utilities |
 | **Content Rights** | Contains no third-party content requiring explicit license. |
@@ -56,9 +56,10 @@ If you encounter any questions or require additional details during review, plea
 > **Listing rationale (2026-10-13):** "photo to calendar" is a standalone App Store
 > autocomplete term, while "screenshot to calendar" only appears inside other apps'
 > names. The name takes the most-searched phrase; the subtitle and keywords cover the
-> other phrasings ("scan", "screenshot", "picture", "image", "pdf"), which Apple
-> likely combines across fields. Productivity is the accurate primary category and
-> the one most direct competitors use; Apple counts the primary category as a
-> search match. Work schedules and multi-date flyers are deliberately left out until
-> that feature ships. Name, subtitle, and keywords change only with a new version;
-> promotional text can change anytime.
+> other phrasings ("screenshot", "flyer", "event", "scan", "picture", "image",
+> "pdf"), which Apple likely combines across fields. "work" + "schedule" target the
+> heavily searched "work schedule" terms; they ship now, with improved work-schedule
+> and multi-date flyer support as the fast-follow update. Productivity is the
+> accurate primary category and the one most direct competitors use; Apple counts the
+> primary category as a search match. Name, subtitle, and keywords change only with a
+> new version; promotional text can change anytime.
