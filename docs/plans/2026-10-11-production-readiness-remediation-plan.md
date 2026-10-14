@@ -371,3 +371,8 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   `com.pencild.premium.lifetime` ($79.99 locally), shown through 2027-04-13.
 - Open: create both products in App Store Connect before release.
 
+2026-10-13: Free plan limits and paywall-on-attempt (see audit §7.9).
+- Free plan: 10 scans/month (scans that find a new event) and 1 alert per
+  event; paid plans: unlimited scans and 3 alerts. No history limit.
+- Gated actions open the paywall instead of being hidden or disabled.
+

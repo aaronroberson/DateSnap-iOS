@@ -283,3 +283,33 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   the App Store side (removing the products from sale) is a separate manual
   step.
 
+### 7.9 Free Plan Limits and Paywall-on-Attempt (2026-10-13)
+- **Free plan:** 10 scans per calendar month, counting only scans that find a
+  new event (failed, no-date, and resumed scans don't count), and 1 alert per
+  event. Plus and Premium have unlimited scans and up to 3 alerts per event.
+  Event history is not limited on any plan. The numbers live in `PlanLimits`.
+  The monthly count is stored locally by `ScanUsageStore`, which is injected
+  through `ServiceContainer` so tests use an ephemeral store.
+- **Subscribers are never limited by mistake.** While entitlements are still
+  being checked, paid allowances apply.
+- **Every Plus and Premium feature stays visible to all users.** Attempting a
+  feature without the entitlement opens the paywall instead of running it:
+  - Scanning past the allowance opens the Plus paywall. A batch that runs out
+    with nothing found goes straight to it; a partial batch shows an upgrade
+    row in Batch Review.
+  - In the reminder schedule editor, adding an alert past the limit or picking
+    a multi-alert preset opens the Plus paywall. These controls are no longer
+    disabled.
+  - On the free plan, the Auto-detect switch shows off, and turning it on opens
+    the Plus paywall.
+  - Already in place: Likely events, PDF & Files import, the Duplicates
+    filter, and deadline reminders each open the matching paywall.
+- Home shows free users "N of 10 free scans left this month" with an Upgrade
+  button. The Plus paywall lists "Unlimited scans" and "Up to 3 alerts per
+  event". The StoreKit product descriptions no longer claim "unlimited event
+  history", which was never a feature.
+- Removed the unused `addOffset`/`removeOffset` from `EventReviewViewModel`.
+- Evidence: `PlanLimitsTests` covers the monthly reset, who is limited, counting
+  only new events, blocking when exhausted, Plus being unlimited, the batch
+  flag, and alert caps on review.
+
