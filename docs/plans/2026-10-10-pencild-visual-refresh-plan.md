@@ -294,7 +294,7 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - Batch Scan Queue / Scan Processing Progress → `ScanFlowViews` overlays: implemented; visual runtime comparison remains pending.
 - Screenshot Triage → `RecentScreenshotsView`: implemented; visual runtime comparison remains pending.
 - No Dates Found → `NoDatesFoundView`: partial–close.
-- Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: partial; keep StoreKit prices, no Lifetime.
+- Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: implemented with live StoreKit pricing, purchase, and restore paths; runtime visual comparison remains pending. Keep StoreKit prices and no Lifetime tier.
 - Settings root → `SettingsHubView`: very different (Stitch: Pro card, System Permissions, App Defaults, Privacy, Support & Legal).
 - Default Calendar → `DefaultCalendarSection`: partial; Stitch shows it as a pushed screen.
 - Privacy → `PrivacyCenterView`: partial.
