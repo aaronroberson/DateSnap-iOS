@@ -20,7 +20,7 @@ Consequences for this plan:
 - **Tabs:** four tabs (Home, Agenda, Review, Settings). History moves under Agenda and Settings.
 - **Font:** bundle Plus Jakarta Sans.
 
-**Not built:** accounts and verification, SMS, camera viewfinder, manual crop, share extension, conflict resolver, background Radar, Smart Suggestions, App Preferences, and a Lifetime tier.
+**Not built:** accounts and verification, SMS, camera viewfinder, manual crop, share extension, conflict resolver, background Radar, Smart Suggestions, and App Preferences. (A Lifetime purchase was added on 2026-10-13 as an introductory offer; see audit §7.8.)
 - No UI for these, and no copy that promises them.
 - Stitch-only rows (e.g. Source Preferences, the profile avatar menu) are dropped or pointed at real destinations.
 
@@ -137,7 +137,7 @@ Consequences for this plan:
 - **Privacy Center** (`PrivacyCenterView`): sandbox hero, on-device processing statement, existing Clear Scan Text / Erase All, policy link. No telemetry or hybrid toggles.
 - **Help** (`HelpFeedbackView`): concierge hero, search, popular guides, Get in Touch (email, bug, feature), diagnostics card + copy bundle.
 - **AutomationSettings:** restyle as a Stitch toggle card.
-- **Paywalls and Manage Plan:** Stitch layout and feature cards using real entitlements and StoreKit prices, no Lifetime. Manage Plan adds a stats card only from real counts (saved events, scans).
+- **Paywalls and Manage Plan:** Stitch layout and feature cards using real entitlements and StoreKit prices, including the Lifetime introductory offer (added 2026-10-13; see audit §7.8). Manage Plan adds a stats card only from real counts (saved events, scans).
 - **Permission-denied screens:** Stitch layouts.
   - The `notificationPermissionDenied` recovery sheet is wired for single-event and batch saves when local alerts are denied. It explains the fallback and opens iOS Settings while preserving Calendar, Reminders, and scan/review behavior.
   - Keep the existing fallbacks.
@@ -305,7 +305,7 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - Batch Scan Queue / Scan Processing Progress → `ScanFlowViews` overlays: implemented; visual runtime comparison remains pending.
 - Screenshot Triage → `RecentScreenshotsView`: implemented; visual runtime comparison remains pending.
 - No Dates Found → `NoDatesFoundView`: implemented; runtime visual comparison remains pending.
-- Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: implemented with live StoreKit pricing, purchase, and restore paths; runtime visual comparison remains pending. Keep StoreKit prices and no Lifetime tier.
+- Plus / Premium / Manage → `PlusPaywallView` / `PremiumPaywallView` / `ManagePlanView`: implemented with live StoreKit pricing, purchase, and restore paths; runtime visual comparison remains pending. Keep StoreKit prices. Lifetime is offered through 2027-04-13 (audit §7.8).
 - Settings root → `SettingsHubView`: very different (Stitch: Pro card, System Permissions, App Defaults, Privacy, Support & Legal).
 - Default Calendar → `DefaultCalendarSection`: partial; Stitch shows it as a pushed screen.
 - Privacy → `PrivacyCenterView`: partial.
@@ -313,7 +313,7 @@ Source: the YAML colors in `.stitch/Brand-Onboarding/Home-Screen/DESIGN.md` line
 - Reminder Presets / Notification Preferences → `ReminderSettingsView`: very different.
 - Permission denied (calendar, notifications) → the respective views: partial–close.
 - Agenda → `AgendaView`: implemented by analogy; runtime visual comparison remains pending.
-- Stitch-only, no backing feature: User Profile and verification flow, Camera viewfinder, Manual crop, Share extension, Conflict resolver, PDF page picker, App Preferences, Smart Suggestions, Source Preferences, Automatic Capture radar, SMS alerts, Lifetime / Family Sharing.
+- Stitch-only, no backing feature: User Profile and verification flow, Camera viewfinder, Manual crop, Share extension, Conflict resolver, PDF page picker, App Preferences, Smart Suggestions, Source Preferences, Automatic Capture radar, SMS alerts, Family Sharing.
 - Tabs: the app has 5 (Home, Agenda, Review, History, Settings). The newest Stitch Home has 4 (Home, Agenda, Review, Settings).
 
 ## Behaviors that must survive (from inventory)
