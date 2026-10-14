@@ -165,7 +165,12 @@ public enum EventExtractionCore {
             return []
         }
 
-        // Step 2: Line segmentation into blocks, then per-block inference
+        // Step 2: Work schedules and multi-date flyers: one event per dated entry.
+        if let entries = ScheduleExtractor.extract(from: result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier, calendar: calendar) {
+            return entries
+        }
+
+        // Step 3: Line segmentation into blocks, then per-block inference
         return DateInference.segmentIntoEventBlocks(result: result).flatMap { block in
             DateInference.inferCandidates(from: block, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier, calendar: calendar)
         }
