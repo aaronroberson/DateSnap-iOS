@@ -47,8 +47,14 @@ original research. Evidence: `docs/audits/2026-10-11-production-readiness-audit.
   free scans left, the user chooses to deselect, upgrade, or discard before
   anything is scanned. An item that needs a higher plan is flagged in Batch
   Review with an upgrade row.
-- **Subscribers are never blocked by a slow entitlement check.** While
-  StoreKit is still checking, limits and gated features are allowed.
+- **An unresolved entitlement is the free plan.** Until StoreKit verifies a
+  paid tier (checking, unverified, or unavailable), free limits and gates
+  apply. Before any paywall opens, the app re-requests the entitlement; if it
+  resolves to a paid plan, the paywall is skipped ("plan is active, try that
+  again"). Each later gate retries, so a subscriber isn't left on free.
+  *(Changed 2026-10-14; previously limits and gates were lifted while
+  checking.)*
+- **Premium is never shown a paywall.** Premium includes every Plus feature.
 - **Paywalls are interstitials.** Separate Plus and Premium sheets can open
   from anywhere, with a close button at the top right and an "Upgrade to …"
   headline. Restore Purchases is in the paywall body, not the top bar, by

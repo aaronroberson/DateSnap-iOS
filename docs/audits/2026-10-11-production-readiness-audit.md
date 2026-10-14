@@ -1,4 +1,4 @@
-# Pencil’d Production Readiness & Codebase Architecture Audit
+# Pencil'd Production Readiness & Codebase Architecture Audit
 
 **Date:** 2026-10-11  
 **Scope:** Architecture, Design System Conformance, Rebranding Integrity, API Feasibility, Component Reusability, and Decomposition Targets  
@@ -18,7 +18,7 @@ because the GitHub API was unreachable.
 
 ## 1. Executive Summary
 
-This audit assesses the Pencil’d codebase across seven key dimensions:
+This audit assesses the Pencil'd codebase across seven key dimensions:
 1. **Stitch Design Feasibility & API Boundaries** (documenting features in Stitch mockups that cannot or should not be implemented due to iOS sandbox, hardware, or privacy constraints).
 2. **Rebranding Migration Integrity** (verifying that there is no unsupported product-facing legacy UI).
 3. **Design System & Token Conformance** (measuring adherence to Luminous Precision tokens vs. remaining legacy `DS*` aliases and hard-coded values).
@@ -52,7 +52,7 @@ The automated pre-commit brand check (`./scripts/hooks/pre-commit` running `scri
 - **Residual String Check:** No unsupported product-facing legacy branding exists in [`Sources/`](../../Sources/), [`Config/`](../../Config/), or [`Assets.xcassets/`](../../Assets.xcassets/).
 - **App Bundle & Display Identity:**
   - `PRODUCT_BUNDLE_IDENTIFIER`: `com.pencild.app`
-  - `INFOPLIST_KEY_CFBundleDisplayName`: `Pencil’d`
+  - `INFOPLIST_KEY_CFBundleDisplayName`: `Pencil'd`
   - StoreKit configuration: [`Pencild.storekit`](../../Pencild.storekit) with canonical identifiers:
     - `com.pencild.plus.monthly`
     - `com.pencild.plus.annual`
@@ -290,8 +290,9 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   Event history is not limited on any plan. The numbers live in `PlanLimits`.
   The monthly count is stored locally by `ScanUsageStore`, which is injected
   through `ServiceContainer` so tests use an ephemeral store.
-- **Subscribers are never limited by mistake.** While entitlements are still
-  being checked, paid allowances apply.
+- **Unresolved entitlements are the free plan** (changed 2026-10-14). Free
+  allowances apply until StoreKit verifies a paid tier; any paywall first
+  re-requests the entitlement (`EntitlementProviding.resolveBeforeUpsell`).
 - **Every Plus and Premium feature stays visible to all users.** Attempting a
   feature without the entitlement opens the paywall instead of running it.
   The control is shown; the result of the Premium operation is not (for
@@ -331,7 +332,7 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
 - All three screens use one section order: needs-attention items (duplicates,
   questions, ambiguous dates); **Event details**; alternative readings and
   **Suggestions**; **Calendar & reminders** (with Alerts); **On the flyer**;
-  the primary action; then the source and "Why Pencil’d chose these details".
+  the primary action; then the source and "Why Pencil'd chose these details".
 - Fixed: Event Review placed the "Calendar & reminders" heading below the
   destination card, above the suggestions. On iPhone, scan details sat above
   Save. Saved Event Detail put the source between destinations and alerts.
@@ -349,7 +350,7 @@ implementation wave were closed on 2026-10-11 (see §7.3 and §7.4).
   `11-compact-detail-full` in `TabletWorkspaceTests`.
 
 ### 7.11 Work Schedules and Multi-Date Flyers (2026-10-13)
-Owner: Claude (Claude Code). Status: implemented and tested; Premium.
+Status: implemented and tested; Premium.
 - New `ScheduleExtractor` (`Sources/Pencild/Services/ScheduleExtractor.swift`)
   runs in `EventExtractionCore.extract` before block segmentation. When a
   screenshot has two or more dated entries, it returns one event per entry
@@ -366,8 +367,8 @@ Owner: Claude (Claude Code). Status: implemented and tested; Premium.
   is checked in `ScanViewModel` right after OCR, before any event is created.
   Starter and Plus get the Premium paywall; nothing is saved and no free scan
   is used. Batch scans flag the item and offer the upgrade in Batch Review.
-  While entitlements are still being checked the scan is allowed, matching
-  the scan limits.
+  While entitlements are unresolved the scan is treated as free (gated),
+  matching the scan limits; the paywall retries the entitlement first.
 - An allowed scan that finds several events opens them all in Batch Review
   instead of opening the first and leaving the rest in Review.
 - The Premium paywall and Manage Plan list "Work schedules & multi-date
@@ -378,7 +379,7 @@ Owner: Claude (Claude Code). Status: implemented and tested; Premium.
   OCR on a rendered schedule), and 2 routing tests in `AppStateNavigationTests`.
 - Verified 2026-10-13 (commit `9d5f325`): full suite, 172 tests in 37 suites,
   passed on iPhone 17 and iPad Pro 11-inch (M5) simulators; brand gate and
-  `git diff --check` passed. A later run in another session could not build
+  `git diff --check` passed. A later run on this host could not build
   because CoreSimulatorService was unavailable on that host. That was an
   environment failure, not a test failure; re-run where the simulator is
   available.
@@ -395,7 +396,7 @@ in the decision record in `docs/business/Pencild-Monetization-Strategy.md`.
 | Results of paid operations are not shown without the entitlement (tailored alert plan, events from a detected schedule) | `ReviewSuggestionsCard`, `EventActionsChecklist`, `ScanViewModel` schedule gate | Implemented as intended design |
 | Free plan: 10 scans/month (counting only scans that find a new event), 1 alert per event, no history limit | `PlanLimits`, `ScanUsageStore` | Implemented as intended design |
 | Batches never skip items: deselect / upgrade / discard prompt; items that need a higher plan are flagged in Batch Review | `BatchAllowancePrompt`, `BatchReviewView` | Implemented as intended design |
-| Entitlement-checking state is treated as allowed for limits and gates | `PlanLimits`, `ScanViewModel.isAllowed` | Implemented as intended design |
+| Unresolved entitlements (checking, unverified, unavailable) are the free plan for limits and gates; the paywall re-requests first | `EntitlementSnapshot.effectiveTier`, `FeatureAccessPolicy`, `PlanLimits`, `EntitlementProviding.resolveBeforeUpsell`, `AppState.shouldShowPaywall` | Implemented as intended design (changed 2026-10-14) |
 | Work schedules and multi-date flyers are Premium and become one event per entry; multi-event scans open in Batch Review | `ScheduleExtractor`, `PremiumFeature.scheduleImport`, `AppState.handleScanOutcome` | Implemented as intended design |
 | Paywalls are interstitials with a top-right close button, an "Upgrade to …" headline, and Restore Purchases in the body (not the top bar) | `PlusPaywallView`, `PremiumPaywallView` | Implemented as intended design |
 | Lifetime purchase offered only through 2027-04-13 (date enforced in the app) | `LifetimeIntroOffer` | Implemented as intended design |

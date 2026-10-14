@@ -58,18 +58,18 @@ provenance refresh before it is treated as current evidence.
    BatchReviewView 685, and ReminderScheduleEditorView 282.
 4. Replace “zero legacy artifacts” with “no unsupported product-facing legacy
    UI”; `DS*` and `ds*` aliases remain an intentional compatibility layer until
-   all in-scope callers migrate. Settings/Profile callers are owned by their
-   existing workstream.
+   all in-scope callers migrate. Settings/Profile callers are part of the
+   integrated product surface.
 5. Separate verified facts from recommendations. A graph result or a stale
    baseline is not completion evidence without a live source read or runtime
    check.
 
 ## Sequenced implementation work
 
-### Phase 0 — Evidence and ownership lock
+### Phase 0 — Evidence lock
 
 - Refresh the audit corrections above.
-- Keep Settings/Profile work and any foreign shared-file edits intact.
+- Keep the integrated Settings/Profile and shared-file work intact.
 - Record the exact `project.yml`, generated-project, Swift-version, StoreKit
   catalog, and bundle-identifier inputs before each configuration change.
 - Do not edit `lancedb/`, commit unrelated work, or use broad staging/reset
@@ -170,17 +170,236 @@ implementation tasks, not completion claims:
    archive/restore. Retain screenshots or an XCTest result bundle that proves
    the populated path; the existing structure tests remain complementary.
 3. **[Done 2026-10-11] Compatibility alias retirement.** Build a scoped caller inventory for
-   `DS*`/`ds*` names outside Settings/Profile ownership. Migrate only proven
+   `DS*`/`ds*` names across product callers. Migrate only proven
    callers, remove an alias only after a zero-caller search and build, and
    rerun the brand and release-content gates.
 4. **[Kept by decision] Provenance-comment review.** Keep the 15 `stitch-id` comments unless the
    mock-data checker is changed to distinguish provenance metadata from runtime
    fixtures. Do not introduce production examples or fabricated data.
-5. **[Done 2026-10-13] Work schedules and multi-date flyers (Premium).** Owner:
-   Claude (Claude Code). One event per dated entry via `ScheduleExtractor`,
+5. **[Done 2026-10-13] Work schedules and multi-date flyers (Premium).** One
+   event per dated entry via `ScheduleExtractor`,
    gated by `PremiumFeature.scheduleImport`. 172 tests passed on iPhone 17 and
    iPad Pro 11-inch (M5); see audit §7.11. Remaining: tune against real
    scheduling-app screenshots.
+
+## Settings and listing follow-ups (2026-10-13)
+
+Findings from the Settings check and the cross-review of
+`docs/business/pencild-strategy-review.md`. Check items off as they land.
+
+### Done in this pass (uncommitted)
+
+- [x] **Default calendar priority order.** Settings → Default Calendar offers
+      Automatic (the default until changed), any writable calendar, or Ask every
+      time. A chosen calendar overrides the automatic order (learned
+      per-category choice, then the iOS default) for every new event; saved
+      events and drafts keep their own calendar. `DefaultCalendarView`,
+      `DefaultCalendarStore`, `DestinationCalendarResolver`.
+- [x] **Ask every time.** The old toggle wrote `settings.askEveryTimeCalendar`
+      with no reader and was removed. The new mode (`settings.calendarAskEveryTime`)
+      leaves new events with no calendar; Review shows a "Required" badge and
+      keeps Save disabled until one is picked. Batch Review disables per-event
+      Save, and Save All opens the events still missing a calendar.
+      `commitEvent` also refuses to save without one.
+- [x] **Reminder presets decided.** Settings → Default Reminders stores one
+      preset (`ReminderDefaultsStore`, `settings.defaultReminderPreset`) that
+      every new event starts with: Standard (unset default, same alerts as
+      before), Travel, or Day-of only. These are the same presets as the
+      per-event Reminder Schedule editor (`ReminderPreset.offsets`). Free plan:
+      Standard is trimmed to 1 alert; Travel opens the Plus paywall. The
+      Settings row shows the chosen preset instead of "Smart, by event type".
+- [x] **Source Preferences row.** Renamed "Scanning Options" (it opens the
+      auto-detect and Apple Intelligence screen); shows whether Apple
+      Intelligence is on instead of the fixed "Screenshots, PDFs, Photos".
+- [x] **History row.** Settings → Your Events → Event History opens the history
+      archive (`AppState.openHistory()`).
+- [x] **Plus paywall lists likely-event triage.** Already present
+      (`PlusPaywallView` "Find likely event screenshots"); the gap was in the
+      strategy review's paywall-lead table, now fixed.
+- [x] **Brand apostrophe.** `Pencil’d` (curly) in app strings, comments,
+      tests, `Info.plist`, display name (`project.yml`,
+      `Pencild-Base.xcconfig`), `Pencild.storekit`, the listing runbook, and
+      business docs. Historical audits and plans keep their original text.
+- [x] **Strategy review citations.** Mismatched `[n]` markers removed; sources
+      listed unnumbered.
+- [x] **Paid filters open the paywall.** `EventSmartFilter.requiredFeature`:
+      RSVP Due needs `advancedReminderPlans` (Premium) and Possible Duplicates
+      needs `duplicateClusters` (Premium). A locked chip stays visible and opens
+      that tier's paywall with the feature's upgrade reason. Applies to Agenda
+      and History & Archive.
+- [x] **Paid chips are marked.** `LinearGradient.pdPaidFeature` (lavender) plus
+      a `PDTierTag` ("PLUS"/"PREMIUM") on paid smart filters and the
+      screenshot picker's Likely events chip (`PDChip(paidTier:)`).
+- [x] **Capture sources unified.** `CaptureSource` defines the order and
+      labels everywhere: Screenshots, Photo Library, PDF & Files Import,
+      Document Scanner, Enter Manually. Home shows them as full cards
+      (`CaptureSourceRow`; Document Scanner now on iPhone too). The Add events
+      sheet (`CaptureSourceSheet`, formerly the launch carousel's second page,
+      same layout) shows them as a tile grid (`CaptureSourceGrid`). Agenda's
+      "Capture new events" opens the sheet. Scan sources hand off to Home via
+      `AppState.beginCapture` (`requestPhotoPicker`, `requestFileImporter`,
+      `requestDocumentScanner`, `requestScreenshotPicker`).
+- [x] **Splash** is the brand page only (3 seconds, Skip); no carousel.
+- [x] **Enter Manually** opens the review form instead of the Calendar app:
+      a blank event at the next hour (`ManualEventFactory`,
+      `EventCandidate.isManualEntry`) with the default calendar and default
+      reminders applied. Scan-only parts (source image, confidence, scan
+      details) are hidden; a title is required to save; closing without a
+      save or draft deletes it, and it never counts as needing review or uses
+      a free scan. Tests: `ManualEntryTests`.
+- [x] **One tabbed paywall** (`PaywallView`, presented as
+      `AppModalScreen.paywall(opening: .plus / .premium)`; callers pick only
+      the tab, `AppModalScreen.paywall(for: feature)`). Free and Plus users see Plus | Premium tabs; Plus is the default
+      unless a Premium feature opened it. Plan order: Lifetime (angled purple
+      "Intro offer" tag, `pdSecondaryContainer`), Annual, Monthly; "You stay
+      in control" sits below the plan options.
+- [x] **Switching billing intervals.** On the member's own plan, the option
+      they already have shows "Current plan" and is disabled; the others stay
+      selectable ("Switch to Annual…"). Lifetime owners can't buy that plan's
+      subscriptions. Current product: `PurchaseViewModel.currentProduct(for:)`.
+- [x] **Premium is never gated.** `AppState.present` never shows a paywall to
+      a Premium member, and the paywall dismisses itself as a backstop.
+      Entitlement logic has one source of truth: `EntitlementSnapshot.effectiveTier`
+      (verified tier, otherwise free) feeds `FeatureAccessPolicy` and
+      `PlanLimits`; `EntitlementProviding` adds `isEntitled(to:)` and
+      `resolveBeforeUpsell()` (re-requests an unresolved check,
+      `EntitlementProvenance.gateRetry`). `AppState` mirrors the snapshot, and
+      `shouldShowPaywall()` (used by `present` and the paywall view) retries
+      first and skips the paywall with a "plan is active, try that again" toast
+      if a paid tier resolves. Removed the "checking means allowed" exceptions
+      in `PlanLimits` and `ScanViewModel.isAllowed`. Tests:
+      `EntitlementRetryTests`, `PlanLimitsTests`.
+      Reminder editor no longer opens the Plus paywall at the paid 3-alert
+      maximum. Tier tags use `SubscriptionTier.badgeText` ("PLUS", "PREMIUM");
+      Settings/Profile no longer render "Pencil’d Pencil’d Premium".
+- [x] **Back button labels.** `PDTopBar` shows a chevron plus a small all-caps
+      label: the previous screen when the pushing stack knows it
+      (`\.pdBackLabel`: "Settings" for Settings screens, "Agenda" for History),
+      otherwise "Back" (sheets, and screens reachable from more than one place).
+      VoiceOver reads "Back to Settings" / "Back".
+- [x] **Duplicate back button on Settings screens** (reported on Privacy &
+      Processing). `SettingsClusterView` never hid the system navigation bar,
+      so every pushed Settings screen showed an iOS back button above the
+      in-content one. The bar is now hidden for the hub and its destinations.
+      Removed the unused `SettingsBackButton`. Needs a runtime visual check.
+- [x] **Shared search field.** `PDSearchField` (48pt minimum, clear button,
+      no autocorrection) is used by Agenda, History & Archive, and Help &
+      Support.
+- [x] **Agenda order** is one chronological list, earliest date first; today
+      keeps its highlighted section in place.
+- [x] **Agenda All** clears the status and smart filters and shows saved,
+      draft, and archived events; picking another date filter returns to Saved.
+- [x] Tests: `ReminderDefaultsStoreTests`; Ask-every-time store test in
+      `DefaultCalendarTests`.
+- [x] Verification: iPhone 17 (iOS 27.0) `xcodebuild test`, 177 tests in 38
+      suites passed after the apostrophe change; `git diff --check` clean. The
+      brand gate flags only the untracked `.codebase-memory/artifact.json`
+      (local code-index cache; add `.codebase-memory/` to `.gitignore` or the
+      gate's exclusions).
+
+### Open
+
+- [ ] **Sign in with Apple entitlement.** `Pencild.entitlements` is empty, but
+      Profile shows `SignInWithAppleButton`. Add
+      `com.apple.developer.applesignin = [Default]` once the LiminalForge, LLC
+      organization team replaces the personal team (`DEVELOPMENT_TEAM`
+      `WGKKDYY866`), enable the capability on the App ID, and verify sign-in on
+      a device. Until then sign-in fails with a "didn’t complete" toast; either
+      ship with the entitlement or hide the button.
+- [ ] Decide whether to adopt the review's keyword field. It drops `invite`
+      and `ticket` as well as `party`, `camera`, and `file`; if adopted, update
+      `docs/runbooks/APP-REVIEW-NOTES.md` and the listing Decision Record
+      together.
+- [ ] Remaining strategy-review items: StoreKit rating prompt after the third
+      successful save; one-scan-left warning state on Home; trial disclosure
+      built from StoreKit `displayPrice`; contextual paywall leads; resume the
+      blocked action after purchase; six-screenshot set; work-schedules Custom
+      Product Page; `PurchaseIntent` before promoting any product.
+
+- [ ] Runtime check of the Add events sheet, the single-page splash, Home's
+      source cards, and the manual-entry form on iPhone and iPad.
+- [ ] Runtime visual check of Default Calendar, Default Reminders, Settings
+      root, and Review/Batch "Required" states on iPhone and iPad.
+
+## Single-source-of-truth audit (2026-10-14)
+
+Business rules found implemented in more than one place. Each item names the
+proposed owner. Ordered by risk.
+
+- [x] **"Needs review" definition (bug).** Four copies:
+      `ContentView.needsReview` (tab badge), `HomeEmptyStateView.needingReviewCount`,
+      `ReviewQueueView` (`ScanFlowViews.swift:401`), `CaptureSourceSheet` library
+      card. ContentView's copy lacks the manual-entry exclusion, so the Review
+      badge shows while a blank manual event is open. Fixed: all four use
+      `EventCandidate.needsReview`.
+- [x] **Manual entry has two creators.** `ManualEventFactory` is now the only
+      creator (optional `ScanPrefill` for No Dates Found, which keeps its flyer
+      and stays in Review); `AppState.startManualEntry` creates, reports save
+      failures, and opens the form for Home, the Add events sheet, and No
+      Dates Found.
+- [x] **Found while testing: Save Draft filed new events as Saved.** A new
+      `SavedEvent` defaults to "Saved", and `saveDraft` only demoted records
+      that weren't Saved, so a never-saved scan's draft was stored as Saved
+      (no Calendar event). Now anything not in Calendar is a draft. Test:
+      `ManualEntryTests.draftOfNewEventIsDraft`.
+- [x] **Paywall routing by tier.** One `PaywallView`; callers choose only the
+      opening tab via `AppModalScreen.paywall(for: PremiumFeature)` (was 3
+      copies of the tier → paywall mapping). Batch Review's two paywall sheets
+      are one `paywallTab`.
+- [x] **Alert-limit upsell rule.** `maxAlerts < PlanLimits.paidAlertsPerEvent`
+      and "preset has more alerts than the plan" are re-derived in
+      `ReminderSettingsView` and `ReminderScheduleEditorView` (3 places), and
+      the two screens disagreed (Settings allowed Standard on free; the editor
+      locked it). Now `PlanLimits.canUpgradeAlerts(from:)` and
+      `ReminderPreset.isLocked(maxAlerts:)` / `offsets(limitedTo:)`: Standard is
+      never locked (trimmed to the plan's limit), others lock above it.
+- [x] **"Upcoming" means two things.** `AgendaDateFilter.upcoming` = from the
+      start of today; `EventSmartFilter.upcoming` (History) = from now. "RSVP
+      Due" uses start of today. Now History's filter and RSVP Due call
+      `AgendaDateFilter.upcoming` (from the start of today).
+- [x] **Permission meaning differs by screen.**
+      - Photos "usable" (`authorized || limited`) is re-derived 6+ times
+        (`HomeViewModel` ×5, `HomeEmptyStateView`, `SavedEventDetailView`).
+      - Calendar: Settings shows write-only as granted ("Add Only");
+        `HomeViewModel.isCalendarAuthorized` requires full access;
+        `DefaultCalendarView` requires full access.
+      - Notifications: Settings counts `.ephemeral` as on; `HomeViewModel` and
+        `NotificationService` don't.
+      Now `PermissionAccess` (granted / partial / denied / not asked, plus
+      `isUsable`, `canReadCalendars`, Settings labels) is used by Settings,
+      Home, Default Calendar, Saved Event Detail, and the Calendar, Reminders,
+      Photos and Notification services. Also fixed: `CalendarService` refused
+      to save with add-only access (now allowed, as EventKit permits).
+      Tests: `PermissionAccessTests`.
+- [x] **All-day alert time.** The 9 AM rule is coded in both
+      `ReminderService` (all-day alerts) and `ReminderStrategyService` (RSVP
+      deadline reminder). Now `ReminderOffset.allDayAlertHour`, and the RSVP
+      reminder reuses `ReminderOffset.triggerDate`.
+- [x] **Untitled title.** Saved as "Untitled Event" (`EventReviewViewModel`)
+      but shown as "Untitled event" (`BatchReviewView`). Now
+      `PencildEvent.untitledTitle`; the "Location TBA" placeholder is
+      `PencildEvent.locationPlaceholder`.
+- [x] **Support email** repeated 4× in `HelpFeedbackView`. Owner:
+      `PencildLinks.supportEmail` / `supportMail(subject:)`.
+- [x] **Maps link builder** duplicated in `EventReviewFieldsCard` and
+      `SavedEventDetailView` (only one skipped the location placeholder). Now
+      `PencildLinks.maps(_:)`. Tests: `SharedRulesTests`.
+- [x] **Persistence from views.** `NoDatesFoundView` no longer inserts or
+      deletes models (covered by the manual-entry item above).
+- [x] **Dead code.** `Features/ContactIntegration.swift` (no callers; own
+      1-hour duration default) and `Views/DefaultCalendarSection.swift` (an
+      older inline picker superseded by `DefaultCalendarView`); both deleted,
+      and no Contacts usage keys existed.
+- [x] **Top-bar titles.** `PDTopBar` no longer repeats the title shown by the
+      screen's `PDScreenIntro`; opt in with `showsTitle` (Event Details,
+      Marketing Kit). Settings intro: "Settings" eyebrow, "Make it yours" title.
+      Verification: iPhone 17, 196 tests in 42 suites passed.
+
+Already centralized (no action): entitlements (this pass), scan allowance
+counting (`ScanUsageStore`), event duration (`EventDurationPolicy`),
+destination calendar choice (`DestinationCalendarResolver`), default reminders
+(`ReminderDefaultsStore`), capture sources (`CaptureSource`), legal links
+(`PencildLinks`), duplicate clustering (`EventSimilarityService`).
 
 ## Progress log
 
@@ -384,7 +603,6 @@ artifact: one Mach-O, 74,199 strings, and 84,847 symbols.
   deselect, upgrade, or discard, instead of skipping items.
 
 2026-10-13: Work schedules and multi-date flyers (see audit §7.11).
-Owner: Claude (Claude Code).
 - `ScheduleExtractor` turns a schedule screenshot into one event per dated
   entry (shifts, roster rows, multi-date flyers, syllabus lines).
 - Premium feature `scheduleImport`: lower plans see the Premium paywall when a
