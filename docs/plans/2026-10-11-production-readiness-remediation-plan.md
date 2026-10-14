@@ -40,6 +40,65 @@ Verification recorded for this pass:
 - The brand identity gate passed for tracked and non-ignored working-tree files.
 - `git diff --check` passed.
 
+## Outstanding before release (2026-10-14)
+
+Single list of everything still open. Check items off here; the dated sections
+below keep the history.
+
+App Store Connect and accounts
+- [ ] **Sign in with Apple entitlement.** `Pencild.entitlements` is empty, but
+      Profile shows `SignInWithAppleButton`. Move signing from the personal
+      team (`WGKKDYY866`) to the LiminalForge, LLC organization team, enable
+      the capability on the App ID, add
+      `com.apple.developer.applesignin = [Default]`, and verify sign-in on a
+      device. Otherwise hide the button for release.
+- [ ] **Create the products in App Store Connect** to match `Pencild.storekit`:
+      Plus and Premium monthly/annual in one subscription group (Premium
+      ranked above Plus), one-week free trial per group, and both lifetime
+      non-consumables (`com.pencild.plus.lifetime`,
+      `com.pencild.premium.lifetime`). Verify IDs, prices, territories.
+- [ ] **Remove the lifetime products after 2027-04-13** (the app stops
+      showing them; the store listing must be retired manually).
+- [ ] **Decide on the keyword field** from `docs/business/pencild-strategy-review.md`.
+      It drops `invite` and `ticket` as well as `party`, `camera`, `file`;
+      if adopted, update `docs/runbooks/APP-REVIEW-NOTES.md` and the listing
+      Decision Record together.
+
+Verification on device / sandbox
+- [ ] **Paywall as a member** (TestFlight or sandbox): Plus member sees
+      "Current plan" on their billing option and can switch intervals;
+      lifetime owner can't rebuy; Premium member never sees a paywall.
+- [ ] **Entitlement retry**: with StoreKit slow or offline at launch, a
+      subscriber is treated as free, and the first paywall re-checks and
+      skips itself with "plan is active, try that again".
+- [ ] **Runtime visual check, iPhone and iPad**: Add events sheet, single-page
+      splash, Home source cards (pill truncation on small widths), Enter
+      Manually form, Default Calendar (Automatic / Ask every time and the
+      Review "Required" state), Default Reminders, Settings root, back
+      labels on Settings screens (no duplicate back button), Agenda filters
+      and search field, paywall tabs and the Lifetime ribbon.
+- [ ] **Add-only Calendar access**: with Calendar set to "Add Events Only",
+      saving works and Default Calendar explains that listing needs full
+      access.
+- [ ] **Schedule extraction** against real scheduling-app screenshots
+      (Deputy, 7shifts, Homebase, When I Work).
+
+Product follow-ups (from the strategy review)
+- [ ] StoreKit rating prompt after the third successful save.
+- [ ] One-scan-left warning state on Home.
+- [ ] Trial disclosure built from StoreKit `displayPrice` and offer period.
+- [ ] Contextual paywall headline for the triggering feature.
+- [ ] Resume the blocked action after a successful purchase.
+- [ ] Six-screenshot App Store set; work-schedules Custom Product Page.
+- [ ] `PurchaseIntent` handling before promoting any product.
+
+Repository
+- [ ] Add `.codebase-memory/` to `.gitignore` (or the brand gate's
+      exclusions); the gate flags its index file.
+- [ ] Confirm the GitHub Actions workflow is disabled remotely
+      (`gh workflow list --all`); the local file is
+      `.github/workflows/ci.yml.disabled`.
+
 ## Audit corrections to make before using the report as a release artifact
 
 The audit at `docs/audits/2026-10-11-production-readiness-audit.md` needs a
@@ -299,27 +358,7 @@ Findings from the Settings check and the cross-review of
 
 ### Open
 
-- [ ] **Sign in with Apple entitlement.** `Pencild.entitlements` is empty, but
-      Profile shows `SignInWithAppleButton`. Add
-      `com.apple.developer.applesignin = [Default]` once the LiminalForge, LLC
-      organization team replaces the personal team (`DEVELOPMENT_TEAM`
-      `WGKKDYY866`), enable the capability on the App ID, and verify sign-in on
-      a device. Until then sign-in fails with a "didn’t complete" toast; either
-      ship with the entitlement or hide the button.
-- [ ] Decide whether to adopt the review's keyword field. It drops `invite`
-      and `ticket` as well as `party`, `camera`, and `file`; if adopted, update
-      `docs/runbooks/APP-REVIEW-NOTES.md` and the listing Decision Record
-      together.
-- [ ] Remaining strategy-review items: StoreKit rating prompt after the third
-      successful save; one-scan-left warning state on Home; trial disclosure
-      built from StoreKit `displayPrice`; contextual paywall leads; resume the
-      blocked action after purchase; six-screenshot set; work-schedules Custom
-      Product Page; `PurchaseIntent` before promoting any product.
-
-- [ ] Runtime check of the Add events sheet, the single-page splash, Home's
-      source cards, and the manual-entry form on iPhone and iPad.
-- [ ] Runtime visual check of Default Calendar, Default Reminders, Settings
-      root, and Review/Batch "Required" states on iPhone and iPad.
+Moved to "Outstanding before release" near the top of this plan.
 
 ## Single-source-of-truth audit (2026-10-14)
 
