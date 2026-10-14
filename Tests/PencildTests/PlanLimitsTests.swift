@@ -140,4 +140,25 @@ struct PlanLimitsTests {
         #expect(plus.maxAlerts == 3)
         #expect(plus.selectedOffsets.count > 1)
     }
+
+    @Test("A batch larger than the free allowance is held back with the exact excess")
+    func batchPreflight() {
+        let free = EntitlementSnapshot.verified(.starter, provenance: .storeKit)
+        #expect(PlanLimits.batchExcess(selecting: 5, snapshot: free, remaining: 3) == 2)
+        #expect(PlanLimits.batchExcess(selecting: 3, snapshot: free, remaining: 3) == 0)
+        #expect(PlanLimits.batchExcess(selecting: 4, snapshot: free, remaining: 0) == 4)
+        #expect(PlanLimits.batchExcess(selecting: 40, snapshot: .verified(.plus, provenance: .storeKit), remaining: 0) == 0)
+        #expect(PlanLimits.batchExcess(selecting: 40, snapshot: .checking(), remaining: 0) == 0)
+    }
+
+    @Test("The over-limit prompt states the selection, what's left, and how many to deselect")
+    func overLimitMessage() {
+        let partial = BatchOverLimit(selected: 5, remaining: 3)
+        #expect(partial.excess == 2)
+        #expect(partial.message.contains("selected 5"))
+        #expect(partial.message.contains("3 free scans left"))
+        #expect(partial.message.contains("Deselect 2"))
+        let none = BatchOverLimit(selected: 4, remaining: 0)
+        #expect(none.message.contains("used this month's \(PlanLimits.freeScansPerMonth) free scans"))
+    }
 }

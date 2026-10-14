@@ -21,6 +21,17 @@ struct RecentScreenshotsView: View {
     @State private var isSelecting = false
     @State private var selectedAssetIDs: Set<String> = []
     @State private var likelyOnly = false
+    @State private var batchOverLimit: BatchOverLimit?
+    @State private var showPlusPaywall = false
+
+    /// Free plan only: scans left this month, or nil when scans are unlimited.
+    private var remainingFreeScans: Int? {
+        PlanLimits.limitsScans(services.subscription.entitlementSnapshot) ? services.scanUsage.remainingFreeScans() : nil
+    }
+
+    private var selectionExcess: Int {
+        remainingFreeScans.map { max(0, selectedAssetIDs.count - $0) } ?? 0
+    }
 
     private var scannedIds: Set<String> { Set(scannedAssets.map(\.assetIdentifier)) }
 
@@ -136,6 +147,19 @@ struct RecentScreenshotsView: View {
                     batchScanBar
                 }
             }
+            .batchAllowancePrompt(
+                $batchOverLimit,
+                deselectTitle: { "Deselect \($0.excess)" },
+                onDeselect: { _ in },
+                onUpgrade: { showPlusPaywall = true },
+                onDiscard: {
+                    selectedAssetIDs.removeAll()
+                    isSelecting = false
+                }
+            )
+            .sheet(isPresented: $showPlusPaywall) {
+                PlusPaywallView()
+            }
             .task { homeViewModel.loadRecentScreenshots(limit: 30) }
             .onChange(of: homeViewModel.recentScreenshots.map(\.localIdentifier)) { _, _ in
                 if appState.isEntitled(to: .likelyEventTriage) {
@@ -165,9 +189,20 @@ struct RecentScreenshotsView: View {
 
     private var batchScanBar: some View {
         HStack(spacing: 12) {
-            Text("\(selectedAssetIDs.count) selected")
-                .font(PDFont.labelLG)
-                .foregroundStyle(Color.pdOnSurface)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(selectedAssetIDs.count) selected")
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
+                if selectionExcess > 0 {
+                    Text("Deselect \(selectionExcess) more to stay within your free scans")
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdWarning)
+                } else if let remainingFreeScans {
+                    Text("\(remainingFreeScans) free scan\(remainingFreeScans == 1 ? "" : "s") left this month")
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+            }
             Spacer()
             Button {
                 startBatchScan()
@@ -214,6 +249,10 @@ struct RecentScreenshotsView: View {
     /// Starts the batch on the shared AppState so progress and the review sheet
     /// outlive this picker sheet.
     private func startBatchScan() {
+        if let remainingFreeScans, selectionExcess > 0 {
+            batchOverLimit = BatchOverLimit(selected: selectedAssetIDs.count, remaining: remainingFreeScans)
+            return
+        }
         let sources = selectedAssets.map { BatchScanSource.asset($0) }
         isSelecting = false
         selectedAssetIDs.removeAll()

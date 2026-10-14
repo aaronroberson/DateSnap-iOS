@@ -234,6 +234,13 @@ public enum PlanLimits {
         snapshot.state != .checking && snapshot.tier == .starter ? freeAlertsPerEvent : paidAlertsPerEvent
     }
 
+    /// How many selected items exceed the free allowance (0 when the batch can run in full).
+    /// Each item uses at most one scan, so a batch within the allowance can never run out midway.
+    public static func batchExcess(selecting count: Int, snapshot: EntitlementSnapshot, remaining: Int) -> Int {
+        guard limitsScans(snapshot) else { return 0 }
+        return max(0, count - remaining)
+    }
+
     public static var scanLimitMessage: String {
         "You've used this month's \(freeScansPerMonth) free scans. Upgrade to Plus for unlimited scans."
     }

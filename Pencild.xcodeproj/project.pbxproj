@@ -24,6 +24,7 @@
 		1925C2A5D124C9323801F038 /* InterpretationRanker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D96424EDC28B0A4F86A52D8 /* InterpretationRanker.swift */; };
 		1A69DD67E7BDCD44C8219B18 /* EventUnderstandingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E645A1CC102A440CD8855D0 /* EventUnderstandingPipeline.swift */; };
 		1C7AA698AC63B2E46C765A2B /* ScanFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7E916DB82363595107B192 /* ScanFlowViews.swift */; };
+		1D0B49C6F25886A02A581A7B /* BatchAllowancePrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336456EBDA1C45D042E45EF4 /* BatchAllowancePrompt.swift */; };
 		1EE0B6351B5417ADCC729EC2 /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9CE0660117BC08F7F942FD /* PremiumPaywallView.swift */; };
 		208DC5EB4AAF14063B45240D /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BFCA41890EB292C786BCC21 /* OCRService.swift */; };
 		26D414B490132B580FA03C28 /* Pencild.icon in Resources */ = {isa = PBXBuildFile; fileRef = B917CD2393B33C973D723130 /* Pencild.icon */; };
@@ -166,6 +167,7 @@
 		2F2C51D0A1E062FC09677C19 /* PlanLimitsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanLimitsTests.swift; sourceTree = "<group>"; };
 		2FB7EFDF4B24723D132A3282 /* EventReviewDestinationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReviewDestinationCard.swift; sourceTree = "<group>"; };
 		3240BE97FF1B2DDA671E3967 /* EvidenceValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceValidator.swift; sourceTree = "<group>"; };
+		336456EBDA1C45D042E45EF4 /* BatchAllowancePrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchAllowancePrompt.swift; sourceTree = "<group>"; };
 		33F07E490B5EA7202AABC722 /* DefaultCalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCalendarStore.swift; sourceTree = "<group>"; };
 		3566FF6E109E84BBE7C2F418 /* AppStateToastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateToastTests.swift; sourceTree = "<group>"; };
 		392BA2957CCCC864BED946E0 /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
@@ -393,6 +395,7 @@
 			children = (
 				5C01313C1CE2ED4EB2E4DEE9 /* AgendaView.swift */,
 				E04EAA4DDC315DC379920C9E /* AutomationSettingsView.swift */,
+				336456EBDA1C45D042E45EF4 /* BatchAllowancePrompt.swift */,
 				0EF7C8FC0FE13209CDF279AA /* BatchDestinationsEditor.swift */,
 				CCB8CEFE92F755DBDBB25957 /* BatchReviewView.swift */,
 				4190AD3348BA862C0F26A2F1 /* CalendarPermissionDeniedView.swift */,
@@ -641,6 +644,7 @@
 				0EE33558BF012640E2B7835A /* AppState.swift in Sources */,
 				4771CCAC645C68BE66FE3C79 /* AppleFoundationModelInterpreter.swift in Sources */,
 				EBA37C4B750AECDA4AA9B7AE /* AutomationSettingsView.swift in Sources */,
+				1D0B49C6F25886A02A581A7B /* BatchAllowancePrompt.swift in Sources */,
 				559F5E606918F57B15CF011B /* BatchDestinationsEditor.swift in Sources */,
 				8ED28C8EEFD31B0A1362955B /* BatchReviewView.swift in Sources */,
 				B50E263A86FAD3656DCB588F /* BatchScanViewModel.swift in Sources */,

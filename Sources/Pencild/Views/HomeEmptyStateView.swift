@@ -30,6 +30,11 @@ struct HomeEmptyStateView: View {
     @Query(sort: \EventCandidate.createdAt, order: .reverse) private var candidates: [EventCandidate]
 
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
+    /// True while the picker is reopened so the user can deselect items over the free allowance;
+    /// the edited selection is processed when the picker closes.
+    @State private var isTrimmingPhotoSelection = false
+    @State private var batchOverLimit: BatchOverLimit?
+    @State private var pendingBatch: PendingBatch?
     @State private var showPhotoPicker: Bool = false
     @State private var showFileImporter: Bool = false
     @State private var showPhotoAccessAlert: Bool = false
@@ -65,12 +70,7 @@ struct HomeEmptyStateView: View {
                 DocumentCameraScanner(
                     onScan: { images in
                         showDocumentCamera = false
-                        let sources = images.enumerated().map { index, image in
-                            BatchScanSource.loaded(id: "camera-page-\(index + 1)-\(UUID().uuidString)", image: image)
-                        }
-                        Task {
-                            await appState.startBatchScan(sources: sources, services: services, modelContext: modelContext)
-                        }
+                        requestBatch(.cameraPages(images))
                     },
                     onCancel: { showDocumentCamera = false },
                     onError: { error in
@@ -81,13 +81,32 @@ struct HomeEmptyStateView: View {
                 .ignoresSafeArea()
             }
             .onChange(of: selectedPhotoItems) { _, items in
-                guard !items.isEmpty else { return }
+                guard !items.isEmpty, !isTrimmingPhotoSelection else { return }
                 selectedPhotoItems = []
-                if items.count == 1 {
-                    runSinglePhotoScan(items[0])
-                } else {
-                    runBatchPhotoScan(items)
-                }
+                handlePickedPhotos(items)
+            }
+            .onChange(of: showPhotoPicker) { _, isShown in
+                guard !isShown, isTrimmingPhotoSelection else { return }
+                isTrimmingPhotoSelection = false
+                let items = selectedPhotoItems
+                selectedPhotoItems = []
+                handlePickedPhotos(items)
+            }
+            .batchAllowancePrompt(
+                $batchOverLimit,
+                deselectTitle: { info in
+                    if case .cameraPages = pendingBatch { return "Scan First \(info.remaining) Page\(info.remaining == 1 ? "" : "s")" }
+                    return "Deselect \(info.excess)"
+                },
+                onDeselect: { info in trimPendingBatch(to: info.remaining) },
+                onUpgrade: { Task { await appState.present(.plusPaywall) } },
+                onDiscard: { pendingBatch = nil }
+            )
+            .onChange(of: appState.subscriptionTier) { _, tier in
+                // Upgraded from the prompt: run the batch the user had chosen.
+                guard tier != .starter, let pending = pendingBatch else { return }
+                pendingBatch = nil
+                run(pending)
             }
             .onChange(of: appState.requestPhotoPicker) { _, requested in
                 if requested {
@@ -624,14 +643,67 @@ struct HomeEmptyStateView: View {
         }
     }
 
-    /// Multi-photo pick: scan every selected screenshot, then review all together.
-    private func runBatchPhotoScan(_ items: [PhotosPickerItem]) {
+    /// A multi-item scan waiting on the free-allowance check.
+    enum PendingBatch {
+        case photos([PhotosPickerItem])
+        case cameraPages([UIImage])
+
+        var count: Int {
+            switch self {
+            case .photos(let items): return items.count
+            case .cameraPages(let pages): return pages.count
+            }
+        }
+    }
+
+    private func handlePickedPhotos(_ items: [PhotosPickerItem]) {
+        switch items.count {
+        case 0: return
+        case 1: runSinglePhotoScan(items[0])
+        default: requestBatch(.photos(items))
+        }
+    }
+
+    /// Runs the batch only if it fits the free allowance; otherwise asks the user to deselect,
+    /// upgrade, or discard. Nothing is scanned or skipped silently.
+    private func requestBatch(_ batch: PendingBatch) {
+        let remaining = services.scanUsage.remainingFreeScans()
+        let excess = PlanLimits.batchExcess(selecting: batch.count, snapshot: services.subscription.entitlementSnapshot, remaining: remaining)
+        guard excess > 0 else {
+            run(batch)
+            return
+        }
+        pendingBatch = batch
+        batchOverLimit = BatchOverLimit(selected: batch.count, remaining: remaining)
+    }
+
+    private func trimPendingBatch(to allowed: Int) {
+        guard let pending = pendingBatch else { return }
+        pendingBatch = nil
+        switch pending {
+        case .photos(let items):
+            // Reopen the picker with the selection intact so the user chooses what to drop.
+            isTrimmingPhotoSelection = true
+            selectedPhotoItems = items
+            showPhotoPicker = true
+        case .cameraPages(let pages):
+            run(.cameraPages(Array(pages.prefix(allowed))))
+        }
+    }
+
+    /// Multi-item scan: every page or photo is scanned, then reviewed together.
+    private func run(_ batch: PendingBatch) {
+        let sources: [BatchScanSource]
+        switch batch {
+        case .photos(let items):
+            sources = items.map { BatchScanSource.photoPicker($0) }
+        case .cameraPages(let pages):
+            sources = pages.enumerated().map { index, image in
+                BatchScanSource.loaded(id: "camera-page-\(index + 1)-\(UUID().uuidString)", image: image)
+            }
+        }
         Task {
-            await appState.startBatchScan(
-                sources: items.map { BatchScanSource.photoPicker($0) },
-                services: services,
-                modelContext: modelContext
-            )
+            await appState.startBatchScan(sources: sources, services: services, modelContext: modelContext)
         }
     }
 
