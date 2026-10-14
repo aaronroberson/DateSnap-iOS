@@ -8,9 +8,11 @@ import SwiftUI
 struct SettingsScreenHeader: View {
     let title: String
     var showBack: Bool = false
+    /// For screens without a `PDScreenIntro` heading.
+    var showsTitle: Bool = false
 
     var body: some View {
-        PDTopBar(title: title, showsBack: showBack) {
+        PDTopBar(title: title, showsBack: showBack, showsTitle: showsTitle) {
             Image(systemName: "person.fill")
                 .font(.system(size: 15))
                 .foregroundStyle(Color.pdOnPrimary)
@@ -18,25 +20,6 @@ struct SettingsScreenHeader: View {
                 .background(Circle().fill(Color.pdPrimary))
                 .accessibilityHidden(true)
         }
-    }
-}
-
-struct SettingsBackButton: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        Button {
-            dismiss()
-        } label: {
-            Image(systemName: "chevron.left")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color.pdOnSurface)
-                .frame(width: 44, height: 44)
-                .background(Circle().fill(Color.pdSurfaceContainer))
-                .contentShape(Circle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Back")
     }
 }
 

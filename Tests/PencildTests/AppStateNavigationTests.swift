@@ -18,9 +18,9 @@ struct AppStateNavigationTests {
         let appState = AppState()
         let (log, token) = recordModals(of: appState)
 
-        await appState.present(.plusPaywall)
+        await appState.present(.paywall(opening: .plus))
 
-        #expect(log() == [AppModalScreen.plusPaywall.id])
+        #expect(log() == [AppModalScreen.paywall(opening: .plus).id])
         withExtendedLifetime(token) {}
     }
 
@@ -30,9 +30,9 @@ struct AppStateNavigationTests {
         await appState.present(.recentScreenshots)
         let (log, token) = recordModals(of: appState)
 
-        await appState.present(.premiumPaywall)
+        await appState.present(.paywall(opening: .premium))
 
-        #expect(log() == [nil, AppModalScreen.premiumPaywall.id])
+        #expect(log() == [nil, AppModalScreen.paywall(opening: .premium).id])
         withExtendedLifetime(token) {}
     }
 
@@ -47,7 +47,7 @@ struct AppStateNavigationTests {
         #expect(appState.batchReviewSession === session)
 
         // Unsaved batch edits must survive a modal request made while the batch is on screen.
-        await appState.present(.plusPaywall)
+        await appState.present(.paywall(opening: .plus))
         #expect(appState.batchReviewSession === session)
     }
 
@@ -87,7 +87,7 @@ struct AppStateNavigationTests {
 
         await appState.handleScanOutcome(scan, services: ServiceContainer.live())
 
-        #expect(appState.activeModal?.id == AppModalScreen.premiumPaywall.id)
+        #expect(appState.activeModal?.id == AppModalScreen.paywall(opening: .premium).id)
         #expect(appState.toastMessage == PremiumFeature.scheduleImport.upgradeReason)
     }
 

@@ -10,6 +10,16 @@ enum EventSmartFilter: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// The paid feature this filter belongs to, or `nil` for filters on every plan.
+    /// Without the entitlement the chip stays visible and opens that tier's paywall.
+    var requiredFeature: PremiumFeature? {
+        switch self {
+        case .upcoming, .repeating: return nil
+        case .rsvpDue: return .advancedReminderPlans
+        case .duplicates: return .duplicateClusters
+        }
+    }
+
     var icon: String {
         switch self {
         case .upcoming: return "calendar"
@@ -22,8 +32,10 @@ enum EventSmartFilter: String, CaseIterable, Identifiable {
     func matches(_ saved: SavedEvent, candidate: EventCandidate, duplicates: Set<String>) -> Bool {
         let now = Date()
         switch self {
-        case .upcoming: return candidate.startDate >= now
-        case .rsvpDue: return (candidate.rsvpDeadline.map { $0 >= Calendar.current.startOfDay(for: now) }) ?? false
+        // "Upcoming" has one meaning app-wide (`AgendaDateFilter.upcoming`: from the start of today),
+        // and an RSVP deadline is due until its day is over.
+        case .upcoming: return AgendaDateFilter.upcoming.includes(candidate.startDate, relativeTo: now)
+        case .rsvpDue: return candidate.rsvpDeadline.map { AgendaDateFilter.upcoming.includes($0, relativeTo: now) } ?? false
         case .repeating: return candidate.recurrenceRaw != nil || candidate.interpretation?.stored?.understanding.recurrence != nil
         case .duplicates: return duplicates.contains(saved.id)
         }
@@ -50,7 +62,6 @@ struct EventFilterPalette {
     let text: Color
     let muted: Color
     let accent: Color
-    let fieldFill: Color
     let chipFill: Color
     let border: Color
     let selectedFill: AnyShapeStyle
@@ -64,7 +75,6 @@ struct EventFilterPalette {
         text: .pdOnSurface,
         muted: .pdOnSurfaceVariant,
         accent: .pdPrimary,
-        fieldFill: .pdSurfaceContainer,
         chipFill: .pdSurfaceContainer,
         border: Color.pdSurfaceHighest.opacity(0.6),
         selectedFill: AnyShapeStyle(Color.pdSecondary.opacity(0.2)),
@@ -79,7 +89,6 @@ struct EventFilterPalette {
         text: .pdOnSurface,
         muted: .pdOnSurfaceVariant,
         accent: .pdPrimary,
-        fieldFill: .pdSurfaceContainer,
         chipFill: .pdSurfaceContainer,
         border: Color.pdOutlineVariant.opacity(0.5),
         selectedFill: AnyShapeStyle(LinearGradient.pdSelected),
@@ -97,7 +106,8 @@ struct EventSearchFilterBar: View {
     @EnvironmentObject private var appState: AppState
 
     @Binding var searchText: String
-    @Binding var status: SavedEventStatus
+    /// `nil` shows every status (Agenda's All); no status chip is selected then.
+    @Binding var status: SavedEventStatus?
     @Binding var smartFilter: EventSmartFilter?
     let counts: [SavedEventStatus: Int]
     var excludedSmartFilters: Set<EventSmartFilter> = []
@@ -129,30 +139,7 @@ struct EventSearchFilterBar: View {
     }
 
     private var searchField: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(palette.muted)
-            TextField("Search events, venues, dates...", text: $searchText)
-                .font(PDFont.jakarta(14, .medium, relativeTo: .subheadline))
-                .foregroundStyle(palette.text)
-                .accessibilityIdentifier("\(idPrefix).search")
-            if !searchText.isEmpty {
-                Button {
-                    searchText = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(palette.muted)
-                        .frame(minWidth: 44, minHeight: 44)
-                }
-                .accessibilityLabel("Clear search")
-            }
-        }
-        .padding(.leading, 14)
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: PDRadius.card)
-                .fill(palette.fieldFill)
-        )
+        PDSearchField(text: $searchText, prompt: "Search events, venues, dates...", accessibilityIdentifier: "\(idPrefix).search")
     }
 
     private func statusChip(_ option: SavedEventStatus) -> some View {
@@ -189,10 +176,12 @@ struct EventSearchFilterBar: View {
 
     private func smartFilterChip(_ filter: EventSmartFilter) -> some View {
         let isSelected = smartFilter == filter
-        let locked = filter == .duplicates && !appState.isEntitled(to: .duplicateClusters)
+        let feature = filter.requiredFeature
+        let locked = feature.map { !appState.isEntitled(to: $0) } ?? false
         return Button {
-            if locked {
-                Task { await appState.present(.premiumPaywall) }
+            if let feature, locked {
+                appState.showToast(feature.upgradeReason)
+                Task { await appState.present(.paywall(for: feature)) }
             } else {
                 smartFilter = isSelected ? nil : filter
             }
@@ -202,17 +191,25 @@ struct EventSearchFilterBar: View {
                     .font(.system(size: 11, weight: .semibold))
                 Text(filter.rawValue)
                     .font(PDFont.bodySM)
+                if let feature {
+                    PDTierTag(tier: feature.requiredTier)
+                }
             }
             .foregroundStyle(isSelected ? palette.selectedText : palette.muted)
             .padding(.horizontal, 12)
             .frame(minHeight: 44)
             .background(
                 Capsule()
-                    .fill(isSelected ? palette.selectedFill : AnyShapeStyle(palette.chipFill))
+                    .fill(isSelected ? palette.selectedFill
+                          : feature != nil ? AnyShapeStyle(LinearGradient.pdPaidFeature)
+                          : AnyShapeStyle(palette.chipFill))
+            )
+            .overlay(
+                Capsule().stroke(isSelected && feature != nil ? palette.selectedBorder : Color.clear, lineWidth: 1)
             )
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .accessibilityHint(locked ? PremiumFeature.duplicateClusters.upgradeReason : "Filters the event list")
+        .accessibilityHint(locked ? (feature?.upgradeReason ?? "") : "Filters the event list")
         .accessibilityIdentifier("\(idPrefix).smart.\(filter.id)")
     }
 }

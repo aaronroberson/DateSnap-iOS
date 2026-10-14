@@ -147,8 +147,7 @@ struct PDInterstitialHeader: View {
 struct PDPlanOption: View {
     let title: String
     var badge: String? = nil
-    /// Angled purple tag (e.g. "Intro offer") that starts at the middle of the title, just above it,
-    /// and rises past the top edge of the option.
+    /// Small angled purple tag shown beside the plan title.
     var ribbon: String? = nil
     let detail: String
     let price: String
@@ -157,8 +156,6 @@ struct PDPlanOption: View {
     /// The plan the user already has: shown with a "Current plan" badge and not selectable.
     var isCurrent = false
     let action: () -> Void
-    @State private var titleWidth: CGFloat = 0
-
     private var primaryText: Color { isSelected ? .pdOnPrimaryFixed : .pdOnSurface }
     private var secondaryText: Color { isSelected ? .pdOnPrimaryFixed.opacity(0.75) : .pdOnSurfaceVariant }
 
@@ -170,7 +167,6 @@ struct PDPlanOption: View {
                         Text(title)
                             .font(PDFont.labelLG)
                             .foregroundStyle(primaryText)
-                            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { titleWidth = $0 }
                         if isCurrent {
                             Text("CURRENT PLAN")
                                 .font(PDFont.labelSM)
@@ -186,6 +182,9 @@ struct PDPlanOption: View {
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Capsule().fill(isSelected ? Color.pdOnPrimaryFixed : Color.pdPrimary))
+                        }
+                        if let ribbon, !isCurrent {
+                            ribbonTag(ribbon, isSelected: isSelected)
                         }
                     }
                     Text(detail)
@@ -213,11 +212,8 @@ struct PDPlanOption: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: PDRadius.plan)
-                    .fill(isSelected ? AnyShapeStyle(LinearGradient.pdAction) : AnyShapeStyle(Color.pdSurfaceLow))
+                    .fill(isSelected ? AnyShapeStyle(LinearGradient.pdAction) : AnyShapeStyle(Color.pdSurfaceContainerHigh))
             )
-            .overlay(alignment: .topLeading) {
-                if let ribbon, !isCurrent { ribbonTag(ribbon) }
-            }
         }
         .buttonStyle(.plain)
         .disabled(isCurrent)
@@ -229,21 +225,20 @@ struct PDPlanOption: View {
 
     private static let contentPadding: CGFloat = 16
 
-    private func ribbonTag(_ text: String) -> some View {
+    private func ribbonTag(_ text: String, isSelected: Bool) -> some View {
         Text(text.uppercased())
             .font(PDFont.labelSM)
             .tracking(0.6)
-            .foregroundStyle(Color.white)
+            .foregroundStyle(isSelected ? Color.pdPrimary : Color.pdLavender)
             .lineLimit(1)
             .fixedSize()
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(Capsule().fill(Color.pdSecondaryContainer))
-            .shadow(color: Color.pdSecondaryContainer.opacity(0.45), radius: 6, y: 2)
-            .rotationEffect(.degrees(-10), anchor: .bottomLeading)
-            // Pinned to the option's top-left, then moved so its bottom-left corner sits just above the
-            // title at its horizontal middle; the tilt carries it past the option's top edge.
-            .offset(x: Self.contentPadding + titleWidth / 2, y: -10)
+            .background(
+                Capsule().fill(isSelected ? Color.pdOnPrimaryFixed : Color.pdSecondaryContainer)
+            )
+            .rotationEffect(.degrees(-4))
+            .offset(y: -8)
             .accessibilityHidden(true)
     }
 }
@@ -273,7 +268,35 @@ struct PDCloseButton: View {
 struct PDCard<Content: View>: View {
     var padding: CGFloat = PDSpacing.md
     var highlighted: Bool = false
+    var surface: Color?
+    var shadowOpacity: Double = 0.25
+    var shadowRadius: CGFloat = 12
+    var shadowY: CGFloat = 4
     @ViewBuilder var content: () -> Content
+
+    init(
+        padding: CGFloat = PDSpacing.md,
+        highlighted: Bool = false,
+        surface: Color? = nil,
+        shadowOpacity: Double = 0.25,
+        shadowRadius: CGFloat = 12,
+        shadowY: CGFloat = 4,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.padding = padding
+        self.highlighted = highlighted
+        self.surface = surface
+        self.shadowOpacity = shadowOpacity
+        self.shadowRadius = shadowRadius
+        self.shadowY = shadowY
+        self.content = content
+    }
+
+    private var fill: AnyShapeStyle {
+        if let surface { return AnyShapeStyle(surface) }
+        if highlighted { return AnyShapeStyle(LinearGradient.pdHighlightCard) }
+        return AnyShapeStyle(Color.pdSurfaceContainer.opacity(0.85))
+    }
 
     var body: some View {
         content()
@@ -281,9 +304,8 @@ struct PDCard<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: PDRadius.card)
-                    .fill(highlighted ? AnyShapeStyle(LinearGradient.pdHighlightCard)
-                                      : AnyShapeStyle(Color.pdSurfaceContainer.opacity(0.85)))
-                    .shadow(color: Color.black.opacity(0.25), radius: 12, y: 4)
+                    .fill(fill)
+                    .shadow(color: Color.black.opacity(shadowOpacity), radius: shadowRadius, y: shadowY)
             )
     }
 }

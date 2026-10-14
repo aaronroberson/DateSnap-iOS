@@ -41,7 +41,7 @@ struct UserProfileFlowView: View {
     private var remindersCount: Int { savedEvents.reduce(0) { $0 + $1.externalReminderIds.count } }
     private var firstSavedDate: Date? { savedEvents.last?.createdAt }
 
-    private var planTitle: String { tier == .starter ? "Pencil’d Free" : "Pencil’d \(tier.displayName)" }
+    private var planTitle: String { tier.displayName }
     private var planSummary: String {
         switch tier {
         case .starter: return "Upgrade to Plus for auto-detect and unlimited screenshot scans."
@@ -162,7 +162,7 @@ struct UserProfileFlowView: View {
                     Spacer()
                 }
                 Button {
-                    Task { await appState.present(.premiumPaywall) }
+                    Task { await appState.present(.paywall(opening: .premium)) }
                 } label: {
                     Text(tier == .starter ? "See plans" : "Manage subscription")
                         .font(PDFont.labelLG)
@@ -367,7 +367,7 @@ struct UserProfileFlowView: View {
                         tint: .pdPrimary,
                         title: "Target calendar"
                     ) {
-                        PDValueChevron(value: calendarStore.defaultCalendarTitle() ?? "iOS default")
+                        PDValueChevron(value: calendarStore.asksEveryTime() ? "Ask every time" : (calendarStore.defaultCalendarTitle() ?? "Automatic"))
                     }
                 }
                 .buttonStyle(PDRowButtonStyle())

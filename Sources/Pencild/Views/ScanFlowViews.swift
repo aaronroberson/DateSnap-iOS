@@ -70,9 +70,9 @@ struct RecentScreenshotsView: View {
                             }
                             Button {
                                 if appState.isEntitled(to: .likelyEventTriage) { likelyOnly = true }
-                                else { Task { await appState.present(.plusPaywall) } }
+                                else { Task { await appState.present(.paywall(opening: .plus)) } }
                             } label: {
-                                PDChip(text: "Likely events", icon: appState.isEntitled(to: .likelyEventTriage) ? "sparkles" : "lock.fill", selected: likelyOnly && appState.isEntitled(to: .likelyEventTriage))
+                                PDChip(text: "Likely events", icon: appState.isEntitled(to: .likelyEventTriage) ? "sparkles" : "lock.fill", selected: likelyOnly && appState.isEntitled(to: .likelyEventTriage), paidTier: PremiumFeature.likelyEventTriage.requiredTier)
                             }
                         }
                         .buttonStyle(.plain)
@@ -158,7 +158,7 @@ struct RecentScreenshotsView: View {
                 }
             )
             .sheet(isPresented: $showPlusPaywall) {
-                PlusPaywallView()
+                PaywallView(initialPlan: .plus)
             }
             .task { homeViewModel.loadRecentScreenshots(limit: 30) }
             .onChange(of: homeViewModel.recentScreenshots.map(\.localIdentifier)) { _, _ in
@@ -398,7 +398,7 @@ struct ReviewQueueView: View {
     @State private var showDiscardConfirmation = false
 
     private var pending: [EventCandidate] {
-        candidates.filter { $0.savedEvent == nil || $0.savedEvent?.status == .draft }
+        candidates.filter(\.needsReview)
     }
     private var highConfidence: [EventCandidate] { pending.filter { $0.confidenceTier == .high } }
     private var visibleCandidates: [EventCandidate] { highConfidenceOnly ? highConfidence : pending }

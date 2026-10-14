@@ -9,9 +9,7 @@ struct EventReviewFieldsCard: View {
     let onOpenURL: (URL) -> Void
 
     private var mapsURL: URL? {
-        let query = [viewModel.venueName, viewModel.location].filter { !$0.isEmpty }.joined(separator: ", ")
-        guard !query.isEmpty, let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
-        return URL(string: "https://maps.apple.com/?q=\(encoded)")
+        PencildLinks.maps([viewModel.venueName, viewModel.location])
     }
 
     var body: some View {

@@ -341,11 +341,11 @@ struct TabletWorkspaceTests {
             (CGSize(width: 402, height: 874), UIUserInterfaceSizeClass.compact, "compact"),
         ] {
             _ = try await render(
-                PlusPaywallView().environmentObject(AppState()).pencildServices(services),
+                PaywallView(initialPlan: .plus).environmentObject(AppState()).pencildServices(services),
                 size: size, sizeClass: sizeClass, name: "08-\(suffix)-plus-paywall"
             )
             _ = try await render(
-                PremiumPaywallView().environmentObject(AppState()).pencildServices(services),
+                PaywallView(initialPlan: .premium).environmentObject(AppState()).pencildServices(services),
                 size: size, sizeClass: sizeClass, name: "09-\(suffix)-premium-paywall"
             )
         }

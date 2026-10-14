@@ -7,11 +7,11 @@ import EventKit
 struct DefaultCalendarView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.services) private var services
-    @AppStorage("settings.askEveryTimeCalendar") private var askEveryTime = false
 
     private let store = DefaultCalendarStore()
     /// Mirrors the persisted choice so the list re-renders on tap (the store is a plain UserDefaults wrapper).
     @State private var selectedID: String?
+    @State private var asksEveryTime = false
     @State private var writableCalendars: [EKCalendar] = []
     @State private var systemDefault: EKCalendar? = nil
     @State private var authorization: EKAuthorizationStatus = .notDetermined
@@ -32,7 +32,7 @@ struct DefaultCalendarView: View {
                 PDScreenIntro(
                     eyebrow: "Settings",
                     title: "Default Calendar",
-                    subtitle: "Choose which connected calendar account receives newly reviewed and confirmed schedules by default."
+                    subtitle: "Choose where new events go. Pick a calendar to send every new event there, or leave Automatic on."
                 )
 
                 // Highlighted Calendar Sync Overview Card
@@ -42,32 +42,23 @@ struct DefaultCalendarView: View {
                             PDIconTile(systemName: "arrow.triangle.2.circlepath.circle.fill", tint: .pdPrimary, size: .large)
 
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Seamless Zero-Conflict Sync")
+                                Text("Where new events go")
                                     .font(PDFont.headlineSM)
                                     .foregroundStyle(Color.pdOnSurface)
                                 HStack(spacing: 5) {
                                     Circle().fill(Color.pdSuccess).frame(width: 6, height: 6)
-                                    Text("All connected accounts ready")
+                                    Text(asksEveryTime ? "Ask every time" : selectedID == nil ? "Automatic" : "Always \(store.defaultCalendarTitle() ?? "your chosen calendar")")
                                         .font(PDFont.bodySM)
                                         .foregroundStyle(Color.pdOnSurfaceVariant)
                                 }
                             }
                         }
 
-                        Text("Events approved during review are automatically committed to your chosen default target without duplicate entries.")
+                        Text("Nothing is added until you confirm it in review. A calendar you pick here overrides the automatic order for every new event; saved events keep their calendar.")
                             .font(PDFont.bodySM)
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                             .lineSpacing(2)
 
-                        if selectedID != nil {
-                            Button("Reset to iOS default") {
-                                store.reset()
-                                selectedID = nil
-                            }
-                            .font(PDFont.labelMD)
-                            .foregroundStyle(Color.pdPrimary)
-                            .padding(.top, 4)
-                        }
                     }
                 }
 
@@ -75,24 +66,23 @@ struct DefaultCalendarView: View {
                 if writableCalendars.isEmpty {
                     fallbackCalendarList
                 } else {
+                    automaticRow
                     realCalendarGroups
                 }
 
-                // Ask Every Time Toggle Card
+                // Per-event override note: the default is preselected, never prompted for.
                 PDCard {
-                    HStack {
+                    HStack(alignment: .top, spacing: PDSpacing.sm) {
+                        PDIconTile(systemName: "hand.tap.fill", tint: .pdSecondary)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Ask Every Time")
+                            Text("Change it for any event")
                                 .font(PDFont.labelLG)
                                 .foregroundStyle(Color.pdOnSurface)
-                            Text("Prompt for destination calendar when reviewing multi-event scans.")
+                            Text(asksEveryTime ? "Review shows the calendar list with nothing selected, and Save waits until you pick one." : "Your default is preselected when you review a scan. Pick a different calendar there for just that event.")
                                 .font(PDFont.bodySM)
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
-                        Spacer()
-                        Toggle("Ask Every Time", isOn: $askEveryTime)
-                            .labelsHidden()
-                            .toggleStyle(PDToggleStyle())
                     }
                 }
             }
@@ -103,7 +93,49 @@ struct DefaultCalendarView: View {
         .background(Color.pdSurface.ignoresSafeArea())
         .task {
             selectedID = store.defaultCalendarIdentifier()
+            asksEveryTime = store.asksEveryTime()
             await refresh()
+        }
+    }
+
+    // MARK: - Automatic (priority order)
+    /// Selected until the user picks a calendar. A picked calendar overrides this order for every new event.
+    private var automaticRow: some View {
+        VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            HStack(spacing: 6) {
+                Image(systemName: "list.number")
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.pdPrimary)
+                Text("PRIORITY ORDER")
+                    .font(PDFont.labelSM)
+                    .tracking(0.6)
+                    .foregroundStyle(Color.pdPrimary)
+            }
+            .padding(.horizontal, PDSpacing.xxs)
+
+            calendarRow(
+                title: "Automatic",
+                subtitle: "Your usual calendar for that kind of event, then the iOS default\(systemDefault.map { " (\($0.title))" } ?? "")",
+                dotColor: .pdPrimary,
+                isSelected: selectedID == nil && !asksEveryTime,
+                subtitleLines: 2
+            ) {
+                store.reset()
+                selectedID = nil
+                asksEveryTime = false
+            }
+
+            calendarRow(
+                title: "Ask every time",
+                subtitle: "No calendar is preselected. Pick one for each event before it saves.",
+                dotColor: .pdSecondary,
+                isSelected: asksEveryTime,
+                subtitleLines: 2
+            ) {
+                store.setAsksEveryTime()
+                selectedID = nil
+                asksEveryTime = true
+            }
         }
     }
 
@@ -159,6 +191,7 @@ struct DefaultCalendarView: View {
                     ) {
                         store.setDefaultCalendarIdentifier(cal.calendarIdentifier, title: cal.title)
                         selectedID = cal.calendarIdentifier
+                        asksEveryTime = false
                     }
                 }
             }
@@ -188,6 +221,7 @@ struct DefaultCalendarView: View {
         subtitle: String,
         dotColor: Color,
         isSelected: Bool,
+        subtitleLines: Int = 1,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -204,7 +238,7 @@ struct DefaultCalendarView: View {
                     Text(subtitle)
                         .font(PDFont.bodySM)
                         .foregroundStyle(Color.pdOnSurfaceVariant)
-                        .lineLimit(1)
+                        .lineLimit(subtitleLines)
                 }
 
                 Spacer()
@@ -236,10 +270,7 @@ struct DefaultCalendarView: View {
     }
 
     private func isSelected(_ identifier: String) -> Bool {
-        if let saved = selectedID {
-            return saved == identifier
-        }
-        return identifier == systemDefault?.calendarIdentifier
+        selectedID == identifier
     }
 
     private func refresh() async {
@@ -254,12 +285,8 @@ struct DefaultCalendarView: View {
             authorization = services.calendar.authorizationStatus()
         }
 
-        let granted: Bool
-        if #available(iOS 17.0, *) {
-            granted = authorization == .fullAccess
-        } else {
-            granted = authorization == .authorized
-        }
+        // Listing calendars needs full access; add-only can save but not list.
+        let granted = authorization.canReadCalendars
 
         guard granted else {
             writableCalendars = []

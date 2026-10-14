@@ -111,30 +111,7 @@ struct HelpFeedbackView: View {
     // MARK: - Search
 
     private var searchBar: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.pdOutline)
-            TextField("Search FAQs, docs, or guides...", text: $query)
-                .font(PDFont.bodyMD)
-                .foregroundStyle(Color.pdOnSurface)
-                .autocorrectionDisabled()
-            if !query.isEmpty {
-                Button {
-                    query = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.pdOutline)
-                }
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: PDRadius.card)
-                .fill(Color.pdSurfaceLow.opacity(0.9))
-        )
+        PDSearchField(text: $query, prompt: "Search FAQs, docs, or guides...", accessibilityIdentifier: "help.search")
     }
 
     private var emptyResults: some View {
@@ -292,7 +269,7 @@ struct HelpFeedbackView: View {
 
             PDGroupedList {
                 Button {
-                    if let url = URL(string: "mailto:support@getpencild.com?subject=Pencil’d%20Support%20Request") {
+                    if let url = PencildLinks.supportMail(subject: "Pencil’d Support Request") {
                         UIApplication.shared.open(url)
                     }
                 } label: {
@@ -300,7 +277,7 @@ struct HelpFeedbackView: View {
                         icon: "envelope.fill",
                         tint: .pdPrimary,
                         title: "Send Message to Support",
-                        subtitle: "Email support@getpencild.com"
+                        subtitle: "Email \(PencildLinks.supportEmail)"
                     ) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold))
@@ -314,7 +291,7 @@ struct HelpFeedbackView: View {
                 Button {
                     topicGuide = SupportTopic(id: "bugReport", icon: "ant.fill", title: "Submit a Bug Report",
                                               subtitle: "Attach sanitized diagnostic capture logs",
-                                              body: "Email support@getpencild.com with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
+                                              body: "Email \(PencildLinks.supportEmail) with your diagnostic summary (copied below), the iOS version, and a screenshot of the failing scan. Diagnostic captures are sanitized on-device — no photo content is ever attached.")
                 } label: {
                     PDListRow(
                         icon: "ant.fill",
@@ -334,7 +311,7 @@ struct HelpFeedbackView: View {
                 Button {
                     topicGuide = SupportTopic(id: "featureRequest", icon: "lightbulb.fill", title: "Request a Feature",
                                               subtitle: "Help shape our next scheduled release",
-                                              body: "Feature requests go straight to the engineering backlog. Send your idea to support@getpencild.com with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
+                                              body: "Feature requests go straight to the engineering backlog. Send your idea to \(PencildLinks.supportEmail) with the subject \"Feature Request\" — the roadmap for the next scheduled release is shaped by the most-requested items each cycle.")
                 } label: {
                     PDListRow(
                         icon: "lightbulb.fill",

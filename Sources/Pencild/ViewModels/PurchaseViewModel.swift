@@ -6,8 +6,10 @@ import SwiftUI
 /// Drives the paywalls: loads StoreKit products, purchases, and restores through `SubscriptionServiceProtocol`.
 @MainActor
 final class PurchaseViewModel: ObservableObject {
-    enum Plan: Sendable {
+    enum Plan: Sendable, Identifiable {
         case plus, premium
+
+        var id: Self { self }
 
         var tier: SubscriptionTier { self == .plus ? .plus : .premium }
 
@@ -56,6 +58,26 @@ final class PurchaseViewModel: ObservableObject {
     func monthlyEquivalent(_ plan: Plan) -> String? {
         guard let annual = product(plan, .annual) else { return nil }
         return (annual.price / 12).formatted(annual.priceFormatStyle)
+    }
+
+    /// The product the user currently owns for `tier`: a lifetime purchase outranks a subscription,
+    /// otherwise the active auto-renewing subscription that expires last (same rule as Manage Plan).
+    func currentProduct(for tier: SubscriptionTier) async -> SubscriptionProductID? {
+        var latest: (product: SubscriptionProductID, expiration: Date)?
+        let now = Date()
+        for await result in StoreKit.Transaction.currentEntitlements {
+            guard case .verified(let transaction) = result,
+                  transaction.revocationDate == nil,
+                  let product = SubscriptionCatalog.product(id: transaction.productID),
+                  product.tier == tier else { continue }
+            if product.period == .lifetime { return product }
+            guard transaction.productType == .autoRenewable,
+                  let expiration = transaction.expirationDate, expiration > now else { continue }
+            if latest == nil || expiration > latest!.expiration {
+                latest = (product, expiration)
+            }
+        }
+        return latest?.product
     }
 
     func canPurchase(_ plan: Plan, _ period: BillingPeriod) -> Bool {
@@ -129,6 +151,30 @@ enum PencildLinks {
         }
         return url
     }()
+
+    static let supportEmail = "support@getpencild.com"
+
+    /// A mail draft to support with `subject` filled in.
+    static func supportMail(subject: String) -> URL? {
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = supportEmail
+        components.queryItems = [URLQueryItem(name: "subject", value: subject)]
+        return components.url
+    }
+
+    /// Apple Maps search for the non-empty parts of a place (venue, address). Skips the
+    /// `PencildEvent.locationPlaceholder` shown when an event has no location.
+    static func maps(_ parts: [String]) -> URL? {
+        let query = parts
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && $0 != PencildEvent.locationPlaceholder }
+            .joined(separator: ", ")
+        guard !query.isEmpty else { return nil }
+        var components = URLComponents(string: "https://maps.apple.com/")
+        components?.queryItems = [URLQueryItem(name: "q", value: query)]
+        return components?.url
+    }
 
     /// Apple's standard auto-renewable subscription EULA.
     static let termsOfUse: URL = {

@@ -44,6 +44,9 @@ enum AgendaDateFilter: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// The app's single definition of these ranges. "Upcoming" starts at the beginning of today, so
+    /// an event earlier today is still upcoming until the day ends (History's smart filter and
+    /// "RSVP Due" use this too).
     func includes(_ date: Date, relativeTo today: Date, calendar: Calendar = .current) -> Bool {
         let startOfToday = calendar.startOfDay(for: today)
         switch self {
@@ -59,8 +62,8 @@ enum AgendaDateFilter: String, CaseIterable, Identifiable {
 }
 
 enum AppModalScreen: Identifiable, Sendable {
-    case premiumPaywall
-    case plusPaywall
+    /// The paywall, opening on the given plan's tab.
+    case paywall(opening: PurchaseViewModel.Plan)
     case calendarPermissionDenied
     case notificationPermissionDenied
     case noDatesFound
@@ -68,14 +71,24 @@ enum AppModalScreen: Identifiable, Sendable {
     case eventReviewEdit(PencildEvent)
     case reminderScheduleEditor(PencildEvent)
     case recentScreenshots
+    case captureSources
     case screenGallery
     case userProfile
     case defaultCalendar
     
+    var isPaywall: Bool {
+        if case .paywall = self { return true }
+        return false
+    }
+
+    /// The paywall opened on the tab of the plan `feature` needs.
+    static func paywall(for feature: PremiumFeature) -> AppModalScreen {
+        .paywall(opening: feature.requiredTier == .premium ? .premium : .plus)
+    }
+
     var id: String {
         switch self {
-        case .premiumPaywall: return "premiumPaywall"
-        case .plusPaywall: return "plusPaywall"
+        case .paywall(let plan): return plan == .premium ? "paywall-premium" : "paywall-plus"
         case .calendarPermissionDenied: return "calendarPermissionDenied"
         case .notificationPermissionDenied: return "notificationPermissionDenied"
         case .noDatesFound: return "noDatesFound"
@@ -83,6 +96,7 @@ enum AppModalScreen: Identifiable, Sendable {
         case .eventReviewEdit(let event): return "eventReviewEdit-\(event.id)"
         case .reminderScheduleEditor(let event): return "reminderScheduleEditor-\(event.id)"
         case .recentScreenshots: return "recentScreenshots"
+        case .captureSources: return "captureSources"
         case .screenGallery: return "screenGallery"
         case .userProfile: return "userProfile"
         case .defaultCalendar: return "defaultCalendar"
@@ -98,12 +112,35 @@ final class AppState: ObservableObject {
     @Published var activeModal: AppModalScreen? = nil
 
     // Membership tier, mirrored from StoreKit via SubscriptionService.
-    @Published private(set) var subscriptionTier: SubscriptionTier = .starter
+    /// Mirror of the subscription service's entitlement snapshot. Every decision below derives from
+    /// it through `FeatureAccessPolicy` (see `EntitlementProviding`), so an unresolved StoreKit
+    /// check counts as free here exactly as it does in the view models.
+    @Published private(set) var entitlementSnapshot: EntitlementSnapshot = .checking()
+    /// The effective tier: verified tier, or free while unresolved.
+    var subscriptionTier: SubscriptionTier { entitlementSnapshot.effectiveTier }
     var isPlusMember: Bool { subscriptionTier != .starter }
     var isPremiumMember: Bool { subscriptionTier == .premium }
+    var entitlementsUnresolved: Bool { entitlementSnapshot.isUnresolved }
+    private var entitlementProvider: (any SubscriptionServiceProtocol)?
 
+    /// Premium includes every Plus feature (tiers are ranked). Unresolved entitlements count as free.
     func isEntitled(to feature: PremiumFeature) -> Bool {
-        subscriptionTier.includes(feature)
+        FeatureAccessPolicy.decision(for: feature, snapshot: entitlementSnapshot) == .allowed
+    }
+
+    /// Whether a paywall should open now. Re-requests an unresolved entitlement first; if that
+    /// shows a paid plan, says so instead of selling it. A Premium member is never shown a paywall.
+    /// `present(_:)` and the paywall view (for screens that open it in their own sheet) both ask.
+    func shouldShowPaywall() async -> Bool {
+        if let provider = entitlementProvider, entitlementSnapshot.isUnresolved {
+            let before = subscriptionTier
+            entitlementSnapshot = await provider.resolveBeforeUpsell()
+            if before == .starter && subscriptionTier != .starter {
+                showToast("Your \(subscriptionTier.displayName) plan is active. Try that again.")
+                return false
+            }
+        }
+        return subscriptionTier != .premium
     }
 
     // Scan context handed from the scan pipeline to the review / no-dates screens.
@@ -114,6 +151,8 @@ final class AppState: ObservableObject {
     /// Set by "Scan another photo" flows to reopen the photo picker from Home.
     @Published var requestPhotoPicker: Bool = false
     @Published var requestFileImporter: Bool = false
+    @Published var requestDocumentScanner: Bool = false
+    @Published var requestScreenshotPicker: Bool = false
     /// Multi-screenshot batch session; presented as its own sheet with per-event destinations.
     @Published var batchReviewSession: BatchReviewSession? = nil
     /// In-flight multi-screenshot scan, kept here so progress survives picker dismissal.
@@ -130,8 +169,39 @@ final class AppState: ObservableObject {
 
     /// Presents a modal, first dismissing any sheet already on screen.
     func present(_ modal: AppModalScreen) async {
+        if modal.isPaywall, await !shouldShowPaywall() { return }
         await dismissPresentedSheets()
         activeModal = modal
+    }
+
+    /// Starts a scan source chosen outside Home (the Add events sheet). Home owns the pickers,
+    /// scan limits and batch prompts, so this switches to it and raises the matching request.
+    func beginCapture(_ source: CaptureSource) async {
+        await dismissPresentedSheets()
+        selectedTab = .home
+        switch source {
+        case .screenshots: requestScreenshotPicker = true
+        case .photoLibrary: requestPhotoPicker = true
+        case .fileImport: requestFileImporter = true
+        case .documentScanner: requestDocumentScanner = true
+        case .manual: break // Needs a model context; the caller creates the event and presents the form.
+        }
+    }
+
+    /// Enter Manually (Home, Add events sheet) and No Dates Found (with a scan prefill): builds the
+    /// event through `ManualEventFactory` and opens the review form.
+    func startManualEntry(
+        in context: ModelContext,
+        prefill: ManualEventFactory.ScanPrefill? = nil,
+        sourceImage: UIImage? = nil
+    ) async {
+        do {
+            let candidate = try ManualEventFactory.makeCandidate(in: context, prefill: prefill)
+            rememberSourceImage(sourceImage, for: [candidate])
+            await present(.eventReviewEdit(candidate.toPencildEvent()))
+        } catch {
+            showToast(error.localizedDescription)
+        }
     }
 
     /// Opens History & Archive, which lives under the Agenda tab.
@@ -158,12 +228,12 @@ final class AppState: ObservableObject {
         // Out of free scans before finding anything: offer Plus instead of an empty review.
         if session.hitScanLimit && session.events.isEmpty {
             showToast(PlanLimits.scanLimitMessage)
-            await present(.plusPaywall)
+            await present(.paywall(opening: .plus))
             return
         }
         if let feature = session.lockedFeature, session.events.isEmpty {
             showToast(feature.upgradeReason)
-            await present(feature.requiredTier == .premium ? .premiumPaywall : .plusPaywall)
+            await present(.paywall(for: feature))
             return
         }
         await presentBatchReview(session)
@@ -172,20 +242,22 @@ final class AppState: ObservableObject {
     // Toast Feedback
     @Published var toastMessage: String? = nil
 
-    private var tierSubscription: AnyCancellable?
+    private var snapshotSubscription: AnyCancellable?
     private let toastDismissalScheduler: any ToastDismissalScheduling
 
     init(toastDismissalScheduler: any ToastDismissalScheduling = LiveToastDismissalScheduler()) {
         self.toastDismissalScheduler = toastDismissalScheduler
     }
 
-    /// Mirrors the subscription tier. The live StoreKit service publishes changes (purchases, renewals, refunds).
+    /// Mirrors the entitlement snapshot. The live StoreKit service publishes changes (purchases,
+    /// renewals, refunds, retries).
     func bind(subscription: SubscriptionServiceProtocol) {
-        subscriptionTier = subscription.currentTier
+        entitlementProvider = subscription
+        entitlementSnapshot = subscription.entitlementSnapshot
         if let live = subscription as? SubscriptionService {
-            tierSubscription = live.$currentTier
+            snapshotSubscription = live.$entitlementSnapshot
                 .receive(on: DispatchQueue.main)
-                .sink { [weak self] tier in self?.subscriptionTier = tier }
+                .sink { [weak self] snapshot in self?.entitlementSnapshot = snapshot }
         }
     }
 
@@ -259,10 +331,10 @@ final class AppState: ObservableObject {
             openHistory()
         case .scanLimitReached:
             showToast(PlanLimits.scanLimitMessage)
-            await present(.plusPaywall)
+            await present(.paywall(opening: .plus))
         case .requiresUpgrade(let feature):
             showToast(feature.upgradeReason)
-            await present(feature.requiredTier == .premium ? .premiumPaywall : .plusPaywall)
+            await present(.paywall(for: feature))
         case .failed(let message):
             await dismissPresentedSheets()
             showToast(message)
