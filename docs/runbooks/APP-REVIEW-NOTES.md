@@ -38,10 +38,12 @@ If you encounter any questions or require additional details during review, plea
 
 | Field | Value / Guidance |
 |---|---|
-| **App Name** | Pencild: Screenshot to Calendar |
-| **Subtitle** | On-Device Flyer & Event Sync |
-| **Primary Category** | Utilities |
-| **Secondary Category** | Productivity |
+| **App Name** | Pencil'd: Photo to Calendar *(27/30)* |
+| **Subtitle** | Scan flyers & screenshots *(25/30)* |
+| **Keywords** | `picture,image,event,invite,ticket,pdf,import,file,reminder,date,party,concert,agenda,camera,scanner` *(99/100; singular, no spaces, no words repeated from name or subtitle)* |
+| **Promotional Text** | Turn event flyers, invites, photos, and screenshots into calendar events. Read on your iPhone and reviewed by you before anything is saved. *(139/170)* |
+| **Primary Category** | Productivity |
+| **Secondary Category** | Utilities |
 | **Content Rights** | Contains no third-party content requiring explicit license. |
 | **Age Rating** | 4+ (No unrestricted web access, no user-generated content). |
 | **Data Nutrition Label** | "Data Not Collected" across all data categories. |
@@ -50,3 +52,13 @@ If you encounter any questions or require additional details during review, plea
 | **Marketing URL** | `https://getpencild.com` |
 | **Copyright** | `2026 LiminalForge, LLC` (matches `NSHumanReadableCopyright` in `Info.plist`) |
 | **Seller** | LiminalForge, LLC: requires Apple Developer Program enrollment as an organization (D-U-N-S number) |
+
+> **Listing rationale (2026-10-13):** "photo to calendar" is a standalone App Store
+> autocomplete term, while "screenshot to calendar" only appears inside other apps'
+> names. The name takes the most-searched phrase; the subtitle and keywords cover the
+> other phrasings ("scan", "screenshot", "picture", "image", "pdf"), which Apple
+> likely combines across fields. Productivity is the accurate primary category and
+> the one most direct competitors use; Apple counts the primary category as a
+> search match. Work schedules and multi-date flyers are deliberately left out until
+> that feature ships. Name, subtitle, and keywords change only with a new version;
+> promotional text can change anytime.
