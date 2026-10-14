@@ -3,6 +3,49 @@
 
 ---
 
+# Decision Record: App Store Listing (2026-10-13)
+
+**Status:** Decided. Supersedes the name, subtitle, keyword, and category
+recommendations under "App Store Package" below, which are kept as the
+original research. The live values are maintained in
+`docs/runbooks/APP-REVIEW-NOTES.md`; update both together.
+
+| Field | Decision |
+|---|---|
+| **App Name** | Pencil'd: Photo to Calendar *(27/30)* |
+| **Subtitle** | Flyers & screenshots to events *(30/30)* |
+| **Keywords** | `picture,image,scan,work,schedule,shift,invite,ticket,pdf,import,file,reminder,date,party,camera` *(95/100)* |
+| **Promotional Text** | Turn flyers, work schedules, invites, photos, and screenshots into calendar events and reminders. Snap or import on your iPhone, approve, and Pencil'd does the rest. *(165/170)* |
+| **Primary / Secondary Category** | Productivity / Utilities |
+| **Copyright** | 2026 LiminalForge, LLC |
+| **Seller** | LiminalForge, LLC (organization enrollment, D-U-N-S number required) |
+| **Domain** | getpencild.com (registered; pencild.com and pencild.app were taken). Privacy `https://getpencild.com/privacy`, support `https://getpencild.com/support` |
+
+**Why:**
+- "photo to calendar" is a standalone App Store autocomplete term (checked
+  against App Store search hints on 2026-10-13); "screenshot to calendar"
+  appears only inside other apps' names. The name takes the most-searched
+  phrase. The earlier "Pencild: Scan Dates & Events" targeted terms with less
+  search demand.
+- The subtitle covers the other phrasings (flyers, screenshots, events). The
+  earlier "Scan, Review & Save Any Date" led with workflow verbs people don't
+  search for; the review-before-save differentiator moves to the description
+  and screenshots.
+- Keywords are singular, comma-separated with no spaces, and repeat nothing
+  from the name or subtitle, since Apple combines terms across those fields.
+  "work", "schedule", and "shift" target the heavily searched work-schedule
+  terms.
+- Work schedules and multi-date flyers ship in this version as a Premium
+  feature (one event per shift or date; lower plans see the paywall), so the
+  "work schedules" claim in the promotional text is backed. See
+  `docs/audits/2026-10-11-production-readiness-audit.md` §7.11.
+- Productivity is the accurate primary category and the one most direct
+  competitors use; Apple counts the primary category as a search match.
+- The name, subtitle, and keywords change only with a new app version.
+  Promotional text can change at any time.
+
+---
+
 # Executive Verdict
 
 **Launch-conditional: Needs targeted refinement before paid acquisition, but organic/TestFlight launch is viable now.**
@@ -152,6 +195,8 @@ The single most important recommendation: **rename or reposition the App Store s
 ---
 
 # App Store Package
+
+> **Superseded 2026-10-13:** the name, subtitle, keywords, and promotional text below are the original research. See the Decision Record at the top of this document for the shipping listing.
 
 *All copy tied to existing or clearly planned capabilities. Items dependent on unshipped features are labeled (PROPOSED).*
 
