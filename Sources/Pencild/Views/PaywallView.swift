@@ -61,6 +61,9 @@ struct PaywallView: View {
                     .padding(.horizontal)
                     .padding(.top, PDSpacing.md)
 
+                    paywallHero
+                        .padding(.horizontal)
+
                     if showsTabs {
                         planTabs
                             .padding(.horizontal)
@@ -185,6 +188,25 @@ struct PaywallView: View {
     }
 
     // MARK: - Tabs
+
+    private var paywallHero: some View {
+        VStack(spacing: PDSpacing.sm) {
+            Image(systemName: plan == .premium ? "crown.fill" : "sparkles")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(Color.pdOnPrimaryFixed)
+                .frame(width: 48, height: 48)
+                .background(Circle().fill(LinearGradient.pdSignature))
+            Text(plan == .premium ? "Pencil’d Premium" : "Pencil’d Plus")
+                .font(PDFont.headlineMD)
+                .foregroundStyle(Color.pdOnSurface)
+            Text(contextualFeature.map(contextualHeadline) ?? "Smarter capture, clearer review, and private on-device processing.")
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, PDSpacing.sm)
+    }
 
     private var planTabs: some View {
         HStack(spacing: 4) {

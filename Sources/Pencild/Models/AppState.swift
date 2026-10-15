@@ -182,6 +182,12 @@ final class AppState: ObservableObject {
     func beginCapture(_ source: CaptureSource) async {
         await dismissPresentedSheets()
         selectedTab = .home
+
+        // The capture-source sheet is the root modal. Give SwiftUI one run loop to mount Home
+        // after that sheet is dismissed and the tab is selected before raising a picker request.
+        // Without this handoff, Home can miss requestDocumentScanner and the user is left on Home.
+        try? await Task.sleep(for: .milliseconds(100))
+
         switch source {
         case .screenshots: requestScreenshotPicker = true
         case .photoLibrary: requestPhotoPicker = true

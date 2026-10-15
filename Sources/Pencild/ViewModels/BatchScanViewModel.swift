@@ -155,13 +155,13 @@ final class BatchScanViewModel: ObservableObject {
                     for: asset,
                     targetSize: CGSize(width: 1440, height: 2560)
                 )
-                await runPipeline(item, image: image, assetIdentifier: asset.localIdentifier, scanner: scanner, modelContext: modelContext)
+                await runPipeline(item, image: image, assetIdentifier: asset.localIdentifier, sourceMedium: .screenshot, scanner: scanner, modelContext: modelContext)
             } catch {
                 item.fail("Could not load the screenshot: \(error.localizedDescription)")
             }
         case .loaded(let id, let image):
             item.begin()
-            await runPipeline(item, image: image, assetIdentifier: id, scanner: scanner, modelContext: modelContext)
+            await runPipeline(item, image: image, assetIdentifier: id, sourceMedium: .ocrScan, scanner: scanner, modelContext: modelContext)
         case .photoPicker(let pickerItem):
             item.begin()
             do {
@@ -177,6 +177,7 @@ final class BatchScanViewModel: ObservableObject {
                     item,
                     image: image,
                     assetIdentifier: pickerItem.itemIdentifier ?? UUID().uuidString,
+                    sourceMedium: .photo,
                     scanner: scanner,
                     modelContext: modelContext
                 )
@@ -190,12 +191,13 @@ final class BatchScanViewModel: ObservableObject {
         _ item: BatchScanItem,
         image: UIImage,
         assetIdentifier: String,
+        sourceMedium: EventSourceMedium,
         scanner: ScanViewModel,
         modelContext: ModelContext?
     ) async {
         item.setDisplayImage(image)
         scanner.reset()
-        await scanner.scanImage(image, assetIdentifier: assetIdentifier, modelContext: modelContext)
+        await scanner.scanImage(image, assetIdentifier: assetIdentifier, modelContext: modelContext, sourceMedium: sourceMedium)
         switch scanner.stage {
         case .complete(let candidates):
             item.complete(candidates: candidates)

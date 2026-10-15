@@ -113,4 +113,16 @@ struct AppStateNavigationTests {
         settings.pendingRoute = .managePlan
         #expect(settings.pendingRoute == .managePlan)
     }
+
+    @Test("Capture-source routing selects Home before raising the document scanner request")
+    func documentScannerCaptureRequestIsRaisedAfterDismissal() async {
+        let appState = AppState()
+        await appState.present(.captureSources)
+
+        await appState.beginCapture(.documentScanner)
+
+        #expect(appState.activeModal == nil)
+        #expect(appState.selectedTab == .home)
+        #expect(appState.requestDocumentScanner)
+    }
 }

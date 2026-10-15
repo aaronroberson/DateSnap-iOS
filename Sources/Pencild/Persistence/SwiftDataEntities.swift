@@ -1,6 +1,19 @@
 import Foundation
 import SwiftData
 
+public enum EventSourceMedium: String, CaseIterable, Sendable {
+    case flyer = "Flyer"
+    case pdf = "PDF"
+    case schedule = "Schedule"
+    case textInvite = "Text Invite"
+    case screenshot = "Screenshot"
+    case file = "File"
+    case photo = "Photo"
+    case ticket = "Ticket"
+    case appleWallet = "Apple Wallet"
+    case ocrScan = "OCR Scan"
+}
+
 // MARK: - Confidence Tier Enum
 
 public enum ConfidenceTier: String, CaseIterable, Sendable {
@@ -96,6 +109,8 @@ public final class ScannedAsset {
     public var ocrConfidence: Float
     public var isProcessed: Bool
     public var candidateCount: Int
+    /// The user-facing medium used to import this source, persisted for review provenance.
+    public var sourceMediumRaw: String = EventSourceMedium.ocrScan.rawValue
 
     @Relationship(deleteRule: .cascade, inverse: \EventCandidate.scannedAsset)
     public var candidates: [EventCandidate] = []
@@ -107,7 +122,8 @@ public final class ScannedAsset {
         rawOcrText: String = "",
         ocrConfidence: Float = 0.0,
         isProcessed: Bool = false,
-        candidateCount: Int = 0
+        candidateCount: Int = 0,
+        sourceMedium: EventSourceMedium = .ocrScan
     ) {
         self.id = id
         self.assetIdentifier = assetIdentifier
@@ -116,7 +132,12 @@ public final class ScannedAsset {
         self.ocrConfidence = ocrConfidence
         self.isProcessed = isProcessed
         self.candidateCount = candidateCount
+        self.sourceMediumRaw = sourceMedium.rawValue
         self.candidates = []
+    }
+
+    public var sourceMedium: EventSourceMedium {
+        EventSourceMedium(rawValue: sourceMediumRaw) ?? .ocrScan
     }
 }
 

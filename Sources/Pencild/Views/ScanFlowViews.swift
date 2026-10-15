@@ -311,6 +311,12 @@ private struct BatchScanProgressContent: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
                     PDScreenIntro(eyebrow: "Batch scan", title: "Reading your sources", subtitle: "Each detected event will wait for your review.")
+                    HStack(spacing: PDSpacing.xs) {
+                        progressPill(icon: "tray.full.fill", text: "\(scanner.items.count) in queue", tone: .pdPrimary)
+                        progressPill(icon: "sparkles", text: "\(scanner.items.filter { $0.stage == .scanning }.count) processing", tone: .pdSecondary)
+                        progressPill(icon: "checkmark.circle.fill", text: "\(scanner.items.filter(\.isResolved).count) ready", tone: .pdSuccess)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     HStack {
                         ProgressView().tint(Color.pdPrimary)
                         Text(scanner.currentLabel.isEmpty ? "Preparing…" : scanner.currentLabel)
@@ -324,9 +330,11 @@ private struct BatchScanProgressContent: View {
                     ForEach(scanner.items) { item in
                         BatchScanProgressRow(item: item)
                     }
-                    Label("Private, on-device processing", systemImage: "lock.shield.fill")
-                        .font(PDFont.bodySM)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                    PDCard(surface: .pdSurfaceLow, shadowOpacity: 0) {
+                        Label("Private, on-device processing", systemImage: "lock.shield.fill")
+                            .font(PDFont.bodySM)
+                            .foregroundStyle(Color.pdOnSurfaceVariant)
+                    }
                 }
                 .padding(PDSpacing.md)
                 .frame(maxWidth: 640)
@@ -334,6 +342,15 @@ private struct BatchScanProgressContent: View {
             }
         }
         .accessibilityAddTraits(.updatesFrequently)
+    }
+
+    private func progressPill(icon: String, text: String, tone: Color) -> some View {
+        Label(text, systemImage: icon)
+            .font(PDFont.labelSM)
+            .foregroundStyle(tone)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(Color.pdSurfaceContainerHigh))
     }
 }
 
@@ -418,36 +435,32 @@ struct ReviewQueueView: View {
     }
     private var highConfidence: [EventCandidate] { pending.filter { $0.confidenceTier == .high } }
     private var visibleCandidates: [EventCandidate] { highConfidenceOnly ? highConfidence : pending }
+    private var reviewSubtitle: String {
+        let noun = pending.count == 1 ? "event" : "events"
+        return "Pencil’d staged \(pending.count) \(noun) for your review. Nothing is added until you confirm it."
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                    PDScreenIntro(eyebrow: "Review queue", title: "Needs review", subtitle: "Nothing is added to your calendar until you confirm it.")
+                    PDScreenIntro(eyebrow: "Review pipeline", title: "Needs review", subtitle: reviewSubtitle)
                     PDStatusBadge(text: "\(pending.count) pending review", icon: "tray.full.fill", tone: pending.isEmpty ? .neutral : .warning)
-                    PDCard {
-                        VStack(alignment: .leading, spacing: PDSpacing.xs) {
-                            Label("You stay in control", systemImage: "hand.raised.fill")
-                                .font(PDFont.labelLG)
-                                .foregroundStyle(Color.pdPrimary)
-                            Text("Check the source, date, and destination. High confidence still waits for your confirmation.")
-                                .font(PDFont.bodyMD)
-                                .foregroundStyle(Color.pdOnSurfaceVariant)
-                        }
-                    }
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: PDSpacing.xs) {
+                        HStack(spacing: 2) {
                             Button { highConfidenceOnly = false } label: {
-                                PDChip(text: "All · \(pending.count)", selected: !highConfidenceOnly)
+                                reviewFilterLabel("All suggestions", count: pending.count, selected: !highConfidenceOnly)
                             }
                             .buttonStyle(.plain)
                             .accessibilityIdentifier("review.filter.all")
                             Button { highConfidenceOnly = true } label: {
-                                PDChip(text: "High confidence · \(highConfidence.count)", icon: "checkmark.seal", selected: highConfidenceOnly)
+                                reviewFilterLabel("High confidence", count: highConfidence.count, selected: highConfidenceOnly)
                             }
                             .buttonStyle(.plain)
                             .accessibilityIdentifier("review.filter.high")
                         }
+                        .padding(4)
+                        .background(Capsule().fill(Color.pdSurfaceLowest.opacity(0.8)))
                     }
                     if visibleCandidates.isEmpty {
                         emptyState
@@ -473,6 +486,30 @@ struct ReviewQueueView: View {
             .safeAreaInset(edge: .bottom) {
                 if !pending.isEmpty {
                     VStack(spacing: PDSpacing.xs) {
+                        PDCard {
+                            VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                                HStack(alignment: .center, spacing: PDSpacing.sm) {
+                                    Image(systemName: "checkmark.shield.fill")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundStyle(Color.pdOnSurface)
+                                        .frame(width: 30, height: 30)
+                                        .background(Circle().fill(LinearGradient.pdSignature))
+                                    Text("You stay in complete control")
+                                        .font(PDFont.labelLG)
+                                        .foregroundStyle(Color.pdOnSurface)
+                                    Spacer(minLength: 8)
+                                    Label("On-device OCR", systemImage: "lock.fill")
+                                        .font(PDFont.labelSM)
+                                        .foregroundStyle(Color.pdSecondary)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Capsule().fill(Color.pdSurfaceHighest))
+                                }
+                                Text("Nothing is added to your calendar automatically. Review the source, time, location, and destination before saving.")
+                                    .font(PDFont.bodyMD)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                            }
+                        }
                         Button {
                             presentHighConfidenceReview()
                         } label: {
@@ -517,6 +554,26 @@ struct ReviewQueueView: View {
                 showDiscardConfirmation = true
             })
         }
+    }
+
+    private func reviewFilterLabel(_ title: String, count: Int, selected: Bool) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+                .font(PDFont.labelMD)
+                .fontWeight(selected ? .semibold : .regular)
+            Text("\(count)")
+                .font(PDFont.labelSM)
+                .fontWeight(.bold)
+                .foregroundStyle(selected ? Color.pdOnPrimary : Color.pdOnSurfaceVariant)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Capsule().fill(selected ? Color.pdPrimaryContainer : Color.pdSurfaceHighest))
+        }
+        .foregroundStyle(selected ? Color.pdOnSurface : Color.pdOnSurfaceVariant)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
+        .background(Capsule().fill(selected ? Color.pdSurfaceContainerHigh : .clear))
     }
 
     private var emptyState: some View {
@@ -568,6 +625,17 @@ private struct ReviewQueueRow: View {
                         .frame(width: 64, height: 80)
                         .clipShape(RoundedRectangle(cornerRadius: PDRadius.tile))
                     VStack(alignment: .leading, spacing: PDSpacing.xs) {
+                        HStack(spacing: 6) {
+                            Image(systemName: candidate.scannedAsset == nil ? "square.and.pencil" : "doc.text.viewfinder")
+                            Text(candidate.scannedAsset?.sourceMedium.rawValue ?? "Manual entry")
+                            Text("•")
+                            Text("\(Int((candidate.confidenceScore * 100).rounded()))% Match")
+                        }
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(candidate.confidenceTier == .high ? Color.pdSuccess : Color.pdWarning)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill((candidate.confidenceTier == .high ? Color.pdSuccess : Color.pdWarning).opacity(0.14)))
                         Text(candidate.title)
                             .font(PDFont.headlineSM)
                             .foregroundStyle(Color.pdOnSurface)
@@ -582,7 +650,6 @@ private struct ReviewQueueRow: View {
                     Spacer(minLength: 0)
                 }
                 HStack {
-                    PDStatusBadge(text: "\(Int((candidate.confidenceScore * 100).rounded()))% · \(candidate.confidenceTier.label)", icon: candidate.confidenceTier.iconName, tone: candidate.confidenceTier == .high ? .success : .warning)
                     if candidate.savedEvent?.status == .draft {
                         PDStatusBadge(text: "Draft", icon: "bookmark.fill", tone: .neutral)
                     }

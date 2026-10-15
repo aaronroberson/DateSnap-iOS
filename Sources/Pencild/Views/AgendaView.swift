@@ -13,6 +13,15 @@ struct AgendaView: View {
     /// `nil` while All is selected: saved, draft, and archived events together.
     @State private var selectedStatus: SavedEventStatus? = .saved
     @State private var smartFilter: EventSmartFilter? = nil
+    @State private var calendarMode: CalendarMode = .month
+    @State private var visibleDate = Date()
+    @State private var selectedDate = Date()
+
+    private enum CalendarMode: String, CaseIterable {
+        case month = "Month"
+        case week = "Week"
+        case agenda = "Agenda"
+    }
 
     private var agendaEvents: [SavedEvent] {
         let duplicates = smartFilter == .duplicates
@@ -38,6 +47,38 @@ struct AgendaView: View {
         !searchText.isEmpty || smartFilter != nil
     }
 
+    private var calendarEvents: [SavedEvent] {
+        let duplicates = smartFilter == .duplicates
+            ? EventSmartFilter.duplicateIDs(in: savedEvents, services: services)
+            : []
+        return savedEvents.filter { saved in
+            guard let candidate = saved.candidate,
+                  selectedStatus == nil || saved.status == selectedStatus,
+                  matchesSearch(saved, candidate: candidate),
+                  selectedFilter.includes(candidate.startDate, relativeTo: Date()) else { return false }
+            if let smartFilter, !smartFilter.matches(saved, candidate: candidate, duplicates: duplicates) { return false }
+            return true
+        }
+    }
+
+    private var monthStart: Date {
+        Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: visibleDate)) ?? visibleDate
+    }
+
+    private var monthDays: [Date] {
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: monthStart)
+        let leading = (weekday - calendar.firstWeekday + 7) % 7
+        let count = calendar.range(of: .day, in: .month, for: monthStart)?.count ?? 0
+        return (0..<(leading + count)).compactMap { calendar.date(byAdding: .day, value: $0 - leading, to: monthStart) }
+    }
+
+    private var weekDays: [Date] {
+        let calendar = Calendar.current
+        let start = calendar.dateInterval(of: .weekOfYear, for: visibleDate)?.start ?? visibleDate
+        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: start) }
+    }
+
     private func groupedDays(_ events: [SavedEvent]) -> [(date: Date, events: [SavedEvent])] {
         let groups = Dictionary(grouping: events) { Calendar.current.startOfDay(for: $0.candidate?.startDate ?? Date()) }
         return groups.keys.sorted().map { (date: $0, events: groups[$0] ?? []) }
@@ -58,31 +99,30 @@ struct AgendaView: View {
                 )
                 dateFilters
 
-                if agendaEvents.isEmpty {
-                    emptyState
-                } else {
-                    // One chronological list, earliest date first; today keeps its highlight.
-                    ForEach(groupedDays(agendaEvents), id: \.date) { day in
-                        if Calendar.current.isDateInToday(day.date) {
-                            eventSection("Today\u{2019}s events", events: day.events, highlighted: true)
-                        } else {
-                            eventSection(day.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), events: day.events, highlighted: false)
+                calendarModePicker
+
+                if calendarMode == .agenda {
+                    if agendaEvents.isEmpty {
+                        emptyState
+                    } else {
+                        ForEach(groupedDays(agendaEvents), id: \.date) { day in
+                            if Calendar.current.isDateInToday(day.date) {
+                                eventSection("Today\u{2019}s events", events: day.events, highlighted: true)
+                            } else {
+                                eventSection(day.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), events: day.events, highlighted: false)
+                            }
                         }
                     }
-                    if selectedFilter == .past || selectedFilter == .all {
-                        Button {
-                            appState.openHistory()
-                        } label: {
-                            HStack(spacing: 6) {
-                                Text("View full history")
-                                Image(systemName: "chevron.right")
-                                    .font(PDFont.jakarta(12, .bold, relativeTo: .footnote))
-                            }
-                            .font(PDFont.jakarta(15, .semibold, relativeTo: .subheadline))
-                            .foregroundStyle(Color.pdLavender)
-                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .center)
-                        }
-                        .buttonStyle(.plain)
+                } else {
+                    if calendarMode == .month {
+                        monthCalendar
+                    } else {
+                        weekCalendar
+                    }
+                    if calendarEvents.isEmpty {
+                        emptyState
+                    } else {
+                        focusedDayAgenda
                     }
                 }
             }
@@ -146,7 +186,7 @@ struct AgendaView: View {
                 Circle()
                     .fill(Color.pdOrange)
                     .frame(width: 6, height: 6)
-                Text("AGENDA")
+                Text("PENCIL'D")
                     .font(PDFont.jakarta(11, .bold, relativeTo: .caption2))
                     .tracking(1.4)
                     .foregroundStyle(Color.pdPrimary)
@@ -197,6 +237,253 @@ struct AgendaView: View {
                     .accessibilityIdentifier("agenda.filter.\(filter.id)")
                 }
             }
+        }
+    }
+
+    private var calendarModePicker: some View {
+        HStack(spacing: 4) {
+            Button { calendarMode = .agenda } label: {
+                calendarModeLabel("List", icon: "list.bullet", selected: calendarMode == .agenda)
+            }
+            Button { calendarMode = .month } label: {
+                calendarModeLabel("Month", icon: "calendar", selected: calendarMode == .month)
+            }
+            Button { calendarMode = .week } label: {
+                calendarModeLabel("Week", icon: "rectangle.split.3x1", selected: calendarMode == .week)
+            }
+        }
+        .padding(4)
+        .background(Capsule().fill(Color.pdSurfaceContainer))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Calendar view")
+    }
+
+    private func calendarModeLabel(_ title: String, icon: String, selected: Bool) -> some View {
+        Label(title, systemImage: icon)
+            .font(PDFont.labelMD)
+            .foregroundStyle(selected ? Color.pdOnPrimary : Color.pdOnSurfaceVariant)
+            .frame(maxWidth: .infinity, minHeight: 38)
+            .background {
+                if selected {
+                    Capsule().fill(LinearGradient.pdSelected)
+                }
+            }
+    }
+
+    private var calendarNavigation: some View {
+        HStack {
+            Button { moveCalendar(by: -1) } label: {
+                Image(systemName: "chevron.left")
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(calendarMode == .month ? "Previous month" : "Previous week")
+            Spacer()
+            Text(calendarMode == .month
+                 ? monthStart.formatted(.dateTime.month(.wide).year())
+                 : (weekDays.first?.formatted(.dateTime.month(.abbreviated).day()) ?? "Week"))
+                .font(PDFont.labelLG)
+                .foregroundStyle(Color.pdOnSurface)
+            Spacer()
+            Button { moveCalendar(by: 1) } label: {
+                Image(systemName: "chevron.right")
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(calendarMode == .month ? "Next month" : "Next week")
+        }
+        .foregroundStyle(Color.pdPrimary)
+    }
+
+    private var monthCalendar: some View {
+        VStack(spacing: PDSpacing.sm) {
+            calendarNavigation
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 6) {
+                ForEach(Calendar.current.shortWeekdaySymbols, id: \.self) { weekday in
+                    Text(weekday.prefix(1).uppercased())
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .frame(maxWidth: .infinity, minHeight: 24)
+                }
+                ForEach(monthDays, id: \.self) { day in
+                    calendarDayCell(day, events: events(on: day), muted: !Calendar.current.isDate(day, equalTo: monthStart, toGranularity: .month))
+                }
+            }
+        }
+        .padding(PDSpacing.md)
+        .background(RoundedRectangle(cornerRadius: 20).fill(Color.pdSurfaceContainer.opacity(0.82)))
+    }
+
+    private var weekCalendar: some View {
+        VStack(spacing: PDSpacing.sm) {
+            calendarNavigation
+            HStack(spacing: 6) {
+                ForEach(weekDays, id: \.self) { day in
+                    Button { selectedDate = day } label: {
+                        VStack(spacing: 4) {
+                            Text(day.formatted(.dateTime.weekday(.abbreviated)).prefix(3).uppercased())
+                                .font(PDFont.labelSM)
+                            Text(day.formatted(.dateTime.day()))
+                                .font(PDFont.headlineSM)
+                            Circle()
+                                .fill(events(on: day).isEmpty ? Color.clear : eventDotColor(events(on: day).first))
+                                .frame(width: 6, height: 6)
+                        }
+                        .foregroundStyle(Calendar.current.isDate(day, inSameDayAs: selectedDate) ? Color.pdOnSurface : Color.pdOnSurfaceVariant)
+                        .frame(maxWidth: .infinity, minHeight: 72)
+                        .background {
+                            if Calendar.current.isDate(day, inSameDayAs: selectedDate) {
+                                RoundedRectangle(cornerRadius: 16).fill(LinearGradient.pdHighlightCard)
+                            } else {
+                                RoundedRectangle(cornerRadius: 16).fill(Color.pdSurfaceContainerLow)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(PDSpacing.md)
+        .background(RoundedRectangle(cornerRadius: 20).fill(Color.pdSurfaceContainer.opacity(0.82)))
+    }
+
+    private func calendarDayCell(_ day: Date, events: [SavedEvent], muted: Bool) -> some View {
+        Button {
+            selectedDate = day
+        } label: {
+            VStack(spacing: 4) {
+                Text(day.formatted(.dateTime.day()))
+                    .font(PDFont.labelMD)
+                    .foregroundStyle(Calendar.current.isDate(day, inSameDayAs: selectedDate) ? Color.pdPrimary : (muted ? Color.pdOnSurfaceVariant.opacity(0.45) : Color.pdOnSurface))
+                    .frame(width: 28, height: 28)
+                    .background {
+                        if Calendar.current.isDate(day, inSameDayAs: selectedDate) {
+                            Circle().fill(LinearGradient.pdSignature.opacity(0.35))
+                        }
+                    }
+                HStack(spacing: 3) {
+                    ForEach(Array(events.prefix(3).indices), id: \.self) { index in
+                        Circle()
+                            .fill(eventDotColor(events[index]))
+                            .frame(width: Calendar.current.isDate(day, inSameDayAs: selectedDate) ? 6 : 5, height: Calendar.current.isDate(day, inSameDayAs: selectedDate) ? 6 : 5)
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, minHeight: 48, alignment: .top)
+            .padding(6)
+            .background(RoundedRectangle(cornerRadius: 12).fill(Calendar.current.isDate(day, inSameDayAs: selectedDate) ? Color.pdPrimary.opacity(0.12) : Color.clear))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(day.formatted(.dateTime.month(.wide).day())), \(events.count) event\(events.count == 1 ? "" : "s")")
+    }
+
+    private func events(on day: Date) -> [SavedEvent] {
+        calendarEvents.filter { saved in
+            guard let date = saved.candidate?.startDate else { return false }
+            return Calendar.current.isDate(date, inSameDayAs: day)
+        }
+    }
+
+    private var focusedDayAgenda: some View {
+        let dayEvents = events(on: selectedDate)
+        return VStack(alignment: .leading, spacing: PDSpacing.sm) {
+            HStack(alignment: .bottom) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("FOCUSED AGENDA")
+                        .font(PDFont.labelSM)
+                        .tracking(1.2)
+                        .foregroundStyle(Color.pdPrimary)
+                    Text(selectedDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
+                        .font(PDFont.headlineSM)
+                        .foregroundStyle(Color.pdOnSurface)
+                }
+                Spacer()
+                Text("\(dayEvents.count) event\(dayEvents.count == 1 ? "" : "s")")
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdPrimary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Capsule().fill(Color.pdSurfaceContainerHigh))
+            }
+            if dayEvents.isEmpty {
+                Text("Nothing scheduled for this day.")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(PDSpacing.md)
+                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.pdSurfaceContainerLow))
+            } else {
+                ForEach(dayEvents) { saved in
+                    focusedEventCard(saved)
+                }
+            }
+        }
+    }
+
+    private func focusedEventCard(_ saved: SavedEvent) -> some View {
+        let candidate = saved.candidate
+        return Button {
+            guard let event = candidate?.toPencildEvent() else { return }
+            Task { await appState.present(saved.status == .draft ? .eventReviewEdit(event) : .savedEventDetail(event)) }
+        } label: {
+            VStack(alignment: .leading, spacing: PDSpacing.sm) {
+                HStack(alignment: .top, spacing: PDSpacing.sm) {
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack(spacing: 6) {
+                            Text(candidate?.scannedAsset?.sourceMedium.rawValue ?? "Manual entry")
+                            Text("•")
+                            Text(saved.status == .draft ? "Draft" : "Saved")
+                        }
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(eventDotColor(saved))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(eventDotColor(saved).opacity(0.15)))
+                        Text(candidate?.title ?? "Saved event")
+                            .font(PDFont.headlineSM)
+                            .foregroundStyle(Color.pdOnSurface)
+                            .lineLimit(2)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                }
+                HStack(spacing: PDSpacing.md) {
+                    Label(candidate?.startDate.formatted(date: .omitted, time: .shortened) ?? "", systemImage: "clock")
+                    if let location = candidate?.location ?? candidate?.venueName, !location.isEmpty {
+                        Label(location, systemImage: "mappin.and.ellipse")
+                            .lineLimit(1)
+                    }
+                }
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+            .padding(PDSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 18).fill(saved.status == .draft ? AnyShapeStyle(LinearGradient.pdHighlightCard) : AnyShapeStyle(Color.pdSurfaceContainer.opacity(0.9))))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func eventDotColor(_ saved: SavedEvent?) -> Color {
+        guard let medium = saved?.candidate?.scannedAsset?.sourceMedium else { return Color.pdSecondary }
+        switch medium {
+        case .flyer, .screenshot, .photo: return Color.pdTertiary
+        case .pdf, .file, .schedule: return Color.pdPrimary
+        case .ticket, .appleWallet: return Color.pdSecondary
+        case .textInvite, .ocrScan: return Color.pdLavender
+        }
+    }
+
+    private func moveCalendar(by value: Int) {
+        let component: Calendar.Component = calendarMode == .month ? .month : .weekOfYear
+        let nextDate = Calendar.current.date(byAdding: component, value: value, to: visibleDate) ?? visibleDate
+        visibleDate = nextDate
+        if calendarMode == .month {
+            selectedDate = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: nextDate)) ?? nextDate
+        } else {
+            selectedDate = Calendar.current.dateInterval(of: .weekOfYear, for: nextDate)?.start ?? nextDate
         }
     }
 

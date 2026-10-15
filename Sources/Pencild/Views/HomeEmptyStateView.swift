@@ -120,6 +120,9 @@ struct HomeEmptyStateView: View {
                     openFileImport()
                 }
             }
+            .onAppear {
+                consumePendingCaptureRequest()
+            }
             .onChange(of: appState.activeModal?.id) { _, newID in
                 // A successful purchase can dismiss the paywall before the entitlement publisher
                 // delivers its tier change. Keep the intent through that handoff, but discard it
@@ -413,6 +416,24 @@ struct HomeEmptyStateView: View {
     }
 
     // MARK: - Actions
+
+    /// Picker requests can be raised while the capture sheet is dismissing and Home is being
+    /// mounted. Reconcile the request flags on appearance so that transition cannot lose a tap.
+    private func consumePendingCaptureRequest() {
+        if appState.requestPhotoPicker {
+            appState.requestPhotoPicker = false
+            showPhotoPicker = true
+        } else if appState.requestDocumentScanner {
+            appState.requestDocumentScanner = false
+            openDocumentScanner()
+        } else if appState.requestScreenshotPicker {
+            appState.requestScreenshotPicker = false
+            scanRecentScreenshots()
+        } else if appState.requestFileImporter {
+            appState.requestFileImporter = false
+            openFileImport()
+        }
+    }
 
     private func openFileImport() {
         if appState.isEntitled(to: .documentImport) {

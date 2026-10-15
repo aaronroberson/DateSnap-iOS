@@ -77,7 +77,7 @@ public final class ScanViewModel: ObservableObject {
     }
 
     // MARK: - Scan PHAsset Pipeline
-    public func scanAsset(_ asset: PHAsset, modelContext: ModelContext? = nil) async {
+    public func scanAsset(_ asset: PHAsset, modelContext: ModelContext? = nil, sourceMedium: EventSourceMedium = .screenshot) async {
         isCancelling = false
         isProcessing = true
         stage = .fetchingImage
@@ -90,7 +90,7 @@ public final class ScanViewModel: ObservableObject {
                 return
             }
             self.currentProcessingImage = image
-            await scanImage(image, assetIdentifier: asset.localIdentifier, modelContext: modelContext)
+            await scanImage(image, assetIdentifier: asset.localIdentifier, modelContext: modelContext, sourceMedium: sourceMedium)
         } catch {
             stage = isCancelling ? .idle : .failed(error.localizedDescription)
             isProcessing = false
@@ -98,22 +98,22 @@ public final class ScanViewModel: ObservableObject {
     }
 
     // MARK: - Scan UIImage Pipeline (Manual import / Picker / Sample)
-    public func scanImage(_ image: UIImage, assetIdentifier: String = UUID().uuidString, modelContext: ModelContext? = nil) async {
-        await scanPages([image], assetIdentifier: assetIdentifier, modelContext: modelContext)
+    public func scanImage(_ image: UIImage, assetIdentifier: String = UUID().uuidString, modelContext: ModelContext? = nil, sourceMedium: EventSourceMedium = .photo) async {
+        await scanPages([image], assetIdentifier: assetIdentifier, modelContext: modelContext, sourceMedium: sourceMedium)
     }
 
     /// Scans raw image data (from `PhotosPicker` or the Files importer).
-    public func scanImageData(_ data: Data, assetIdentifier: String = UUID().uuidString, modelContext: ModelContext? = nil) async {
+    public func scanImageData(_ data: Data, assetIdentifier: String = UUID().uuidString, modelContext: ModelContext? = nil, sourceMedium: EventSourceMedium = .photo) async {
         guard let image = UIImage(data: data) else {
             stage = .failed(PencildError.photoLibrary(.imageConversionFailed).localizedDescription)
             return
         }
-        await scanImage(image, assetIdentifier: assetIdentifier, modelContext: modelContext)
+        await scanImage(image, assetIdentifier: assetIdentifier, modelContext: modelContext, sourceMedium: sourceMedium)
     }
 
     /// Scans the bundled-at-runtime sample flyer; needs no photo permissions.
     public func scanSampleFlyer(modelContext: ModelContext? = nil) async {
-        await scanImage(SampleFlyer.render(), assetIdentifier: "pencild-sample-flyer", modelContext: modelContext)
+        await scanImage(SampleFlyer.render(), assetIdentifier: "pencild-sample-flyer", modelContext: modelContext, sourceMedium: .flyer)
     }
 
     // MARK: - Files / PDF Import Pipeline (Premium)
@@ -146,14 +146,14 @@ public final class ScanViewModel: ObservableObject {
                 return .allowed
             }
             let pages = (0..<min(document.pageCount, 30)).compactMap { document.page(at: $0) }.map(Self.render(page:))
-            await scanPages(pages, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext)
+            await scanPages(pages, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext, sourceMedium: .pdf)
         } else {
             guard let data = try? Data(contentsOf: url) else {
                 stage = .failed("This file could not be read.")
                 isProcessing = false
                 return .allowed
             }
-            await scanImageData(data, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext)
+            await scanImageData(data, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext, sourceMedium: .file)
         }
         return .allowed
     }
@@ -165,7 +165,7 @@ public final class ScanViewModel: ObservableObject {
     }
 
     // MARK: - Shared OCR → Extraction → Dedupe Pipeline
-    private func scanPages(_ pages: [UIImage], assetIdentifier: String, modelContext: ModelContext?) async {
+    private func scanPages(_ pages: [UIImage], assetIdentifier: String, modelContext: ModelContext?, sourceMedium: EventSourceMedium) async {
         if PlanLimits.limitsScans(entitlements.entitlementSnapshot), scanUsage.remainingFreeScans() == 0 {
             stage = .scanLimitReached
             isProcessing = false
@@ -288,7 +288,8 @@ public final class ScanViewModel: ObservableObject {
                     rawOcrText: fullText,
                     ocrConfidence: ocrConfidence,
                     isProcessed: true,
-                    candidateCount: newCandidates.count
+                    candidateCount: newCandidates.count,
+                    sourceMedium: sourceMedium
                 )
                 context.insert(scannedAsset)
                 var newInterpretationRecords: [InterpretationRecord] = []

@@ -161,12 +161,25 @@ struct BatchReviewView: View {
                 }
             })
             PDScreenIntro(
-                eyebrow: "Verification stage",
+                eyebrow: "Bulk import",
                 title: "Review your events",
                 subtitle: "Each event keeps its own calendar and reminder schedule. Nothing is saved until you confirm."
             )
+            HStack(spacing: PDSpacing.xs) {
+                reviewSummaryPill(icon: "checkmark.circle.fill", text: "\(session.actionableCount) ready", tone: .pdPrimary)
+                reviewSummaryPill(icon: "calendar", text: "\(session.events.count) detected", tone: .pdSecondary)
+            }
         }
         .padding(.top, PDSpacing.sm)
+    }
+
+    private func reviewSummaryPill(icon: String, text: String, tone: Color) -> some View {
+        Label(text, systemImage: icon)
+            .font(PDFont.labelSM)
+            .foregroundStyle(tone)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(Color.pdSurfaceContainerHigh))
     }
 
     static func contentMaxWidth(for sizeClass: UserInterfaceSizeClass?) -> CGFloat {
@@ -518,6 +531,17 @@ private struct BatchEventCard: View {
                 HStack(spacing: 12) {
                     screenshotThumb
                     VStack(alignment: .leading, spacing: PDSpacing.xxs) {
+                        HStack(spacing: 6) {
+                            Image(systemName: event.candidate.scannedAsset == nil ? "square.and.pencil" : "doc.text.viewfinder")
+                            Text(event.candidate.scannedAsset?.sourceMedium.rawValue ?? "Manual entry")
+                            Text("•")
+                            Text("\(Int((review.confidenceScore * 100).rounded()))% Match")
+                        }
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(review.confidenceTier == .high ? Color.pdSuccess : Color.pdWarning)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill((review.confidenceTier == .high ? Color.pdSuccess : Color.pdWarning).opacity(0.14)))
                         Text(review.title.isEmpty ? PencildEvent.untitledTitle : review.title)
                             .font(PDFont.labelLG)
                             .foregroundStyle(Color.pdOnSurface)
