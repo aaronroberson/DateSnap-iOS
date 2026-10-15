@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-error-container": "#ffdad6", "on-tertiary-fixed-variant": "#910030", "surface-bright": "#36374f", "tertiary-fixed-dim": "#ffb2ba", "on-secondary-container": "#d2a0ff", "primary-fixed-dim": "#ffb68b", "on-primary-container": "#5c2800", "tertiary-fixed": "#ffd9dc", "on-secondary": "#4a007f", "surface-container-high": "#27283f", "primary-container": "#ff7a00", "inverse-primary": "#994700", "primary": "#ffb68b", "on-primary": "#522300", "secondary-fixed-dim": "#deb7ff", "outline-variant": "#584235", "surface-dim": "#101127", "surface-container-lowest": "#0b0c22", "on-background": "#e1e0ff", "outline": "a78b7c", "inverse-surface": "#e1e0ff", "tertiary": "#ffb2ba", "surface-container-low": "#181930", "error-container": "#93000a", "surface-tint": "#ffb68b", "on-secondary-fixed-variant": "#670fac", "error": "#ffb4ab", "background": "#101127", "on-surface-variant": "#e0c0af", "tertiary-container": "#ff7288", "on-tertiary-fixed": "#400011", "on-error": "#690005", "inverse-on-surface": "#2d2e46", "surface-container-highest": "#32334a", "primary-fixed": "#ffdbc8", "secondary": "#deb7ff", "on-primary-fixed-variant": "#753400", "surface": "#101127", "on-surface": "#e1e0ff", "on-tertiary": "#670020", "on-primary-fixed": "#321200", "secondary-container": "#670fac", "on-secondary-fixed": "#2c0050", "surface-container": "#1d1e34", "secondary-fixed": "#f0dbff", "surface-variant": "#32334a", "on-tertiary-container": "#730025" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "4.5rem", "gutter": "1.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-xl": "2rem", "space-2xl": "3rem", "margin-desktop": "2.5rem", "space-xs": "0.375rem", "gutter-desktop": "1.75rem", "space-2xs": "0.25rem", "space-lg": "1.5rem", "margin": "1rem", "margin-tablet": "1.5rem" }, "fontFamily": { "label-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"] }, "fontSize": { "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-xl-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "display-lg-mobile": ["38px", { "lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }] } } } }</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><button aria-label="Go back" class="min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 active:scale-95 transition-all" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><h1 class="flex-1 text-center font-headline-sm text-headline-sm text-on-surface tracking-tight truncate px-space-xs">Privacy &amp; Processing</h1><button aria-label="User Profile" class="min-w-[44px] min-h-[44px] flex items-center justify-center" type="button"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></button></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface"><div class="flex flex-col w-full px-margin pb-space-3xl gap-space-lg">
+<div class="flex flex-col gap-space-2xs pt-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-sm shadow-primary-container"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary">SETTINGS</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Privacy &amp; Processing</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+      Inspect on-device neural processing isolation, local image security, and data telemetry policies.
+    </p>
+</div>
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-space-lg shadow-xl shadow-surface-container-lowest/80">
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-80" fill="none" preserveaspectratio="none" viewbox="0 0 360 220">
+<circle cx="280" cy="30" fill="#deb7ff" opacity="0.9" r="1.5"></circle>
+<circle cx="90" cy="170" fill="#ffb68b" opacity="0.8" r="1.5"></circle>
+<circle cx="320" cy="140" fill="#ff7288" opacity="0.7" r="2"></circle>
+<circle cx="45" cy="50" fill="#deb7ff" opacity="0.6" r="1.2"></circle>
+<circle cx="210" cy="185" fill="#ffffff" opacity="0.9" r="1"></circle>
+<path d="M-40 180 C80 120, 190 230, 400 80" opacity="0.85" stroke="url(#luminousSweep1)" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M-20 60 C120 190, 240 30, 420 150" opacity="0.55" stroke="url(#luminousSweep2)" stroke-dasharray="3 4" stroke-width="1.8"></path>
+<path d="M20 220 C180 80, 280 190, 390 30" opacity="0.45" stroke="url(#luminousSweep3)" stroke-width="1.2"></path>
+<defs>
+<lineargradient id="luminousSweep1" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ff7a00" stop-opacity="0.95"></stop>
+<stop offset="45%" stop-color="#ff7288" stop-opacity="0.9"></stop>
+<stop offset="100%" stop-color="#deb7ff" stop-opacity="0.8"></stop>
+</lineargradient>
+<lineargradient id="luminousSweep2" x1="0%" x2="100%" y1="100%" y2="0%">
+<stop offset="0%" stop-color="#deb7ff" stop-opacity="0.8"></stop>
+<stop offset="60%" stop-color="#ff7288" stop-opacity="0.6"></stop>
+<stop offset="100%" stop-color="#ffb68b" stop-opacity="0.2"></stop>
+</lineargradient>
+<lineargradient id="luminousSweep3" x1="10%" x2="90%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ff7a00" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#deb7ff" stop-opacity="0.7"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="relative z-10 flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high/80 flex items-center justify-center shadow-md shadow-primary-container/20">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+<div class="flex items-center gap-space-2xs px-space-xs py-1 rounded-full bg-surface-container/70">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="font-label-sm text-label-sm tracking-wide text-primary-fixed uppercase">APPLE SILICON SANDBOX • ACTIVE</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-2xs">
+<h3 class="font-headline-md text-headline-md text-on-surface">100% On-Device Neural Engine</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Your calendar captures, screenshots, and PDFs are processed strictly within local device memory. No images or extracted text are ever transmitted to external servers.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs pt-space-2xs">
+<div class="flex items-center gap-space-2xs px-space-xs py-1 rounded-full bg-surface-container-high/80">
+<span class="material-symbols-outlined text-primary text-[15px]">cloud_off</span>
+<span class="font-label-sm text-label-sm text-on-surface">Zero Cloud Logging</span>
+</div>
+<div class="flex items-center gap-space-2xs px-space-xs py-1 rounded-full bg-surface-container-high/80">
+<span class="material-symbols-outlined text-secondary text-[15px]">lock</span>
+<span class="font-label-sm text-label-sm text-on-surface">Encrypted Cache</span>
+</div>
+<div class="flex items-center gap-space-2xs px-space-xs py-1 rounded-full bg-surface-container-high/80">
+<span class="material-symbols-outlined text-tertiary text-[15px]">memory</span>
+<span class="font-label-sm text-label-sm text-on-surface">Local CoreML</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">PROCESSING ARCHITECTURE MODE</span>
+<span class="font-label-sm text-label-sm text-primary">CoreML v5.2</span>
+</div>
+<div class="flex flex-col gap-space-sm" id="architecture-selector">
+<div class="relative flex flex-col gap-space-xs p-space-md rounded-2xl cursor-pointer transition-all bg-gradient-to-br from-primary-container/20 via-surface-container to-secondary-container/20 shadow-lg shadow-surface-container-lowest/50" id="option-local" onclick="selectArchitecture('local')">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Strict Local Isolation</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/20 text-primary">RECOMMENDED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-8">
+          OCR and date parsing run entirely on Apple Neural Engine. Zero outbound network calls permitted under any workflow.
+        </p>
+</div>
+<div class="relative flex flex-col gap-space-xs p-space-md rounded-2xl cursor-pointer transition-all bg-surface-container hover:bg-surface-container-high shadow-sm shadow-surface-container-lowest/30" id="option-hybrid" onclick="selectArchitecture('hybrid')">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-transparent" id="hybrid-indicator"></span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Enhanced Hybrid Parsing</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface-variant">OFFLINE SAFE</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-8">
+          Optionally send anonymized unparseable layout geometries for high-accuracy cloud fallback (Disabled by default).
+        </p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant px-space-xs">LOCAL CACHE &amp; DATA LIFECYCLE</span>
+<div class="flex flex-col rounded-2xl bg-surface-container p-space-md gap-space-md shadow-md shadow-surface-container-lowest/40">
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface">Auto-Purge Processed Images</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Immediately delete cached temporary image bitmaps after schedule confirmation.</span>
+</div>
+<button aria-checked="true" class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-primary-container p-0.5 transition-colors duration-200 ease-in-out" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-6 w-6 translate-x-5 transform rounded-full bg-on-primary-container shadow-md transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<div class="h-px bg-surface-container-highest/50 w-full"></div>
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface">Retain Scanned Notes in Calendar</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Embed snippet preview in Apple Calendar event notes.</span>
+</div>
+<button aria-checked="true" class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-primary-container p-0.5 transition-colors duration-200 ease-in-out" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-6 w-6 translate-x-5 transform rounded-full bg-on-primary-container shadow-md transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<div class="h-px bg-surface-container-highest/50 w-full"></div>
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-lg text-label-lg text-on-surface">Crash Telemetry &amp; Diagnostics</span>
+<span class="px-space-xs py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface-variant">OPT-IN ONLY</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Share anonymous runtime exception traces with developers.</span>
+</div>
+<button aria-checked="false" class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-surface-container-highest p-0.5 transition-colors duration-200 ease-in-out" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="pointer-events-none inline-block h-6 w-6 translate-x-0 transform rounded-full bg-on-surface-variant shadow-md transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col rounded-2xl bg-surface-container p-space-md gap-space-md shadow-md shadow-surface-container-lowest/40">
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[22px]">delete_sweep</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Clear In-Memory Vision Cache</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="cache-size-text">18.4 MB currently allocated</span>
+</div>
+</div>
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-highest text-primary font-label-md text-label-md hover:bg-primary/20 active:scale-95 transition-all shrink-0" id="purge-btn" onclick="purgeCache()" type="button">
+        Purge Now
+      </button>
+</div>
+<div class="h-px bg-surface-container-highest/50 w-full"></div>
+<div class="flex flex-col gap-space-xs">
+<button class="flex items-center justify-between py-space-2xs text-left group" type="button">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Privacy Policy</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</button>
+<button class="flex items-center justify-between py-space-2xs text-left group" type="button">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Apple Security Enclave Whitepaper</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] group-hover:translate-x-0.5 transition-transform">open_in_new</span>
+</button>
+<button class="flex items-center justify-between py-space-2xs text-left group" type="button">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Export Data Audit Log (.json)</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] group-hover:translate-x-0.5 transition-transform">download</span>
+</button>
+</div>
+</div>
+<div class="sticky bottom-4 z-40 flex flex-col items-center gap-space-xs pt-space-sm">
+<div class="w-full p-1.5 rounded-full bg-surface-container/80 backdrop-blur-xl shadow-2xl shadow-surface-container-lowest/90">
+<button class="w-full flex items-center justify-center gap-space-xs py-space-md px-space-lg rounded-full bg-gradient-to-r from-primary-container via-tertiary-container to-secondary text-surface-container-lowest font-label-lg text-label-lg shadow-lg shadow-primary-container/30 active:scale-98 transition-all" id="save-btn" onclick="saveSettings()" type="button">
+<span class="material-symbols-outlined text-[20px] font-bold" id="save-icon">verified_user</span>
+<span id="save-label">Save Privacy Settings</span>
+</button>
+</div>
+<div class="flex items-center gap-space-2xs text-center">
+<span class="material-symbols-outlined text-primary text-[14px]">lock</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Cryptographically verified local sandbox execution.</span>
+</div>
+</div>
+</div>
+<script>
+  function toggleSwitch(btn) {
+    const isChecked = btn.getAttribute('aria-checked') === 'true';
+    const newState = !isChecked;
+    btn.setAttribute('aria-checked', String(newState));
+    const thumb = btn.firstElementChild;
+    if (newState) {
+      btn.classList.remove('bg-surface-container-highest');
+      btn.classList.add('bg-primary-container');
+      thumb.classList.remove('translate-x-0', 'bg-on-surface-variant');
+      thumb.classList.add('translate-x-5', 'bg-on-primary-container');
+    } else {
+      btn.classList.remove('bg-primary-container');
+      btn.classList.add('bg-surface-container-highest');
+      thumb.classList.remove('translate-x-5', 'bg-on-primary-container');
+      thumb.classList.add('translate-x-0', 'bg-on-surface-variant');
+    }
+  }
+
+  function selectArchitecture(mode) {
+    const localCard = document.getElementById('option-local');
+    const hybridCard = document.getElementById('option-hybrid');
+    if (mode === 'local') {
+      localCard.className = "relative flex flex-col gap-space-xs p-space-md rounded-2xl cursor-pointer transition-all bg-gradient-to-br from-primary-container/20 via-surface-container to-secondary-container/20 shadow-lg shadow-surface-container-lowest/50";
+      localCard.querySelector('.w-6').className = "w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container";
+      localCard.querySelector('.w-6').innerHTML = '<span class="material-symbols-outlined text-[16px] font-bold">check</span>';
+
+      hybridCard.className = "relative flex flex-col gap-space-xs p-space-md rounded-2xl cursor-pointer transition-all bg-surface-container hover:bg-surface-container-high shadow-sm shadow-surface-container-lowest/30";
+      hybridCard.querySelector('.w-6').className = "w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant";
+      hybridCard.querySelector('.w-6').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-transparent"></span>';
+    } else {
+      hybridCard.className = "relative flex flex-col gap-space-xs p-space-md rounded-2xl cursor-pointer transition-all bg-gradient-to-br from-primary-container/20 via-surface-container to-secondary-container/20 shadow-lg shadow-surface-container-lowest/50";
+      hybridCard.querySelector('.w-6').className = "w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container";
+      hybridCard.querySelector('.w-6').innerHTML = '<span class="material-symbols-outlined text-[16px] font-bold">check</span>';
+
+      localCard.className = "relative flex flex-col gap-space-xs p-space-md rounded-2xl cursor-pointer transition-all bg-surface-container hover:bg-surface-container-high shadow-sm shadow-surface-container-lowest/30";
+      localCard.querySelector('.w-6').className = "w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant";
+      localCard.querySelector('.w-6').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-transparent"></span>';
+    }
+  }
+
+  function purgeCache() {
+    const purgeBtn = document.getElementById('purge-btn');
+    const cacheText = document.getElementById('cache-size-text');
+    purgeBtn.textContent = 'Purging...';
+    purgeBtn.disabled = true;
+    setTimeout(() => {
+      cacheText.textContent = '0 KB currently allocated';
+      purgeBtn.textContent = 'Cleared!';
+      setTimeout(() => {
+        purgeBtn.textContent = 'Purge Now';
+        purgeBtn.disabled = false;
+      }, 1500);
+    }, 450);
+  }
+
+  function saveSettings() {
+    const btn = document.getElementById('save-btn');
+    const label = document.getElementById('save-label');
+    const icon = document.getElementById('save-icon');
+    label.textContent = 'Settings Encrypted & Applied';
+    icon.textContent = 'done_all';
+    btn.classList.add('scale-95');
+    setTimeout(() => {
+      btn.classList.remove('scale-95');
+    }, 150);
+    setTimeout(() => {
+      label.textContent = 'Save Privacy Settings';
+      icon.textContent = 'verified_user';
+    }, 2200);
+  }
+</script></main></body></html>

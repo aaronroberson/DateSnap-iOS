@@ -43,11 +43,16 @@ struct PrivacyCenterView: View {
                                 .lineSpacing(2)
                         }
 
-                        HStack(spacing: PDSpacing.sm) {
-                            PDChip(text: "On-device analysis", icon: "cpu", selected: true)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: PDSpacing.xs) {
+                                PDChip(text: "On-device OCR", icon: "cpu", selected: true)
+                                PDChip(text: "No account", icon: "person.slash", selected: false)
+                                PDChip(text: "No cloud upload", icon: "cloud.off", selected: false)
+                            }
                         }
                     }
                 }
+                .settingsLuminousEdge()
 
                 // Storage Actions
                 VStack(alignment: .leading, spacing: PDSpacing.sm) {

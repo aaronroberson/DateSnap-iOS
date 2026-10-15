@@ -4,6 +4,25 @@ import SwiftUI
 // Wraps the canonical Pencil’d design system components in `PencilComponents.swift`
 // while keeping existing call sites working.
 
+// A restrained luminous edge used on the settings screens' primary cards. It echoes the
+// Stitch settings compositions without adding decorative or non-production content.
+extension View {
+    func settingsLuminousEdge() -> some View {
+        overlay {
+            RoundedRectangle(cornerRadius: PDRadius.card)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.pdOrange.opacity(0.72), Color.pdTertiaryContainer.opacity(0.5), Color.pdLavender.opacity(0.62)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+                .opacity(0.8)
+        }
+    }
+}
+
 // MARK: - Screen header with optional custom back button (pushed screens)
 struct SettingsScreenHeader: View {
     let title: String

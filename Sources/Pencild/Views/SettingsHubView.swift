@@ -179,6 +179,7 @@ struct SettingsHubView: View {
                 }
             }
         }
+        .settingsLuminousEdge()
     }
 
     private var permissionsSection: some View {
@@ -290,7 +291,7 @@ struct SettingsHubView: View {
                             .foregroundStyle(Color.pdOnSurface)
                     }
 
-                    Text("Pencil’d analyzes your photos and screenshots locally on your device neural engine. Scanned images are never stored or transmitted to external servers.")
+                    Text("Pencil’d analyzes your photos and screenshots locally on your device. Images and extracted text stay on this device and are not transmitted to external servers.")
                         .font(PDFont.bodySM)
                         .foregroundStyle(Color.pdOnSurfaceVariant)
                         .lineSpacing(2)
@@ -308,6 +309,7 @@ struct SettingsHubView: View {
                     .padding(.top, 4)
                 }
             }
+                .settingsLuminousEdge()
         }
     }
 

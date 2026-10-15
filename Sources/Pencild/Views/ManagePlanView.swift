@@ -173,6 +173,7 @@ struct ManagePlanView: View {
                 }
             }
         }
+        .settingsLuminousEdge()
     }
 
     private var usageSummary: some View {
