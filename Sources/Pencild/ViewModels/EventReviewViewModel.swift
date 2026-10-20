@@ -20,6 +20,8 @@ public final class EventReviewViewModel: ObservableObject {
     @Published public var title: String
     @Published public var startDate: Date
     @Published public var endDate: Date
+    /// False when the source did not publish an end. The displayed fallback is never persisted.
+    @Published public var endDateWasExplicit: Bool
     @Published public var isAllDay: Bool
     @Published public var location: String
     @Published public var venueName: String
@@ -112,6 +114,7 @@ public final class EventReviewViewModel: ObservableObject {
 
         self.title = candidate.title
         self.startDate = candidate.startDate
+        self.endDateWasExplicit = candidate.endDate != nil
         self.endDate = candidate.endDate ?? EventDurationPolicy.fallbackEnd(for: candidate.startDate)
         self.isAllDay = candidate.isAllDay
         self.location = candidate.location ?? ""
@@ -238,7 +241,7 @@ public final class EventReviewViewModel: ObservableObject {
     private func applyEdits() {
         candidate.title = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? PencildEvent.untitledTitle : title
         candidate.startDate = startDate
-        candidate.endDate = isAllDay ? nil : max(endDate, startDate)
+        candidate.endDate = isAllDay || !endDateWasExplicit ? nil : max(endDate, startDate)
         candidate.isAllDay = isAllDay
         candidate.location = location.isEmpty ? nil : location
         candidate.venueName = venueName.isEmpty ? nil : venueName

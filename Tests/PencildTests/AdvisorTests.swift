@@ -142,3 +142,62 @@ struct EventActionLinkValidationTests {
         #expect(EventActionsChecklist.validatedActionURL(for: dataScheme) == nil)
     }
 }
+
+@Suite("Schedule Conflict Analyzer")
+struct ScheduleConflictAnalyzerTests {
+    private let anchor = Date(timeIntervalSinceReferenceDate: 1_000_000)
+
+    @Test("Finds an overlap")
+    func findsOverlap() {
+        let incoming = ScheduleConflictAnalyzer.interval(
+            id: "incoming", title: "Incoming", start: anchor,
+            end: anchor.addingTimeInterval(3600), assumedDuration: 7200
+        )
+        let existing = ScheduleConflictAnalyzer.interval(
+            id: "existing", title: "Existing", start: anchor.addingTimeInterval(1800),
+            end: anchor.addingTimeInterval(5400), assumedDuration: 7200
+        )
+
+        let conflicts = ScheduleConflictAnalyzer.conflicts(for: incoming, against: [existing])
+        #expect(conflicts.map(\.kind) == [.overlap])
+    }
+
+    @Test("Treats an adjacent event as a short-gap risk")
+    func findsShortGap() {
+        let incoming = ScheduleConflictAnalyzer.interval(
+            id: "incoming", title: "Incoming", start: anchor,
+            end: anchor.addingTimeInterval(3600), assumedDuration: 7200
+        )
+        let existing = ScheduleConflictAnalyzer.interval(
+            id: "existing", title: "Existing", start: anchor.addingTimeInterval(3900),
+            end: anchor.addingTimeInterval(7500), assumedDuration: 7200
+        )
+
+        let conflicts = ScheduleConflictAnalyzer.conflicts(for: incoming, against: [existing])
+        #expect(conflicts.first?.kind == .insufficientGap)
+        #expect(conflicts.first?.gap == TimeInterval(5 * 60))
+    }
+
+    @Test("Projects a missing end without changing the source value")
+    func projectsMissingEnd() {
+        let interval = ScheduleConflictAnalyzer.interval(
+            id: "incoming", title: "Open", start: anchor, end: nil,
+            assumedDuration: 2 * 3600
+        )
+        #expect(interval.end == anchor.addingTimeInterval(2 * 3600))
+    }
+
+    @Test("Does not flag a sufficient transition window")
+    func ignoresSufficientGap() {
+        let incoming = ScheduleConflictAnalyzer.interval(
+            id: "incoming", title: "Incoming", start: anchor,
+            end: anchor.addingTimeInterval(3600), assumedDuration: 7200
+        )
+        let existing = ScheduleConflictAnalyzer.interval(
+            id: "existing", title: "Existing", start: anchor.addingTimeInterval(4500),
+            end: anchor.addingTimeInterval(8100), assumedDuration: 7200
+        )
+
+        #expect(ScheduleConflictAnalyzer.conflicts(for: incoming, against: [existing]).isEmpty)
+    }
+}

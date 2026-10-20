@@ -95,6 +95,9 @@ struct EventReviewFieldsCard: View {
                         displayedComponents: [.date, .hourAndMinute]
                     )
                     .labelsHidden()
+                    .onChange(of: viewModel.endDate) { _, _ in
+                        viewModel.endDateWasExplicit = true
+                    }
                 }
             }
 

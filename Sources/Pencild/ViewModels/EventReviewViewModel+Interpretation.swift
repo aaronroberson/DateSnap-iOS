@@ -111,9 +111,49 @@ extension EventReviewViewModel {
         return suggestion
     }
 
+    public var isOpenEndedEvent: Bool {
+        !isAllDay && !endDateWasExplicit
+    }
+
     public func applySuggestedDuration() {
         guard let duration = suggestedDuration else { return }
         endDate = startDate.addingTimeInterval(duration)
+        endDateWasExplicit = true
+    }
+
+    public enum OpenEndedDurationAssumption: String, CaseIterable, Sendable {
+        case oneHour
+        case twoHours
+        case category
+        case openEnded
+
+        var duration: TimeInterval? {
+            switch self {
+            case .oneHour: return 60 * 60
+            case .twoHours: return 2 * 60 * 60
+            case .category: return nil
+            case .openEnded: return nil
+            }
+        }
+    }
+
+    /// Applies a review-only assumption. Open-ended keeps the source's missing end time intact.
+    public func applyDurationAssumption(_ assumption: OpenEndedDurationAssumption) {
+        let duration: TimeInterval?
+        switch assumption {
+        case .category:
+            duration = EventDurationPolicy.suggestedDuration(for: category) ?? EventDurationPolicy.fallback
+        case .oneHour, .twoHours, .openEnded:
+            duration = assumption.duration
+        }
+
+        guard let duration else {
+            endDateWasExplicit = false
+            endDate = EventDurationPolicy.fallbackEnd(for: startDate)
+            return
+        }
+        endDate = startDate.addingTimeInterval(duration)
+        endDateWasExplicit = true
     }
 
     public var reminderPlan: ReminderPlan {

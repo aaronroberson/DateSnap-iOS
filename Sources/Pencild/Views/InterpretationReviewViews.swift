@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 // MARK: - Engine Route Badge
 /// States how the scan was interpreted. Apple Intelligence is named only when the on-device model actually ran.
@@ -364,6 +365,7 @@ struct ReviewSuggestionsCard: View {
     @ObservedObject var viewModel: EventReviewViewModel
     let isEntitledToReminderPlans: Bool
     let onUpgrade: () -> Void
+    @Query(sort: \EventCandidate.startDate) private var candidates: [EventCandidate]
 
     /// A reminder plan worth offering: non-empty and different from the alerts already chosen.
     private var suggestedPlan: ReminderPlan? {
@@ -377,10 +379,13 @@ struct ReviewSuggestionsCard: View {
         let duration = viewModel.suggestedDuration
         let plan = suggestedPlan
         let signal = viewModel.recurrenceSignal
-        if duration != nil || plan != nil || signal != nil {
+        if viewModel.isOpenEndedEvent || duration != nil || plan != nil || signal != nil {
             VStack(alignment: .leading, spacing: PDSpacing.sm) {
                 PDSectionHeader(title: "Suggestions", trailing: "Nothing changes until you tap")
                 VStack(alignment: .leading, spacing: 12) {
+                    if viewModel.isOpenEndedEvent {
+                        OpenEndedConflictRadarCard(viewModel: viewModel, candidates: candidates)
+                    }
                     if let duration {
                         suggestionRow(
                             icon: "clock.arrow.circlepath",
@@ -455,5 +460,143 @@ struct ReviewSuggestionsCard: View {
                 .foregroundStyle(Color.pdPrimary)
                 .frame(minWidth: 44, minHeight: 44)
         }
+    }
+}
+
+private struct OpenEndedConflictRadarCard: View {
+    @ObservedObject var viewModel: EventReviewViewModel
+    let candidates: [EventCandidate]
+    @State private var assumption: EventReviewViewModel.OpenEndedDurationAssumption = .oneHour
+
+    private var incoming: ScheduleInterval {
+        let duration: TimeInterval = assumption == .twoHours ? 2 * 3600 : 3600
+        return ScheduleConflictAnalyzer.interval(
+            id: viewModel.candidate.id,
+            title: viewModel.title,
+            start: viewModel.startDate,
+            end: assumption == .openEnded ? nil : viewModel.startDate.addingTimeInterval(duration),
+            assumedDuration: duration,
+            location: viewModel.location
+        )
+    }
+
+    private var existing: [ScheduleInterval] {
+        candidates.compactMap { candidate in
+            guard candidate.id != viewModel.candidate.id,
+                  candidate.savedEvent?.status == .saved,
+                  !candidate.isAllDay else { return nil }
+            return ScheduleConflictAnalyzer.interval(
+                id: candidate.id,
+                title: candidate.title,
+                start: candidate.startDate,
+                end: candidate.endDate,
+                assumedDuration: EventDurationPolicy.fallback,
+                location: candidate.location
+            )
+        }
+    }
+
+    private var conflicts: [ScheduleConflict] {
+        ScheduleConflictAnalyzer.conflicts(for: incoming, against: existing)
+    }
+
+    private var sourceLabel: String {
+        viewModel.candidate.scannedAsset?.sourceMedium.rawValue ?? "Local review"
+    }
+
+    private var ocrLabel: String {
+        let score = viewModel.candidate.scannedAsset?.ocrConfidence ?? viewModel.confidenceScore
+        return String(format: "%.1f%% OCR", score * 100)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Conflict Radar", systemImage: "radar")
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
+                Spacer()
+                Text("AI-assisted")
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdPrimary)
+            }
+
+            HStack(spacing: 6) {
+                badge(sourceLabel, tint: .pdPrimary)
+                badge(ocrLabel, tint: .pdSecondary)
+                badge("End time missing", tint: .pdTertiary)
+            }
+
+            Text("Open-ended overlap detected")
+                .font(PDFont.headlineMD)
+                .foregroundStyle(Color.pdOnSurface)
+            Text("This scan starts at \(viewModel.startDate.formatted(date: .omitted, time: .shortened)) without a published end time. Check your local Pencil’d schedule before saving.")
+                .font(PDFont.bodySM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+
+            if conflicts.isEmpty {
+                Label("No local collisions in the selected horizon", systemImage: "checkmark.circle")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdSuccess)
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("\(conflicts.count) local schedule risk\(conflicts.count == 1 ? "" : "s")", systemImage: "exclamationmark.triangle")
+                        .font(PDFont.labelMD)
+                        .foregroundStyle(Color.pdError)
+                    ForEach(conflicts.prefix(3)) { conflict in
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: conflict.kind == .overlap ? "arrow.left.and.right" : "figure.walk")
+                                .foregroundStyle(conflict.kind == .overlap ? Color.pdError : Color.pdWarning)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(conflict.event.title)
+                                    .font(PDFont.bodyMD)
+                                    .foregroundStyle(Color.pdOnSurface)
+                                Text(conflict.kind == .overlap ? "Overlaps this assumed time block" : "Only \(Int((conflict.gap ?? 0) / 60))m between events")
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                            }
+                        }
+                    }
+                }
+                .padding(10)
+                .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(Color.pdError.opacity(0.10)))
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Choose a duration assumption")
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
+                Picker("Duration assumption", selection: $assumption) {
+                    Text("1 hour").tag(EventReviewViewModel.OpenEndedDurationAssumption.oneHour)
+                    Text("2 hours").tag(EventReviewViewModel.OpenEndedDurationAssumption.twoHours)
+                    Text("Open-ended").tag(EventReviewViewModel.OpenEndedDurationAssumption.openEnded)
+                }
+                .pickerStyle(.segmented)
+                Button {
+                    viewModel.applyDurationAssumption(assumption)
+                } label: {
+                    Label(assumption == .openEnded ? "Pencil in as flexible" : "Apply assumption and pencil in", systemImage: "edit_calendar")
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(PDGradientButtonStyle())
+            }
+            .padding(12)
+            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(Color.pdSurfaceLowest.opacity(0.7)))
+
+            Text("Analysis uses saved Pencil’d events on this device. Apple Calendar-wide conflicts require Calendar read access and are not claimed here.")
+                .font(PDFont.labelSM)
+                .foregroundStyle(Color.pdOnSurfaceVariant)
+        }
+        .padding(14)
+        .pdGlassCard(cornerRadius: PDRadius.card)
+    }
+
+    private func badge(_ title: String, tint: Color) -> some View {
+        Text(title)
+            .font(PDFont.labelSM)
+            .foregroundStyle(tint)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(tint.opacity(0.14)))
     }
 }

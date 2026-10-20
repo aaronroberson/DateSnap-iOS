@@ -24,3 +24,91 @@ public enum EventDurationPolicy {
         start.addingTimeInterval(fallback)
     }
 }
+
+/// A normalized interval used by Conflict Radar. Keeping this value type separate from SwiftData
+/// makes overlap detection deterministic and easy to test without Calendar or persistence access.
+public struct ScheduleInterval: Sendable, Equatable {
+    public let id: String
+    public let title: String
+    public let start: Date
+    public let end: Date
+    public let location: String?
+
+    public init(id: String, title: String, start: Date, end: Date, location: String? = nil) {
+        self.id = id
+        self.title = title
+        self.start = start
+        self.end = end
+        self.location = location
+    }
+}
+
+public enum ScheduleConflictKind: Sendable, Equatable {
+    case overlap
+    case insufficientGap
+}
+
+public struct ScheduleConflict: Sendable, Equatable, Identifiable {
+    public let id: String
+    public let kind: ScheduleConflictKind
+    public let event: ScheduleInterval
+    public let gap: TimeInterval?
+
+    public init(kind: ScheduleConflictKind, event: ScheduleInterval, gap: TimeInterval? = nil) {
+        self.kind = kind
+        self.event = event
+        self.gap = gap
+        self.id = "\(kind)-\(event.id)"
+    }
+}
+
+/// Detects collisions and short transition windows in the local Pencil’d schedule.
+/// External Apple Calendar events are intentionally not included until read authorization and a
+/// read-through service are added; the UI labels this boundary explicitly.
+public enum ScheduleConflictAnalyzer {
+    public static let defaultMinimumGap: TimeInterval = 15 * 60
+
+    public static func interval(
+        id: String,
+        title: String,
+        start: Date,
+        end: Date?,
+        assumedDuration: TimeInterval,
+        location: String? = nil
+    ) -> ScheduleInterval {
+        ScheduleInterval(
+            id: id,
+            title: title,
+            start: start,
+            end: max(end ?? start.addingTimeInterval(assumedDuration), start),
+            location: location
+        )
+    }
+
+    public static func conflicts(
+        for incoming: ScheduleInterval,
+        against existing: [ScheduleInterval],
+        minimumGap: TimeInterval = defaultMinimumGap
+    ) -> [ScheduleConflict] {
+        existing
+            .filter { $0.id != incoming.id }
+            .compactMap { event in
+                if incoming.start < event.end && event.start < incoming.end {
+                    return ScheduleConflict(kind: .overlap, event: event)
+                }
+
+                let gap: TimeInterval
+                if event.start >= incoming.end {
+                    gap = event.start.timeIntervalSince(incoming.end)
+                } else if incoming.start >= event.end {
+                    gap = incoming.start.timeIntervalSince(event.end)
+                } else {
+                    return nil
+                }
+
+                guard gap < minimumGap else { return nil }
+                return ScheduleConflict(kind: .insufficientGap, event: event, gap: gap)
+            }
+            .sorted { $0.event.start < $1.event.start }
+    }
+}
