@@ -39,4 +39,58 @@ struct SubscriptionServiceTests {
         #expect(extracted.productID == "com.pencild.plus.monthly")
         #expect(extracted.revocationDate == nil)
     }
+
+    // MARK: - Entitlement Cache
+
+    @Test("EntitlementCache round-trips a SubscriptionLease")
+    func entitlementCacheRoundTrip() {
+        let suite = UserDefaults(suiteName: "entitlement-cache-test-\(UUID().uuidString)")!
+        EntitlementCache.setDefaults(suite)
+        defer {
+            EntitlementCache.clear()
+            EntitlementCache.useStandardDefaults()
+        }
+
+        let original = SubscriptionLease(tier: .plus, outlook: .inGrace(until: Date(timeIntervalSince1970: 1_100_000)), expirationDate: Date(timeIntervalSince1970: 1_000_000), evaluatedAt: Date(timeIntervalSince1970: 999_999))
+        EntitlementCache.save(original)
+        let loaded = EntitlementCache.load()
+        #expect(loaded == original)
+    }
+
+    @Test("EntitlementCache.clear removes the stored value")
+    func entitlementCacheClear() {
+        let suite = UserDefaults(suiteName: "entitlement-cache-test-\(UUID().uuidString)")!
+        EntitlementCache.setDefaults(suite)
+        defer {
+            EntitlementCache.clear()
+            EntitlementCache.useStandardDefaults()
+        }
+
+        EntitlementCache.save(SubscriptionLease(tier: .premium, outlook: .lifetime, expirationDate: nil, evaluatedAt: Date()))
+        #expect(EntitlementCache.load() != nil)
+        EntitlementCache.clear()
+        #expect(EntitlementCache.load() == nil)
+    }
+
+    @Test("a verified purchase is granted immediately and cached")
+    @MainActor
+    func verifiedPurchaseGrantsImmediately() {
+        let suite = UserDefaults(suiteName: "entitlement-cache-test-\(UUID().uuidString)")!
+        EntitlementCache.setDefaults(suite)
+        defer { EntitlementCache.useStandardDefaults() }
+
+        let service = SubscriptionService(observesTransactionUpdates: false)
+        service.applyVerified(
+            SubscriptionEntitlementRecord(
+                productID: "com.pencild.plus.annual",
+                expirationDate: Date().addingTimeInterval(365 * 86_400),
+                revocationDate: nil,
+                verification: .verified
+            ),
+            provenance: .purchase
+        )
+        #expect(service.currentTier == .plus)
+        #expect(service.entitlementSnapshot.state == .verified)
+        #expect(EntitlementCache.load()?.tier == .plus)
+    }
 }

@@ -65,6 +65,10 @@ public enum EntitlementProvenance: String, Sendable, CaseIterable, Equatable {
     case sceneActivation
     /// Re-requested at a gate because an earlier check never resolved (see `AppState.present`).
     case gateRetry
+    /// Seeded from the persisted `SubscriptionLease` at launch so a paid subscriber keeps their
+    /// features while StoreKit's `currentEntitlements` stream is unresolved (offline, cold launch).
+    /// StoreKit re-verifies and corrects it on the next successful refresh.
+    case cached
 }
 
 // MARK: - Entitlement Snapshot
@@ -85,6 +89,13 @@ public struct EntitlementSnapshot: Sendable, Equatable {
 
     /// StoreKit hasn't returned a verified answer yet.
     public var isUnresolved: Bool { state != .verified }
+
+    /// Standing on the offline lease rather than a live StoreKit answer. Access is granted, but
+    /// gated attempts and the background retry keep asking StoreKit to confirm it.
+    public var isProvisional: Bool { state == .verified && provenance == .cached }
+
+    /// Needs a live StoreKit answer: unresolved, or only provisional.
+    public var needsLiveVerification: Bool { isUnresolved || isProvisional }
 
     public static func == (lhs: EntitlementSnapshot, rhs: EntitlementSnapshot) -> Bool {
         lhs.tier == rhs.tier && lhs.state == rhs.state && lhs.evaluatedAt == rhs.evaluatedAt && lhs.provenance == rhs.provenance
@@ -208,7 +219,7 @@ public extension EntitlementProviding {
     /// Each call retries while unresolved, so the user is never stuck on free for the session.
     @discardableResult
     func resolveBeforeUpsell() async -> EntitlementSnapshot {
-        if entitlementSnapshot.isUnresolved {
+        if entitlementSnapshot.needsLiveVerification {
             await refreshEntitlements(.gateRetry)
         }
         return entitlementSnapshot

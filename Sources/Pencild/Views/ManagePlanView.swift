@@ -34,6 +34,7 @@ struct ManagePlanView: View {
                     title: "Your Plan, Your Pace",
                     subtitle: "Review your current plan and manage billing with Apple."
                 )
+                SubscriptionStatusBanner()
                 subscriptionCard
                 usageSummary
                 benefits

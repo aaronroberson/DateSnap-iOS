@@ -123,9 +123,10 @@ public final class ScanViewModel: ObservableObject {
         at url: URL,
         modelContext: ModelContext? = nil
     ) async -> FeatureAccessDecision {
+        // Re-check an unresolved or lease-only entitlement before refusing a paid operation.
         let decision = FeatureAccessPolicy.decision(
             for: .documentImport,
-            snapshot: entitlements.entitlementSnapshot
+            snapshot: await entitlements.resolveBeforeUpsell()
         )
         guard decision == .allowed else {
             stage = .failed(decision.documentImportMessage)

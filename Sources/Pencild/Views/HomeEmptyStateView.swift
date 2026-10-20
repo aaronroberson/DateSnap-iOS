@@ -160,6 +160,7 @@ struct HomeEmptyStateView: View {
             VStack(alignment: .leading, spacing: 18) {
                 topBar
                 titleBlock
+                SubscriptionStatusBanner()
                 scanAllowanceBanner
                 recentScreenshotsCard
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], alignment: .leading, spacing: 16) {
@@ -177,6 +178,7 @@ struct HomeEmptyStateView: View {
             VStack(alignment: .leading, spacing: 16) {
                 topBar
                 titleBlock
+                SubscriptionStatusBanner()
                 scanAllowanceBanner
                 recentScreenshotsCard
                 sourceCards
@@ -436,11 +438,17 @@ struct HomeEmptyStateView: View {
     }
 
     private func openFileImport() {
-        if appState.isEntitled(to: .documentImport) {
-            showFileImporter = true
-        } else {
-            pendingFileImportAfterPurchase = true
-            Task { await appState.present(.paywall(for: .documentImport)) }
+        Task {
+            switch await appState.authorize(.documentImport) {
+            case .allowed:
+                showFileImporter = true
+            case .denied(.requiresTier):
+                pendingFileImportAfterPurchase = true
+                await appState.present(.paywall(for: .documentImport))
+            case .denied(let reason):
+                // StoreKit couldn't confirm the plan even after retrying: say so, don't sell.
+                appState.showToast(FeatureAccessDecision.denied(reason).documentImportMessage)
+            }
         }
     }
 

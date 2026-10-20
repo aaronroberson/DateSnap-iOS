@@ -142,4 +142,48 @@ struct StoreKitRestoreIntegrationTests {
         #expect(!service.isSubscribed)
         try await drainAndClear(session)
     }
+
+    @Test("Cancelled plan keeps access until it expires, and the lease says so")
+    func cancelledPlanEndsAtExpiry() async throws {
+        let session = try makeSession()
+        let transaction = try await session.buyProduct(identifier: "com.pencild.plus.monthly")
+        try await drainUnfinished()
+        try session.disableAutoRenewForTransaction(identifier: UInt(transaction.id))
+        try await drainUnfinished()
+
+        let service = SubscriptionService.shared
+        await service.refreshEntitlements(.restore)
+        #expect(service.currentTier == .plus)
+        #expect(EntitlementCache.load()?.outlook == .endsAtExpiry)
+
+        try session.expireSubscription(productIdentifier: transaction.productID)
+        try await drainUnfinished()
+        // Sync first, as a real restore does: the test session reports expiry through the store.
+        _ = try await service.restorePurchases()
+        #expect(service.currentTier == .starter)
+        #expect(EntitlementCache.load() == nil)
+        try await drainAndClear(session)
+        EntitlementCache.clear()
+    }
+
+    @Test("A failed renewal inside Apple's billing grace period keeps access")
+    func billingGracePeriodKeepsAccess() async throws {
+        let session = try makeSession()
+        session.billingGracePeriodIsEnabled = true
+        session.shouldEnterBillingRetryOnRenewal = true
+        let transaction = try await session.buyProduct(identifier: "com.pencild.plus.monthly")
+        try await drainUnfinished()
+        try session.forceRenewalOfSubscription(productIdentifier: transaction.productID)
+
+        try await drainUnfinished()
+
+        let service = SubscriptionService.shared
+        await service.refreshEntitlements(.restore)
+        #expect(service.currentTier == .plus, "grace-period subscribers must keep their plan")
+        if case .inGrace? = EntitlementCache.load()?.outlook {} else {
+            Issue.record("expected an in-grace lease, got \(String(describing: EntitlementCache.load()?.outlook))")
+        }
+        try await drainAndClear(session)
+        EntitlementCache.clear()
+    }
 }

@@ -131,11 +131,22 @@ final class AppState: ObservableObject {
         FeatureAccessPolicy.decision(for: feature, snapshot: entitlementSnapshot) == .allowed
     }
 
+    /// Decides a gated action the user is attempting right now. A snapshot that is unresolved or
+    /// only provisional (offline lease) is re-checked against StoreKit first, so a legitimate
+    /// subscriber is not turned away on a stale answer; if StoreKit still can't answer, the
+    /// lease decides.
+    func authorize(_ feature: PremiumFeature) async -> FeatureAccessDecision {
+        if let provider = entitlementProvider, entitlementSnapshot.needsLiveVerification {
+            entitlementSnapshot = await provider.resolveBeforeUpsell()
+        }
+        return FeatureAccessPolicy.decision(for: feature, snapshot: entitlementSnapshot)
+    }
+
     /// Whether a paywall should open now. Re-requests an unresolved entitlement first; if that
     /// shows a paid plan, says so instead of selling it. A Premium member is never shown a paywall.
     /// `present(_:)` and the paywall view (for screens that open it in their own sheet) both ask.
     func shouldShowPaywall() async -> Bool {
-        if let provider = entitlementProvider, entitlementSnapshot.isUnresolved {
+        if let provider = entitlementProvider, entitlementSnapshot.needsLiveVerification {
             let before = subscriptionTier
             entitlementSnapshot = await provider.resolveBeforeUpsell()
             if before == .starter && subscriptionTier != .starter {
