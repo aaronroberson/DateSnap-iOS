@@ -314,6 +314,12 @@ private final class TestPhotoLibrary: PhotoLibraryServiceProtocol, @unchecked Se
         throw InjectedServiceFailure.ocr
     }
 
+    func fetchImage(for asset: PHAsset, targetSize: CGSize, allowICloudDownload: Bool, progress: (@Sendable (Double) -> Void)?) async throws -> UIImage {
+        throw InjectedServiceFailure.ocr
+    }
+
+    func isInCloud(for asset: PHAsset) async -> Bool { false }
+
     func observeLibraryChanges() -> AsyncStream<Void> {
         AsyncStream { $0.finish() }
     }

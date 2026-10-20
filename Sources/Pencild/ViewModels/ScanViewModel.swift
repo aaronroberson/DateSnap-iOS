@@ -77,13 +77,23 @@ public final class ScanViewModel: ObservableObject {
     }
 
     // MARK: - Scan PHAsset Pipeline
-    public func scanAsset(_ asset: PHAsset, modelContext: ModelContext? = nil, sourceMedium: EventSourceMedium = .screenshot) async {
+    public func scanAsset(
+        _ asset: PHAsset,
+        modelContext: ModelContext? = nil,
+        sourceMedium: EventSourceMedium = .screenshot,
+        allowICloudDownload: Bool = false
+    ) async {
         isCancelling = false
         isProcessing = true
         stage = .fetchingImage
 
         do {
-            let image = try await photoLibraryService.fetchImage(for: asset, targetSize: CGSize(width: 1440, height: 2560))
+            let image = try await photoLibraryService.fetchImage(
+                for: asset,
+                targetSize: CGSize(width: 1440, height: 2560),
+                allowICloudDownload: allowICloudDownload,
+                progress: nil
+            )
             guard !isCancelling else {
                 stage = .idle
                 isProcessing = false
@@ -121,7 +131,8 @@ public final class ScanViewModel: ObservableObject {
     @discardableResult
     public func scanDocument(
         at url: URL,
-        modelContext: ModelContext? = nil
+        modelContext: ModelContext? = nil,
+        allowICloudDownload: Bool = false
     ) async -> FeatureAccessDecision {
         // Re-check an unresolved or lease-only entitlement before refusing a paid operation.
         let decision = FeatureAccessPolicy.decision(
@@ -139,6 +150,24 @@ public final class ScanViewModel: ObservableObject {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
 
+        // Pencil'd only scans on-device files by default. An iCloud Drive file that isn't fully
+        // downloaded locally is either rejected (with a clear message) or fetched through Apple's
+        // built-in download process when the user opted in (see `RemoteAssetGate`).
+        if RemoteAssetGate.isFileDownloadedLocally(url) == false {
+            if allowICloudDownload {
+                let downloaded = await RemoteAssetGate.downloadUbiquitousFile(url)
+                guard downloaded else {
+                    stage = .failed(PencildError.fileImport(.fileDownloadFailed("The download didn't finish.")).localizedDescription)
+                    isProcessing = false
+                    return .allowed
+                }
+            } else {
+                stage = .failed(PencildError.fileImport(.fileNotDownloadedLocally).localizedDescription)
+                isProcessing = false
+                return .allowed
+            }
+        }
+
         let type = UTType(filenameExtension: url.pathExtension)
         if type?.conforms(to: .pdf) == true {
             guard let document = PDFDocument(url: url), document.pageCount > 0 else {
@@ -150,7 +179,7 @@ public final class ScanViewModel: ObservableObject {
             await scanPages(pages, assetIdentifier: "file:\(url.lastPathComponent)", modelContext: modelContext, sourceMedium: .pdf)
         } else {
             guard let data = try? Data(contentsOf: url) else {
-                stage = .failed("This file could not be read.")
+                stage = .failed(PencildError.fileImport(.fileUnreadable("The file could not be read.")).localizedDescription)
                 isProcessing = false
                 return .allowed
             }

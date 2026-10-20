@@ -67,6 +67,7 @@ struct ContentView: View {
                 .zIndex(1)
             }
         }
+        .iCloudSingleAlert()
         .environmentObject(appState)
         .environmentObject(settingsState)
         .environmentObject(scanViewModel)
@@ -119,6 +120,14 @@ struct ContentView: View {
         }
         .sheet(item: $appState.batchReviewSession) { session in
             BatchReviewView(session: session)
+                .environmentObject(appState)
+                .environmentObject(settingsState)
+                .environmentObject(scanViewModel)
+                .environmentObject(homeViewModel)
+                .pencildServices(services)
+        }
+        .sheet(item: $appState.pendingICloudBatch) { confirmation in
+            ICloudBatchConfirmationView(confirmation: confirmation)
                 .environmentObject(appState)
                 .environmentObject(settingsState)
                 .environmentObject(scanViewModel)

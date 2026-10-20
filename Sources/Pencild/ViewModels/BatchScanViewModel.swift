@@ -118,7 +118,10 @@ final class BatchScanViewModel: ObservableObject {
 
     /// Scans each source in order, updating per-item stages as it goes.
     /// A failure on one screenshot never stops the others.
-    func scan(_ sources: [BatchScanSource], modelContext: ModelContext?) async {
+    /// `allowICloudDownload` is forwarded to `PhotoLibraryService.fetchImage` for `.asset` sources;
+    /// when false (default), an iCloud-only screenshot surfaces `.iCloudDownloadRequired` instead
+    /// of silently downloading it.
+    func scan(_ sources: [BatchScanSource], modelContext: ModelContext?, allowICloudDownload: Bool = false) async {
         guard !sources.isEmpty, !isProcessing else { return }
         isProcessing = true
         items = sources.enumerated().map { BatchScanItem(label: Self.label(forIndex: $0.offset + 1)) }
@@ -134,7 +137,7 @@ final class BatchScanViewModel: ObservableObject {
 
         for (item, source) in zip(items, sources) {
             currentLabel = item.label
-            await scanOne(item, source: source, scanner: scanner, modelContext: modelContext)
+            await scanOne(item, source: source, scanner: scanner, modelContext: modelContext, allowICloudDownload: allowICloudDownload)
         }
     }
 
@@ -142,7 +145,8 @@ final class BatchScanViewModel: ObservableObject {
         _ item: BatchScanItem,
         source: BatchScanSource,
         scanner: ScanViewModel,
-        modelContext: ModelContext?
+        modelContext: ModelContext?,
+        allowICloudDownload: Bool
     ) async {
         switch source {
         case .failed(let reason):
@@ -153,11 +157,13 @@ final class BatchScanViewModel: ObservableObject {
             do {
                 let image = try await services.photoLibrary.fetchImage(
                     for: asset,
-                    targetSize: CGSize(width: 1440, height: 2560)
+                    targetSize: CGSize(width: 1440, height: 2560),
+                    allowICloudDownload: allowICloudDownload,
+                    progress: nil
                 )
                 await runPipeline(item, image: image, assetIdentifier: asset.localIdentifier, sourceMedium: .screenshot, scanner: scanner, modelContext: modelContext)
             } catch {
-                item.fail("Could not load the screenshot: \(error.localizedDescription)")
+                item.fail(error.localizedDescription)
             }
         case .loaded(let id, let image):
             item.begin()
@@ -166,7 +172,9 @@ final class BatchScanViewModel: ObservableObject {
             item.begin()
             do {
                 guard let data = try await pickerItem.loadTransferable(type: Data.self) else {
-                    item.fail("That photo could not be loaded.")
+                    // `PhotosPicker` can't pre-check iCloud state; an empty/failed transfer usually
+                    // means the original is in iCloud and hasn't downloaded. Surface that clearly.
+                    item.fail("This photo isn't downloaded to your device. Open it in Photos first, or allow iCloud downloads in Settings › Scanning Options.")
                     return
                 }
                 guard let image = UIImage(data: data) else {
@@ -182,7 +190,7 @@ final class BatchScanViewModel: ObservableObject {
                     modelContext: modelContext
                 )
             } catch {
-                item.fail("Could not load the photo: \(error.localizedDescription)")
+                item.fail("This photo isn't downloaded to your device. If it's stored in iCloud, open it in Photos first, or allow iCloud downloads in Settings › Scanning Options.")
             }
         }
     }

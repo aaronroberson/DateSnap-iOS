@@ -435,6 +435,10 @@ private final class TestBatchPhotoLibrary: PhotoLibraryServiceProtocol, @uncheck
     func fetchImage(for asset: PHAsset, targetSize: CGSize) async throws -> UIImage {
         throw BatchOCRUnavailable()
     }
+    func fetchImage(for asset: PHAsset, targetSize: CGSize, allowICloudDownload: Bool, progress: (@Sendable (Double) -> Void)?) async throws -> UIImage {
+        throw BatchOCRUnavailable()
+    }
+    func isInCloud(for asset: PHAsset) async -> Bool { false }
     func observeLibraryChanges() -> AsyncStream<Void> {
         AsyncStream { $0.finish() }
     }

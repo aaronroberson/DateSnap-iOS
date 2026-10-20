@@ -13,6 +13,8 @@ private final class TabletTestPhotoLibrary: PhotoLibraryServiceProtocol, @unchec
     func authorizationStatus(for accessLevel: PHAccessLevel) -> PHAuthorizationStatus { .authorized }
     func fetchRecentScreenshots(limit: Int) async throws -> [PHAsset] { [] }
     func fetchImage(for asset: PHAsset, targetSize: CGSize) async throws -> UIImage { UIImage() }
+    func fetchImage(for asset: PHAsset, targetSize: CGSize, allowICloudDownload: Bool, progress: (@Sendable (Double) -> Void)?) async throws -> UIImage { UIImage() }
+    func isInCloud(for asset: PHAsset) async -> Bool { false }
     func observeLibraryChanges() -> AsyncStream<Void> { AsyncStream { $0.finish() } }
 }
 

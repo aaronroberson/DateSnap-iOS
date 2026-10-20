@@ -261,15 +261,35 @@ struct RecentScreenshotsView: View {
     }
 
     private func scan(_ asset: PHAsset) {
-        dismiss()
         Task {
-            await scanViewModel.scanAsset(asset, modelContext: modelContext)
-            await appState.handleScanOutcome(scanViewModel, services: services)
+            let remote = await services.photoLibrary.isInCloud(for: asset)
+            guard remote else {
+                await runAssetScan(asset, allowICloudDownload: false)
+                return
+            }
+            switch RemoteAssetGate.decide(remoteCount: 1, preference: ICloudDownloadPreference.standard) {
+            case .proceed(let allow):
+                await runAssetScan(asset, allowICloudDownload: allow)
+            case .skipRemotes:
+                appState.showToast("Skipped iCloud-only screenshot. Allow iCloud downloads in Settings to scan it.")
+            case .ask:
+                appState.pendingICloudSingle = ICloudSingleConfirmation(itemLabel: "screenshot") { downloadAllowed in
+                    Task {
+                        await self.runAssetScan(asset, allowICloudDownload: downloadAllowed)
+                    }
+                }
+            }
         }
     }
 
+    private func runAssetScan(_ asset: PHAsset, allowICloudDownload: Bool) async {
+        dismiss()
+        await scanViewModel.scanAsset(asset, modelContext: modelContext, allowICloudDownload: allowICloudDownload)
+        await appState.handleScanOutcome(scanViewModel, services: services)
+    }
+
     /// Starts the batch on the shared AppState so progress and the review sheet
-    /// outlive this picker sheet.
+    /// outlive this picker sheet. Routed through `requestBatchScan` so the iCloud gate runs first.
     private func startBatchScan() {
         if let remainingFreeScans, selectionExcess > 0 {
             batchOverLimit = BatchOverLimit(selected: selectedAssetIDs.count, remaining: remainingFreeScans)
@@ -280,7 +300,7 @@ struct RecentScreenshotsView: View {
         selectedAssetIDs.removeAll()
         dismiss()
         Task { @MainActor in
-            await appState.startBatchScan(
+            await appState.requestBatchScan(
                 sources: sources,
                 services: services,
                 modelContext: modelContext
@@ -396,6 +416,7 @@ struct AssetThumbnail: View {
     let asset: PHAsset
     var height: CGFloat = 150
     @State private var image: UIImage?
+    @State private var isInCloud = false
 
     var body: some View {
         ZStack {
@@ -404,6 +425,16 @@ struct AssetThumbnail: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
+            } else if isInCloud {
+                VStack(spacing: 6) {
+                    Image(systemName: "icloud")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                    Text("Stored in iCloud")
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .multilineTextAlignment(.center)
+                }
             } else {
                 ProgressView().tint(Color.pdOnSurfaceVariant)
             }
@@ -413,7 +444,15 @@ struct AssetThumbnail: View {
         .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
         .overlay(RoundedRectangle(cornerRadius: PDRadius.card).stroke(Color.pdSurfaceHighest.opacity(0.6), lineWidth: 1))
         .task(id: asset.localIdentifier) {
-            image = try? await services.photoLibrary.fetchImage(for: asset, targetSize: CGSize(width: 360, height: 640))
+            // Thumbnails are decorative: never trigger an iCloud download for a 56pt preview. A
+            // cloud-only asset shows an iCloud badge instead of an endless spinner (audit Fix 5).
+            do {
+                image = try await services.photoLibrary.fetchImage(for: asset, targetSize: CGSize(width: 360, height: 640))
+            } catch PencildError.photoLibrary(.iCloudDownloadRequired) {
+                isInCloud = true
+            } catch {
+                isInCloud = false
+            }
         }
     }
 }

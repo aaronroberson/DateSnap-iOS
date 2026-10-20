@@ -172,6 +172,12 @@ final class AppState: ObservableObject {
     /// In-flight multi-screenshot scan, kept here so progress survives picker dismissal.
     @Published private(set) var activeBatchScan: BatchScanViewModel? = nil
     @Published private(set) var isBatchScanning = false
+    /// A batch that contains iCloud-only sources awaiting the user's download decision. Presented
+    /// as a sheet by `ContentView` (see `ICloudBatchConfirmationView`).
+    @Published var pendingICloudBatch: ICloudBatchConfirmation? = nil
+    /// A single iCloud-only asset awaiting the user's download decision. Presented as an alert by
+    /// whichever view initiated the scan (see `RecentScreenshotsView`).
+    @Published var pendingICloudSingle: ICloudSingleConfirmation? = nil
 
     // MARK: - Navigation
     // Tabs change through `selectedTab`; History through `openHistory()`. Every modal sheet is
@@ -232,16 +238,20 @@ final class AppState: ObservableObject {
 
     /// Scans every source in one sequential batch, then presents the combined review session.
     /// A single-selection batch still uses this path, so progress and routing stay identical.
+    /// `allowICloudDownload` is forwarded to the scanner for iCloud-only `.asset` sources; callers
+    /// should usually go through `requestBatchScan(...)` so the user's `ICloudDownloadPreference`
+    /// is consulted before any download happens.
     func startBatchScan(
         sources: [BatchScanSource],
         services: ServiceContainer,
-        modelContext: ModelContext?
+        modelContext: ModelContext?,
+        allowICloudDownload: Bool = false
     ) async {
         guard !sources.isEmpty, !isBatchScanning else { return }
         let scanner = BatchScanViewModel(services: services)
         activeBatchScan = scanner
         isBatchScanning = true
-        await scanner.scan(sources, modelContext: modelContext)
+        await scanner.scan(sources, modelContext: modelContext, allowICloudDownload: allowICloudDownload)
         isBatchScanning = false
 
         let session = BatchReviewSession(scan: scanner, services: services)
@@ -257,6 +267,52 @@ final class AppState: ObservableObject {
             return
         }
         await presentBatchReview(session)
+    }
+
+    // MARK: - iCloud / Remote-Asset Batch Gate
+
+    /// Entry point for batch scans. Runs the `RemoteAssetGate` preflight and consults the user's
+    /// `ICloudDownloadPreference`:
+    /// - no iCloud sources → scans on-device sources immediately;
+    /// - `.allow` → scans the whole batch with downloads enabled;
+    /// - `.skip` → discards iCloud sources (with a toast) and scans the rest;
+    /// - `.ask` → stores the confirmation on `pendingICloudBatch` so `ContentView` can present the
+    ///   sheet (see `ICloudBatchConfirmationView`).
+    func requestBatchScan(sources: [BatchScanSource], services: ServiceContainer, modelContext: ModelContext?) async {
+        let plan = await RemoteAssetGate.partition(sources, photos: services.photoLibrary)
+        let decision = RemoteAssetGate.decide(remoteCount: plan.remote.count, preference: ICloudDownloadPreference.standard)
+        switch decision {
+        case .proceed(let allow):
+            await startBatchScan(sources: sources, services: services, modelContext: modelContext, allowICloudDownload: allow)
+        case .skipRemotes:
+            if !plan.remote.isEmpty {
+                showToast("Skipped \(plan.remote.count) iCloud-only item\(plan.remote.count == 1 ? "" : "s"). Allow iCloud downloads in Settings to include them.")
+            }
+            await startBatchScan(sources: plan.local, services: services, modelContext: modelContext, allowICloudDownload: false)
+        case .ask:
+            pendingICloudBatch = ICloudBatchConfirmation(sources: sources, plan: plan, services: services, modelContext: modelContext)
+        }
+    }
+
+    /// Resolves a pending iCloud batch confirmation. Clears the sheet and starts the batch per the
+    /// user's decision.
+    func resolveICloudBatch(_ decision: ICloudBatchDecision) async {
+        guard let confirmation = pendingICloudBatch else { return }
+        pendingICloudBatch = nil
+        guard let services = confirmation.services else { return }
+        let resolved = decision.resolvedSources(for: confirmation)
+        if case .perPhoto(let selected) = decision, selected.count < confirmation.remoteCount {
+            let discarded = confirmation.remoteCount - selected.count
+            if discarded > 0 {
+                showToast("Discarded \(discarded) deselected iCloud item\(discarded == 1 ? "" : "s").")
+            }
+        }
+        await startBatchScan(
+            sources: resolved.sources,
+            services: services,
+            modelContext: confirmation.modelContext,
+            allowICloudDownload: resolved.allowICloudDownload
+        )
     }
 
     // Toast Feedback

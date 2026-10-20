@@ -117,6 +117,8 @@ struct AutomationSettingsView: View {
                             .foregroundStyle(Color.pdOnSurfaceVariant)
                     }
                 }
+
+                ICloudDownloadSettingsCard()
             }
             .padding(.horizontal, PDSpacing.margin)
             .padding(.top, PDSpacing.sm)

@@ -569,7 +569,6 @@ struct HomeEmptyStateView: View {
         }
     }
 }
-
 private extension View {
     func cardBackground() -> some View {
         background(
@@ -596,31 +595,5 @@ struct TrailingIconLabelStyle: LabelStyle {
             configuration.title
             configuration.icon
         }
-    }
-}
-
-/// The three glowing signature ribbons from the Stitch "Recent screenshots" hero card.
-private struct SignatureRibbons: View {
-    var body: some View {
-        Canvas { context, size in
-            let sx = size.width / 360, sy = size.height / 180
-            func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: x * sx, y: y * sy) }
-            let ribbons: [(Color, CGFloat, [CGPoint])] = [
-                (.pdOrange, 2.5, [pt(-20, 160), pt(80, 120), pt(140, 30), pt(260, 50), pt(310, 58), pt(350, 20), pt(390, -10)]),
-                (.pdTertiaryContainer, 1.75, [pt(0, 180), pt(110, 140), pt(170, 70), pt(280, 85), pt(330, 92), pt(360, 60), pt(400, 40)]),
-                (.pdLavender, 1.5, [pt(30, 190), pt(130, 160), pt(200, 110), pt(310, 120), pt(350, 125), pt(380, 100), pt(410, 80)])
-            ]
-            for (color, width, p) in ribbons {
-                var path = Path()
-                path.move(to: p[0])
-                path.addCurve(to: p[3], control1: p[1], control2: p[2])
-                path.addCurve(to: p[6], control1: p[4], control2: p[5])
-                var glow = context
-                glow.addFilter(.shadow(color: color, radius: 5))
-                glow.stroke(path, with: .color(color.opacity(0.7)), style: StrokeStyle(lineWidth: width, lineCap: .round))
-            }
-        }
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 }

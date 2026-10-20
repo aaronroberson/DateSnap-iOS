@@ -9,6 +9,7 @@ public enum PencildError: LocalizedError, Sendable, CustomStringConvertible {
     case reminders(ReminderError)
     case notifications(NotificationError)
     case subscription(SubscriptionError)
+    case fileImport(FileImportError)
     case persistence(String)
     case general(String)
 
@@ -25,6 +26,7 @@ public enum PencildError: LocalizedError, Sendable, CustomStringConvertible {
         case .reminders(let err): return err.errorDescription
         case .notifications(let err): return err.errorDescription
         case .subscription(let err): return err.errorDescription
+        case .fileImport(let err): return err.errorDescription
         case .persistence(let msg): return "Data persistence error: \(msg)"
         case .general(let msg): return msg
         }
@@ -39,6 +41,7 @@ public enum PencildError: LocalizedError, Sendable, CustomStringConvertible {
         case .reminders(let err): return err.recoverySuggestion
         case .notifications(let err): return err.recoverySuggestion
         case .subscription(let err): return err.recoverySuggestion
+        case .fileImport(let err): return err.recoverySuggestion
         default: return nil
         }
     }
@@ -52,6 +55,12 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
     case assetNotFound(String)
     case imageConversionFailed
     case smartAlbumNotFound
+    /// The asset's original is only in iCloud and the user has not allowed downloading it. Pencil'd
+    /// only scans on-device assets by default; a scan that needs the full-resolution iCloud original
+    /// must ask the user first (see Settings › Scanning Options › iCloud & remote downloads).
+    case iCloudDownloadRequired
+    /// An iCloud download was attempted (user-approved) but failed or was interrupted.
+    case iCloudDownloadFailed(String)
 
     public var errorDescription: String? {
         switch self {
@@ -67,6 +76,10 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
             return "Failed to convert the photo asset into a processable image."
         case .smartAlbumNotFound:
             return "The Screenshots smart album could not be located on this device."
+        case .iCloudDownloadRequired:
+            return "This photo is stored in iCloud and isn't downloaded to your device."
+        case .iCloudDownloadFailed(let reason):
+            return "Could not download this photo from iCloud: \(reason)"
         }
     }
 
@@ -78,6 +91,42 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
             return "Please ensure the screenshot exists in your Photos app and try again."
         case .smartAlbumNotFound:
             return "Take a screenshot using your device buttons, then retry scanning."
+        case .iCloudDownloadRequired:
+            return "Allow iCloud downloads in Settings › Scanning Options, or open the photo in Photos to download it first."
+        case .iCloudDownloadFailed:
+            return "Check your connection and try again, or open the photo in Photos to download it first."
+        }
+    }
+}
+
+// MARK: - File Import Domain Errors
+/// Errors for the Files / iCloud Drive / PDF import path. Like `PhotoLibraryError`, a file that
+/// lives in iCloud Drive but isn't downloaded locally is reported explicitly so the user can choose
+/// to download it via Apple's built-in process (see `RemoteAssetGate` and `ICloudDownloadPreference`).
+public enum FileImportError: LocalizedError, Sendable {
+    case fileNotDownloadedLocally
+    case fileDownloadFailed(String)
+    case fileUnreadable(String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .fileNotDownloadedLocally:
+            return "This file is stored in iCloud Drive and isn't downloaded to your device."
+        case .fileDownloadFailed(let reason):
+            return "Could not download this file from iCloud: \(reason)"
+        case .fileUnreadable(let reason):
+            return "This file could not be read: \(reason)"
+        }
+    }
+
+    public var recoverySuggestion: String? {
+        switch self {
+        case .fileNotDownloadedLocally:
+            return "Allow iCloud downloads in Settings › Scanning Options, or open the file in Files to download it first."
+        case .fileDownloadFailed:
+            return "Check your connection and try again, or open the file in Files to download it first."
+        case .fileUnreadable:
+            return "Pick a different file or export a copy into Pencil'd."
         }
     }
 }
