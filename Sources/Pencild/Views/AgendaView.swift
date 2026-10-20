@@ -317,34 +317,45 @@ struct AgendaView: View {
     private var weekCalendar: some View {
         VStack(spacing: PDSpacing.sm) {
             calendarNavigation
-            HStack(spacing: 6) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 7), spacing: 6) {
                 ForEach(weekDays, id: \.self) { day in
-                    Button { selectedDate = day } label: {
-                        VStack(spacing: 4) {
-                            Text(day.formatted(.dateTime.weekday(.abbreviated)).prefix(3).uppercased())
-                                .font(PDFont.labelSM)
-                            Text(day.formatted(.dateTime.day()))
-                                .font(PDFont.headlineSM)
-                            Circle()
-                                .fill(events(on: day).isEmpty ? Color.clear : eventDotColor(events(on: day).first))
-                                .frame(width: 6, height: 6)
-                        }
-                        .foregroundStyle(Calendar.current.isDate(day, inSameDayAs: selectedDate) ? Color.pdOnSurface : Color.pdOnSurfaceVariant)
-                        .frame(maxWidth: .infinity, minHeight: 72)
-                        .background {
-                            if Calendar.current.isDate(day, inSameDayAs: selectedDate) {
-                                RoundedRectangle(cornerRadius: 16).fill(LinearGradient.pdHighlightCard)
-                            } else {
-                                RoundedRectangle(cornerRadius: 16).fill(Color.pdSurfaceContainerLow)
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
+                    weekDayCell(day)
                 }
             }
         }
         .padding(PDSpacing.md)
         .background(RoundedRectangle(cornerRadius: 20).fill(Color.pdSurfaceContainer.opacity(0.82)))
+    }
+
+    private func weekDayCell(_ day: Date) -> some View {
+        let isSelected = Calendar.current.isDate(day, inSameDayAs: selectedDate)
+        let dayEvents = events(on: day)
+        let weekdayText = String(day.formatted(.dateTime.weekday(.abbreviated)).prefix(3)).uppercased()
+        let dayText = day.formatted(.dateTime.day())
+        let dotColor = dayEvents.first.map(eventDotColor) ?? Color.clear
+
+        return Button {
+            selectedDate = day
+        } label: {
+            VStack(spacing: 4) {
+                Text(weekdayText)
+                    .font(PDFont.labelSM)
+                Text(dayText)
+                    .font(PDFont.headlineSM)
+                Circle()
+                    .fill(dotColor)
+                    .frame(width: 6, height: 6)
+            }
+            .foregroundStyle(isSelected ? Color.pdOnSurface : Color.pdOnSurfaceVariant)
+            .frame(maxWidth: .infinity, minHeight: 72)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(isSelected
+                          ? AnyShapeStyle(LinearGradient.pdHighlightCard)
+                          : AnyShapeStyle(Color.pdSurfaceLow))
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     private func calendarDayCell(_ day: Date, events: [SavedEvent], muted: Bool) -> some View {
@@ -388,36 +399,40 @@ struct AgendaView: View {
     private var focusedDayAgenda: some View {
         let dayEvents = events(on: selectedDate)
         return VStack(alignment: .leading, spacing: PDSpacing.sm) {
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("FOCUSED AGENDA")
-                        .font(PDFont.labelSM)
-                        .tracking(1.2)
-                        .foregroundStyle(Color.pdPrimary)
-                    Text(selectedDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
-                        .font(PDFont.headlineSM)
-                        .foregroundStyle(Color.pdOnSurface)
-                }
-                Spacer()
-                Text("\(dayEvents.count) event\(dayEvents.count == 1 ? "" : "s")")
-                    .font(PDFont.labelSM)
-                    .foregroundStyle(Color.pdPrimary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Capsule().fill(Color.pdSurfaceContainerHigh))
-            }
+            focusedAgendaHeader(eventCount: dayEvents.count)
             if dayEvents.isEmpty {
                 Text("Nothing scheduled for this day.")
                     .font(PDFont.bodySM)
                     .foregroundStyle(Color.pdOnSurfaceVariant)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(PDSpacing.md)
-                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.pdSurfaceContainerLow))
+                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.pdSurfaceLow))
             } else {
                 ForEach(dayEvents) { saved in
                     focusedEventCard(saved)
                 }
             }
+        }
+    }
+
+    private func focusedAgendaHeader(eventCount: Int) -> some View {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("FOCUSED AGENDA")
+                    .font(PDFont.labelSM)
+                    .tracking(1.2)
+                    .foregroundStyle(Color.pdPrimary)
+                Text(selectedDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
+            }
+            Spacer()
+            Text("\(eventCount) event\(eventCount == 1 ? "" : "s")")
+                .font(PDFont.labelSM)
+                .foregroundStyle(Color.pdPrimary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(Color.pdSurfaceContainerHigh))
         }
     }
 
