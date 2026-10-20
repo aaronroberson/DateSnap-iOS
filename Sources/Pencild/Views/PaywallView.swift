@@ -86,6 +86,11 @@ struct PaywallView: View {
                     }
                     .padding(.horizontal)
 
+                    if let offer = purchases.winBack {
+                        winBackCard(offer)
+                            .padding(.horizontal)
+                    }
+
                     planOptions
                         .padding(.horizontal)
 
@@ -158,6 +163,7 @@ struct PaywallView: View {
             .task(id: plan) { await loadCurrentProduct() }
             .task {
                 await purchases.attach(services.subscription)
+                await purchases.loadWinBackOffer()
                 for candidate in [PurchaseViewModel.Plan.plus, .premium] {
                     for period in [BillingPeriod.annual, .monthly] {
                         if let product = purchases.product(candidate, period),
@@ -301,6 +307,31 @@ struct PaywallView: View {
         }
         // Room for the Lifetime ribbon, which rises above its option.
         .padding(.top, LifetimeIntroOffer.isAvailable() ? 14 : 0)
+    }
+
+    private func winBackCard(_ offer: PurchaseViewModel.WinBackSummary) -> some View {
+        PDCard(highlighted: true) {
+            VStack(alignment: .leading, spacing: PDSpacing.xs) {
+                PDStatusBadge(text: "Welcome back", icon: "gift.fill", tone: .success)
+                Text("Come back to \(offer.tierName) for \(offer.displayPrice)")
+                    .font(PDFont.headlineSM)
+                    .foregroundStyle(Color.pdOnSurface)
+                Text("A reduced rate, just for returning members. Review the terms in the App Store sheet.")
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                Button {
+                    Task {
+                        guard let tier = await purchases.purchaseWinBack() else { return }
+                        appState.showToast("Current plan: \(tier.displayName)")
+                        dismiss()
+                    }
+                } label: {
+                    Text("Claim offer")
+                }
+                .buttonStyle(PDPrimaryButtonStyle(minHeight: 44))
+                .disabled(purchases.isPurchasing)
+            }
+        }
     }
 
     private var controlCard: some View {

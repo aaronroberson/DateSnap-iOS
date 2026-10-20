@@ -23,6 +23,17 @@ final class PurchaseViewModel: ObservableObject {
     @Published private(set) var products: [String: Product] = [:]
     @Published private(set) var isLoadingProducts = false
     @Published private(set) var isPurchasing = false
+    /// A reduced-rate win-back offer the member is eligible for after their plan lapsed (iOS 18+).
+    @Published private(set) var winBack: WinBackSummary?
+
+    /// Plain display data for a win-back offer. The `Product.SubscriptionOffer` itself is iOS 18
+    /// only, so it is looked up again from the product when the member claims it.
+    struct WinBackSummary: Equatable {
+        let productID: String
+        let offerID: String
+        let displayPrice: String
+        let tierName: String
+    }
     @Published var errorMessage: String? = nil
 
     /// Connects the view model to the app's subscription service (from `@Environment(\.services)`) and loads products.
@@ -43,6 +54,59 @@ final class PurchaseViewModel: ObservableObject {
         } catch {
             errorMessage = "Subscriptions are unavailable right now. Check your connection and try again."
         }
+    }
+
+    /// Finds a win-back offer for a lapsed subscriber (App Store Connect must define one).
+    func loadWinBackOffer() async {
+        guard #available(iOS 18.0, *) else { return }
+        guard let groupID = products.values.compactMap({ $0.subscription?.subscriptionGroupID }).first,
+              let statuses = try? await Product.SubscriptionInfo.status(for: groupID) else { return }
+        for status in statuses {
+            guard case .verified(let renewal) = status.renewalInfo,
+                  case .verified(let transaction) = status.transaction,
+                  !renewal.eligibleWinBackOfferIDs.isEmpty,
+                  let product = products[transaction.productID],
+                  let offer = product.subscription?.winBackOffers.first(where: {
+                      $0.id.map(renewal.eligibleWinBackOfferIDs.contains) ?? false
+                  }),
+                  let offerID = offer.id else { continue }
+            winBack = WinBackSummary(
+                productID: product.id,
+                offerID: offerID,
+                displayPrice: offer.displayPrice,
+                tierName: SubscriptionCatalog.tier(for: product.id)?.displayName ?? "Pencil’d"
+            )
+            return
+        }
+    }
+
+    /// Purchases the win-back offer. Returns the resulting tier, or nil if cancelled / failed.
+    func purchaseWinBack() async -> SubscriptionTier? {
+        guard #available(iOS 18.0, *), let subscription, let winBack,
+              let product = products[winBack.productID],
+              let offer = product.subscription?.winBackOffers.first(where: { $0.id == winBack.offerID }) else {
+            errorMessage = "This offer isn't available right now."
+            return nil
+        }
+        isPurchasing = true
+        defer { isPurchasing = false }
+        do {
+            switch try await product.purchase(options: [.winBackOffer(offer)]) {
+            case .success(let verification):
+                let transaction = try SubscriptionService.checkVerified(verification)
+                await transaction.finish()
+                await subscription.refreshEntitlements(.purchase)
+                self.winBack = nil
+                return subscription.currentTier
+            case .pending:
+                errorMessage = "Your purchase is pending approval. It will unlock automatically once approved."
+            default:
+                break
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        return nil
     }
 
     func product(_ plan: Plan, _ period: BillingPeriod) -> Product? {
