@@ -110,17 +110,12 @@ private struct SplashBrandPage: View {
             .ignoresSafeArea()
 
             VStack(spacing: 22) {
-                Image("PencildMark")
+                Image("PencildBrand")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 148, height: 148)
-                    .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 34, style: .continuous)
-                            .stroke(Color.white.opacity(0.14), lineWidth: 1)
-                    )
+                    .frame(maxWidth: 300, maxHeight: 184)
                     .shadow(color: Color.pdOrange.opacity(0.35), radius: 36, y: 10)
-                    .accessibilityLabel("Pencil’d app icon")
+                    .accessibilityLabel("Pencil’d")
 
                 Text("Pencil’d")
                     .font(PDFont.jakarta(42, .heavy, relativeTo: .largeTitle))

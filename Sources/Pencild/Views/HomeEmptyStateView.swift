@@ -14,7 +14,6 @@ enum HomeBrandCopy {
     static let privacyHeading = "Private & On-Device Intelligence"
     static let privacyBody = "Your photos, screenshots, and documents are processed on this device. Review every detected event before saving."
 }
-
 /// Capture home (Stitch "Home Screen"): pick where the next event comes from.
 /// Every source routes into the existing scan pipeline and review flow.
 struct HomeEmptyStateView: View {
@@ -219,12 +218,12 @@ struct HomeEmptyStateView: View {
                 .foregroundStyle(LinearGradient(colors: [.pdOrange, .pdCoral, .pdLavender], startPoint: .leading, endPoint: .trailing))
                 .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isHeader)
-            Image("PencildMark")
+            Image("PencildBrand")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 144)
+                .frame(maxWidth: 300, maxHeight: 172)
                 .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
-                .accessibilityHidden(true)
+                .accessibilityLabel("Pencil’d")
             Text(HomeBrandCopy.captureSubtitle)
                 .font(PDFont.bodyMD)
                 .foregroundStyle(Color.pdOnSurfaceVariant)
@@ -460,37 +459,47 @@ struct HomeEmptyStateView: View {
     }
 
     /// Multi-page documents can yield multiple events; present them together for review
-    /// rather than opening only the first event and leaving the rest in the queue.
+    /// rather than opening only the first event and leaving the rest in the queue. iCloud Drive
+    /// files that aren't downloaded locally are gated by the user's `ICloudDownloadPreference`.
     private func runDocumentScan(at url: URL) {
-        Task {
-            _ = await scanViewModel.scanDocument(at: url, modelContext: modelContext)
-            guard case .complete(let candidates) = scanViewModel.stage, candidates.count > 1 else {
-                await appState.handleScanOutcome(scanViewModel, services: services)
-                return
-            }
+        let remote = RemoteAssetGate.isFileDownloadedLocally(url) == false
+        guard remote else {
+            runDocumentScanNow(at: url, allowICloudDownload: false)
+            return
+        }
 
-            appState.rememberSourceImage(scanViewModel.currentProcessingImage, for: candidates)
-            let events = candidates.map { candidate in
-                BatchEventItem(
-                    candidate: candidate,
-                    screenshotID: UUID(),
-                    screenshotLabel: "Imported document",
-                    screenshotImage: scanViewModel.currentProcessingImage,
-                    services: services
-                )
+        switch RemoteAssetGate.decide(remoteCount: 1, preference: ICloudDownloadPreference.standard) {
+        case .proceed(let allow):
+            runDocumentScanNow(at: url, allowICloudDownload: allow)
+        case .skipRemotes:
+            appState.showToast("Skipped iCloud-only file. Allow iCloud downloads in Settings to scan it.")
+        case .ask:
+            appState.pendingICloudSingle = ICloudSingleConfirmation(itemLabel: "file") { downloadAllowed in
+                self.runDocumentScanNow(at: url, allowICloudDownload: downloadAllowed)
             }
-            await appState.presentBatchReview(BatchReviewSession(events: events))
+        }
+    }
+
+    /// Runs the document scan with the resolved iCloud-download decision and routes the outcome.
+    private func runDocumentScanNow(at url: URL, allowICloudDownload: Bool) {
+        runScan {
+            _ = await scanViewModel.scanDocument(at: url, modelContext: modelContext, allowICloudDownload: allowICloudDownload)
         }
     }
 
     /// Single-photo pick keeps the classic full-review flow.
     private func runSinglePhotoScan(_ item: PhotosPickerItem) {
         runScan {
-            guard let data = try? await item.loadTransferable(type: Data.self) else {
-                scanViewModel.stage = .failed("That photo could not be loaded.")
-                return
+            do {
+                let data = try await item.loadTransferable(type: Data.self)
+                guard let data, !data.isEmpty else {
+                    scanViewModel.stage = .failed("This photo isn't downloaded to your device. If it's stored in iCloud, open it in Photos first, or allow iCloud downloads in Settings › Scanning Options.")
+                    return
+                }
+                await scanViewModel.scanImageData(data, assetIdentifier: item.itemIdentifier ?? UUID().uuidString, modelContext: modelContext)
+            } catch {
+                scanViewModel.stage = .failed("This photo isn't downloaded to your device. If it's stored in iCloud, open it in Photos first, or allow iCloud downloads in Settings › Scanning Options.")
             }
-            await scanViewModel.scanImageData(data, assetIdentifier: item.itemIdentifier ?? UUID().uuidString, modelContext: modelContext)
         }
     }
 
@@ -543,6 +552,8 @@ struct HomeEmptyStateView: View {
     }
 
     /// Multi-item scan: every page or photo is scanned, then reviewed together.
+    /// Routed through `AppState.requestBatchScan` so the iCloud/remote-asset gate can ask before
+    /// any iCloud download happens.
     private func run(_ batch: PendingBatch) {
         let sources: [BatchScanSource]
         switch batch {
@@ -554,7 +565,7 @@ struct HomeEmptyStateView: View {
             }
         }
         Task {
-            await appState.startBatchScan(sources: sources, services: services, modelContext: modelContext)
+            await appState.requestBatchScan(sources: sources, services: services, modelContext: modelContext)
         }
     }
 

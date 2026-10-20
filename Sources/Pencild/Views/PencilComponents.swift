@@ -303,10 +303,49 @@ struct PDCard<Content: View>: View {
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: PDRadius.card)
-                    .fill(fill)
-                    .shadow(color: Color.black.opacity(shadowOpacity), radius: shadowRadius, y: shadowY)
+                ZStack {
+                    RoundedRectangle(cornerRadius: PDRadius.card)
+                        .fill(fill)
+                    if highlighted {
+                        PDSignatureRibbons()
+                            .opacity(0.34)
+                            .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
+                    }
+                }
+                .shadow(color: Color.black.opacity(shadowOpacity), radius: shadowRadius, y: shadowY)
             )
+    }
+}
+
+/// The colorful signature waves used behind Stitch-inspired hero and featured cards.
+struct PDSignatureRibbons: View {
+    var body: some View {
+        Canvas { context, size in
+            let sx = size.width / 360
+            let sy = size.height / 180
+            func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+                CGPoint(x: x * sx, y: y * sy)
+            }
+
+            let ribbons: [(Color, CGFloat, [CGPoint])] = [
+                (.pdOrange, 2.5, [point(-20, 160), point(80, 120), point(140, 30), point(260, 50), point(310, 58), point(350, 20), point(390, -10)]),
+                (.pdTertiaryContainer, 1.75, [point(0, 180), point(110, 140), point(170, 70), point(280, 85), point(330, 92), point(360, 60), point(400, 40)]),
+                (.pdLavender, 1.5, [point(30, 190), point(130, 160), point(200, 110), point(310, 120), point(350, 125), point(380, 100), point(410, 80)])
+            ]
+
+            for (color, width, points) in ribbons {
+                var path = Path()
+                path.move(to: points[0])
+                path.addCurve(to: points[3], control1: points[1], control2: points[2])
+                path.addCurve(to: points[6], control1: points[4], control2: points[5])
+
+                var glow = context
+                glow.addFilter(.shadow(color: color, radius: 5))
+                glow.stroke(path, with: .color(color.opacity(0.78)), style: StrokeStyle(lineWidth: width, lineCap: .round))
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
