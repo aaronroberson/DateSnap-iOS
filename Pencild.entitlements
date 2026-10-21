@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Sign in with Apple (com.apple.developer.applesignin) requires a paid Apple Developer Program membership.
-	     Personal development teams do not support this capability, so it is omitted for local development. -->
+	<!-- Pencil’d is local-first and requires no account. Capabilities such as Sign in with Apple
+	     (com.apple.developer.applesignin), iCloud, App Groups, and Push Notifications are omitted for this release. -->
 </dict>
 </plist>

@@ -9,10 +9,10 @@ Provide this exact information in App Store Connect under **App Review Informati
 ```text
 Dear Apple App Review Team,
 
-Pencild is a privacy-first utility that processes screenshots and event flyers on-device using Apple's Vision and NaturalLanguage frameworks to create Apple Calendar events and Reminders.
+Pencil’d is a privacy-first utility that processes screenshots and event flyers on-device using Apple's Vision and NaturalLanguage frameworks to create Apple Calendar events and Reminders.
 
 1. PERMISSIONS RATIONALE:
-- Photo Library (Read): Used exclusively to let users select event flyers or detect screenshots in their Screenshots album. Vision OCR and text extraction run locally. Pencild does not upload images, OCR strings, or photo metadata.
+- Photo Library (Read): Used exclusively to let users select event flyers or detect screenshots in their Screenshots album. Vision OCR and text extraction run locally. Pencil’d does not upload images, OCR strings, or photo metadata.
 - Calendars & Reminders (Full Access): Used exclusively to write and sync the extracted events and staggered alert reminders into the user's native Apple Calendar and Reminders apps upon explicit user confirmation.
 
 2. ON-DEVICE PRIVACY VERIFICATION:
@@ -53,8 +53,8 @@ If you encounter any questions or require additional details during review, plea
 | **Privacy Policy URL** | `https://getpencild.com/privacy` *(Must be live and valid)* |
 | **Support URL** | `https://getpencild.com/support` *(Must be live and valid)* |
 | **Marketing URL** | `https://getpencild.com` |
-| **Copyright** | `2026 LiminalForge, LLC` (matches `NSHumanReadableCopyright` in `Info.plist`) |
-| **Seller** | LiminalForge, LLC: requires Apple Developer Program enrollment as an organization (D-U-N-S number) |
+| **Copyright** | `2026 Aaron Roberson` (matches `NSHumanReadableCopyright` in `Info.plist`) |
+| **Seller** | Aaron Roberson (individual Apple Developer Program membership; organization conversion to LiminalForge, LLC planned post-launch) |
 
 > **Listing rationale (2026-10-13):** "photo to calendar" is a standalone App Store
 > autocomplete term, while "screenshot to calendar" only appears inside other apps'

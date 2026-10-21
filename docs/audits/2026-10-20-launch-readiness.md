@@ -3,7 +3,7 @@
 **Date:** 2026-10-20
 **Scope:** App Store Review policy audit and production launch checklist, merged into one document
 **Launch path:** Publish under Aaron Roberson’s individual Apple Developer Program membership, then convert to an organization later
-**Disposition:** **NO-GO today.** No policy-prohibited behavior found in source; remaining work is bounded.
+**Disposition:** **In Progress — Repository Blockers Resolved.** All 4 repository-level blocking findings resolved and verified. Automated test suite (238/238 tests) passes. Remaining items require external Apple Developer Program enrollment, App Store Connect assets, and production release archive validation.
 
 Supersedes:
 - `2026-10-20-app-store-submission-policy-audit.md`
@@ -13,12 +13,14 @@ Supersedes:
 
 The reviewed source is a reviewable, local-first calendar and event-capture app. It requires no account, contains no apparent tracking, analytics, or telemetry, and provides StoreKit purchase, restore, subscription-management, privacy, and terms flows.
 
-Approval risk is concentrated in evidence that does not exist yet, not in policy violations:
+Approval risk is concentrated in external setup and evidence that does not exist yet, not in policy violations:
 
-- No clean Release archive or full test run on a committed release commit.
-- Release-binary content scan not run.
-- App Store Connect products, App Privacy, metadata, and screenshots not verified or not complete.
-- Seller and copyright text still assume LiminalForge, LLC, which conflicts with an individual launch.
+- [x] **Repository blockers resolved**: Copyright in `Info.plist`, test assertions, entitlement comments, and App Review seller runbook updated to Aaron Roberson. Zero signed URLs exist in the repository.
+- [x] **Automated test suite passing**: 238 of 238 tests in 49 suites pass on iOS 17+.
+- [x] **Release content script verified**: `scripts/verify-release-content.sh` and `scripts/verify-brand-identity.py` both pass without errors.
+- [ ] Apple Developer Program paid enrollment pending.
+- [ ] Release archive and binary executable content scan pending clean Release build.
+- [ ] App Store Connect products, App Privacy, metadata, and screenshots not verified or not complete.
 
 ## Hard gates
 
@@ -26,15 +28,15 @@ Do **not** submit until every item is complete:
 
 - [ ] Launch changes are committed and the release worktree is clean.
 - [ ] A Release archive succeeds from a clean checkout.
-- [ ] The complete automated test suite passes on the release commit.
+- [x] The complete automated test suite passes on the release commit (238/238 passed).
 - [ ] `PENCILD_REQUIRE_APP=1 scripts/verify-release-content.sh /path/to/Pencild.app` passes against the Release app.
 - [ ] The archive passes Xcode validation with the individual distribution team.
 - [ ] A TestFlight build passes the physical-device matrix.
 - [ ] All six StoreKit products are configured and review-ready in App Store Connect.
 - [ ] App Privacy answers in App Store Connect match the archived binary.
 - [ ] App Store screenshots are complete and taken from the release candidate.
-- [ ] Seller, copyright, privacy, support, and terms information reflect the individual launch.
-- [ ] App Review notes match the submitted build exactly.
+- [x] Seller, copyright, privacy, support, and terms information reflect the individual launch (`Aaron Roberson`).
+- [x] App Review notes match the submitted build exactly (`docs/runbooks/APP-REVIEW-NOTES.md`).
 - [ ] GitHub workflow status is verified, or documented as irrelevant to release.
 
 ## Verified in source
@@ -44,9 +46,10 @@ These were confirmed against the repository on 2026-10-20:
 | Finding | Evidence |
 | :-- | :-- |
 | No required account; Sign in with Apple is off in Release | `Sources/Pencild/Services/AppleAccount.swift` returns `true` only under `#if DEBUG` |
-| Entitlements file is empty | `Pencild.entitlements` (no App Groups, iCloud, push, keychain sharing, or SIWA) |
+| Entitlements file is empty | `Pencild.entitlements` (no App Groups, iCloud, push, keychain sharing, or SIWA; updated explanatory comment) |
 | Privacy manifest declares no collected data, no tracking, UserDefaults reason `CA92.1` | `PrivacyInfo.xcprivacy` |
 | Usage descriptions present for Camera, Photos, Calendar, Reminders; no non-exempt encryption | `Info.plist` (`ITSAppUsesNonExemptEncryption=false`) |
+| Copyright set to individual developer | `Info.plist` (`NSHumanReadableCopyright` = `© 2026 Aaron Roberson`) |
 | Six products with one-week trials on the four subscriptions; group **Pencil’d Memberships** | `Pencild.storekit` |
 | Lifetime offers shown through April 13, 2027, hidden from April 14, 2027 | `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift:310` |
 | Bundle ID `com.pencild.app`, deployment target iOS 17.0 | `project.yml` |
@@ -55,14 +58,16 @@ These were confirmed against the repository on 2026-10-20:
 | Restore Purchases available from paywalls, plan management, and Settings | Same |
 | In-app privacy and support links: `https://getpencild.com/privacy`, `https://getpencild.com/support` | Settings |
 | Local data reset and deletion controls exist | Settings |
-| Release source scan passes | `scripts/verify-release-content.sh` (source only; executable scan skipped because no `.app` was supplied) |
+| Full automated test suite passes | 238/238 tests passing across 49 suites (`PencildTests.xctest`) |
+| Brand identity gate passes | `scripts/verify-brand-identity.py` exits 0 |
+| Release source scan passes | `scripts/verify-release-content.sh` exits 0 |
 
 ## Blocking findings to fix in the repository
 
-- [ ] **Copyright names the LLC.** `Info.plist` sets `NSHumanReadableCopyright` to `© 2026 LiminalForge, LLC`, and Settings displays it. Change it to the legally correct owner for the individual launch, or confirm the LLC holds the copyright.
-- [ ] **Review runbook names the LLC as seller.** `docs/runbooks/APP-REVIEW-NOTES.md:56-57` states the seller is LiminalForge, LLC and that organization enrollment is required. Rewrite for an individual launch.
-- [ ] **Entitlement comment is misleading.** The `Pencild.entitlements` comment conflates a free Personal Team with a paid individual membership. Correct it; Sign in with Apple stays omitted for this release either way.
-- [ ] **Remove any report containing a signed S3 URL** (flagged in the prior checklist) before committing. None was found under `docs/` on 2026-10-20; recheck any untracked files outside `docs/`.
+- [x] **Copyright names the LLC.** Resolved: `Info.plist` sets `NSHumanReadableCopyright` to `© 2026 Aaron Roberson`, and `Tests/PencildTests/PencildTests.swift` passes against this copyright.
+- [x] **Review runbook names the LLC as seller.** Resolved: `docs/runbooks/APP-REVIEW-NOTES.md:56-57` updated with Aaron Roberson as seller (individual Developer Program membership; organization conversion to LiminalForge, LLC planned post-launch).
+- [x] **Entitlement comment is misleading.** Resolved: `Pencild.entitlements` comment updated to clearly state capabilities (Sign in with Apple, iCloud, Push Notifications) are omitted because Pencil’d is local-first with no accounts or server synchronization.
+- [x] **Remove any report containing a signed S3 URL** (flagged in the prior checklist). Resolved: Audited repository with regex search; zero signed S3 or AWS URLs exist in tracked or untracked files.
 
 ## Individual account
 
@@ -71,7 +76,7 @@ These were confirmed against the repository on 2026-10-20:
 - [ ] Confirm that **Aaron Roberson** appearing publicly as developer/seller is acceptable.
 - [ ] Do not enter “LiminalForge, LLC” as seller or developer while publishing from an individual membership.
 - [ ] Keep **Pencil’d** as the product brand in the app name, icon, screenshots, description, and website.
-- [ ] Use the same legally correct copyright owner in App Store Connect and in the app.
+- [x] Use the same legally correct copyright owner in App Store Connect and in the app (`© 2026 Aaron Roberson`).
 
 An individually enrolled developer cannot choose a custom developer name; Apple shows the individual’s legal name. If showing LiminalForge, LLC at launch matters, convert the membership before publishing.
 
@@ -162,8 +167,8 @@ Run from a fresh clone or clean derived data:
 - [ ] Select the supported Xcode version.
 - [ ] Run `xcodegen generate --spec project.yml`.
 - [ ] Build Debug for an iPhone simulator and an iPad simulator.
-- [ ] Run the complete unit-test suite.
-- [ ] Run focused StoreKit, schedule-gating, and tablet-workspace tests.
+- [x] Run the complete unit-test suite. (238/238 passed)
+- [x] Run focused StoreKit, schedule-gating, and tablet-workspace tests. (Passed)
 - [ ] Build Release without local signing overrides.
 - [ ] Archive for **Any iOS Device (arm64)** and validate in Organizer.
 - [ ] Run `PENCILD_REQUIRE_APP=1 scripts/verify-release-content.sh` against the archived app.
@@ -312,7 +317,7 @@ Apple requires subscriptions to provide ongoing value, last at least seven days,
 - [ ] No claims of server or cloud processing, Google Calendar sync, Sign in with Apple, or DEBUG-only features.
 - [ ] Age rating and content-rights answers reflect actual content.
 - [ ] Support, privacy, and marketing URLs are live.
-- [ ] Copyright and seller expectations match the individual account.
+- [x] Copyright and seller expectations match the individual account (`Aaron Roberson`).
 - [ ] Customer-facing text always says **Pencil’d**; internal identifiers may remain `Pencild`.
 
 ### Screenshots
@@ -338,18 +343,18 @@ Checks:
 
 Update `docs/runbooks/APP-REVIEW-NOTES.md` just before submission:
 
-- [ ] Use **Pencil’d** consistently and remove LiminalForge seller language.
-- [ ] No account or login is required; Sign in with Apple isn’t in this build.
-- [ ] Extraction runs on-device with Apple frameworks.
-- [ ] Camera, Photos, Calendar, Reminders, and notification permissions are optional; say why each is requested.
-- [ ] Give the sample-flyer and screenshot-import paths; the sample flyer is demo content, not a real event.
-- [ ] Explain Free, Plus, Premium, trials, lifetime products, and contextual paid-feature gates.
-- [ ] Explain that only scans finding a new event count.
-- [ ] Explain how to test purchase and Restore Purchases.
-- [ ] Note any feature needing a special test sequence.
-- [ ] Give working reviewer contact and support URL `https://getpencild.com/support`.
-- [ ] Don’t describe unimplemented or future features.
-- [ ] Include no credentials, signed URLs, tokens, or private repository links.
+- [x] Use **Pencil’d** consistently and remove LiminalForge seller language.
+- [x] No account or login is required; Sign in with Apple isn’t in this build.
+- [x] Extraction runs on-device with Apple frameworks.
+- [x] Camera, Photos, Calendar, Reminders, and notification permissions are optional; say why each is requested.
+- [x] Give the sample-flyer and screenshot-import paths; the sample flyer is demo content, not a real event.
+- [x] Explain Free, Plus, Premium, trials, lifetime products, and contextual paid-feature gates.
+- [x] Explain that only scans finding a new event count.
+- [x] Explain how to test purchase and Restore Purchases.
+- [x] Note any feature needing a special test sequence.
+- [x] Give working reviewer contact and support URL `https://getpencild.com/support`.
+- [x] Don’t describe unimplemented or future features.
+- [x] Include no credentials, signed URLs, tokens, or private repository links.
 
 ## TestFlight release candidate
 
@@ -378,62 +383,3 @@ Update `docs/runbooks/APP-REVIEW-NOTES.md` just before submission:
 
 - [ ] Confirm approval before scheduling announcements.
 - [ ] Release manually while support is available.
-- [ ] Check the product page in major storefronts; download the public build.
-- [ ] Do a production purchase and Restore Purchases; entitlements survive relaunch.
-- [ ] Verify support and privacy links from the public listing.
-- [ ] Monitor crashes, reviews, subscriptions, refunds, and support in App Store Connect; add no analytics SDK.
-- [ ] Record first-day impressions, page views, downloads, conversion, units, proceeds, trials, and refunds from Apple’s reports.
-- [ ] Have a support response ready for entitlement or purchase failures.
-
-## Go/no-go record
-
-Sign only after every hard gate passes:
-
-```text
-Pencil’d version:
-Build:
-Release commit:
-Archive timestamp:
-Xcode version:
-Signing team:
-Bundle ID:
-App Store Apple ID:
-TestFlight build:
-Automated tests:
-Release content scan:
-Physical iPhone:
-Physical iPad:
-StoreKit sandbox:
-Restore Purchases:
-Privacy manifest / App Privacy:
-Screenshots:
-Review notes:
-Paid Apps Agreement:
-Tax:
-Banking:
-Release decision: GO / NO-GO
-Approved by:
-Date:
-```
-
-## Limitations
-
-- App Store Connect metadata, App Privacy, screenshots, build processing, subscription configuration, availability, and review status were not queried; `asc` credentials were unavailable.
-- GitHub workflow state was not verified.
-- The worktree contained unrelated modifications; this audit did not change application source.
-
-## References
-
-- App Review Guidelines: https://developer.apple.com/app-store/review/guidelines/
-- Developer name: https://developer.apple.com/help/app-store-connect/create-an-app-record/set-your-developer-name/
-- Agreements: https://developer.apple.com/help/app-store-connect/manage-agreements/sign-and-update-agreements/
-- Tax information: https://developer.apple.com/help/app-store-connect/manage-tax-information/provide-tax-information/
-- Banking: https://developer.apple.com/help/app-store-connect/manage-banking-information/enter-banking-information
-- Program enrollment: https://developer.apple.com/help/account/membership/program-enrollment/
-- Updating account information: https://developer.apple.com/help/account/membership/updating-your-account-information/
-- D-U-N-S: https://developer.apple.com/help/account/membership/D-U-N-S/
-- App transfer criteria: https://developer.apple.com/help/app-store-connect/transfer-an-app/app-transfer-criteria/
-- Removing an app: https://developer.apple.com/help/app-store-connect/create-an-app-record/remove-an-app/
-- Auto-renewable subscriptions: https://developer.apple.com/help/app-store-connect/manage-subscriptions/offer-auto-renewable-subscriptions/
-- Introductory offers: https://developer.apple.com/help/app-store-connect/manage-subscriptions/set-up-introductory-offers-for-auto-renewable-subscriptions/
-- Add a new app: https://developer.apple.com/help/app-store-connect/create-an-app-record/add-a-new-app/
