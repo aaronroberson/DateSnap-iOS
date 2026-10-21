@@ -79,7 +79,7 @@ struct CalendarPermissionDeniedView: View {
                 .background(Color.pdSurfaceContainerHigh, in: RoundedRectangle(cornerRadius: PDRadius.plan))
                 .accessibilityHidden(true)
             PDScreenIntro(
-                eyebrow: "Calendar permission",
+                eyebrow: "Permissions",
                 title: "Calendar Access is Off",
                 subtitle: "Allow access to add the dates you review to Apple Calendar. Until then, your scans can stay in Review."
             )

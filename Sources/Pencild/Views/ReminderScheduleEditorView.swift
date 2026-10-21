@@ -35,7 +35,7 @@ struct ReminderScheduleEditorView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
                     PDTopBar(title: "Reminder schedule")
-                    PDScreenIntro(eyebrow: "REMINDER ALERTS", title: "Reminder Schedule", subtitle: "Choose when Pencil’d should remind you about this event.")
+                    PDScreenIntro(eyebrow: "Event Alerts", title: "Reminder Schedule", subtitle: "Choose when Pencil’d should remind you about this event.")
                     summary
                     presets
                     VStack(alignment: .leading, spacing: PDSpacing.sm) {

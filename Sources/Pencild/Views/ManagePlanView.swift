@@ -30,7 +30,7 @@ struct ManagePlanView: View {
             VStack(alignment: .leading, spacing: PDSpacing.lg) {
                 SettingsScreenHeader(title: "Manage Plan", showBack: true)
                 PDScreenIntro(
-                    eyebrow: "Your membership",
+                    eyebrow: "Subscription",
                     title: "Your Plan, Your Pace",
                     subtitle: "Review your current plan and manage billing with Apple."
                 )
@@ -258,7 +258,7 @@ struct ManagePlanView: View {
     private var upsell: some View {
         PDCard(highlighted: true) {
             VStack(alignment: .leading, spacing: 12) {
-                PDEyebrow(text: "Pencil’d Premium")
+                PDStatusBadge(text: "Premium upgrade", icon: "sparkles", tone: .info)
                 Text("Bring your documents into the plan.")
                     .font(PDFont.headlineSM).foregroundStyle(Color.pdOnSurface)
                 Text(PremiumFeature.documentImport.upgradeReason)

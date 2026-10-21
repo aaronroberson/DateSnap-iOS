@@ -16,7 +16,7 @@ struct ICloudBatchConfirmationView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
                     PDScreenIntro(
-                        eyebrow: "iCloud",
+                        eyebrow: "iCloud Ingestion",
                         title: "Some sources are in iCloud",
                         subtitle: "\(confirmation.remoteCount) of \(confirmation.totalCount) item\(confirmation.totalCount == 1 ? "" : "s") are stored in iCloud and aren't on this device yet. Pencil’d only scans on-device photos, PDFs, and files unless you allow it."
                     )
@@ -118,7 +118,7 @@ struct ICloudPhotoChooserView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: PDSpacing.md) {
                     PDScreenIntro(
-                        eyebrow: "Choose items",
+                        eyebrow: "iCloud Ingestion",
                         title: "Select what to download",
                         subtitle: "Only the iCloud items you check will be downloaded and scanned. Deselected items are discarded from this batch."
                     )

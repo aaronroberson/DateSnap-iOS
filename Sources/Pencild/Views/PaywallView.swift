@@ -54,7 +54,7 @@ struct PaywallView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     PDScreenIntro(
-                        eyebrow: "Subscription",
+                        eyebrow: "Pencil’d Membership",
                         title: "Upgrade Plan",
                         subtitle: "Unlock more ways to capture, review, and organize your events with Plus and Premium."
                     )

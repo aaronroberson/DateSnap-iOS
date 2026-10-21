@@ -71,7 +71,7 @@ struct HelpFeedbackView: View {
                 }
 
                 PDScreenIntro(
-                    eyebrow: "Pencil’d Help Center",
+                    eyebrow: "Settings",
                     title: "How can we help?",
                     subtitle: "Search guides, troubleshooting advice, or get in touch with our team."
                 )

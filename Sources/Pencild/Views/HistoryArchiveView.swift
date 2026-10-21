@@ -76,7 +76,7 @@ struct HistoryArchiveView: View {
                     .frame(maxWidth: horizontalSizeClass == .regular ? 1080 : .infinity)
                 VStack(alignment: .leading, spacing: PDSpacing.sm) {
                     HStack(alignment: .top, spacing: PDSpacing.md) {
-                        PDScreenIntro(eyebrow: "ON YOUR DEVICE", title: "History & Archive", subtitle: "Your saved events, drafts, and archived scans.")
+                        PDScreenIntro(eyebrow: "Library", title: "History & Archive", subtitle: "Your saved events, drafts, and archived scans.")
                         Spacer(minLength: 0)
                         Button { Task { await appState.present(.captureSources) } } label: {
                             PDIconTile(systemName: "camera.viewfinder", size: .large)

@@ -161,7 +161,7 @@ struct BatchReviewView: View {
                 }
             })
             PDScreenIntro(
-                eyebrow: "Bulk import",
+                eyebrow: "Batch Review",
                 title: "Review your events",
                 subtitle: "Each event keeps its own calendar and reminder schedule. Nothing is saved until you confirm."
             )
@@ -684,7 +684,10 @@ private struct BatchEventCard: View {
                     .padding(PDSpacing.md)
                 PDRowDivider()
                 VStack(alignment: .leading, spacing: PDSpacing.xs) {
-                    PDEyebrow(text: "Notes & details")
+                    Text("NOTES & DETAILS")
+                        .font(PDFont.labelSM)
+                        .tracking(0.6)
+                        .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
                     TextEditor(text: $review.notes)
                         .font(PDFont.bodyMD)
                         .scrollContentBackground(.hidden)

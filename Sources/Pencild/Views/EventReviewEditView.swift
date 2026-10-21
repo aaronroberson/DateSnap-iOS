@@ -243,14 +243,14 @@ struct EventReviewForm: View {
             if viewModel.isManualEntry && !viewModel.isEditingSavedEvent {
                 PDTopBar(title: "New event")
                 PDScreenIntro(
-                    eyebrow: "Enter manually",
+                    eyebrow: "Manual Entry",
                     title: "Add an event",
                     subtitle: "Your default calendar and reminders are already applied. Change anything before saving."
                 )
             } else {
                 PDTopBar(title: viewModel.isEditingSavedEvent ? "Edit event" : "Review event")
                 PDScreenIntro(
-                    eyebrow: viewModel.isEditingSavedEvent ? "Saved event" : "Verification stage",
+                    eyebrow: viewModel.isEditingSavedEvent ? "Saved Event" : "Review & Edit",
                     title: viewModel.isEditingSavedEvent ? "Edit event" : "Review before saving",
                     subtitle: "Refine the timing, venue, and reminders before saving to your calendar."
                 )

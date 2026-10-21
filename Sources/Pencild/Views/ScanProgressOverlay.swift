@@ -21,7 +21,6 @@ struct ScanProgressOverlay: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: PDSpacing.lg) {
                         HStack {
-                            PDEyebrow(text: "ON-DEVICE SCAN")
                             Spacer()
                             Button(scan.isCancelling ? "Canceling…" : "Cancel") { scan.cancelScan() }
                                 .font(PDFont.labelLG)
@@ -31,7 +30,7 @@ struct ScanProgressOverlay: View {
                                 .accessibilityIdentifier("scan.cancel")
                         }
                         PDScreenIntro(
-                            eyebrow: "SCANNED. REVIEWED. PENCIL'D.",
+                            eyebrow: "Scan Ingestion",
                             title: scan.isCancelling ? "Stopping this scan" : "Finding your event",
                             subtitle: "Nothing is added to your calendar until you review and confirm it."
                         )

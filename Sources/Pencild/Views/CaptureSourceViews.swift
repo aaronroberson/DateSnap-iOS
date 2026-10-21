@@ -431,7 +431,7 @@ struct CaptureSourceSheet: View {
                     PDCloseButton(accessibilityLabel: "Close")
                 }
                 PDScreenIntro(
-                    eyebrow: "Capture",
+                    eyebrow: "Capture Sources",
                     title: "Create New Event",
                     subtitle: CaptureSheetCopy.welcomeBody
                 )

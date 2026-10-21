@@ -63,7 +63,7 @@ struct RecentScreenshotsView: View {
                             .accessibilityIdentifier("screenshots.select")
                         }
                     }
-                    PDScreenIntro(eyebrow: "Screenshot triage", title: "Your screenshots", subtitle: "Choose the sources you want to scan on this device.")
+                    PDScreenIntro(eyebrow: "Source Triage", title: "Your screenshots", subtitle: "Choose the sources you want to scan on this device.")
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: PDSpacing.xs) {
                             Button { likelyOnly = false } label: {
@@ -330,7 +330,7 @@ private struct BatchScanProgressContent: View {
             Color.pdSurface.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                    PDScreenIntro(eyebrow: "Batch scan", title: "Reading your sources", subtitle: "Each detected event will wait for your review.")
+                    PDScreenIntro(eyebrow: "Batch Ingestion", title: "Reading your sources", subtitle: "Each detected event will wait for your review.")
                     HStack(spacing: PDSpacing.xs) {
                         progressPill(icon: "tray.full.fill", text: "\(scanner.items.count) in queue", tone: .pdPrimary)
                         progressPill(icon: "sparkles", text: "\(scanner.items.filter { $0.stage == .scanning }.count) processing", tone: .pdSecondary)
@@ -483,7 +483,7 @@ struct ReviewQueueView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
-                    PDScreenIntro(eyebrow: "Review pipeline", title: "Needs review", subtitle: reviewSubtitle)
+                    PDScreenIntro(eyebrow: "Review Pipeline", title: "Needs review", subtitle: reviewSubtitle)
                     PDStatusBadge(text: "\(pending.count) pending review", icon: "tray.full.fill", tone: pending.isEmpty ? .neutral : .warning)
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 2) {

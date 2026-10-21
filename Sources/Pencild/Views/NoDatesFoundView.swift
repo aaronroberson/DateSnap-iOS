@@ -32,7 +32,7 @@ struct NoDatesFoundView: View {
                     }
 
                     PDScreenIntro(
-                        eyebrow: "No dates found",
+                        eyebrow: "Scan Recovery",
                         title: "Couldn't find any dates",
                         subtitle: "Pencil’d read this image on your device, but didn't find a date or time to review. Try a clearer image or enter the details yourself."
                     )

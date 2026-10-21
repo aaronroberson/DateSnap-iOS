@@ -56,7 +56,7 @@ struct UserProfileFlowView: View {
                 PDTopBar(title: "Profile", showsBack: true)
 
                 PDScreenIntro(
-                    eyebrow: "Profile",
+                    eyebrow: "Account",
                     title: "Your Pencil’d",
                     subtitle: "Your plan and capture activity, kept on this device."
                 )

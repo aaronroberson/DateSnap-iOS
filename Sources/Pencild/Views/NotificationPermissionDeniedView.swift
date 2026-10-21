@@ -19,7 +19,7 @@ struct NotificationPermissionDeniedView: View {
                             .background(Color.pdSurfaceContainerHigh, in: RoundedRectangle(cornerRadius: PDRadius.plan))
                             .accessibilityHidden(true)
                         PDScreenIntro(
-                            eyebrow: "Notification permission",
+                            eyebrow: "Permissions",
                             title: "Pencil’d Alerts Are Turned Off",
                             subtitle: "Allow notifications to receive the local alerts you choose for your saved events. Your Calendar events are still available."
                         )
