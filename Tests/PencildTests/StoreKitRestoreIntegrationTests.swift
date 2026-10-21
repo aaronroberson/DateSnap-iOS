@@ -186,4 +186,59 @@ struct StoreKitRestoreIntegrationTests {
         try await drainAndClear(session)
         EntitlementCache.clear()
     }
+
+    // MARK: - Offline behaviour (audit 2026-10-18, fixes 1–3)
+
+    private var offlineProducts: SKTestFailures.LoadProducts {
+        .generic(.networkError(URLError(.notConnectedToInternet)))
+    }
+
+    private var offlineStatus: SKTestFailures.SubscriptionStatus {
+        .generic(.networkError(URLError(.notConnectedToInternet)))
+    }
+
+    @Test("Offline: a cold launch with a valid lease starts on the paid plan")
+    func offlineColdLaunchUsesLease() async throws {
+        let session = try makeSession()
+        try await session.setSimulatedError(offlineProducts, forAPI: .loadProducts)
+        try await session.setSimulatedError(offlineStatus, forAPI: .subscriptionStatus)
+        EntitlementCache.save(SubscriptionLease(
+            tier: .plus,
+            outlook: .renewing,
+            expirationDate: Date().addingTimeInterval(86_400),
+            evaluatedAt: Date().addingTimeInterval(-60)
+        ))
+
+        let service = SubscriptionService(observesTransactionUpdates: false)
+
+        // Checked synchronously, before any StoreKit answer can arrive.
+        #expect(service.entitlementSnapshot.isProvisional)
+        #expect(service.entitlementSnapshot.effectiveTier == .plus)
+        #expect(service.currentTier == .plus)
+        #expect(FeatureAccessPolicy.decision(for: .likelyEventTriage, snapshot: service.entitlementSnapshot) == .allowed)
+
+        await service.refreshEntitlements(.launch)
+        try await session.setSimulatedError(nil, forAPI: .loadProducts)
+        try await session.setSimulatedError(nil, forAPI: .subscriptionStatus)
+        EntitlementCache.clear()
+    }
+
+    @Test("Offline: the paywall price fetch fails promptly instead of loading forever")
+    func offlineProductFetchFailsPromptly() async throws {
+        let session = try makeSession()
+        try await session.setSimulatedError(offlineProducts, forAPI: .loadProducts)
+        let service = SubscriptionService(observesTransactionUpdates: false)
+
+        let clock = ContinuousClock()
+        let start = clock.now
+        await #expect(throws: (any Error).self) {
+            _ = try await service.fetchProducts()
+        }
+        #expect(clock.now - start < SubscriptionService.productFetchTimeout + .seconds(1))
+        #expect(service.isLoading == false)
+
+        await service.refreshEntitlements(.launch)
+        try await session.setSimulatedError(nil, forAPI: .loadProducts)
+        EntitlementCache.clear()
+    }
 }
