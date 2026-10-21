@@ -24,7 +24,7 @@ Profile: Analytical. Repo reviewed: this repository (app target `Pencild`).
 
 ## Actionable next steps
 
-**Status check 2026-10-20:** most fixes were implemented in uncommitted changes on 2026-10-19. Remaining work is marked below.
+**Status 2026-10-20:** fixes 1–6 done and committed; fix 7 dropped. Verified: simulator build plus all 238 tests passed on iPhone 17, including `DeadlineTests`. Offline simulation: two StoreKit integration tests fake a network error on the simulator. A paid user with a valid lease starts on the paid plan immediately, and the price fetch fails in under 2 s. Fix 4 logic (resume once, cancellation, late images dropped) is covered by `ImageRequestGateTests`, and fix 6's iCloud decisions by `RemoteAssetGateTests`; 244 tests pass. Still to do: a hands-on Airplane Mode check on a real iPhone, which needs a person and iCloud-only photos.
 
 Fixes 1–3 are the smallest and remove the offline paid-feature lockout and the launch stall; do those first.
 
@@ -32,11 +32,11 @@ Fixes 1–3 are the smallest and remove the offline paid-feature lockout and the
 | --- | --- | --- | --- | --- |
 | 1 | Cache the last verified tier and expiry (Keychain or UserDefaults). Seed `entitlementSnapshot` from it at launch as verified with a cached provenance; StoreKit corrects it later. | Actionable | Small | Done — `SubscriptionLease` + `EntitlementCache` seed a `.cached` verified snapshot at launch. |
 | 2 | Wrap the `currentEntitlements` loop in a 3 s timeout. On timeout keep the cached tier instead of failing closed. | Actionable | Small | Done — `withDeadline` (`Deadline.swift`) returns at the timeout even when the stream ignores cancellation (1.5 s interactive, 3 s background). |
-| 3 | Remove `fetchProducts()` from `init`. Call it from `PaywallView` and `ManagePlanView` with a "Prices unavailable offline" state. | Actionable | Trivial | Done — removed from `init`; `PurchaseViewModel.attach` loads products when a paywall or Manage Plan appears. |
+| 3 | Remove `fetchProducts()` from `init`. Call it from `PaywallView` and `ManagePlanView` with a "Prices unavailable offline" state. | Actionable | Trivial | Done — removed from `init`; products load when a paywall or Manage Plan appears, capped at 8 s by `withDeadline` so offline shows "Price unavailable". |
 | 4 | In `fetchImage`: set `resizeMode = .fast`, call `cancelImageRequest` on task cancellation, read `PHImageResultIsInCloudKey` and `PHImageResultErrorKey`, resume exactly once. | Actionable | Small | Done — `resizeMode = .fast`, in-cloud/error keys, resume-once, and `cancelImageRequest` via `withTaskCancellationHandler`. |
 | 5 | In `AssetThumbnail`, show "Stored in iCloud — not available offline" instead of an endless spinner. | Actionable | Small | Done — `AssetThumbnail` shows a "Stored in iCloud" tile. |
 | 6 | Show a visible offline error on the picker paths ("This photo isn't downloaded to your device"). | Actionable | Small | Done — picker, batch and Files paths show "isn't downloaded to your device" errors, gated by `ICloudDownloadPreference`. |
-| 7 | Add an `NWPathMonitor` offline banner. | Speculative | Optional | Not started. |
+| 7 | Add an `NWPathMonitor` offline banner. | Speculative | Optional | Won't do — the app is local-first, so a global "offline" banner would imply it needs a connection. StoreKit and iCloud paths give their own offline messages. |
 
 ## Follow-up questions and recommendation
 
@@ -46,3 +46,15 @@ Fixes 1–3 are the smallest and remove the offline paid-feature lockout and the
 - Premium promises Files/cloud import. Does it need a clear offline message, since iCloud Drive files can't be read offline?
 
 **Recommendation:** make fixes 1–3 first, then 4 and 5 for screenshot loading. Build and test each in Xcode, since none has been compiled.
+
+## Follow-up 2026-10-20: stuck scan sheet
+
+Reported on device: tapping a screenshot opened the scan sheet, the image never loaded, and Cancel showed "Stopping this scan" forever, so the only way out was force-quitting.
+
+| Cause | Fix |
+| --- | --- |
+| `cancelScan()` set a flag but never stopped the Photos fetch, so `scanAsset` kept waiting. | The fetch runs in its own task; `cancelScan()` cancels it, which cancels the Photos request and ends the await immediately. |
+| Fix 4 made a blank degraded frame wait for a final image. Offline, Photos may never send one for an iCloud-only original. | Without iCloud download allowed, a blank degraded frame now fails with "stored in iCloud". |
+| No upper bound on a Photos request. | 15 s limit on device-only requests and 120 s on approved iCloud downloads, then a clear error (`imageLoadTimedOut`). |
+
+Verified: simulator build and 244 tests pass. A debug build was installed on the iPhone 17 Pro for the Airplane Mode check.

@@ -84,6 +84,11 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
     }
 
     // MARK: - Fetch UIImage for PHAsset
+    /// How long an on-device image request may take before it fails instead of hanging.
+    static let localTimeout: TimeInterval = 15
+    /// How long a user-approved iCloud download may take.
+    static let downloadTimeout: TimeInterval = 120
+
     public func fetchImage(for asset: PHAsset, targetSize: CGSize = CGSize(width: 1440, height: 2560)) async throws -> UIImage {
         try await fetchImage(for: asset, targetSize: targetSize, allowICloudDownload: false, progress: nil)
     }
@@ -140,8 +145,12 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                         request.finish(.success(image))
                     } else if isInCloud && !allowICloudDownload {
                         request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadRequired)))
+                    } else if isDegraded && !allowICloudDownload {
+                        // Offline, Photos can send a blank degraded frame and never a final one for an
+                        // iCloud-only original, so waiting for a final frame would hang the scan.
+                        request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadRequired)))
                     } else if isDegraded {
-                        // A nil degraded frame may still be followed by the final image.
+                        // Downloading: a blank degraded frame comes before the downloaded image.
                         return
                     } else if allowICloudDownload {
                         // Network access was allowed but the image still came back nil: the iCloud
@@ -153,6 +162,14 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                     }
                 }
                 request.setRequestID(requestID)
+
+                // Backstop: never leave a scan or thumbnail waiting forever on Photos.
+                let limit = allowICloudDownload ? Self.downloadTimeout : Self.localTimeout
+                DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + limit) {
+                    if let expiredID = request.expire() {
+                        PHImageManager.default().cancelImageRequest(expiredID)
+                    }
+                }
             }
         } onCancel: {
             if let requestID = request.cancel() {
@@ -229,7 +246,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
 
 /// Resume-once bookkeeping for `fetchImage`. Photos can call back twice (degraded, then final) and
 /// task cancellation can race the callback; only the first outcome resumes the continuation.
-private final class ImageRequestGate: @unchecked Sendable {
+final class ImageRequestGate: @unchecked Sendable {
     private let lock = NSLock()
     private var continuation: CheckedContinuation<UIImage, any Error>?
     private var requestID: PHImageRequestID?
@@ -267,6 +284,17 @@ private final class ImageRequestGate: @unchecked Sendable {
         let id = requestID
         lock.unlock()
         finish(.failure(CancellationError()))
+        return id
+    }
+
+    /// Fails a request that never finished. Returns its Photos request ID so it can be cancelled.
+    func expire() -> PHImageRequestID? {
+        lock.lock()
+        let pending = !isFinished
+        let id = requestID
+        lock.unlock()
+        guard pending else { return nil }
+        finish(.failure(PencildError.photoLibrary(.imageLoadTimedOut)))
         return id
     }
 

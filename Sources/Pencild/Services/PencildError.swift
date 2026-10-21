@@ -61,6 +61,8 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
     case iCloudDownloadRequired
     /// An iCloud download was attempted (user-approved) but failed or was interrupted.
     case iCloudDownloadFailed(String)
+    /// Photos never delivered the image within the time limit (see `PhotoLibraryService.fetchImage`).
+    case imageLoadTimedOut
 
     public var errorDescription: String? {
         switch self {
@@ -80,6 +82,8 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
             return "This photo is stored in iCloud and isn't downloaded to your device."
         case .iCloudDownloadFailed(let reason):
             return "Could not download this photo from iCloud: \(reason)"
+        case .imageLoadTimedOut:
+            return "This screenshot took too long to load."
         }
     }
 
@@ -95,6 +99,8 @@ public enum PhotoLibraryError: LocalizedError, Sendable {
             return "Allow iCloud downloads in Settings › Scanning Options, or open the photo in Photos to download it first."
         case .iCloudDownloadFailed:
             return "Check your connection and try again, or open the photo in Photos to download it first."
+        case .imageLoadTimedOut:
+            return "Open it in Photos first. If it's stored in iCloud, it may need a connection to download."
         }
     }
 }

@@ -57,6 +57,8 @@ public final class ScanViewModel: ObservableObject {
     @Published public var currentProcessingImage: UIImage? = nil
     @Published public var isProcessing: Bool = false
     @Published public private(set) var isCancelling: Bool = false
+    /// The in-flight Photos fetch for `scanAsset`, so `cancelScan()` can stop it.
+    private var fetchTask: Task<UIImage, any Error>?
     /// Page progress for multi-page documents ("Page 2 of 5").
     @Published public var progressDetail: String? = nil
     /// Review bundle (best interpretation, alternatives, evidence) per candidate ID from the last scan.
@@ -87,13 +89,26 @@ public final class ScanViewModel: ObservableObject {
         isProcessing = true
         stage = .fetchingImage
 
-        do {
-            let image = try await photoLibraryService.fetchImage(
+        // The fetch runs in its own task so Cancel can stop it. Cancelling it cancels the Photos
+        // request, which resumes the await right away instead of leaving the sheet stuck.
+        let identifier = asset.localIdentifier
+        let photos = photoLibraryService
+        let fetch = Task<UIImage, any Error> {
+            guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else {
+                throw PencildError.photoLibrary(.assetNotFound(identifier))
+            }
+            return try await photos.fetchImage(
                 for: asset,
                 targetSize: CGSize(width: 1440, height: 2560),
                 allowICloudDownload: allowICloudDownload,
                 progress: nil
             )
+        }
+        fetchTask = fetch
+        defer { fetchTask = nil }
+
+        do {
+            let image = try await fetch.value
             guard !isCancelling else {
                 stage = .idle
                 isProcessing = false
@@ -402,6 +417,7 @@ public final class ScanViewModel: ObservableObject {
     public func cancelScan() {
         guard isProcessing else { return }
         isCancelling = true
+        fetchTask?.cancel()
         interpretationTask?.cancel()
     }
 
