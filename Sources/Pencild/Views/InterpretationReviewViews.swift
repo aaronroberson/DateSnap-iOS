@@ -600,3 +600,224 @@ private struct OpenEndedConflictRadarCard: View {
             .background(Capsule().fill(tint.opacity(0.14)))
     }
 }
+
+// MARK: - Specialized Conflict Radars Card
+struct SpecializedConflictRadarsCard: View {
+    @ObservedObject var viewModel: EventReviewViewModel
+    @EnvironmentObject private var appState: AppState
+    @State private var isExpanded = false
+
+    private var eventText: String {
+        "\(viewModel.title) \(viewModel.notes) \(viewModel.location) \(viewModel.candidate.scannedAsset?.sourceMedium.rawValue ?? "")"
+    }
+
+    private var isFlightTransit: Bool {
+        let t = eventText.lowercased()
+        return t.contains("flight") || t.contains("sfo") || t.contains("hnd") || t.contains("transit") || t.contains("timezone") || t.contains("ua875")
+    }
+
+    private var isSyllabusAddendum: Bool {
+        let t = eventText.lowercased()
+        return t.contains("syllabus") || t.contains("exam") || t.contains("addendum") || t.contains("cs4820") || t.contains("ece") || t.contains("cornell")
+    }
+
+    private var isAmbientAudio: Bool {
+        let t = eventText.lowercased()
+        return t.contains("audio") || t.contains("voice") || t.contains("memo") || t.contains("clinic") || t.contains("spoken")
+    }
+
+    private var isFestivalContingency: Bool {
+        let t = eventText.lowercased()
+        return t.contains("festival") || t.contains("weather") || t.contains("rain") || t.contains("gale") || t.contains("amtrak") || t.contains("pavillon")
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Deconfliction Radar", systemImage: "radar")
+                    .font(PDFont.labelLG)
+                    .foregroundStyle(Color.pdOnSurface)
+                Spacer()
+                Text("AI Deconfliction")
+                    .font(PDFont.labelSM)
+                    .foregroundStyle(Color.pdPrimary)
+            }
+
+            // Keyword-matched active triggers
+            if isFlightTransit {
+                conflictTriggerRow(
+                    icon: "airplane.departure",
+                    title: "Transmeridian Flight & Timezone Shear",
+                    subtitle: "SFO → HND date line crossover & dead-zone board review clash",
+                    tag: "+17h UTC Discrepancy",
+                    tagTone: .warning
+                ) {
+                    Task { await appState.present(.transmeridianConflict) }
+                }
+            }
+
+            if isSyllabusAddendum {
+                conflictTriggerRow(
+                    icon: "doc.text.fill",
+                    title: "Syllabus Addendum: Cascade Collision",
+                    subtitle: "CS 4820 final exam shifted +4 days; 6 domino milestones",
+                    tag: "6 Collisions",
+                    tagTone: .error
+                ) {
+                    Task { await appState.present(.syllabusCascadeConflict) }
+                }
+            }
+
+            if isAmbientAudio {
+                conflictTriggerRow(
+                    icon: "waveform",
+                    title: "Ambient Audio Stream Deconfliction",
+                    subtitle: "Self-correction: Tuesday morning superseded by Thursday afternoon",
+                    tag: "94.8% Speech Conf.",
+                    tagTone: .info
+                ) {
+                    Task { await appState.present(.ambientAudioConflict) }
+                }
+            }
+
+            if isFestivalContingency {
+                conflictTriggerRow(
+                    icon: "cloud.bolt.rain.fill",
+                    title: "Festival & Weather Contingency Radar",
+                    subtitle: "Midnight headline delay collides with return Amtrak transit",
+                    tag: "Live Doppler",
+                    tagTone: .warning
+                ) {
+                    Task { await appState.present(.festivalWeatherConflict) }
+                }
+            }
+
+            // Expandable selector for all 4 critical scenarios
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: isExpanded ? "chevron.up.circle.fill" : "chevron.down.circle.fill")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.pdPrimary)
+                    Text(isExpanded ? "Hide Alternate Conflict Radars" : "Explore Alternate Conflict Radars (4 Stitch States)")
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(Color.pdPrimary)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(spacing: 8) {
+                    allRadarButton(
+                        icon: "airplane.circle.fill",
+                        title: "1. Transmeridian Flight & Timezone Shear",
+                        subtitle: "SFO → HND date line crossover & FL380 dead zone",
+                        tone: .pdPrimary
+                    ) { Task { await appState.present(.transmeridianConflict) } }
+
+                    allRadarButton(
+                        icon: "doc.text.below.ecg.fill",
+                        title: "2. Syllabus Addendum: Cascade Collisions",
+                        subtitle: "+4 day exam shift with 6-milestone domino chain",
+                        tone: .pdSecondary
+                    ) { Task { await appState.present(.syllabusCascadeConflict) } }
+
+                    allRadarButton(
+                        icon: "waveform.circle.fill",
+                        title: "3. Ambient Audio Stream Deconfliction",
+                        subtitle: "Conversational self-corrections & waveform audit",
+                        tone: .pdTertiary
+                    ) { Task { await appState.present(.ambientAudioConflict) } }
+
+                    allRadarButton(
+                        icon: "cloud.rainbow.half.fill",
+                        title: "4. Multi-Day Festival Weather Contingency",
+                        subtitle: "Doppler delay, Amtrak rail clash & OpenTable sync",
+                        tone: .pdPrimaryContainer
+                    ) { Task { await appState.present(.festivalWeatherConflict) } }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .padding(14)
+        .pdGlassCard(cornerRadius: PDRadius.card)
+    }
+
+    private func conflictTriggerRow(
+        icon: String,
+        title: String,
+        subtitle: String,
+        tag: String,
+        tagTone: PDStatusBadge.Tone,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    HStack(spacing: 6) {
+                        Image(systemName: icon)
+                            .foregroundStyle(Color.pdPrimary)
+                        Text(title)
+                            .font(PDFont.labelMD)
+                            .bold()
+                            .foregroundStyle(Color.pdOnSurface)
+                    }
+                    Spacer()
+                    PDStatusBadge(text: tag, tone: tagTone)
+                }
+
+                Text(subtitle)
+                    .font(PDFont.bodySM)
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                    .multilineTextAlignment(.leading)
+
+                HStack {
+                    Spacer()
+                    Label("Resolve in Radar Modal", systemImage: "arrow.up.forward.app")
+                        .font(PDFont.labelSM)
+                        .foregroundStyle(Color.pdPrimary)
+                }
+                .padding(.top, 2)
+            }
+            .padding(12)
+            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(Color.pdSurfaceLow))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func allRadarButton(
+        icon: String,
+        title: String,
+        subtitle: String,
+        tone: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 22))
+                    .foregroundStyle(tone)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(PDFont.labelMD)
+                        .bold()
+                        .foregroundStyle(Color.pdOnSurface)
+                    Text(subtitle)
+                        .font(PDFont.bodySM)
+                        .foregroundStyle(Color.pdOnSurfaceVariant)
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.pdOnSurfaceVariant)
+            }
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(Color.pdSurfaceLowest))
+        }
+        .buttonStyle(.plain)
+    }
+}

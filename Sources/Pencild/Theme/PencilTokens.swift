@@ -28,6 +28,7 @@ extension Color {
     static let pdTertiary = Color(hex: "FFB2BA")
     static let pdTertiaryContainer = Color(hex: "FF7288")
     static let pdError = Color(hex: "FFB4AB")
+    static let pdOnError = Color(hex: "690005")
 
     // Gradient stops
     static let pdOrange = Color(hex: "FF7A00")

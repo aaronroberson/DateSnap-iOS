@@ -76,6 +76,10 @@ enum AppModalScreen: Identifiable, Sendable {
     case screenGallery
     case userProfile
     case defaultCalendar
+    case transmeridianConflict
+    case syllabusCascadeConflict
+    case ambientAudioConflict
+    case festivalWeatherConflict
     
     var isPaywall: Bool {
         if case .paywall = self { return true }
@@ -103,6 +107,10 @@ enum AppModalScreen: Identifiable, Sendable {
         case .screenGallery: return "screenGallery"
         case .userProfile: return "userProfile"
         case .defaultCalendar: return "defaultCalendar"
+        case .transmeridianConflict: return "transmeridianConflict"
+        case .syllabusCascadeConflict: return "syllabusCascadeConflict"
+        case .ambientAudioConflict: return "ambientAudioConflict"
+        case .festivalWeatherConflict: return "festivalWeatherConflict"
         }
     }
 }

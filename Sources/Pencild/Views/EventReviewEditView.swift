@@ -361,6 +361,7 @@ struct EventReviewForm: View {
                 isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
                 onUpgrade: { Task { await appState.present(.paywall(opening: .premium)) } }
             )
+            SpecializedConflictRadarsCard(viewModel: viewModel)
             PDSectionHeader(title: "Calendar & reminders")
             destinationCard
             if !viewModel.actions.isEmpty {
