@@ -165,7 +165,6 @@ struct HomeEmptyStateView: View {
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], alignment: .leading, spacing: 16) {
                     sourceCards
                     sampleFlyerCard
-                    deconflictionDemosCard
                 }
                 privacyFooter
                 Color.clear.frame(height: 90)
@@ -183,7 +182,6 @@ struct HomeEmptyStateView: View {
                 recentScreenshotsCard
                 sourceCards
                 sampleFlyerCard
-                deconflictionDemosCard
                 privacyFooter
                 Color.clear.frame(height: 90)
             }
@@ -404,101 +402,6 @@ struct HomeEmptyStateView: View {
         }
         .buttonStyle(PressScaleButtonStyle())
         .disabled(scanViewModel.isProcessing)
-    }
-
-    private var deconflictionDemosCard: some View {
-        VStack(alignment: .leading, spacing: PDSpacing.sm) {
-            HStack(alignment: .top, spacing: PDSpacing.md) {
-                sourceIcon("sparkles.rectangle.stack", tint: .pdSecondary, fill: .pdSurfaceContainer)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Deconfliction Intelligence")
-                        .font(PDFont.headlineSM)
-                        .foregroundStyle(Color.pdOnSurface)
-                    Text("Preview how Pencil’d resolves time zone shears, cascading syllabus shifts, ambiguous audio notes, and weather delays.")
-                        .font(PDFont.bodyMD)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                }
-                Spacer(minLength: 0)
-            }
-
-            VStack(spacing: 8) {
-                deconflictionPill(
-                    icon: "airplane.departure",
-                    title: "Transmeridian Flight & Timezone Shear",
-                    subtitle: "SFO → HND date line crossover & dead-zone review clash",
-                    tone: .pdPrimary
-                ) {
-                    Task { await appState.present(.transmeridianConflict) }
-                }
-
-                deconflictionPill(
-                    icon: "doc.text.fill",
-                    title: "Syllabus Addendum: Cascade Collisions",
-                    subtitle: "+4 days exam push with 6-milestone domino chain",
-                    tone: .pdSecondary
-                ) {
-                    Task { await appState.present(.syllabusCascadeConflict) }
-                }
-
-                deconflictionPill(
-                    icon: "waveform",
-                    title: "Ambient Audio Stream Deconfliction",
-                    subtitle: "Conversational self-correction & radar slot comparison",
-                    tone: .pdTertiary
-                ) {
-                    Task { await appState.present(.ambientAudioConflict) }
-                }
-
-                deconflictionPill(
-                    icon: "cloud.bolt.rain.fill",
-                    title: "Festival & Weather Contingency Radar",
-                    subtitle: "Midnight headline delay collides with return Amtrak transit",
-                    tone: .pdPrimaryContainer
-                ) {
-                    Task { await appState.present(.festivalWeatherConflict) }
-                }
-            }
-        }
-        .padding(PDSpacing.lg)
-        .background(
-            RoundedRectangle(cornerRadius: PDRadius.card)
-                .fill(Color.pdSurfaceLow)
-        )
-    }
-
-    private func deconflictionPill(
-        icon: String,
-        title: String,
-        subtitle: String,
-        tone: Color,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(tone)
-                    .frame(width: 32, height: 32)
-                    .background(RoundedRectangle(cornerRadius: 6).fill(Color.pdSurfaceContainerHigh))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(PDFont.labelMD)
-                        .bold()
-                        .foregroundStyle(Color.pdOnSurface)
-                    Text(subtitle)
-                        .font(PDFont.bodySM)
-                        .foregroundStyle(Color.pdOnSurfaceVariant)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 0)
-                Image(systemName: "arrow.up.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color.pdPrimary)
-            }
-            .padding(PDSpacing.sm)
-            .background(RoundedRectangle(cornerRadius: PDRadius.tile).fill(Color.pdSurfaceLowest.opacity(0.8)))
-        }
-        .buttonStyle(.plain)
     }
 
     private var privacyFooter: some View {

@@ -61,6 +61,8 @@ struct EventReviewForm: View {
     @State private var showNotificationRecovery = false
     @State private var isCommitting = false
     @State private var lastSaveWasPartial = false
+    @State private var pendingConflictContext: ConflictResolutionContext?
+    @State private var bypassConflictCheck = false
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var sourceViewport = SourceViewport()
@@ -106,6 +108,18 @@ struct EventReviewForm: View {
                 Task { await appState.present(.savedEventDetail(viewModel.candidate.toPencildEvent())) }
             }) {
                 NotificationPermissionDeniedView()
+            }
+            .sheet(item: conflictSheetBinding) { context in
+                ConflictResolutionView(
+                    context: context,
+                    state: conflictModalState,
+                    onResolve: { pendingConflictContext = nil },
+                    onSaveAnyway: {
+                        pendingConflictContext = nil
+                        bypassConflictCheck = true
+                        Task { await save() }
+                    }
+                )
             }
             .alert(lastSaveWasPartial ? "Saved with incomplete reminders" : "Couldn't Save Event", isPresented: Binding(
                 get: { !isCommitting && viewModel.errorMessage != nil && !viewModel.calendarAccessDenied },
@@ -361,7 +375,6 @@ struct EventReviewForm: View {
                 isEntitledToReminderPlans: appState.isEntitled(to: .advancedReminderPlans),
                 onUpgrade: { Task { await appState.present(.paywall(opening: .premium)) } }
             )
-            SpecializedConflictRadarsCard(viewModel: viewModel)
             PDSectionHeader(title: "Calendar & reminders")
             destinationCard
             if !viewModel.actions.isEmpty {
@@ -535,6 +548,32 @@ struct EventReviewForm: View {
     }
 
     private func save() async {
+        if !bypassConflictCheck {
+            do {
+                let conflicts = try await services.calendar.detectConflicts(
+                    for: viewModel.candidate,
+                    excluding: viewModel.candidate.savedEvent?.externalCalendarEventId
+                )
+                if !conflicts.isEmpty {
+                    pendingConflictContext = ConflictResolutionContext(
+                        incoming: ScheduleConflictAnalyzer.interval(
+                            id: viewModel.candidate.id,
+                            title: viewModel.title,
+                            start: viewModel.startDate,
+                            end: viewModel.endDateWasExplicit ? viewModel.endDate : nil,
+                            assumedDuration: EventDurationPolicy.fallback,
+                            location: viewModel.location.isEmpty ? nil : viewModel.location
+                        ),
+                        conflicts: conflicts
+                    )
+                    return
+                }
+            } catch {
+                // The existing commit path remains authoritative for permission and save errors.
+                // A read failure must not silently prevent an explicitly requested calendar save.
+            }
+        }
+        bypassConflictCheck = false
         isCommitting = true
         lastSaveWasPartial = false
         defer { isCommitting = false }
@@ -562,6 +601,21 @@ struct EventReviewForm: View {
         try? await Task.sleep(for: .seconds(1.1))
         appState.showToast(wasUpdate ? "Calendar event updated" : "Event saved to Calendar")
         await appState.present(.savedEventDetail(viewModel.candidate.toPencildEvent()))
+    }
+
+    private var conflictModalState: AppModalScreen {
+        let text = "\(viewModel.title) \(viewModel.notes) \(viewModel.location)".lowercased()
+        if text.contains("flight") || text.contains("timezone") { return .transmeridianConflict }
+        if text.contains("audio") || text.contains("voice") || text.contains("memo") { return .ambientAudioConflict }
+        if text.contains("festival") || text.contains("weather") || text.contains("rain") { return .festivalWeatherConflict }
+        return .syllabusCascadeConflict
+    }
+
+    private var conflictSheetBinding: Binding<ConflictResolutionContext?> {
+        Binding(
+            get: { pendingConflictContext },
+            set: { pendingConflictContext = $0 }
+        )
     }
 
     private func requestReviewIfEligible(wasUpdate: Bool) async {

@@ -10,6 +10,7 @@ protocol CalendarEventStoreProviding: Sendable {
     func save(_ event: EKEvent) throws
     func remove(_ event: EKEvent) throws
     func existingEvent(withExternalIdentifier identifier: String) -> EKEvent?
+    func events(matching start: Date, end: Date) -> [EKEvent]
 }
 
 private final class LiveCalendarEventStore: CalendarEventStoreProviding, @unchecked Sendable {
@@ -51,6 +52,14 @@ private final class LiveCalendarEventStore: CalendarEventStoreProviding, @unchec
         let items = eventStore.calendarItems(withExternalIdentifier: identifier)
         return items.compactMap { $0 as? EKEvent }.first ?? eventStore.event(withIdentifier: identifier)
     }
+
+    func events(matching start: Date, end: Date) -> [EKEvent] {
+        eventStore.events(matching: eventStore.predicateForEvents(withStart: start, end: end, calendars: nil))
+    }
+}
+
+extension CalendarEventStoreProviding {
+    func events(matching start: Date, end: Date) -> [EKEvent] { [] }
 }
 
 // MARK: - Calendar Service Protocol
@@ -63,6 +72,14 @@ public protocol CalendarServiceProtocol: Sendable {
     /// Rewrites an existing event (found by the identifier `createEvent` returned); recreates it if it was removed in Calendar.
     func updateEvent(externalIdentifier: String, candidate: EventCandidate, calendar: EKCalendar?, alarms: [TimeInterval]) async throws -> String
     func deleteEvent(externalIdentifier: String) throws
+    /// Reads the user's existing Calendar events for the draft's interval immediately before save.
+    func detectConflicts(for candidate: EventCandidate, excluding externalIdentifier: String?) async throws -> [ScheduleConflict]
+}
+
+public extension CalendarServiceProtocol {
+    func detectConflicts(for candidate: EventCandidate, excluding externalIdentifier: String? = nil) async throws -> [ScheduleConflict] {
+        []
+    }
 }
 
 // MARK: - Production Calendar Service
@@ -97,6 +114,39 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
 
     public func defaultCalendar() -> EKCalendar? {
         eventStore.defaultCalendar()
+    }
+
+    public func detectConflicts(for candidate: EventCandidate, excluding externalIdentifier: String? = nil) async throws -> [ScheduleConflict] {
+        let status = authorizationStatus()
+        if !status.access.isUsable {
+            let granted = try await requestEventAccess()
+            guard granted else { throw PencildError.calendar(.accessDenied) }
+        }
+
+        let incoming = ScheduleConflictAnalyzer.interval(
+            id: candidate.id,
+            title: candidate.title,
+            start: candidate.startDate,
+            end: candidate.endDate,
+            assumedDuration: EventDurationPolicy.fallback,
+            location: candidate.location
+        )
+        let existing = eventStore.events(
+            matching: incoming.start,
+            end: incoming.end
+        ).compactMap { event -> ScheduleInterval? in
+            guard event.calendarItemExternalIdentifier != externalIdentifier,
+                  !event.isAllDay,
+                  let title = event.title else { return nil }
+            return ScheduleConflictAnalyzer.interval(
+                id: event.calendarItemExternalIdentifier ?? event.eventIdentifier ?? UUID().uuidString,
+                title: title,
+                start: event.startDate,
+                end: event.endDate,
+                location: event.location
+            )
+        }
+        return ScheduleConflictAnalyzer.conflicts(for: incoming, against: existing)
     }
 
     // MARK: - Create Event

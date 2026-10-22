@@ -113,13 +113,13 @@ struct ContentView: View {
                 case .defaultCalendar:
                     DefaultCalendarView()
                 case .transmeridianConflict:
-                    TransmeridianConflictView()
+                    ConflictResolutionView(context: appState.activeConflictContext, state: modal)
                 case .syllabusCascadeConflict:
-                    SyllabusCascadeConflictView()
+                    ConflictResolutionView(context: appState.activeConflictContext, state: modal)
                 case .ambientAudioConflict:
-                    AmbientAudioConflictView()
+                    ConflictResolutionView(context: appState.activeConflictContext, state: modal)
                 case .festivalWeatherConflict:
-                    FestivalWeatherContingencyConflictView()
+                    ConflictResolutionView(context: appState.activeConflictContext, state: modal)
                 }
             }
             .environmentObject(appState)

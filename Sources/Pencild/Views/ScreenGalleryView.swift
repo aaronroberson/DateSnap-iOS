@@ -224,38 +224,6 @@ struct ScreenGalleryView: View {
             modal: .defaultCalendar,
             settingsRoute: .defaultCalendar
         ),
-        ScreenItem(
-            id: 25,
-            title: "Transmeridian Flight & Timezone Shear Conflict",
-            stitchId: "20cddd471317418eb67d5e72ffafce87",
-            description: "SFO → HND date line crossover (+1 day), in-flight zero-connectivity corridor eclipsing board review, and automated lounge reschedule.",
-            category: "Conflict Resolution",
-            modal: .transmeridianConflict
-        ),
-        ScreenItem(
-            id: 26,
-            title: "Syllabus Addendum: Cascade Milestone Collision",
-            stitchId: "04f8163ba5644ff1849cdb97ca3f76b2",
-            description: "Emergency syllabus exam push (+4 days) creating a 6-milestone cascading domino collapse with ECE lab hard lock & Cornell Store shift deficit.",
-            category: "Conflict Resolution",
-            modal: .syllabusCascadeConflict
-        ),
-        ScreenItem(
-            id: 27,
-            title: "Ambient Audio Stream Deconfliction",
-            stitchId: "28789503b0f7464594251a79a5de5b11",
-            description: "Voice memo with in-flight conversational self-correction, interactive scrubber waveform, superseded vs final transcript, and Thursday radar slot audit.",
-            category: "Conflict Resolution",
-            modal: .ambientAudioConflict
-        ),
-        ScreenItem(
-            id: 28,
-            title: "Multi-Day Festival & Weather Contingency Collision",
-            stitchId: "51bee88e4ad449dcaae98db66cbcf60f",
-            description: "Live outdoor lightning rain delay rolling headline sets to midnight, clashing with return Amtrak #284 rail transit & Le Pavillon dinner.",
-            category: "Conflict Resolution",
-            modal: .festivalWeatherConflict
-        )
     ]
     
     var body: some View {
@@ -265,7 +233,7 @@ struct ScreenGalleryView: View {
                     HStack {
                         PDScreenIntro(
                             eyebrow: "Design System",
-                            title: "All 28 Stitch Screens",
+                            title: "All 24 Stitch Screens",
                             subtitle: "Select any screen below to preview the implemented SwiftUI view, test navigation links, and verify interactive states."
                         )
                         Spacer()

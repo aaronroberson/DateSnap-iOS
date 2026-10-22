@@ -115,12 +115,23 @@ enum AppModalScreen: Identifiable, Sendable {
     }
 }
 
+/// The review-time conflict payload. It contains only the draft and collisions actually found
+/// in Pencil'd's local schedule; no scenario or calendar fixture is embedded in the UI.
+struct ConflictResolutionContext: Sendable, Equatable, Identifiable {
+    let incoming: ScheduleInterval
+    let conflicts: [ScheduleConflict]
+
+    var id: String { incoming.id }
+}
+
 @MainActor
 final class AppState: ObservableObject {
     @Published var selectedTab: ActiveTab = .home
     /// History & Archive is pushed from Agenda rather than living in the tab bar.
     @Published var showHistory = false
     @Published var activeModal: AppModalScreen? = nil
+    /// The real draft and local schedule collisions currently being reviewed by Conflict Radar.
+    @Published var activeConflictContext: ConflictResolutionContext?
 
     // Membership tier, mirrored from StoreKit via SubscriptionService.
     /// Mirror of the subscription service's entitlement snapshot. Every decision below derives from
@@ -200,6 +211,11 @@ final class AppState: ObservableObject {
         if modal.isPaywall, await !shouldShowPaywall() { return }
         await dismissPresentedSheets()
         activeModal = modal
+    }
+
+    func presentConflict(_ modal: AppModalScreen, context: ConflictResolutionContext) async {
+        activeConflictContext = context
+        await present(modal)
     }
 
     /// Starts a scan source chosen outside Home (the Add events sheet). Home owns the pickers,
