@@ -182,10 +182,17 @@ public final class HomeViewModel: ObservableObject {
                         return (assetID, likely)
                     }
                 }
+                var newAssessed: Set<String> = []
+                var newLikely: Set<String> = []
                 for await (assetID, likely) in group {
-                    guard let self = self, !Task.isCancelled else { break }
-                    self.assessedIDs.insert(assetID)
-                    if likely { self.likelyEventIDs.insert(assetID) }
+                    guard !Task.isCancelled else { break }
+                    newAssessed.insert(assetID)
+                    if likely { newLikely.insert(assetID) }
+                }
+                guard let self = self, !Task.isCancelled else { return }
+                self.assessedIDs.formUnion(newAssessed)
+                if !newLikely.isEmpty {
+                    self.likelyEventIDs.formUnion(newLikely)
                 }
             }
             self?.triageTask = nil

@@ -417,6 +417,8 @@ struct AssetThumbnail: View {
     var height: CGFloat = 150
     @State private var image: UIImage?
     @State private var isInCloud = false
+    @State private var hasFailed = false
+    @State private var requestID: PHImageRequestID?
 
     var body: some View {
         ZStack {
@@ -435,6 +437,11 @@ struct AssetThumbnail: View {
                         .foregroundStyle(Color.pdOnSurfaceVariant)
                         .multilineTextAlignment(.center)
                 }
+                .padding(4)
+            } else if hasFailed {
+                Image(systemName: "photo")
+                    .font(.system(size: 22))
+                    .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.5))
             } else {
                 ProgressView().tint(Color.pdOnSurfaceVariant)
             }
@@ -443,17 +450,64 @@ struct AssetThumbnail: View {
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: PDRadius.card))
         .overlay(RoundedRectangle(cornerRadius: PDRadius.card).stroke(Color.pdSurfaceHighest.opacity(0.6), lineWidth: 1))
-        .task(id: asset.localIdentifier) {
-            // Thumbnails are decorative: never trigger an iCloud download for a 56pt preview. A
-            // cloud-only asset shows an iCloud badge instead of an endless spinner (audit Fix 5).
-            do {
-                image = try await services.photoLibrary.fetchImage(for: asset, targetSize: CGSize(width: 360, height: 640))
-            } catch PencildError.photoLibrary(.iCloudDownloadRequired) {
-                isInCloud = true
-            } catch {
-                isInCloud = false
+        .onAppear {
+            loadThumbnail()
+        }
+        .onDisappear {
+            cancelThumbnailRequest()
+        }
+        .onChange(of: asset.localIdentifier) { _, _ in
+            cancelThumbnailRequest()
+            image = nil
+            isInCloud = false
+            hasFailed = false
+            loadThumbnail()
+        }
+    }
+
+    private func cancelThumbnailRequest() {
+        if let requestID {
+            PHImageManager.default().cancelImageRequest(requestID)
+            self.requestID = nil
+        }
+    }
+
+    private func loadThumbnail() {
+        guard image == nil else { return }
+
+        let targetSize = CGSize(width: 360, height: 640)
+        let options = PHImageRequestOptions()
+        options.deliveryMode = .opportunistic
+        options.resizeMode = .fast
+        options.isNetworkAccessAllowed = false
+        options.isSynchronous = false
+
+        let id = PHImageManager.default().requestImage(
+            for: asset,
+            targetSize: targetSize,
+            contentMode: .aspectFill,
+            options: options
+        ) { fetchedImage, info in
+            let isCancelled = (info?[PHImageCancelledKey] as? Bool) ?? false
+            guard !isCancelled else { return }
+
+            let cloudOnly = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
+            let error = info?[PHImageErrorKey] as? Error
+
+            DispatchQueue.main.async {
+                if let fetchedImage {
+                    self.image = fetchedImage
+                    self.isInCloud = false
+                    self.hasFailed = false
+                } else if cloudOnly {
+                    self.isInCloud = true
+                    self.hasFailed = false
+                } else if error != nil {
+                    self.hasFailed = true
+                }
             }
         }
+        self.requestID = id
     }
 }
 
