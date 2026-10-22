@@ -287,6 +287,33 @@ struct PencildInferenceTests {
         ], meanConfidence: 0.95), locale: Locale(identifier: "en_US"), anchor: anchor, calendar: calendar).isEmpty)
     }
 
+    @Test("Cursive and stylized OCR ordinals like 'November oth' resolve to valid dates")
+    func testCursiveOCROrdinalRepair() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let anchor = calendar.date(from: DateComponents(year: 2026, month: 10, day: 1))!
+        let text = """
+        PDX-RATED PRESENTS
+        sychedetic rotica NIGHT
+        November oth
+        9PM-2AM
+        722 E Burnside St.
+        Portland, Or
+        """
+        let result = OCRResult(fullText: text, lines: text.components(separatedBy: "\n").enumerated().map {
+            OCRLine(text: $1, confidence: 0.92, boundingBox: CGRect(x: 0, y: 0.9 - Double($0) * 0.1, width: 1, height: 0.05))
+        }, meanConfidence: 0.92)
+
+        let candidates = EventExtractionCore.extract(from: result, locale: Locale(identifier: "en_US"), anchor: anchor, calendar: calendar)
+        #expect(candidates.count == 1)
+        if let first = candidates.first {
+            let comps = calendar.dateComponents([.year, .month, .day, .hour], from: first.startDate)
+            #expect(comps.month == 11)
+            #expect(comps.day == 6)
+            #expect(comps.hour == 21)
+        }
+    }
+
     // MARK: - 6. False-Positive Filtering Tests
 
     @Test("Receipts, shipping notices, and pure timestamps are rejected as false positives")

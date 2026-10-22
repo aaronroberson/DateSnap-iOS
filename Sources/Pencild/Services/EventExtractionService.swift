@@ -155,8 +155,8 @@ public enum EventExtractionCore {
         assetIdentifier: String = "local_asset",
         calendar: Calendar = .current
     ) -> [ExtractedCandidateData] {
-        // Step 0: Drop the screenshot's status-bar clock so it is never read as an event time.
-        let result = DateInference.removingStatusBarClock(from: result)
+        // Step 0: Drop the screenshot's status-bar clock and repair common cursive/stylized OCR misreads
+        let result = DateInference.repairOCRText(in: DateInference.removingStatusBarClock(from: result))
         let trimmed = result.fullText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
 
@@ -227,6 +227,63 @@ public enum DateInference {
         }
         guard lines.count != result.lines.count else { return result }
         return OCRResult(fullText: lines.map(\.text).joined(separator: "\n"), lines: lines, meanConfidence: result.meanConfidence)
+    }
+
+    // MARK: - OCR Text Normalization & Typo Repair
+
+    /// Corrects common OCR letter/digit confusions in dates (e.g. cursive "6th" misread as "oth").
+    public static func correctOCRDateTypos(_ input: String) -> String {
+        var text = input
+
+        // Ordinals with letter 'o'/'O':
+        // "1oth" -> "10th", "2oth" -> "20th", "3oth" -> "30th"
+        text = text.replacingOccurrences(of: #"(?i)\b([123])[oO]th\b"#, with: "$10th", options: .regularExpression)
+
+        // Bare "oth" or "Oth" -> "6th" (in script/cursive fonts, "6th" is frequently recognized as "oth")
+        text = text.replacingOccurrences(of: #"(?i)\b[oO]th\b"#, with: "6th", options: .regularExpression)
+
+        // "lst", "Ist" -> "1st"
+        text = text.replacingOccurrences(of: #"(?i)\b[lI]st\b"#, with: "1st", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"(?i)\b([23])[lI]st\b"#, with: "$11st", options: .regularExpression)
+
+        // "znd", "Znd" -> "2nd"
+        text = text.replacingOccurrences(of: #"(?i)\b[zZ]nd\b"#, with: "2nd", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"(?i)\b2[zZ]nd\b"#, with: "22nd", options: .regularExpression)
+
+        // "bth" -> "6th"
+        text = text.replacingOccurrences(of: #"(?i)\b[bB]th\b"#, with: "6th", options: .regularExpression)
+
+        // Common month typos or OCR substitutions:
+        let months = "(?:Jan(?:uary|urary)?|Feb(?:ruary|uary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|tmber)?|Oct(?:ober)?|Nov(?:ember|emer)?|Dec(?:ember|embr)?)"
+        text = text.replacingOccurrences(
+            of: #"(?i)\b(\#(months))\s+([oO]|0)th\b"#,
+            with: "$1 6th",
+            options: .regularExpression
+        )
+        text = text.replacingOccurrences(
+            of: #"(?i)\b(\#(months))\s+[bB]th\b"#,
+            with: "$1 6th",
+            options: .regularExpression
+        )
+        text = text.replacingOccurrences(
+            of: #"(?i)\b(\#(months))\s+[sS]th\b"#,
+            with: "$1 5th",
+            options: .regularExpression
+        )
+
+        return text
+    }
+
+    public static func repairOCRText(in result: OCRResult) -> OCRResult {
+        let repairedLines = result.lines.map { line -> OCRLine in
+            let repaired = correctOCRDateTypos(line.text)
+            if repaired == line.text {
+                return line
+            }
+            return OCRLine(text: repaired, confidence: line.confidence, boundingBox: line.boundingBox)
+        }
+        let fullText = repairedLines.map(\.text).joined(separator: "\n")
+        return OCRResult(fullText: fullText, lines: repairedLines, meanConfidence: result.meanConfidence)
     }
 
     /// True when text names a specific day: a month, a weekday, or a numeric date. A bare clock time
@@ -476,6 +533,7 @@ public enum DateInference {
     }
 
     public static func detectDates(in text: String, locale: Locale, anchor: Date, calendar: Calendar = .current) -> [DetectedDateItem] {
+        let text = correctOCRDateTypos(text)
         var items: [DetectedDateItem] = []
 
         // B6: Parse times and windows across the text
@@ -672,7 +730,7 @@ public enum DateInference {
         calendar: Calendar,
         timeInfo: TimeInfo
     ) -> [DetectedDateItem] {
-        let monthsPattern = "(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)"
+        let monthsPattern = "(?:January|Janurary|February|Febuary|March|April|May|June|July|August|September|Septmber|October|November|Novemer|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)"
         let weekdayPrefix = "(?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[,\\s]+)?"
 
         // Pattern 1: Month Name followed by range or single day (e.g. "Oct 12-14", "Oct 12–14, 2026", "July 18")

@@ -71,8 +71,9 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
     public func analyze(_ result: OCRResult, locale: Locale, anchor: Date, assetIdentifier: String) async -> PreparedUnderstanding {
         let span = IntelligenceTelemetry.begin("analyze")
         let analysis = await Task.detached(priority: .userInitiated) {
-            let extracted = EventExtractionCore.extract(from: result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier, calendar: calendar)
-            return RuleBasedEventAnalyzer.analyze(result: result, extracted: extracted, locale: locale, anchor: anchor, calendar: calendar)
+            let repaired = DateInference.repairOCRText(in: result)
+            let extracted = EventExtractionCore.extract(from: repaired, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier, calendar: calendar)
+            return RuleBasedEventAnalyzer.analyze(result: repaired, extracted: extracted, locale: locale, anchor: anchor, calendar: calendar)
         }.value
         let currentPolicy = policy()
         let decision: IntelligencePolicy.Decision = analysis.events.isEmpty
