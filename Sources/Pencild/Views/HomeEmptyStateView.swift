@@ -215,17 +215,13 @@ struct HomeEmptyStateView: View {
 
     private var titleBlock: some View {
         VStack(spacing: PDSpacing.sm) {
-            Text(HomeBrandCopy.captureHeading)
-                .font(PDFont.headlineLG)
-                .foregroundStyle(LinearGradient(colors: [.pdOrange, .pdCoral, .pdLavender], startPoint: .leading, endPoint: .trailing))
-                .multilineTextAlignment(.center)
-                .accessibilityAddTraits(.isHeader)
-            Image("PencildBrand")
+            Image("PencildTurnSchedulesShiny")
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 300, maxHeight: 172)
+                .frame(maxWidth: 320, maxHeight: 160)
                 .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
-                .accessibilityLabel("Pencil’d")
+                .accessibilityLabel("Pencil’d — \(HomeBrandCopy.captureHeading)")
+                .accessibilityAddTraits(.isHeader)
             Text(HomeBrandCopy.captureSubtitle)
                 .font(PDFont.bodyMD)
                 .foregroundStyle(Color.pdOnSurfaceVariant)
