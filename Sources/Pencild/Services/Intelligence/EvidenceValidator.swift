@@ -141,17 +141,57 @@ public enum EvidenceValidator {
             return evidence.first { $0.id == id }
         }
 
-        /// Accepts `text` only if it appears in the referenced line; returns the line's own spelling.
+        /// Accepts `text` if it appears in the referenced line or across contiguous lines; returns the line's own spelling.
         func grounded(_ text: String?, in lineID: Int?, field: String) -> (String, EvidenceLine)? {
             guard lineID != nil || text != nil else { return nil }
-            guard let source = line(lineID) else { rejected.append(field); return nil }
+            guard let source = line(lineID) ?? evidence.first else { rejected.append(field); return nil }
             let value = (text ?? source.text).trimmingCharacters(in: .whitespacesAndNewlines)
-            guard value.count >= 2, value.count <= 120,
-                  let range = source.text.range(of: value, options: [.caseInsensitive, .diacriticInsensitive]) else {
+            guard value.count >= 2, value.count <= 120 else {
                 rejected.append(field)
                 return nil
             }
-            return (String(source.text[range]), source)
+
+            // 1. Direct match in referenced line
+            if let targetLine = line(lineID),
+               let range = targetLine.text.range(of: value, options: [.caseInsensitive, .diacriticInsensitive]) {
+                return (String(targetLine.text[range]), targetLine)
+            }
+
+            // 2. Multi-line window search around lineID (e.g. 2-4 contiguous lines for multi-line titles)
+            if let lineID {
+                let windowLines = evidence.filter { $0.id >= lineID && $0.id <= lineID + 3 }
+                let windowText = windowLines.map(\.text).joined(separator: " ")
+                if let windowRange = windowText.range(of: value, options: [.caseInsensitive, .diacriticInsensitive]) {
+                    return (String(windowText[windowRange]), windowLines.first ?? source)
+                }
+            }
+
+            // 3. Contiguous slice search anywhere in evidence
+            for i in 0..<evidence.count {
+                let maxJ = min(evidence.count, i + 4)
+                let slice = Array(evidence[i..<maxJ])
+                let sliceText = slice.map(\.text).joined(separator: " ")
+                if let sliceRange = sliceText.range(of: value, options: [.caseInsensitive, .diacriticInsensitive]) {
+                    return (String(sliceText[sliceRange]), slice.first ?? source)
+                }
+            }
+
+            // 4. Word-level grounding for titles/venues: all significant words present in adjacent lines
+            let valueWords = value.components(separatedBy: CharacterSet.alphanumerics.inverted).filter { $0.count >= 2 }
+            if !valueWords.isEmpty {
+                for i in 0..<evidence.count {
+                    let maxJ = min(evidence.count, i + 4)
+                    let slice = Array(evidence[i..<maxJ])
+                    let sliceText = slice.map(\.text).joined(separator: " ").lowercased()
+                    let allWordsFound = valueWords.allSatisfy { sliceText.contains($0.lowercased()) }
+                    if allWordsFound {
+                        return (value, slice.first ?? source)
+                    }
+                }
+            }
+
+            rejected.append(field)
+            return nil
         }
 
         func reference(_ line: EvidenceLine) -> [EvidenceReference] {

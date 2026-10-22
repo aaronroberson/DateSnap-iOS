@@ -314,6 +314,33 @@ struct PencildInferenceTests {
         }
     }
 
+    @Test("Social media caption text is deprioritized over compound flyer title")
+    func testScreenshotCaptionVersusFlyerTitle() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let anchor = calendar.date(from: DateComponents(year: 2026, month: 10, day: 1))!
+        let lines = [
+            OCRLine(text: "Ague im the host for Thursday Portland and", confidence: 0.9, boundingBox: CGRect(x: 0.1, y: 0.85, width: 0.8, height: 0.04)),
+            OCRLine(text: "I'm holding another heavily requested 35+", confidence: 0.9, boundingBox: CGRect(x: 0.1, y: 0.80, width: 0.8, height: 0.04)),
+            OCRLine(text: "event! Last one we sold out with singles.", confidence: 0.9, boundingBox: CGRect(x: 0.1, y: 0.75, width: 0.8, height: 0.04)),
+            OCRLine(text: "ROSE CITY SOCIAL CLUB", confidence: 0.9, boundingBox: CGRect(x: 0.2, y: 0.40, width: 0.6, height: 0.05)),
+            OCRLine(text: "OCT 23", confidence: 0.95, boundingBox: CGRect(x: 0.3, y: 0.35, width: 0.4, height: 0.05)),
+            OCRLine(text: "7 PM", confidence: 0.95, boundingBox: CGRect(x: 0.3, y: 0.30, width: 0.4, height: 0.05)),
+            OCRLine(text: "VINTAGE", confidence: 0.95, boundingBox: CGRect(x: 0.2, y: 0.20, width: 0.6, height: 0.06)),
+            OCRLine(text: "HOLLYWOOD", confidence: 0.95, boundingBox: CGRect(x: 0.15, y: 0.14, width: 0.7, height: 0.06)),
+            OCRLine(text: "NIGHT", confidence: 0.95, boundingBox: CGRect(x: 0.25, y: 0.08, width: 0.5, height: 0.06))
+        ]
+        let fullText = lines.map(\.text).joined(separator: "\n")
+        let result = OCRResult(fullText: fullText, lines: lines, meanConfidence: 0.93)
+
+        let candidates = EventExtractionCore.extract(from: result, locale: Locale(identifier: "en_US"), anchor: anchor, calendar: calendar)
+        #expect(candidates.count == 1)
+        if let first = candidates.first {
+            #expect(first.title.uppercased().contains("VINTAGE HOLLYWOOD NIGHT"))
+            #expect(!first.title.contains("Ague im the host"))
+        }
+    }
+
     // MARK: - 6. False-Positive Filtering Tests
 
     @Test("Receipts, shipping notices, and pure timestamps are rejected as false positives")

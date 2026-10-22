@@ -1196,39 +1196,73 @@ public enum DateInference {
             "subtotal", "total", "tax", "price"
         ]
 
+        let conversationalKeywords = [
+            "im", "i'm", "i am", "we're", "we are", "my", "you're", "youre", "ur", "soooo",
+            "dm me", "link in bio", "swipe", "follow", "would love", "see ya", "see you there",
+            "cant wait", "can't wait", "holding another", "sold out", "word of mouth",
+            "crush might", "ticketed event", "make sure to", "grab yours", "spread the word",
+            "thinking about coming", "host for", "comment below", "tag a friend"
+        ]
+
+        // Build composite multi-line candidates for titles split across 2-3 lines (e.g. VINTAGE / HOLLYWOOD / NIGHT)
+        var pool: [(line: OCRLine, isCompound: Bool)] = lines.map { ($0, false) }
+        for i in 0..<lines.count {
+            let l1 = lines[i]
+            let t1 = l1.text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard t1.count >= 2, t1.count <= 30, !isTemporalOnlyLine(t1) else { continue }
+            let words1 = t1.split(whereSeparator: \.isWhitespace).count
+            guard words1 <= 4, !t1.hasSuffix("."), !t1.hasSuffix("!") else { continue }
+
+            var accumText = t1
+            var accumBox = l1.boundingBox
+            var minConf = l1.confidence
+
+            for j in (i + 1)..<min(lines.count, i + 3) {
+                let next = lines[j]
+                let tNext = next.text.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard tNext.count >= 2, tNext.count <= 30, !isTemporalOnlyLine(tNext) else { break }
+                let wordsNext = tNext.split(whereSeparator: \.isWhitespace).count
+                guard wordsNext <= 4, !tNext.hasSuffix("."), !tNext.hasSuffix("!") else { break }
+
+                let yDist = abs(next.boundingBox.origin.y - accumBox.origin.y)
+                guard yDist < 0.35 else { break }
+
+                accumText += " \(tNext)"
+                accumBox = accumBox.union(next.boundingBox)
+                minConf = min(minConf, next.confidence)
+                pool.append((OCRLine(text: accumText, confidence: minConf, boundingBox: accumBox), true))
+            }
+        }
+
+        let maxHeight = pool.map { $0.line.boundingBox.height }.max() ?? 1.0
         var scoredLines: [(line: OCRLine, score: Float)] = []
 
-        // In Vision coords, origin is lower-left (0,0). Upper 60% of image corresponds to y >= 0.40.
-        let upperLines = lines.filter { $0.boundingBox.origin.y >= 0.40 }
-        let candidatePool = upperLines.isEmpty ? lines : upperLines
-
-        // Type size is the rendered line height; the tallest line in the pool is the headline.
-        let maxHeight = candidatePool.map { $0.boundingBox.height }.max() ?? 1.0
-
-        for line in candidatePool {
+        for item in pool {
+            let line = item.line
             let trimmed = line.text.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.count < 3 || trimmed.count > 70 { continue }
 
             let lower = trimmed.lowercased()
-            // Whole-word match so "SUNSET" isn't read as "sun" (Sunday) or "CAMP" as "am".
             let words = Set(lower.components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "+")).inverted).filter { !$0.isEmpty })
             let containsBoilerplate = boilerplateKeywords.contains { keyword in
+                keyword.contains(" ") ? lower.contains(keyword) : words.contains(keyword)
+            }
+            let containsConversational = conversationalKeywords.contains { keyword in
                 keyword.contains(" ") ? lower.contains(keyword) : words.contains(keyword)
             }
             let isNumericDate = trimmed.range(of: "^\\d{1,2}[/.-]\\d{1,2}", options: .regularExpression) != nil
             if isNumericDate || isTemporalOnlyLine(trimmed) { continue }
 
-            // Prominence dominates: a large headline beats wider body copy.
             let sizeRank = Float(line.boundingBox.height / max(0.001, maxHeight)) * 0.55
             let widthScore = Float(line.normalizedWidth) * 0.10
-            // Top quartile bonus: maxY in top 25% of image (y >= 0.75)
-            let topQuartileBonus: Float = line.boundingBox.maxY >= 0.75 ? 0.10 : 0.0
-            // Sentence-like lines (many words, or closing punctuation) are descriptions, not titles.
+            let topQuartileBonus: Float = line.boundingBox.maxY >= 0.75 ? 0.08 : (line.boundingBox.origin.y >= 0.35 ? 0.04 : 0.0)
+            let compoundBonus: Float = item.isCompound ? 0.15 : 0.0
+
             let wordCount = trimmed.split(whereSeparator: \.isWhitespace).count
             let isSentence = wordCount > 8 || trimmed.hasSuffix(".") || trimmed.hasSuffix("!") || trimmed.hasSuffix("?")
-            let penalty: Float = (containsBoilerplate ? 0.25 : 0.0) + (isSentence ? 0.25 : 0.0)
+            let penalty: Float = (containsBoilerplate ? 0.25 : 0.0) + (isSentence ? 0.25 : 0.0) + (containsConversational ? 0.45 : 0.0)
 
-            let totalScore = max(0.1, sizeRank + widthScore + topQuartileBonus - penalty)
+            let totalScore = max(0.1, sizeRank + widthScore + topQuartileBonus + compoundBonus - penalty)
             scoredLines.append((line, totalScore))
         }
 

@@ -130,6 +130,12 @@ struct AlternativeInterpretationsCard: View {
                                 : .dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute()))
                                 .font(PDFont.bodySM)
                                 .foregroundStyle(Color.pdOnSurfaceVariant)
+                            if let venue = alternative.venue.value, !venue.isEmpty {
+                                Label(venue, systemImage: "mappin.and.ellipse")
+                                    .font(PDFont.bodySM)
+                                    .foregroundStyle(Color.pdOnSurfaceVariant)
+                                    .lineLimit(1)
+                            }
                             if let reason = alternative.start.reason ?? alternative.title.reason {
                                 Text(reason)
                                     .font(PDFont.bodySM)
@@ -512,7 +518,7 @@ private struct OpenEndedConflictRadarCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("Conflict Radar", systemImage: "radar")
+                Label("Conflict Radar", systemImage: "dot.radiowaves.left.and.right")
                     .font(PDFont.labelLG)
                     .foregroundStyle(Color.pdOnSurface)
                 Spacer()
@@ -634,7 +640,7 @@ struct SpecializedConflictRadarsCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label("Deconfliction Radar", systemImage: "radar")
+                Label("Deconfliction Radar", systemImage: "dot.radiowaves.left.and.right")
                     .font(PDFont.labelLG)
                     .foregroundStyle(Color.pdOnSurface)
                 Spacer()

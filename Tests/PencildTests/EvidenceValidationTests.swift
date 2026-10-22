@@ -130,4 +130,30 @@ struct EvidenceValidationTests {
         #expect(bounded.lines.allSatisfy { $0.text.count <= 200 })
         #expect(bounded.lines.reduce(0) { $0 + $1.text.count } <= 3000)
     }
+
+    @Test("Multi-line title across contiguous lines is grounded and accepted")
+    func acceptsMultiLineGroundedTitle() throws {
+        let multiLinePoster = makeOCR([
+            ("VINTAGE", 0.08),
+            ("HOLLYWOOD", 0.08),
+            ("NIGHT", 0.08),
+            ("ROSE CITY SOCIAL CLUB", 0.05),
+            ("October 23, 2026", 0.04),
+            ("7:00 PM", 0.04)
+        ])
+        let extracted = EventExtractionCore.extract(from: multiLinePoster, locale: locale, anchor: testAnchor, calendar: testCalendar)
+        let a = RuleBasedEventAnalyzer.analyze(result: multiLinePoster, extracted: extracted, locale: locale, anchor: testAnchor, calendar: testCalendar)
+        let baseline = try #require(a.events.first?.best)
+        let hypothesis = EventHypothesis(
+            titleLineID: 0, titleText: "Vintage Hollywood Night",
+            venueLineID: 3, venueText: "ROSE CITY SOCIAL CLUB",
+            dateLineID: 4,
+            startTimeLineID: 5, startTimeText: "7:00 PM"
+        )
+        let outcome = EvidenceValidator.validate(hypothesis, against: baseline, evidence: a.evidence, locale: locale, anchor: testAnchor, calendar: testCalendar)
+        let merged = try #require(outcome.candidate)
+        #expect(!outcome.rejectedFields.contains("title"))
+        #expect(merged.title.value == "VINTAGE HOLLYWOOD NIGHT")
+        #expect(merged.title.provenance == .modelInterpretation)
+    }
 }
