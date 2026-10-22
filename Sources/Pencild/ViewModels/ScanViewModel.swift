@@ -85,6 +85,7 @@ public final class ScanViewModel: ObservableObject {
         sourceMedium: EventSourceMedium = .screenshot,
         allowICloudDownload: Bool = false
     ) async {
+        print("[Pencild-Scan] scanAsset called for \(asset.localIdentifier), allowICloud: \(allowICloudDownload)")
         isCancelling = false
         isProcessing = true
         stage = .fetchingImage
@@ -95,6 +96,7 @@ public final class ScanViewModel: ObservableObject {
         let photos = photoLibraryService
         let fetch = Task<UIImage, any Error> {
             guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else {
+                print("[Pencild-Scan] PHAsset.fetchAssets returned nil for \(identifier)")
                 throw PencildError.photoLibrary(.assetNotFound(identifier))
             }
             return try await photos.fetchImage(
@@ -109,7 +111,9 @@ public final class ScanViewModel: ObservableObject {
 
         do {
             let image = try await fetch.value
+            print("[Pencild-Scan] fetch.value returned image with size: \(image.size)")
             guard !isCancelling else {
+                print("[Pencild-Scan] scan was cancelled after image fetch")
                 stage = .idle
                 isProcessing = false
                 return
@@ -117,6 +121,7 @@ public final class ScanViewModel: ObservableObject {
             self.currentProcessingImage = image
             await scanImage(image, assetIdentifier: asset.localIdentifier, modelContext: modelContext, sourceMedium: sourceMedium)
         } catch {
+            print("[Pencild-Scan] scanAsset caught error: \(error)")
             stage = isCancelling ? .idle : .failed(error.localizedDescription)
             isProcessing = false
         }

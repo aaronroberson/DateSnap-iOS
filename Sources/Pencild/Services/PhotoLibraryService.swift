@@ -99,12 +99,13 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
         allowICloudDownload: Bool,
         progress: (@Sendable (Double) -> Void)? = nil
     ) async throws -> UIImage {
+        print("[Pencild-Photo] Starting fetchImage for asset \(asset.localIdentifier), allowICloudDownload: \(allowICloudDownload)")
         let imageManager = PHImageManager.default()
         let options = PHImageRequestOptions()
         // Pencil'd only scans on-device assets by default. iCloud downloads are an explicit opt-in
         // (see `ICloudDownloadPreference`), so the network is enabled only when the user approved it.
         options.isNetworkAccessAllowed = allowICloudDownload
-        options.deliveryMode = .highQualityFormat
+        options.deliveryMode = .opportunistic
         options.isSynchronous = false
         // `.fast` resizes before decoding so a 360×640 thumbnail request never decodes the full
         // screenshot original — the previous default could decode multi-megapixel images for a
@@ -133,15 +134,22 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                     contentMode: .aspectFit,
                     options: options
                 ) { image, info in
-                    if (info?[PHImageCancelledKey] as? Bool) == true {
+                    let isCancelled = (info?[PHImageCancelledKey] as? Bool) ?? false
+                    let isInCloud = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
+                    let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
+                    print("[Pencild-Photo] requestImage callback: image=\(String(describing: image?.size)), isDegraded=\(isDegraded), isInCloud=\(isInCloud), cancelled=\(isCancelled), error=\(String(describing: info?[PHImageErrorKey]))")
+
+                    if isCancelled {
                         request.finish(.failure(CancellationError()))
                         return
                     }
-                    let isInCloud = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
-                    let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
 
                     if let image {
-                        // Accept a degraded image rather than hang; the gate drops the later final one.
+                        // If it's a degraded thumbnail preview that's too tiny for OCR, wait for the full image callback
+                        if isDegraded && (image.size.width < 300 || image.size.height < 300) {
+                            print("[Pencild-Photo] Skipping degraded preview frame \(image.size), waiting for full image")
+                            return
+                        }
                         request.finish(.success(image))
                     } else if isInCloud && !allowICloudDownload {
                         request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadRequired)))
@@ -167,6 +175,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
                 let limit = allowICloudDownload ? Self.downloadTimeout : Self.localTimeout
                 DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + limit) {
                     if let expiredID = request.expire() {
+                        print("[Pencild-Photo] request timed out after \(limit)s, cancelling request \(expiredID)")
                         PHImageManager.default().cancelImageRequest(expiredID)
                     }
                 }
@@ -180,6 +189,7 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
 
     // MARK: - iCloud cloud-state probe
     public func isInCloud(for asset: PHAsset) async -> Bool {
+        print("[Pencild-Photo] Probing isInCloud for asset \(asset.localIdentifier)")
         let imageManager = PHImageManager.default()
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = false
@@ -190,17 +200,38 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
         let probeSize = CGSize(width: 8, height: 8)
 
         return await withCheckedContinuation { continuation in
+            let lock = NSLock()
             var hasResumed = false
-            imageManager.requestImage(
+            let requestID = imageManager.requestImage(
                 for: asset,
                 targetSize: probeSize,
                 contentMode: .aspectFit,
                 options: options
             ) { _, info in
-                guard !hasResumed else { return }
+                lock.lock()
+                guard !hasResumed else {
+                    lock.unlock()
+                    return
+                }
                 hasResumed = true
+                lock.unlock()
                 let isInCloud = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
+                print("[Pencild-Photo] isInCloud probe result for \(asset.localIdentifier): \(isInCloud)")
                 continuation.resume(returning: isInCloud)
+            }
+
+            // Failsafe: probe must never block longer than 1.5s
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1.5) {
+                lock.lock()
+                guard !hasResumed else {
+                    lock.unlock()
+                    return
+                }
+                hasResumed = true
+                lock.unlock()
+                PHImageManager.default().cancelImageRequest(requestID)
+                print("[Pencild-Photo] isInCloud probe timed out for \(asset.localIdentifier), defaulting to false")
+                continuation.resume(returning: false)
             }
         }
     }
