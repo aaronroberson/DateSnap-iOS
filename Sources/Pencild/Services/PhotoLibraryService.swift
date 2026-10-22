@@ -102,14 +102,10 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
         print("[Pencild-Photo] Starting fetchImage for asset \(asset.localIdentifier), allowICloudDownload: \(allowICloudDownload)")
         let imageManager = PHImageManager.default()
         let options = PHImageRequestOptions()
-        // Pencil'd only scans on-device assets by default. iCloud downloads are an explicit opt-in
-        // (see `ICloudDownloadPreference`), so the network is enabled only when the user approved it.
         options.isNetworkAccessAllowed = allowICloudDownload
         options.isSynchronous = false
         options.version = .current
 
-        // Forward iCloud download progress when a callback was provided. `PHAssetImageProgressHandler`
-        // bridges to `(Double, Error?, UnsafeMutablePointer<ObjCBool>?, [AnyHashable: Any]?) -> Void`.
         if let progress {
             let forward: (Double) -> Void = progress
             let handler: (Double, Error?, UnsafeMutablePointer<ObjCBool>?, [AnyHashable: Any]?) -> Void = { value, _, _, _ in
@@ -118,54 +114,67 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
             options.progressHandler = handler
         }
 
-        // Cancelling the Swift task (a thumbnail scrolled off screen, a cancelled scan) cancels the
-        // Photos request too, so stale decodes and iCloud downloads don't pile up.
-        let request = ImageRequestGate()
-        return try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<UIImage, any Error>) in
-                request.install(continuation)
-                let requestID = imageManager.requestImageDataAndOrientation(
-                    for: asset,
-                    options: options
-                ) { data, dataUTI, orientation, info in
-                    let isCancelled = (info?[PHImageCancelledKey] as? Bool) ?? false
-                    let isInCloud = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
-                    let error = info?[PHImageErrorKey] as? Error
-                    print("[Pencild-Photo] requestImageData callback: bytes=\(data?.count ?? 0), isInCloud=\(isInCloud), cancelled=\(isCancelled), error=\(String(describing: error))")
+        return try await withCheckedThrowingContinuation { continuation in
+            let stateLock = NSLock()
+            var hasResumed = false
+            var activeRequestID: PHImageRequestID?
 
-                    if isCancelled {
-                        request.finish(.failure(CancellationError()))
-                        return
-                    }
-
-                    if let data, var image = UIImage(data: data) {
-                        if let cgImage = image.cgImage, orientation != .up {
-                            image = UIImage(cgImage: cgImage, scale: image.scale, orientation: orientation.uiOrientation)
-                        }
-                        print("[Pencild-Photo] Loaded full-resolution image: \(image.size)")
-                        request.finish(.success(image))
-                    } else if isInCloud && !allowICloudDownload {
-                        request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadRequired)))
-                    } else if allowICloudDownload, let error {
-                        request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadFailed(error.localizedDescription))))
-                    } else {
-                        request.finish(.failure(PencildError.photoLibrary(.imageConversionFailed)))
-                    }
+            let requestID = imageManager.requestImageDataAndOrientation(
+                for: asset,
+                options: options
+            ) { data, dataUTI, orientation, info in
+                stateLock.lock()
+                guard !hasResumed else {
+                    stateLock.unlock()
+                    return
                 }
-                request.setRequestID(requestID)
+                hasResumed = true
+                stateLock.unlock()
 
-                // Backstop: never leave a scan or thumbnail waiting forever on Photos.
-                let limit = allowICloudDownload ? Self.downloadTimeout : Self.localTimeout
-                DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + limit) {
-                    if let expiredID = request.expire() {
-                        print("[Pencild-Photo] request timed out after \(limit)s, cancelling request \(expiredID)")
-                        PHImageManager.default().cancelImageRequest(expiredID)
+                let isCancelled = (info?[PHImageCancelledKey] as? Bool) ?? false
+                let isInCloud = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
+                let error = info?[PHImageErrorKey] as? Error
+                print("[Pencild-Photo] requestImageData callback: bytes=\(data?.count ?? 0), isInCloud=\(isInCloud), cancelled=\(isCancelled), error=\(String(describing: error))")
+
+                if isCancelled {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+
+                if let data, var image = UIImage(data: data) {
+                    if let cgImage = image.cgImage, orientation != .up {
+                        image = UIImage(cgImage: cgImage, scale: image.scale, orientation: orientation.uiOrientation)
                     }
+                    print("[Pencild-Photo] Resuming continuation with loaded full-resolution image: \(image.size)")
+                    continuation.resume(returning: image)
+                } else if isInCloud && !allowICloudDownload {
+                    continuation.resume(throwing: PencildError.photoLibrary(.iCloudDownloadRequired))
+                } else if allowICloudDownload, let error {
+                    continuation.resume(throwing: PencildError.photoLibrary(.iCloudDownloadFailed(error.localizedDescription)))
+                } else {
+                    continuation.resume(throwing: PencildError.photoLibrary(.imageConversionFailed))
                 }
             }
-        } onCancel: {
-            if let requestID = request.cancel() {
-                PHImageManager.default().cancelImageRequest(requestID)
+
+            stateLock.lock()
+            activeRequestID = requestID
+            stateLock.unlock()
+
+            let limit = allowICloudDownload ? Self.downloadTimeout : Self.localTimeout
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + limit) {
+                stateLock.lock()
+                guard !hasResumed else {
+                    stateLock.unlock()
+                    return
+                }
+                hasResumed = true
+                let idToCancel = activeRequestID
+                stateLock.unlock()
+
+                if let idToCancel {
+                    PHImageManager.default().cancelImageRequest(idToCancel)
+                }
+                continuation.resume(throwing: PencildError.photoLibrary(.imageLoadTimedOut))
             }
         }
     }
