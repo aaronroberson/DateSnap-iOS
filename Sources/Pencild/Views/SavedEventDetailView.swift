@@ -225,6 +225,15 @@ struct SavedEventDetailView: View {
             }
             .buttonStyle(PDPrimaryButtonStyle())
             .disabled(!hasCalendarRecord)
+
+            Button {
+                dismiss()
+            } label: {
+                Text("Close")
+            }
+            .buttonStyle(PDSecondaryButtonStyle())
+            .accessibilityIdentifier("savedEventDetail.closeButton")
+
             HStack(spacing: PDSpacing.sm) {
                 Button { Task { await appState.present(.eventReviewEdit(event)) } } label: {
                     Label("Edit", systemImage: "pencil").frame(maxWidth: .infinity, minHeight: 48)
