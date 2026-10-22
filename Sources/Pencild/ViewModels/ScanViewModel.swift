@@ -242,7 +242,7 @@ public final class ScanViewModel: ObservableObject {
             let ocrResult: OCRResult
             do {
                 ocrResult = try await recognizeWithRetry(page)
-                print("[Pencild-Scan] OCR succeeded with \(ocrResult.lines.count) lines")
+                print("[Pencild-Scan] OCR succeeded with \(ocrResult.lines.count) lines:\n\(ocrResult.fullText)")
             } catch PencildError.ocr(.noTextRecognized) {
                 print("[Pencild-Scan] OCR found no text")
                 guard !isCancelling else { return }
