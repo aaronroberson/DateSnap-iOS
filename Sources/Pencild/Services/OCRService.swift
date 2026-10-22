@@ -63,7 +63,9 @@ extension OCRServiceProtocol {
 
 // MARK: - Production OCR Service
 
-public final class OCRService: OCRServiceProtocol {
+public final class OCRService: OCRServiceProtocol, @unchecked Sendable {
+    private static let serialQueue = DispatchQueue(label: "com.pencild.ocr.serial", qos: .userInitiated)
+
     public init() {}
 
     public func recognizeText(in image: UIImage) async throws -> (fullText: String, confidence: Float) {
@@ -78,61 +80,66 @@ public final class OCRService: OCRServiceProtocol {
 
         let orientation = CGImagePropertyOrientation(image.imageOrientation)
 
-        // Process OCR on background thread off the main actor
-        return try await Task.detached(priority: .userInitiated) {
-            let request = VNRecognizeTextRequest()
-            request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = true
-            request.automaticallyDetectsLanguage = true
+        return try await withCheckedThrowingContinuation { continuation in
+            Self.serialQueue.async {
+                let request = VNRecognizeTextRequest()
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                request.automaticallyDetectsLanguage = true
 
-            let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
+                let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
 
-            do {
-                try handler.perform([request])
-            } catch {
-                throw PencildError.ocr(.visionRequestFailed(error.localizedDescription))
-            }
+                do {
+                    try handler.perform([request])
+                } catch {
+                    continuation.resume(throwing: PencildError.ocr(.visionRequestFailed(error.localizedDescription)))
+                    return
+                }
 
-            guard let observations = request.results, !observations.isEmpty else {
-                throw PencildError.ocr(.noTextRecognized)
-            }
+                guard let observations = request.results, !observations.isEmpty else {
+                    continuation.resume(throwing: PencildError.ocr(.noTextRecognized))
+                    return
+                }
 
-            var detectedLines: [OCRLine] = []
-            var totalConfidence: Float = 0.0
+                var detectedLines: [OCRLine] = []
+                var totalConfidence: Float = 0.0
 
-            for observation in observations {
-                if let candidate = observation.topCandidates(1).first {
-                    let text = candidate.string.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if !text.isEmpty {
-                        let line = OCRLine(
-                            text: text,
-                            confidence: candidate.confidence,
-                            boundingBox: observation.boundingBox
-                        )
-                        detectedLines.append(line)
-                        totalConfidence += candidate.confidence
+                for observation in observations {
+                    if let candidate = observation.topCandidates(1).first {
+                        let text = candidate.string.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if !text.isEmpty {
+                            let line = OCRLine(
+                                text: text,
+                                confidence: candidate.confidence,
+                                boundingBox: observation.boundingBox
+                            )
+                            detectedLines.append(line)
+                            totalConfidence += candidate.confidence
+                        }
                     }
                 }
+
+                guard !detectedLines.isEmpty else {
+                    continuation.resume(throwing: PencildError.ocr(.noTextRecognized))
+                    return
+                }
+
+                // In Vision coordinates, origin is lower-left (0,0) and top is (1,1).
+                // Sort top-to-bottom: higher maxY appears higher on the physical flyer/screenshot.
+                detectedLines.sort { $0.boundingBox.maxY > $1.boundingBox.maxY }
+
+                let fullText = detectedLines.map { $0.text }.joined(separator: "\n")
+                let meanConfidence = totalConfidence / Float(detectedLines.count)
+
+                // Guard against unreadable or heavily blurred screenshots
+                if meanConfidence < confidenceFloor {
+                    continuation.resume(throwing: PencildError.ocr(.insufficientConfidence(meanConfidence)))
+                    return
+                }
+
+                continuation.resume(returning: OCRResult(fullText: fullText, lines: detectedLines, meanConfidence: meanConfidence))
             }
-
-            guard !detectedLines.isEmpty else {
-                throw PencildError.ocr(.noTextRecognized)
-            }
-
-            // In Vision coordinates, origin is lower-left (0,0) and top is (1,1).
-            // Sort top-to-bottom: higher maxY appears higher on the physical flyer/screenshot.
-            detectedLines.sort { $0.boundingBox.maxY > $1.boundingBox.maxY }
-
-            let fullText = detectedLines.map { $0.text }.joined(separator: "\n")
-            let meanConfidence = totalConfidence / Float(detectedLines.count)
-
-            // Guard against unreadable or heavily blurred screenshots
-            if meanConfidence < confidenceFloor {
-                throw PencildError.ocr(.insufficientConfidence(meanConfidence))
-            }
-
-            return OCRResult(fullText: fullText, lines: detectedLines, meanConfidence: meanConfidence)
-        }.value
+        }
     }
 }
 

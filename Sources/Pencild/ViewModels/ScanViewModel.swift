@@ -237,14 +237,18 @@ public final class ScanViewModel: ObservableObject {
             progressDetail = pages.count > 1 ? "Page \(index + 1) of \(pages.count)" : nil
 
             // Step 1: On-Device Vision OCR with layout metadata
+            print("[Pencild-Scan] Stage transitioning to .processingOCR")
             stage = .processingOCR
             let ocrResult: OCRResult
             do {
                 ocrResult = try await recognizeWithRetry(page)
+                print("[Pencild-Scan] OCR succeeded with \(ocrResult.lines.count) lines")
             } catch PencildError.ocr(.noTextRecognized) {
+                print("[Pencild-Scan] OCR found no text")
                 guard !isCancelling else { return }
                 continue
             } catch {
+                print("[Pencild-Scan] OCR failed with: \(error)")
                 guard !isCancelling else { return }
                 if pages.count == 1 {
                     stage = .failed(error.localizedDescription)
@@ -259,16 +263,21 @@ public final class ScanViewModel: ObservableObject {
             // Work schedules and multi-date flyers are Premium: check before creating any events.
             if !isAllowed(.scheduleImport),
                ScheduleExtractor.detects(ocrResult, locale: .current, anchor: Date(), calendar: .current) {
+                print("[Pencild-Scan] Schedule detected, requires upgrade")
                 stage = .requiresUpgrade(.scheduleImport)
                 return
             }
 
             // Step 2: On-Device NaturalLanguage & Regex Event Extraction
             // Step 2: Deterministic extraction, then (when useful and available) on-device interpretation
+            print("[Pencild-Scan] Stage transitioning to .extractingEvents")
             stage = .extractingEvents
             let prepared = await understanding.analyze(ocrResult, locale: .current, anchor: Date(), assetIdentifier: assetIdentifier)
             guard !isCancelling else { return }
-            if prepared.willInterpret { stage = .interpreting }
+            if prepared.willInterpret {
+                print("[Pencild-Scan] Stage transitioning to .interpreting")
+                stage = .interpreting
+            }
             let completion = Task.detached(priority: .userInitiated) { await understanding.complete(prepared) }
             interpretationTask = completion
             let result = await completion.value

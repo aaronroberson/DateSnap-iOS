@@ -168,36 +168,34 @@ public final class HomeViewModel: ObservableObject {
             .filter { !scannedIDs.contains($0.localIdentifier) && !assessedIDs.contains($0.localIdentifier) }
             .prefix(PhotoCandidateRanker.assessmentBudget)
         let granted = IntelligenceUsagePolicy().consume(.likelyEventTriage, count: candidates.count, tier: snapshot.effectiveTier)
-        let pending = candidates.prefix(granted)
+        let pending = Array(candidates.prefix(granted))
         guard !pending.isEmpty else { return .allowed }
         let photos = photoLibraryService
         let ocr = ocrService
-        triageTask = Task { [weak self] in
-            await withTaskGroup(of: (String, Bool).self) { group in
-                for asset in pending {
-                    guard !Task.isCancelled else { break }
-                    let assetID = asset.localIdentifier
-                    group.addTask {
-                        let likely = await PhotoCandidateRanker.isLikelyEvent(asset, photos: photos, ocr: ocr)
-                        return (assetID, likely)
-                    }
-                }
-                var newAssessed: Set<String> = []
-                var newLikely: Set<String> = []
-                for await (assetID, likely) in group {
-                    guard !Task.isCancelled else { break }
-                    newAssessed.insert(assetID)
-                    if likely { newLikely.insert(assetID) }
-                }
-                guard let self = self, !Task.isCancelled else { return }
-                self.assessedIDs.formUnion(newAssessed)
-                if !newLikely.isEmpty {
-                    self.likelyEventIDs.formUnion(newLikely)
-                }
+        triageTask = Task(priority: .utility) { [weak self] in
+            var newAssessed: Set<String> = []
+            var newLikely: Set<String> = []
+            for asset in pending {
+                guard !Task.isCancelled else { break }
+                let assetID = asset.localIdentifier
+                let likely = await PhotoCandidateRanker.isLikelyEvent(asset, photos: photos, ocr: ocr)
+                guard !Task.isCancelled else { break }
+                newAssessed.insert(assetID)
+                if likely { newLikely.insert(assetID) }
             }
-            self?.triageTask = nil
+            guard let self = self, !Task.isCancelled else { return }
+            self.assessedIDs.formUnion(newAssessed)
+            if !newLikely.isEmpty {
+                self.likelyEventIDs.formUnion(newLikely)
+            }
+            self.triageTask = nil
         }
         return .allowed
+    }
+
+    public func cancelTriage() {
+        triageTask?.cancel()
+        triageTask = nil
     }
 
     // MARK: - Observe Photo Library Changes
