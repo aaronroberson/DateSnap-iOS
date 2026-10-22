@@ -72,7 +72,7 @@ struct ScanProgressOverlay: View {
                             VStack(spacing: PDSpacing.md) {
                                 PDScanStepRow(title: "Load source", icon: "photo", complete: step > 0, active: step == 0)
                                 PDScanStepRow(title: "Read text on device", icon: "text.viewfinder", complete: step > 1, active: step == 1)
-                                PDScanStepRow(title: "Find dates and places", icon: "calendar.badge.magnifyingglass", complete: step > 2, active: step == 2)
+                                PDScanStepRow(title: "Find dates and places", icon: "calendar.badge.clock", complete: step > 2, active: step == 2)
                                 if scan.stage == .interpreting {
                                     PDScanStepRow(title: "Interpret event details", icon: "sparkles", complete: false, active: true)
                                 }

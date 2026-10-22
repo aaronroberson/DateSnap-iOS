@@ -239,12 +239,37 @@ struct HomeEmptyStateView: View {
         CaptureScreenshotsCard(isDisabled: scanViewModel.isProcessing, action: scanRecentScreenshots) {
             CaptureScreenshotsFooter(
                 onScanAsset: { asset in
-                    runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext) }
+                    scanSingleAssetWithGate(asset)
                 },
                 onReview: {
                     withAnimation(.easeInOut(duration: 0.2)) { appState.selectedTab = .review }
                 }
             )
+        }
+    }
+
+    private func scanSingleAssetWithGate(_ asset: PHAsset) {
+        Task {
+            guard await homeViewModel.ensurePhotoAccess() else {
+                showPhotoAccessAlert = true
+                return
+            }
+            if await services.photoLibrary.isInCloud(for: asset) {
+                switch RemoteAssetGate.decide(remoteCount: 1, preference: ICloudDownloadPreference.standard) {
+                case .proceed(let allow):
+                    runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext, allowICloudDownload: allow) }
+                case .skipRemotes:
+                    appState.showToast("Skipped iCloud-only screenshot. Allow iCloud downloads in Settings to scan it.")
+                case .ask:
+                    appState.pendingICloudSingle = ICloudSingleConfirmation(itemLabel: "screenshot") { downloadAllowed in
+                        self.runScan {
+                            await self.scanViewModel.scanAsset(asset, modelContext: self.modelContext, allowICloudDownload: downloadAllowed)
+                        }
+                    }
+                }
+            } else {
+                runScan { await scanViewModel.scanAsset(asset, modelContext: modelContext, allowICloudDownload: false) }
+            }
         }
     }
 

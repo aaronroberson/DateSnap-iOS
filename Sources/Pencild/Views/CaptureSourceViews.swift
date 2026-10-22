@@ -442,8 +442,25 @@ struct CaptureSourceSheet: View {
                         CaptureScreenshotsFooter(
                             onScanAsset: { asset in
                                 Task {
-                                    await scanViewModel.scanAsset(asset, modelContext: modelContext)
-                                    await appState.handleScanOutcome(scanViewModel, services: services)
+                                    if await services.photoLibrary.isInCloud(for: asset) {
+                                        switch RemoteAssetGate.decide(remoteCount: 1, preference: ICloudDownloadPreference.standard) {
+                                        case .proceed(let allow):
+                                            await scanViewModel.scanAsset(asset, modelContext: modelContext, allowICloudDownload: allow)
+                                            await appState.handleScanOutcome(scanViewModel, services: services)
+                                        case .skipRemotes:
+                                            appState.showToast("Skipped iCloud-only screenshot. Allow iCloud downloads in Settings to scan it.")
+                                        case .ask:
+                                            appState.pendingICloudSingle = ICloudSingleConfirmation(itemLabel: "screenshot") { downloadAllowed in
+                                                Task {
+                                                    await self.scanViewModel.scanAsset(asset, modelContext: self.modelContext, allowICloudDownload: downloadAllowed)
+                                                    await self.appState.handleScanOutcome(self.scanViewModel, services: self.services)
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        await scanViewModel.scanAsset(asset, modelContext: modelContext, allowICloudDownload: false)
+                                        await appState.handleScanOutcome(scanViewModel, services: services)
+                                    }
                                 }
                             },
                             onReview: {
