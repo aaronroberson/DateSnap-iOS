@@ -90,28 +90,21 @@ public final class ScanViewModel: ObservableObject {
         isProcessing = true
         stage = .fetchingImage
 
-        // The fetch runs in its own task so Cancel can stop it. Cancelling it cancels the Photos
-        // request, which resumes the await right away instead of leaving the sheet stuck.
         let identifier = asset.localIdentifier
         let photos = photoLibraryService
-        let fetch = Task<UIImage, any Error> {
+
+        do {
             guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else {
                 print("[Pencild-Scan] PHAsset.fetchAssets returned nil for \(identifier)")
                 throw PencildError.photoLibrary(.assetNotFound(identifier))
             }
-            return try await photos.fetchImage(
+            let image = try await photos.fetchImage(
                 for: asset,
                 targetSize: CGSize(width: 1440, height: 2560),
                 allowICloudDownload: allowICloudDownload,
                 progress: nil
             )
-        }
-        fetchTask = fetch
-        defer { fetchTask = nil }
-
-        do {
-            let image = try await fetch.value
-            print("[Pencild-Scan] fetch.value returned image with size: \(image.size)")
+            print("[Pencild-Scan] photos.fetchImage returned image with size: \(image.size)")
             guard !isCancelling else {
                 print("[Pencild-Scan] scan was cancelled after image fetch")
                 stage = .idle
@@ -276,7 +269,7 @@ public final class ScanViewModel: ObservableObject {
             let prepared = await understanding.analyze(ocrResult, locale: .current, anchor: Date(), assetIdentifier: assetIdentifier)
             guard !isCancelling else { return }
             if prepared.willInterpret { stage = .interpreting }
-            let completion = Task { await understanding.complete(prepared) }
+            let completion = Task.detached(priority: .userInitiated) { await understanding.complete(prepared) }
             interpretationTask = completion
             let result = await completion.value
             interpretationTask = nil
