@@ -81,7 +81,7 @@ private struct SplashBackdrop: View {
                 .fill(Color.pdSecondary.opacity(0.18))
                 .frame(width: 300, height: 300)
                 .blur(radius: 90)
-                .offset(x: 120, y: 160)
+                .offset(x: 120, y: 40)
 
             // Dynamic diagonal light stream
             SplashLightArcs()
@@ -100,14 +100,6 @@ private struct SplashBackdrop: View {
                 )
                 .blur(radius: 1)
                 .opacity(glowPulse ? 0.9 : 0.6)
-
-            // Star sparkles
-            Group {
-                SparkleDot(x: 110, y: 180, size: 3, color: .pdPrimary)
-                SparkleDot(x: 310, y: 220, size: 4, color: .pdSecondary)
-                SparkleDot(x: 80, y: 300, size: 3, color: .pdCoral)
-                SparkleDot(x: 330, y: 370, size: 3.5, color: .pdOrange)
-            }
         }
         .ignoresSafeArea()
         .onAppear {
@@ -116,20 +108,6 @@ private struct SplashBackdrop: View {
                 glowPulse = true
             }
         }
-    }
-}
-
-private struct SparkleDot: View {
-    let x: CGFloat
-    let y: CGFloat
-    let size: CGFloat
-    let color: Color
-
-    var body: some View {
-        Circle()
-            .fill(color.opacity(0.85))
-            .frame(width: size, height: size)
-            .position(x: x, y: y)
     }
 }
 
@@ -236,29 +214,29 @@ private struct SplashFooter: View {
     }
 
     private var featureBadges: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 6) {
             featureBadge(icon: "doc.text.viewfinder", label: "Instant OCR", tint: .pdPrimary)
             featureBadge(icon: "sparkles", label: "Apple Intelligence", tint: .pdSecondary)
             featureBadge(icon: "lock.fill", label: "100% Private", tint: .pdTertiary)
         }
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private func featureBadge(icon: String, label: String, tint: Color) -> some View {
-        HStack(spacing: 3) {
+        HStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 9.5, weight: .semibold))
+                .font(.system(size: 8, weight: .semibold))
                 .foregroundStyle(tint)
 
             Text(label)
-                .font(PDFont.jakarta(9.5, .semibold, relativeTo: .caption2))
+                .font(PDFont.jakarta(8, .semibold, relativeTo: .caption2))
                 .foregroundStyle(Color.pdOnSurface)
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .minimumScaleFactor(0.85)
                 .allowsTightening(true)
         }
-        .padding(.horizontal, 7)
+        .padding(.horizontal, 9)
         .padding(.vertical, 6)
-        .frame(maxWidth: .infinity)
         .background(
             Capsule()
                 .fill(Color.pdSurfaceLow.opacity(0.85))
@@ -269,13 +247,16 @@ private struct SplashFooter: View {
     private var assuranceTag: some View {
         HStack(spacing: 5) {
             Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 11))
+                .font(.system(size: 9.5))
                 .foregroundStyle(Color.pdPrimary)
 
             Text("Fast, zero-latency on-device calendar sync")
-                .font(PDFont.jakarta(11, .medium, relativeTo: .caption2))
+                .font(PDFont.jakarta(9.5, .medium, relativeTo: .caption2))
                 .foregroundStyle(Color.pdOnSurfaceVariant.opacity(0.8))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
+        .frame(maxWidth: .infinity, alignment: .center)
         .padding(.top, 2)
     }
 }
@@ -290,7 +271,7 @@ private struct SplashSliderTrack: View {
     @State private var isCompleted = false
     @State private var arrowNudge = false
 
-    private let trackHeight: CGFloat = 72
+    private let trackHeight: CGFloat = 76
     private let knobSize: CGFloat = 56
     private let horizontalPadding: CGFloat = 8
 

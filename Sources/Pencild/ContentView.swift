@@ -14,11 +14,13 @@ struct ContentView: View {
     @StateObject private var scanViewModel: ScanViewModel
     @StateObject private var homeViewModel: HomeViewModel
     @Query private var candidates: [EventCandidate]
-    @State private var showSplash = true
+    @State private var showSplash: Bool
 
-    init(services: ServiceContainer) {
+    init(services: ServiceContainer, showSplash: Bool? = nil) {
         _scanViewModel = StateObject(wrappedValue: ScanViewModel(services: services))
         _homeViewModel = StateObject(wrappedValue: HomeViewModel(services: services))
+        let shouldShowSplash = showSplash ?? !UserDefaults.standard.bool(forKey: AppleAccount.splashChoiceKey)
+        _showSplash = State(initialValue: shouldShowSplash)
     }
 
     var body: some View {
