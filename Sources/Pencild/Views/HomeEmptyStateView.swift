@@ -47,7 +47,7 @@ struct HomeEmptyStateView: View {
             }
             .background(Color.pdSurface.ignoresSafeArea())
             .animation(.easeInOut(duration: 0.2), value: scanViewModel.isProcessing)
-            .photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItems, matching: .images, photoLibrary: .shared())
+            .photosPicker(isPresented: $showPhotoPicker, selection: $selectedPhotoItems, matching: .images)
             .sheet(isPresented: $showDocumentCamera) {
                 DocumentCameraScanner(
                     onScan: { images in
@@ -251,7 +251,7 @@ struct HomeEmptyStateView: View {
     /// Free plan only: how many of this month's scans remain, with a path to Plus.
     @ViewBuilder
     private var scanAllowanceBanner: some View {
-        if PlanLimits.limitsScans(services.subscription.entitlementSnapshot) {
+        if PlanLimits.limitsScans(appState.entitlementSnapshot) {
             let remaining = services.scanUsage.remainingFreeScans()
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: PDSpacing.sm) {

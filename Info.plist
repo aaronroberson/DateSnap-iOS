@@ -34,6 +34,8 @@
 	<string>Pencil’d uses the camera only when you choose Scan a paper flyer, to capture pages for on-device event detection.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Pencil’d analyzes selected screenshots and event flyers on your iPhone to extract dates, times, and venues. Your photos and screenshots never leave your device.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Pencil’d saves extracted event assets and screenshots to your photo library when requested.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>
 	<string>Pencil’d needs Reminders access to schedule countdown alerts before your events.</string>
 	<key>NSRemindersUsageDescription</key>
