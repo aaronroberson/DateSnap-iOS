@@ -105,12 +105,8 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
         // Pencil'd only scans on-device assets by default. iCloud downloads are an explicit opt-in
         // (see `ICloudDownloadPreference`), so the network is enabled only when the user approved it.
         options.isNetworkAccessAllowed = allowICloudDownload
-        options.deliveryMode = .opportunistic
         options.isSynchronous = false
-        // `.fast` resizes before decoding so a 360×640 thumbnail request never decodes the full
-        // screenshot original — the previous default could decode multi-megapixel images for a
-        // small preview, a major source of jank during scrolling.
-        options.resizeMode = .fast
+        options.version = .current
 
         // Forward iCloud download progress when a callback was provided. `PHAssetImageProgressHandler`
         // bridges to `(Double, Error?, UnsafeMutablePointer<ObjCBool>?, [AnyHashable: Any]?) -> Void`.
@@ -128,43 +124,30 @@ public final class PhotoLibraryService: NSObject, PhotoLibraryServiceProtocol, P
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<UIImage, any Error>) in
                 request.install(continuation)
-                let requestID = imageManager.requestImage(
+                let requestID = imageManager.requestImageDataAndOrientation(
                     for: asset,
-                    targetSize: targetSize,
-                    contentMode: .aspectFit,
                     options: options
-                ) { image, info in
+                ) { data, dataUTI, orientation, info in
                     let isCancelled = (info?[PHImageCancelledKey] as? Bool) ?? false
                     let isInCloud = (info?[PHImageResultIsInCloudKey] as? Bool) ?? false
-                    let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
-                    print("[Pencild-Photo] requestImage callback: image=\(String(describing: image?.size)), isDegraded=\(isDegraded), isInCloud=\(isInCloud), cancelled=\(isCancelled), error=\(String(describing: info?[PHImageErrorKey]))")
+                    let error = info?[PHImageErrorKey] as? Error
+                    print("[Pencild-Photo] requestImageData callback: bytes=\(data?.count ?? 0), isInCloud=\(isInCloud), cancelled=\(isCancelled), error=\(String(describing: error))")
 
                     if isCancelled {
                         request.finish(.failure(CancellationError()))
                         return
                     }
 
-                    if let image {
-                        // If it's a degraded thumbnail preview that's too tiny for OCR, wait for the full image callback
-                        if isDegraded && (image.size.width < 300 || image.size.height < 300) {
-                            print("[Pencild-Photo] Skipping degraded preview frame \(image.size), waiting for full image")
-                            return
+                    if let data, var image = UIImage(data: data) {
+                        if let cgImage = image.cgImage, orientation != .up {
+                            image = UIImage(cgImage: cgImage, scale: image.scale, orientation: orientation.uiOrientation)
                         }
+                        print("[Pencild-Photo] Loaded full-resolution image: \(image.size)")
                         request.finish(.success(image))
                     } else if isInCloud && !allowICloudDownload {
                         request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadRequired)))
-                    } else if isDegraded && !allowICloudDownload {
-                        // Offline, Photos can send a blank degraded frame and never a final one for an
-                        // iCloud-only original, so waiting for a final frame would hang the scan.
-                        request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadRequired)))
-                    } else if isDegraded {
-                        // Downloading: a blank degraded frame comes before the downloaded image.
-                        return
-                    } else if allowICloudDownload {
-                        // Network access was allowed but the image still came back nil: the iCloud
-                        // download failed or was interrupted.
-                        let reason = (info?[PHImageErrorKey] as? NSError)?.localizedDescription ?? "The download didn't complete."
-                        request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadFailed(reason))))
+                    } else if allowICloudDownload, let error {
+                        request.finish(.failure(PencildError.photoLibrary(.iCloudDownloadFailed(error.localizedDescription))))
                     } else {
                         request.finish(.failure(PencildError.photoLibrary(.imageConversionFailed)))
                     }
@@ -341,3 +324,20 @@ final class ImageRequestGate: @unchecked Sendable {
         continuation.resume(with: result)
     }
 }
+// MARK: - CGImagePropertyOrientation Helper
+extension CGImagePropertyOrientation {
+    var uiOrientation: UIImage.Orientation {
+        switch self {
+        case .up: return .up
+        case .upMirrored: return .upMirrored
+        case .down: return .down
+        case .downMirrored: return .downMirrored
+        case .left: return .left
+        case .leftMirrored: return .leftMirrored
+        case .right: return .right
+        case .rightMirrored: return .rightMirrored
+        @unknown default: return .up
+        }
+    }
+}
+
