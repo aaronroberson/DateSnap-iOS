@@ -21,7 +21,30 @@ struct ScanProgressOverlay: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: PDSpacing.lg) {
                         HStack {
+                            Button {
+                                scan.cancelScan()
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "chevron.left")
+                                        .font(.system(size: 13, weight: .bold))
+                                    Text("BACK")
+                                        .font(PDFont.labelMD)
+                                        .tracking(0.6)
+                                        .lineLimit(1)
+                                }
+                                .foregroundStyle(Color.pdOnSurface)
+                                .padding(.leading, 10)
+                                .padding(.trailing, 12)
+                                .frame(minHeight: 44)
+                                .background(Capsule().fill(Color.pdSurfaceContainer))
+                                .contentShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(scan.isCancelling)
+                            .accessibilityLabel("Back to capture")
+
                             Spacer()
+
                             Button(scan.isCancelling ? "Canceling…" : "Cancel") { scan.cancelScan() }
                                 .font(PDFont.labelLG)
                                 .foregroundStyle(Color.pdPrimary)
