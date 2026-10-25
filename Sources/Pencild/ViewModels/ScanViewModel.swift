@@ -278,7 +278,8 @@ public final class ScanViewModel: ObservableObject {
                 print("[Pencild-Scan] Stage transitioning to .interpreting")
                 stage = .interpreting
             }
-            let completion = Task.detached(priority: .userInitiated) { await understanding.complete(prepared) }
+            let sourceImage = page.cgImage
+            let completion = Task.detached(priority: .userInitiated) { await understanding.complete(prepared, sourceImage: sourceImage) }
             interpretationTask = completion
             let result = await completion.value
             interpretationTask = nil

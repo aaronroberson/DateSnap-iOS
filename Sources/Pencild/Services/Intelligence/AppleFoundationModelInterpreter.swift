@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 #if canImport(FoundationModels)
 import FoundationModels
@@ -61,9 +62,24 @@ struct GeneratedEvent {
 }
 
 @available(iOS 26.0, macOS 26.0, *)
-@Generable(description: "Events described on the flyer, in the same order as the detected events listed in the prompt.")
+@Generable(description: "Events described in the source image, in the same order as the detected events listed in the prompt.")
 struct GeneratedEventList {
     @Guide(description: "One entry per detected event, in the same order.")
+    var events: [GeneratedEvent]
+}
+
+@available(iOS 27.0, macOS 27.0, *)
+@Generable(description: "A source image assessment and any calendar events visibly described by it.")
+struct GeneratedVisualInterpretation {
+    @Guide(description: "True only when the image is plausibly an event, appointment, calendar, class, meeting, performance, or deadline source.")
+    var calendarRelevant: Bool
+    @Guide(description: "A number from 0 to 1 representing how relevant the image is to creating a calendar event.")
+    var relevanceScore: Float
+    @Guide(description: "A short source label such as flyer, calendar, invitation, map, receipt, conversation, document, or other.")
+    var sourceType: String
+    @Guide(description: "A short observable reason for the source assessment.")
+    var reason: String?
+    @Guide(description: "Events described in the image, grounded in the image and OCR lines.")
     var events: [GeneratedEvent]
 }
 
@@ -72,11 +88,11 @@ struct GeneratedEventList {
 /// On-device semantic pass over OCR lines. The actor isolates session state; a fresh session per scan keeps
 /// context bounded, and the actor serializes scans so sessions never run concurrently.
 @available(iOS 26.0, macOS 26.0, *)
-actor AppleFoundationModelInterpreter: OnDeviceEventInterpreting {
+actor AppleFoundationModelInterpreter: OnDeviceEventInterpreting, MultimodalOnDeviceEventInterpreting {
     static let instructions = """
-    You label text recognized from an event flyer or screenshot. Each line is numbered.
+    You inspect a source image and its OCR text. Each OCR line is numbered.
     Only reference line numbers that appear in the list, and copy text exactly from the referenced line.
-    Never invent dates, times, places, names, links, emails or phone numbers. Leave a field empty when the flyer does not state it.
+    Never invent dates, times, places, names, links, emails or phone numbers. Leave a field empty when the source does not state it.
     Distinguish the event's own date from RSVP deadlines and ticket on-sale dates, and the show start from doors or arrival times.
     """
 
@@ -92,6 +108,29 @@ actor AppleFoundationModelInterpreter: OnDeviceEventInterpreting {
         let response = try await session.respond(to: Self.prompt(for: request), generating: GeneratedEventList.self, options: options)
         try Task.checkCancellation()
         return response.content.events.prefix(max(1, request.baseline.count)).map(Self.hypothesis(from:))
+    }
+
+    @available(iOS 27.0, macOS 27.0, *)
+    func interpret(_ request: InterpretationRequest, image: CGImage) async throws -> MultimodalInterpretation {
+        try Task.checkCancellation()
+        let session = LanguageModelSession(instructions: Self.instructions + "\nInspect the attached source image itself. Use visual structure and pixels to distinguish calendar-relevant sources from maps, receipts, conversations, and unrelated screenshots.")
+        let attachment = Attachment<ImageAttachmentContent>(image).label("Source image")
+        let prompt = Prompt {
+            Self.prompt(for: request)
+            attachment
+        }
+        let options = GenerationOptions(temperature: 0, maximumResponseTokens: 500)
+        let response = try await session.respond(to: prompt, generating: GeneratedVisualInterpretation.self, options: options)
+        try Task.checkCancellation()
+        let generated = response.content
+        let assessment = VisualSourceAssessment(
+            isCalendarRelevant: generated.calendarRelevant,
+            sourceType: generated.sourceType,
+            relevanceScore: generated.relevanceScore,
+            reason: generated.reason
+        )
+        let hypotheses = generated.events.prefix(max(1, request.baseline.count)).map(Self.hypothesis(from:))
+        return MultimodalInterpretation(sourceAssessment: assessment, hypotheses: hypotheses)
     }
 
     static func prompt(for request: InterpretationRequest) -> String {
@@ -110,7 +149,7 @@ actor AppleFoundationModelInterpreter: OnDeviceEventInterpreting {
         \(detected)
         Why a second look is needed: \(request.triggers.joined(separator: ", ")).
 
-        Flyer lines:
+        OCR lines:
         \(lines)
         """
     }

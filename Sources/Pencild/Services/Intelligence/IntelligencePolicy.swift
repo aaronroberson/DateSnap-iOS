@@ -2,7 +2,8 @@ import Foundation
 
 // MARK: - Intelligence Policy
 /// Central decision on whether the on-device semantic pass runs for a scan: user setting, rollout flag,
-/// runtime capability, scan quality and whether the deterministic result actually needs help.
+/// runtime capability and scan quality. Every scan that looks like event text gets the semantic pass;
+/// the deterministic OCR interpretation remains the evidence-grounded fallback.
 /// Subscription tier is deliberately *not* an input — single-scan interpretation is a review-quality feature.
 public struct IntelligencePolicy: Sendable {
     public static let userDefaultsKey = "intelligence.enhancedInterpretationEnabled"
@@ -43,8 +44,8 @@ public struct IntelligencePolicy: Sendable {
         case skip(reason: String)
     }
 
-    /// Decides whether to invoke the model. `triggers` are the deterministic reasons the scan could
-    /// benefit (ambiguity, unlabeled time pairs, low title margin, deadlines…); none means skip.
+    /// Decides whether to invoke the model. `triggers` are included in the request as context, but are
+    /// not a gate: a clear-looking scan still benefits from an independent on-device event check.
     public func decide(capability: IntelligenceCapability, quality: OCRQualityReport, triggers: [String]) -> Decision {
         guard rolloutEnabled else { return .skip(reason: IntelligenceUnavailableReason.disabledByRollout.rawValue) }
         guard userEnabled else { return .skip(reason: IntelligenceUnavailableReason.disabledByUser.rawValue) }
@@ -52,7 +53,6 @@ public struct IntelligencePolicy: Sendable {
             return .skip(reason: reason.rawValue)
         }
         guard quality.lineCount > 0, quality.isScanWorthy else { return .skip(reason: "notScanWorthy") }
-        guard !triggers.isEmpty else { return .skip(reason: "baselineClear") }
         return .interpret(reasons: triggers)
     }
 }

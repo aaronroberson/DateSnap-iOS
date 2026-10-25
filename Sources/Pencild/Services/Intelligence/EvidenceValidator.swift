@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 // MARK: - Interpreter Contract
 
@@ -103,6 +104,24 @@ public protocol OnDeviceEventInterpreting: Sendable {
     func interpret(_ request: InterpretationRequest) async throws -> [EventHypothesis]
     /// Optional warm-up so the first request doesn't pay model load time.
     func prewarm() async
+}
+
+/// Optional multimodal extension. Implementations inspect the source pixels in addition to OCR.
+/// The API is available only where Foundation Models image attachments are available.
+@available(iOS 27.0, macOS 27.0, *)
+public struct MultimodalInterpretation: Sendable {
+    public var sourceAssessment: VisualSourceAssessment
+    public var hypotheses: [EventHypothesis]
+
+    public init(sourceAssessment: VisualSourceAssessment, hypotheses: [EventHypothesis]) {
+        self.sourceAssessment = sourceAssessment
+        self.hypotheses = hypotheses
+    }
+}
+
+@available(iOS 27.0, macOS 27.0, *)
+public protocol MultimodalOnDeviceEventInterpreting: OnDeviceEventInterpreting {
+    func interpret(_ request: InterpretationRequest, image: CGImage) async throws -> MultimodalInterpretation
 }
 
 extension OnDeviceEventInterpreting {

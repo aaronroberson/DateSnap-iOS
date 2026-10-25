@@ -381,9 +381,25 @@ public enum EngineRoute: String, Sendable, Codable {
     case onDeviceModel
 }
 
+/// Visual assessment returned by the multimodal on-device model. The relevance score is a source-level
+/// signal, separate from field extraction confidence, and is used to reject clearly non-calendar images.
+public struct VisualSourceAssessment: Sendable, Codable, Equatable {
+    public var isCalendarRelevant: Bool
+    public var sourceType: String
+    public var relevanceScore: Float
+    public var reason: String?
+
+    public init(isCalendarRelevant: Bool, sourceType: String, relevanceScore: Float, reason: String? = nil) {
+        self.isCalendarRelevant = isCalendarRelevant
+        self.sourceType = sourceType
+        self.relevanceScore = max(0, min(1, relevanceScore))
+        self.reason = reason
+    }
+}
+
 /// Everything the review flow needs from one scan.
 public struct EventUnderstandingResult: Sendable, Codable {
-    public static let schemaVersion = 1
+    public static let schemaVersion = 2
 
     public var events: [EventUnderstanding]
     public var quality: OCRQualityReport
@@ -393,6 +409,8 @@ public struct EventUnderstandingResult: Sendable, Codable {
     public var evidence: [EvidenceLine]
     /// Validator rejections, recorded for observability (counts only are logged).
     public var rejectedFieldCount: Int
+    /// Optional pixel-level source assessment from the multimodal model.
+    public var visualSourceAssessment: VisualSourceAssessment?
 
     public init(
         events: [EventUnderstanding],
@@ -400,7 +418,8 @@ public struct EventUnderstandingResult: Sendable, Codable {
         route: EngineRoute,
         fallbackReason: String? = nil,
         evidence: [EvidenceLine] = [],
-        rejectedFieldCount: Int = 0
+        rejectedFieldCount: Int = 0,
+        visualSourceAssessment: VisualSourceAssessment? = nil
     ) {
         self.events = events
         self.quality = quality
@@ -408,6 +427,7 @@ public struct EventUnderstandingResult: Sendable, Codable {
         self.fallbackReason = fallbackReason
         self.evidence = evidence
         self.rejectedFieldCount = rejectedFieldCount
+        self.visualSourceAssessment = visualSourceAssessment
     }
 
     public func evidenceLine(_ id: Int) -> EvidenceLine? {

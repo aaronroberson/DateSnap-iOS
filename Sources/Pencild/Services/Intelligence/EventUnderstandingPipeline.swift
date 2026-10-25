@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 import os
 
 // MARK: - Event Understanding Pipeline
@@ -7,7 +8,7 @@ import os
 /// any model unavailability, timeout, failure or invalid output falls back to the deterministic baseline.
 public protocol EventUnderstandingProviding: Sendable {
     func analyze(_ result: OCRResult, locale: Locale, anchor: Date, assetIdentifier: String) async -> PreparedUnderstanding
-    func complete(_ prepared: PreparedUnderstanding) async -> EventUnderstandingResult
+    func complete(_ prepared: PreparedUnderstanding, sourceImage: CGImage?) async -> EventUnderstandingResult
     /// Warms the on-device model while OCR runs, when it is enabled and available.
     func prewarm(locale: Locale) async
 }
@@ -15,8 +16,8 @@ public protocol EventUnderstandingProviding: Sendable {
 extension EventUnderstandingProviding {
     public func prewarm(locale: Locale) async {}
 
-    public func understand(_ result: OCRResult, locale: Locale = .current, anchor: Date = Date(), assetIdentifier: String = "local_asset") async -> EventUnderstandingResult {
-        await complete(await analyze(result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier))
+    public func understand(_ result: OCRResult, locale: Locale = .current, anchor: Date = Date(), assetIdentifier: String = "local_asset", sourceImage: CGImage? = nil) async -> EventUnderstandingResult {
+        await complete(await analyze(result, locale: locale, anchor: anchor, assetIdentifier: assetIdentifier), sourceImage: sourceImage)
     }
 }
 
@@ -76,18 +77,25 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
             return RuleBasedEventAnalyzer.analyze(result: repaired, extracted: extracted, locale: locale, anchor: anchor, calendar: calendar)
         }.value
         let currentPolicy = policy()
-        let decision: IntelligencePolicy.Decision = analysis.events.isEmpty
-            ? .skip(reason: "noCandidates")
-            : currentPolicy.decide(capability: capability.currentCapability(for: locale), quality: analysis.quality, triggers: analysis.triggers)
+        // Let the semantic pass inspect usable source images even when deterministic OCR did not
+        // produce a candidate. This is what allows pixel analysis to reject maps, receipts, and
+        // other non-calendar screenshots before they become review suggestions.
+        let decision = currentPolicy.decide(
+            capability: capability.currentCapability(for: locale),
+            quality: analysis.quality,
+            triggers: analysis.triggers
+        )
         IntelligenceTelemetry.end(span, "analyze", detail: "events=\(analysis.events.count) triggers=\(analysis.triggers.count)")
         return PreparedUnderstanding(analysis: analysis, decision: decision, locale: locale, anchor: anchor, policy: currentPolicy)
     }
 
-    public func complete(_ prepared: PreparedUnderstanding) async -> EventUnderstandingResult {
+    public func complete(_ prepared: PreparedUnderstanding, sourceImage: CGImage? = nil) async -> EventUnderstandingResult {
         let analysis = prepared.analysis
         var hypotheses: [EventHypothesis] = []
         var route = EngineRoute.rulesOnly
         var fallbackReason: String? = nil
+        var visualSourceAssessment: VisualSourceAssessment? = nil
+        var visualSourceRejected = false
 
         switch prepared.decision {
         case .skip(let reason):
@@ -104,8 +112,18 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
                     triggers: analysis.triggers
                 ).bounded(by: prepared.policy)
                 do {
-                    hypotheses = try await Self.withTimeout(prepared.policy.timeout) {
-                        try await interpreter.interpret(request)
+                    if #available(iOS 27.0, macOS 27.0, *),
+                       let multimodal = interpreter as? any MultimodalOnDeviceEventInterpreting,
+                       let sourceImage {
+                        let multimodalResult = try await Self.withTimeout(prepared.policy.timeout) {
+                            try await multimodal.interpret(request, image: sourceImage)
+                        }
+                        visualSourceAssessment = multimodalResult.sourceAssessment
+                        hypotheses = multimodalResult.hypotheses
+                    } else {
+                        hypotheses = try await Self.withTimeout(prepared.policy.timeout) {
+                            try await interpreter.interpret(request)
+                        }
                     }
                     route = .onDeviceModel
                     IntelligenceTelemetry.end(span, "interpret", detail: "hypotheses=\(hypotheses.count)")
@@ -123,7 +141,7 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
 
         var rejected = 0
         var acceptedAny = false
-        let events = analysis.events.enumerated().map { index, event -> EventUnderstanding in
+        var events = analysis.events.enumerated().map { index, event -> EventUnderstanding in
             let baseline = event.best
             var modelCandidate: EventInterpretationCandidate? = nil
             if index < hypotheses.count {
@@ -134,9 +152,17 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
                 acceptedAny = acceptedAny || outcome.candidate != nil
             }
             let alternatives = InterpretationRanker.deterministicAlternatives(for: baseline, titleCandidates: analysis.titleCandidates)
-            let ranked = InterpretationRanker.rank(baseline: baseline, modelCandidate: modelCandidate,
+            var ranked = InterpretationRanker.rank(baseline: baseline, modelCandidate: modelCandidate,
                                                    deterministicAlternatives: alternatives,
                                                    ocrMeanConfidence: analysis.quality.meanConfidence)
+            if let visualSourceAssessment {
+                ranked.best.rankScore = min(ranked.best.rankScore, visualSourceAssessment.relevanceScore)
+                ranked.alternatives = ranked.alternatives.map { alternative in
+                    var adjusted = alternative
+                    adjusted.rankScore = min(adjusted.rankScore, visualSourceAssessment.relevanceScore)
+                    return adjusted
+                }
+            }
             var understanding = event
             understanding.best = ranked.best
             understanding.alternatives = ranked.alternatives
@@ -144,8 +170,14 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
             return understanding
         }
 
+        if let visualSourceAssessment, !visualSourceAssessment.isCalendarRelevant {
+            events = []
+            fallbackReason = "nonCalendarSource"
+            visualSourceRejected = true
+        }
+
         // The model ran but nothing it said survived validation: this is a rules-only result.
-        if route == .onDeviceModel && !acceptedAny {
+        if route == .onDeviceModel && !acceptedAny && !visualSourceRejected {
             route = .rulesOnly
             fallbackReason = "allOutputRejected"
         }
@@ -157,7 +189,8 @@ public struct EventUnderstandingPipeline: EventUnderstandingProviding {
             route: route,
             fallbackReason: fallbackReason,
             evidence: analysis.evidence,
-            rejectedFieldCount: rejected
+            rejectedFieldCount: rejected,
+            visualSourceAssessment: visualSourceAssessment
         )
     }
 

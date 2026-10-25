@@ -538,7 +538,6 @@ struct ReviewQueueView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: PDSpacing.lg) {
                     PDScreenIntro(eyebrow: "Review Pipeline", title: "Needs review", subtitle: reviewSubtitle)
-                    PDStatusBadge(text: "\(pending.count) pending review", icon: "tray.full.fill", tone: pending.isEmpty ? .neutral : .warning)
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 2) {
                             Button { highConfidenceOnly = false } label: {
@@ -579,30 +578,6 @@ struct ReviewQueueView: View {
             .safeAreaInset(edge: .bottom) {
                 if !pending.isEmpty {
                     VStack(spacing: PDSpacing.xs) {
-                        PDCard {
-                            VStack(alignment: .leading, spacing: PDSpacing.sm) {
-                                HStack(alignment: .center, spacing: PDSpacing.sm) {
-                                    Image(systemName: "checkmark.shield.fill")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundStyle(Color.pdOnSurface)
-                                        .frame(width: 30, height: 30)
-                                        .background(Circle().fill(LinearGradient.pdSignature))
-                                    Text("You stay in complete control")
-                                        .font(PDFont.labelLG)
-                                        .foregroundStyle(Color.pdOnSurface)
-                                    Spacer(minLength: 8)
-                                    Label("On-device OCR", systemImage: "lock.fill")
-                                        .font(PDFont.labelSM)
-                                        .foregroundStyle(Color.pdSecondary)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(Capsule().fill(Color.pdSurfaceHighest))
-                                }
-                                Text("Nothing is added to your calendar automatically. Review the source, time, location, and destination before saving.")
-                                    .font(PDFont.bodyMD)
-                                    .foregroundStyle(Color.pdOnSurfaceVariant)
-                            }
-                        }
                         Button {
                             presentHighConfidenceReview()
                         } label: {

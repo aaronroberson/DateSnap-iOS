@@ -97,11 +97,11 @@ struct EventUnderstandingPipelineTests {
         #expect(result.fallbackReason == IntelligenceUnavailableReason.disabledByUser.rawValue)
     }
 
-    @Test("Clear scans skip the model even when available")
-    func clearScanSkips() async {
+    @Test("Clear scans still run the on-device pass when available")
+    func clearScanUsesOnDevicePass() async {
         let clear = makeOCR([("Book Club", 0.08), ("October 20, 2026 at 7pm", 0.04), ("Central Library", 0.03)])
         let result = await pipeline(.failure).understand(clear, locale: Locale(identifier: "en_US"), anchor: testAnchor)
-        #expect(result.fallbackReason == "baselineClear")
+        #expect(result.fallbackReason == "modelError")
     }
 
     @Test("Interpretation candidates materialize into the canonical value snapshot")
