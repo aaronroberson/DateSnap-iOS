@@ -143,6 +143,7 @@ public final class CalendarService: CalendarServiceProtocol, @unchecked Sendable
                 title: title,
                 start: event.startDate,
                 end: event.endDate,
+                assumedDuration: EventDurationPolicy.fallback,
                 location: event.location
             )
         }

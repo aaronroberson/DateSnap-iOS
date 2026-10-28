@@ -160,6 +160,31 @@ struct ScheduleConflictAnalyzerTests {
 
         let conflicts = ScheduleConflictAnalyzer.conflicts(for: incoming, against: [existing])
         #expect(conflicts.map(\.kind) == [.overlap])
+        let overlap = ScheduleConflictAnalyzer.overlap(for: incoming, with: existing)
+        #expect(overlap?.start == anchor.addingTimeInterval(1800))
+        #expect(overlap?.end == anchor.addingTimeInterval(3600))
+    }
+
+    @Test("Reports the actual overlap when an event crosses midnight")
+    func findsOvernightOverlap() {
+        let calendar = Calendar(identifier: .gregorian)
+        let day = calendar.date(from: DateComponents(year: 2026, month: 10, day: 23))!
+        let incoming = ScheduleConflictAnalyzer.interval(
+            id: "incoming", title: "Late event", start: day.addingTimeInterval(23 * 3600),
+            end: calendar.date(byAdding: .day, value: 1, to: day)!.addingTimeInterval(3600),
+            assumedDuration: 7200
+        )
+        let existing = ScheduleConflictAnalyzer.interval(
+            id: "existing", title: "Overnight event", start: calendar.date(byAdding: .day, value: 1, to: day)!,
+            end: calendar.date(byAdding: .day, value: 1, to: day)!.addingTimeInterval(2 * 3600),
+            assumedDuration: 7200
+        )
+
+        let conflicts = ScheduleConflictAnalyzer.conflicts(for: incoming, against: [existing])
+        let overlap = ScheduleConflictAnalyzer.overlap(for: incoming, with: existing)
+        #expect(conflicts.first?.kind == .overlap)
+        #expect(overlap?.start == calendar.date(byAdding: .day, value: 1, to: day))
+        #expect(overlap?.end == calendar.date(byAdding: .day, value: 1, to: day)!.addingTimeInterval(3600))
     }
 
     @Test("Treats an adjacent event as a short-gap risk")

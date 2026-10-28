@@ -120,8 +120,24 @@ enum AppModalScreen: Identifiable, Sendable {
 struct ConflictResolutionContext: Sendable, Equatable, Identifiable {
     let incoming: ScheduleInterval
     let conflicts: [ScheduleConflict]
+    /// Optional provenance metadata for the extracted draft. Existing calendar events have no
+    /// extraction confidence, so this is intentionally absent for them.
+    let incomingTitleConfidence: Float?
+    let incomingTimeZoneIdentifier: String?
 
     var id: String { incoming.id }
+
+    init(
+        incoming: ScheduleInterval,
+        conflicts: [ScheduleConflict],
+        incomingTitleConfidence: Float? = nil,
+        incomingTimeZoneIdentifier: String? = nil
+    ) {
+        self.incoming = incoming
+        self.conflicts = conflicts
+        self.incomingTitleConfidence = incomingTitleConfidence
+        self.incomingTimeZoneIdentifier = incomingTimeZoneIdentifier
+    }
 }
 
 @MainActor

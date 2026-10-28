@@ -550,22 +550,8 @@ struct EventReviewForm: View {
     private func save() async {
         if !bypassConflictCheck {
             do {
-                let conflicts = try await services.calendar.detectConflicts(
-                    for: viewModel.candidate,
-                    excluding: viewModel.candidate.savedEvent?.externalCalendarEventId
-                )
-                if !conflicts.isEmpty {
-                    pendingConflictContext = ConflictResolutionContext(
-                        incoming: ScheduleConflictAnalyzer.interval(
-                            id: viewModel.candidate.id,
-                            title: viewModel.title,
-                            start: viewModel.startDate,
-                            end: viewModel.endDateWasExplicit ? viewModel.endDate : nil,
-                            assumedDuration: EventDurationPolicy.fallback,
-                            location: viewModel.location.isEmpty ? nil : viewModel.location
-                        ),
-                        conflicts: conflicts
-                    )
+                if let context = try await viewModel.conflictContext() {
+                    pendingConflictContext = context
                     return
                 }
             } catch {

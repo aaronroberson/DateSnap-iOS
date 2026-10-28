@@ -331,6 +331,21 @@ final class BatchReviewSession: ObservableObject, Identifiable {
         }
     }
 
+    /// Returns the first conflict that Save All would otherwise send directly to EventKit.
+    func firstConflict(excluding candidateIDs: Set<String> = []) async -> (event: BatchEventItem, context: ConflictResolutionContext)? {
+        for event in events where event.isActionable && !candidateIDs.contains(event.candidate.id) {
+            do {
+                if let context = try await event.review.conflictContext() {
+                    return (event, context)
+                }
+            } catch {
+                // Preserve the existing save behavior when Calendar read access is unavailable.
+                continue
+            }
+        }
+        return nil
+    }
+
     @discardableResult
     func saveAll(modelContext: ModelContext?) async -> BatchSaveSummary {
         guard !isSaving else {

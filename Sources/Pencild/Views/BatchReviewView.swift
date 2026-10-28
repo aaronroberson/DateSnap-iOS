@@ -23,6 +23,9 @@ struct BatchReviewView: View {
     @State private var showFailureAlert = false
     @State private var pendingFailureAlert = false
     @State private var showNotificationRecovery = false
+    @State private var pendingConflictContext: ConflictResolutionContext?
+    @State private var pendingConflictEventID: UUID?
+    @State private var conflictBypassedCandidateIDs: Set<String> = []
     /// A possible-duplicate saved event opened from a card. Shown from this sheet because the
     /// root can present only one sheet and leaving would discard the batch's unsaved edits.
     @State private var openedDuplicate: PencildEvent? = nil
@@ -80,6 +83,23 @@ struct BatchReviewView: View {
             }
             .sheet(item: $openedDuplicate) { event in
                 SavedEventDetailView(event: event)
+            }
+            .sheet(item: $pendingConflictContext) { context in
+                ConflictResolutionView(
+                    context: context,
+                    state: .syllabusCascadeConflict,
+                    onResolve: {
+                        if let eventID = pendingConflictEventID {
+                            expandedIDs.insert(eventID)
+                        }
+                        pendingConflictEventID = nil
+                    },
+                    onSaveAnyway: {
+                        conflictBypassedCandidateIDs.insert(context.incoming.id)
+                        pendingConflictEventID = nil
+                        appState.showToast("Conflict acknowledged; tap Save All to continue")
+                    }
+                )
             }
             .sheet(item: $paywallTab) { plan in
                 PaywallView(initialPlan: plan)
@@ -429,6 +449,11 @@ struct BatchReviewView: View {
     }
 
     private func saveAll() async {
+        if let pending = await session.firstConflict(excluding: conflictBypassedCandidateIDs) {
+            pendingConflictEventID = pending.event.id
+            pendingConflictContext = pending.context
+            return
+        }
         let summary = await session.saveAll(modelContext: modelContext)
         if summary.failedMessages.isEmpty && summary.savedCount > 0 {
             appState.showToast("Saved \(summary.savedCount) event\(summary.savedCount == 1 ? "" : "s") to Calendar")
@@ -461,6 +486,7 @@ private struct BatchEventCard: View {
     @ObservedObject var event: BatchEventItem
     /// The card reads editable state through the review VM, so observe it directly too.
     @ObservedObject private var review: EventReviewViewModel
+    @State private var pendingConflictContext: ConflictResolutionContext?
     let isExpanded: Bool
     let duplicateWarningDismissed: Bool
     let onDismissDuplicateWarning: () -> Void
@@ -715,19 +741,7 @@ private struct BatchEventCard: View {
             .disabled(!event.isActionable)
 
             Button {
-                Task {
-                    event.status = .saving
-                    let result = await event.review.commitEvent(modelContext: modelContext)
-                    switch result {
-                    case .success, .partial:
-                        event.status = .saved
-                        if review.notificationsSkipped, await services.notifications.authorizationStatus() == .denied {
-                            onNotificationsDenied()
-                        }
-                    case .failure(let error):
-                        event.status = .failed(error.message)
-                    }
-                }
+                Task { await preflightAndCommit() }
             } label: {
                 HStack(spacing: 6) {
                     if event.review.isSaving {
@@ -739,6 +753,40 @@ private struct BatchEventCard: View {
             }
             .buttonStyle(PDGradientButtonStyle())
             .disabled(event.review.isSaving || !event.isActionable || review.needsCalendarChoice)
+        }
+        .sheet(item: $pendingConflictContext) { context in
+            ConflictResolutionView(
+                context: context,
+                state: .syllabusCascadeConflict,
+                onResolve: {},
+                onSaveAnyway: { Task { await commitEvent() } }
+            )
+        }
+    }
+
+    private func preflightAndCommit() async {
+        do {
+            if let context = try await review.conflictContext() {
+                pendingConflictContext = context
+                return
+            }
+        } catch {
+            // Preserve existing behavior when Calendar read access is unavailable.
+        }
+        await commitEvent()
+    }
+
+    private func commitEvent() async {
+        event.status = .saving
+        let result = await review.commitEvent(modelContext: modelContext)
+        switch result {
+        case .success, .partial:
+            event.status = .saved
+            if review.notificationsSkipped, await services.notifications.authorizationStatus() == .denied {
+                onNotificationsDenied()
+            }
+        case .failure(let error):
+            event.status = .failed(error.message)
         }
     }
 }

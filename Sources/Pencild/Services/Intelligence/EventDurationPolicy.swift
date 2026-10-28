@@ -111,4 +111,17 @@ public enum ScheduleConflictAnalyzer {
             }
             .sorted { $0.event.start < $1.event.start }
     }
+
+    /// Returns the actual shared interval, rather than either event's full duration.
+    /// Keeping this calculation here prevents the UI from overstating an overlap,
+    /// especially when an event crosses midnight.
+    public static func overlap(
+        for incoming: ScheduleInterval,
+        with existing: ScheduleInterval
+    ) -> (start: Date, end: Date)? {
+        let start = max(incoming.start, existing.start)
+        let end = min(incoming.end, existing.end)
+        guard start < end else { return nil }
+        return (start, end)
+    }
 }

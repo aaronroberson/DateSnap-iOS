@@ -255,6 +255,29 @@ public final class EventReviewViewModel: ObservableObject {
         recordCorrections()
     }
 
+    /// Builds the app-owned conflict payload from the current edited values.
+    func conflictContext() async throws -> ConflictResolutionContext? {
+        applyEdits()
+        let conflicts = try await calendarService.detectConflicts(
+            for: candidate,
+            excluding: candidate.savedEvent?.externalCalendarEventId
+        )
+        guard !conflicts.isEmpty else { return nil }
+        return ConflictResolutionContext(
+            incoming: ScheduleConflictAnalyzer.interval(
+                id: candidate.id,
+                title: candidate.title,
+                start: candidate.startDate,
+                end: candidate.endDate,
+                assumedDuration: EventDurationPolicy.fallback,
+                location: candidate.location
+            ),
+            conflicts: conflicts,
+            incomingTitleConfidence: candidate.titleConfidence,
+            incomingTimeZoneIdentifier: candidate.timeZoneIdentifier
+        )
+    }
+
     private func savedEventRecord(in context: ModelContext) -> SavedEvent {
         if let existing = candidate.savedEvent {
             return existing
