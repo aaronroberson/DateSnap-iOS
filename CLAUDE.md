@@ -27,7 +27,7 @@ PENCILD_LIVE_AI_DESTINATION='platform=iOS,id=<udid>' scripts/run-live-ai-evaluat
 
 - The app target builds with `-warnings-as-errors` and complete strict concurrency, so any warning fails the build. The test target relaxes warnings-as-errors only because of a StoreKitTest SDK header.
 - Live-model tests are skipped unless `PENCILD_EVAL_LIVE=1`. `PENCILD_REQUIRE_LIVE_AI=1` makes it a failure when the model is unavailable.
-- CI (`.github/workflows/ci.yml`) runs the brand gate, then `xcodegen generate`, then the full suite on the first available iPhone simulator. It also warns, without failing, when the committed pbxproj differs from fresh generator output.
+- CI (`.github/workflows/ci.yml`) runs a Linux-only gate: the brand identity check and the script regression suite. Owner decision 2026-11-03 bans macOS runners (10× billing multiplier), so `xcodegen generate` and the full iOS test suite never run in CI — run them locally with the commands above before relying on them.
 - The brand gate rejects the pre-rename app name in new text and filenames.
 
 ## Architecture

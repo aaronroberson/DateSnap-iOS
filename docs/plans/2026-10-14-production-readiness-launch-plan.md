@@ -59,8 +59,11 @@ Product decisions are fixed for this wave:
 
 17. Add `.codebase-memory/` to `.gitignore` or the approved brand-gate
     exclusions, without committing its local index.
-18. Confirm the GitHub Actions workflow is disabled remotely after inspecting
-    the current local and remote state.
+18. Resolved 2026-11-03 by owner decision reversal: Actions is re-enabled
+    with a Linux-only gate in `.github/workflows/ci.yml` (brand gate +
+    script regressions, verified green on dispatch). macOS runners are
+    banned for budget reasons and the iOS xcodebuild suite stays
+    local-only.
     
 19. Update "CAPTURE - Create New Event" sheet/modal so that it has a matching background gradient as the other sheets/modals, , matching eyebrow color, font, and font size as well as positioning, restore the description below the title, Update the full width Screenshots tile to include the auto selected events display when applicable (same as the Home screen's Screenshots card) , make the 4 tiles after the Screenshots tile into a two column grid (2x2), superimpose the PREMIUM bandge over the top right corner of the PDF  & File import tile (extending beyond the top border of the tile) and change it's background to match the other three 2x tiles.
 

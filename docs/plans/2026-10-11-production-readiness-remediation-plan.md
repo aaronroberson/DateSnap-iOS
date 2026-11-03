@@ -3,6 +3,11 @@
 Date: 2026-10-11  
 Scope: `Pencild` visual refresh and production-readiness follow-up
 
+> **Status update 2026-11-03:** the CI-disable approach described below was
+> superseded. Owner decision: GitHub Actions is re-enabled with a Linux-only
+> gate (brand gate + script regressions); macOS runners are banned for budget
+> reasons; the iOS xcodebuild suite stays local-only (see `AGENTS.md`).
+
 ## Current evidence
 
 The claimed implementation commit IDs (`b9a3930`, `7a75acc`, `22993e4`,
