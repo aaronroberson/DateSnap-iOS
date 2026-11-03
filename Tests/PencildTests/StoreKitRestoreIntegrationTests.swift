@@ -241,4 +241,65 @@ struct StoreKitRestoreIntegrationTests {
         try await session.setSimulatedError(nil, forAPI: .loadProducts)
         EntitlementCache.clear()
     }
+
+    // MARK: - Direct purchase flow (SubscriptionService.purchase(product:))
+
+    @Test(
+        "Direct purchase unlocks the purchased tier and immediately caches entitlement",
+        .serialized,
+        arguments: [
+            ("com.pencild.plus.monthly", SubscriptionTier.plus),
+            ("com.pencild.premium.annual", SubscriptionTier.premium),
+            ("com.pencild.plus.lifetime", SubscriptionTier.plus),
+            ("com.pencild.premium.lifetime", SubscriptionTier.premium),
+        ]
+    )
+    func directPurchaseUnlocksPurchasedTier(productID: String, expected: SubscriptionTier) async throws {
+        let session = try makeSession()
+
+        let products = try await Product.products(for: [productID])
+        guard let product = products.first else {
+            Issue.record("Expected to find product with ID \(productID)")
+            return
+        }
+
+        let service = SubscriptionService.shared
+        let tier = try await service.purchase(product: product)
+
+        #expect(tier == expected)
+        #expect(service.currentTier == expected)
+        #expect(service.purchasedProductIDs.contains(productID))
+        #expect(service.isSubscribed)
+        #expect(service.isLoading == false)
+        #expect(service.entitlementSnapshot.state == .verified)
+        #expect(EntitlementCache.load()?.tier == expected)
+
+        try await drainAndClear(session)
+        EntitlementCache.clear()
+    }
+
+    @Test("Simulated purchase failure throws PencildError.subscription(.purchaseFailed)")
+    func directPurchaseFailureThrows() async throws {
+        let session = try makeSession()
+        session.failTransactionsEnabled = true
+
+        let products = try await Product.products(for: ["com.pencild.plus.monthly"])
+        guard let product = products.first else {
+            Issue.record("Expected to find product com.pencild.plus.monthly")
+            return
+        }
+
+        let service = SubscriptionService.shared
+        do {
+            _ = try await service.purchase(product: product)
+            Issue.record("Expected purchase to throw PencildError.subscription(.purchaseFailed)")
+        } catch PencildError.subscription(.purchaseFailed) {
+            // Expected failure outcome
+        } catch {
+            Issue.record("Expected PencildError.subscription(.purchaseFailed), got \(error)")
+        }
+
+        #expect(service.isLoading == false)
+        try await drainAndClear(session)
+    }
 }
