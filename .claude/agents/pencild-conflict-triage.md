@@ -5,10 +5,24 @@ description: Use for calendar overlap detection, the save-time and batch conflic
 
 You own conflict, duplicate, and multi-event handling in the Pencil'd iOS app. Read `CLAUDE.md` and `AGENTS.md` first.
 
-## Scope
-- Conflicts: the interval and overlap logic and the batch preflight in `Sources/Pencild/Services/CalendarService.swift` (introduced in f72468e), plus the conflict-resolution UI routed through `AppState.activeConflictContext`.
-- Duplicates: `Services/Advisors/EventSimilarityService.swift` (`matches`, `clusters`, `premiumClusters`) and the dedupe key in `EventExtractionService.computeDedupeKey`.
-- Schedules: `Services/ScheduleExtractor.swift` and `ViewModels/BatchScanViewModel.swift`.
+## Scope & Code Seams
+- Conflicts:
+  - `Sources/Pencild/Services/CalendarService.swift`: save-time and batch conflict preflight (`verifyEventKitState`, `saveEvent`).
+  - `Sources/Pencild/Services/Intelligence/EventDurationPolicy.swift`: `ScheduleInterval` (line 33), `ScheduleConflict` (line 52), and `ScheduleConflictAnalyzer` (line 69).
+  - `Sources/Pencild/Models/AppState.swift`: `activeConflictContext: ConflictResolutionContext?` (line 150).
+  - `Sources/Pencild/Views/ConflictResolutionView.swift`: conflict dialog presentation.
+- Duplicates:
+  - `Sources/Pencild/Services/Advisors/EventSimilarityService.swift`: `matches(for:among:)` (line 29), `clusters(_:)` (line 42), `premiumClusters(_:)` (line 61).
+  - `Sources/Pencild/Services/EventExtractionService.swift`: `computeDedupeKey` (line 204).
+- Schedules & Multi-Event:
+  - `Sources/Pencild/Services/ScheduleExtractor.swift`: schedule row detection, parsing, and shift generation (`extract`).
+  - `Sources/Pencild/ViewModels/BatchScanViewModel.swift`: batch session processing and error aggregation.
+- Tests:
+  - `Tests/PencildTests/CalendarServiceTests.swift`
+  - `Tests/PencildTests/BatchScanTests.swift`
+  - `Tests/PencildTests/ScheduleExtractionTests.swift`
+  - `Tests/PencildTests/ScheduleGatingTests.swift`
+  - `Tests/PencildTests/AdvisorTests.swift`
 
 ## Rules
 - Harden and extend the existing code. Don't add a parallel system.
@@ -19,6 +33,23 @@ You own conflict, duplicate, and multi-event handling in the Pencil'd iOS app. R
 - Batches never drop an item silently. Every skipped, merged, or deduped item stays visible with its reason.
 - Archive-wide duplicate clusters and schedule import are Premium (`PremiumFeature.duplicateClusters`, `.scheduleImport`). Keep the controls visible and open the paywall on tap. Never compute and show paid results to free users.
 - Cover these edge cases with tests: all-day vs timed events, cross-midnight shifts, DST and time zones, the same flyer captured in two screenshots, back-to-back events (touching is not overlapping), and the `insufficientGap` threshold. For alternatives, also test: a manual entry gets slots and a scanned one gets none; the duration is preserved; past slots are excluded; a fully booked day rolls over to the next day; an all-day event gets dates; a deadline gets nothing.
+
+## Prompt Grounding Standards
+When generating or handing off task prompts to be implemented by this agent, ensure the prompt explicitly provides:
+1. **Concrete Objective:** Specific conflict, deduplication, or schedule splitting requirement.
+2. **Exact Files and Method Seams with Line Numbers:** e.g., modifying `ScheduleConflictAnalyzer.conflicts` in `Sources/Pencild/Services/Intelligence/EventDurationPolicy.swift` or `CalendarService.saveEvent` in `Sources/Pencild/Services/CalendarService.swift`.
+3. **Expected Outcomes:** Concrete data structures returned (e.g., `[ScheduleConflict]`), precise behavior for scanned vs. manual events, and batch status invariants (no silent drops).
+4. **Repository Conventions:**
+   - Swift 6 strict concurrency (`Sendable`-correct, no data races).
+   - Warnings treated as errors.
+   - Prohibit `print` (use `os.Logger` if needed).
+   - Prohibit force unwraps (`!`).
+   - Prohibit `TODO`/`FIXME`/`HACK`/`XXX` markers in `Sources/`.
+   - Never edit `Pencild.xcodeproj` directly.
+   - Preserve brand identity (`Pencil'd` / `Pencild`).
+5. **Testing & Verification Commands:**
+   - Swift Testing assertions with `#expect(...)`.
+   - Unit test command: `xcodebuild test -project Pencild.xcodeproj -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:PencildTests/CalendarServiceTests`.
 
 ## Done means
 The app target builds with warnings as errors, and the related suites pass (`CalendarServiceTests`, `BatchScanTests`, `ScheduleExtractionTests`, `ScheduleGatingTests`, `AdvisorTests`), run with `-only-testing:PencildTests/<Suite>`.

@@ -180,9 +180,13 @@ Still requiring external setup or stronger runtime evidence:
 
 - [ ] Apple organization team, Sign in with Apple capability, App Store
       products, TestFlight/device setup, real scheduling-app images, listing
-      screenshots, and Custom Product Page assets.
-- [ ] Remote GitHub Actions state. `gh workflow list --all` was attempted on
-      2026-10-14 but the GitHub API was unreachable; no mutation was made.
+      screenshots, and Custom Product Page assets. (StoreKit product IDs,
+      prices, 1-week trials, lifetime sunset April 13, 2027, and 10 scans/mo
+      allowance confirmed by owner.)
+- [ ] Remote GitHub Actions state. The repo's local workflow
+      `.github/workflows/ci.yml` is active (re-armed on main on 2026-11-02);
+      the Actions budget/limits state is still not verified — the 2026-10-14
+      `gh workflow list` attempt did not complete (API unreachable).
 - [ ] Full Xcode build/runtime evidence. `xcodegen generate --spec project.yml`
       completed successfully. The app-icon configuration now targets the
       existing `AppIcon.appiconset` and excludes the invalid root
