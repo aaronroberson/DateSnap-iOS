@@ -52,7 +52,7 @@ When assigning or handing off scoped tasks to Jules agents, ground prompts accor
 - **Domain:** Category-based suggested durations and end-time defaults when flyers lack an explicit end time.
 - **Code Seams:** `Sources/Pencild/Services/Intelligence/EventDurationPolicy.swift` (`suggestedDuration(for:)`, `fallbackEnd(for:)`), `Sources/Pencild/Services/Intelligence/EventUnderstandingModels.swift` (`EventCategory`, `DurationSource`).
 - **Tests:** `Tests/PencildTests/EventUnderstandingTests.swift`, `Tests/PencildTests/ExtractionEvaluationTests.swift`.
-- **Invariants:** Explicit end times on flyers always take precedence over heuristics. Suggested durations are user-editable review defaults (never silently saved). Appointments are 1h (3600s), dining is ~1.5h (5400s), and `.deadline`/`.other` strictly return `nil`.
+- **Invariants:** Explicit end times on flyers always take precedence over heuristics. Suggested durations are user-editable review defaults (never silently saved). Appointments are 1h (3600s), and `.deadline`/`.other` strictly return `nil`. (A dedicated dining duration (~1.5h) exists only as a proposal in plan docs; it is not yet implemented in `EventDurationPolicy`.)
 
 ### 2. Conflict & Multi-Event Triage (`pencild-conflict-triage`)
 - **Domain:** Calendar overlap detection, save-time and batch conflict preflight, duplicate flyer clustering, and multi-date / multi-shift schedule splitting.

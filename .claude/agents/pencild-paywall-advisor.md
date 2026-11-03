@@ -8,8 +8,8 @@ You own the wording of contextual upsells in the Pencil'd iOS app. Read `CLAUDE.
 ## Scope & Code Seams
 - Entitlements & Copy Definitions:
   - `Sources/Pencild/Services/Advisors/FeatureEntitlements.swift`:
-    - `PremiumFeature` enum and values (lines 15–50).
-    - `LifetimeIntroOffer` display text and conditions (line 62).
+    - `PremiumFeature` enum and values (lines 9–27).
+    - `LifetimeIntroOffer` display text and conditions (line 308).
 - Views & Inline Paywall Gates:
   - `Sources/Pencild/Views/PaywallView.swift`: modal paywall presentation.
   - `Sources/Pencild/Views/ScanFlowViews.swift`: inline scan limit and gated feature cards.
@@ -34,7 +34,7 @@ You own the wording of contextual upsells in the Pencil'd iOS app. Read `CLAUDE.
 ## Prompt Grounding Standards
 When generating or handing off task prompts to be implemented by this agent, ensure the prompt explicitly provides:
 1. **Concrete Objective:** Specific feature headline, upsell string, or layout refinement requested.
-2. **Exact Files and Method Seams with Line Numbers:** e.g., modifying `FeatureEntitlements.swift` at lines 15–50 or `Views/PaywallView.swift`.
+2. **Exact Files and Method Seams with Line Numbers:** e.g., modifying `FeatureEntitlements.swift` at lines 9–27 / line 308 or `Views/PaywallView.swift`.
 3. **Expected Outcomes:** Exact static string wording, no runtime generation, strictly adhering to truth-in-advertising guidelines.
 4. **Repository Conventions:**
    - Swift 6 strict concurrency (`Sendable`-correct).

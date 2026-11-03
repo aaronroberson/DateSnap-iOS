@@ -9,11 +9,11 @@ You own conflict, duplicate, and multi-event handling in the Pencil'd iOS app. R
 - Conflicts:
   - `Sources/Pencild/Services/CalendarService.swift`: save-time and batch conflict preflight (`verifyEventKitState`, `saveEvent`).
   - `Sources/Pencild/Services/Intelligence/EventDurationPolicy.swift`: `ScheduleInterval` (line 33), `ScheduleConflict` (line 52), and `ScheduleConflictAnalyzer` (line 69).
-  - `Sources/Pencild/Models/AppState.swift`: `activeConflictContext: ConflictResolutionContext?` (line 54).
+  - `Sources/Pencild/Models/AppState.swift`: `activeConflictContext: ConflictResolutionContext?` (line 150).
   - `Sources/Pencild/Views/ConflictResolutionView.swift`: conflict dialog presentation.
 - Duplicates:
-  - `Sources/Pencild/Services/Advisors/EventSimilarityService.swift`: `matches(for:among:)` (line 42), `clusters(_:)` (line 55), `premiumClusters(_:)` (line 70).
-  - `Sources/Pencild/Services/EventExtractionService.swift`: `computeDedupeKey` (line 210).
+  - `Sources/Pencild/Services/Advisors/EventSimilarityService.swift`: `matches(for:among:)` (line 29), `clusters(_:)` (line 42), `premiumClusters(_:)` (line 61).
+  - `Sources/Pencild/Services/EventExtractionService.swift`: `computeDedupeKey` (line 204).
 - Schedules & Multi-Event:
   - `Sources/Pencild/Services/ScheduleExtractor.swift`: schedule row detection, parsing, and shift generation (`extract`).
   - `Sources/Pencild/ViewModels/BatchScanViewModel.swift`: batch session processing and error aggregation.

@@ -12,20 +12,19 @@ You own end-time defaults for extracted events in the Pencil'd iOS app. Read `CL
     - `EventDurationPolicy.suggestedDuration(for:)` (line 12: category duration suggestions).
     - `EventDurationPolicy.fallbackEnd(for:)` (line 23: default end date computation).
 - Read-only Context:
-  - `Sources/Pencild/Services/Intelligence/EventUnderstandingModels.swift`: `EventCategory` enum (line 110) and `DurationSource` enum (line 133).
+  - `Sources/Pencild/Services/Intelligence/EventUnderstandingModels.swift`: `EventCategory` enum (line 110) and `DurationSource` enum (line 129).
   - `Sources/Pencild/Services/Intelligence/RuleBasedEventAnalyzer.swift`: `classifyCategory(text:)` (line 281).
-  - `Sources/Pencild/Services/EventExtractionService.swift`: `parseTimesAndWindows` (line 118).
+  - `Sources/Pencild/Services/EventExtractionService.swift`: `parseTimesAndWindows(in:)` (line 1045).
   - `Sources/Pencild/ViewModels/EventReviewViewModel+Interpretation.swift`: `suggestedDuration` property (line 107).
 - Tests:
   - `Tests/PencildTests/EventUnderstandingTests.swift`: `categoryDuration` test.
-  - `Tests/PencildTests/ExtractionEvaluationTests.swift`: `EvaluationFixtures.flyers` (lines 27–55).
+  - `Tests/PencildTests/ExtractionEvaluationTests.swift`: `EvaluationFixtures.flyers` (lines 27–53).
 
 ## Rules
 - An explicit end time or window in the OCR evidence always wins over a heuristic.
 - `.deadline` and `.other` return `nil`. A deadline is a point in time, not a span.
-- Suggested durations:
+- Suggested durations (as implemented in `suggestedDuration(for:)`; a dedicated dining duration (~1.5h) remains a proposal in plan docs, not implemented):
   - `.appointment`: 3600s (1 hour) covering medical and personal appointments.
-  - Dining / dinner context: ~5400s (1.5 hours).
   - `.concert`, `.sports`, `.social`: 10800s (3 hours).
   - `.nightlife`: 14400s (4 hours).
   - `.conference`, `.festival`: 28800s (8 hours).
