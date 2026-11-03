@@ -49,6 +49,7 @@
 		3EBF7CD04442C9AAF487C21C /* StoreKitRestoreIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCE6A8CF00E2DC2CAA68FD0 /* StoreKitRestoreIntegrationTests.swift */; };
 		3EEE9A68E2E645BD288D9277 /* SwiftDataEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8912CF4259DF7C05ED61EA94 /* SwiftDataEntities.swift */; };
 		42F3A86C2A39DAF16F8B7AEA /* ReminderDefaultsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A11DE649B7D89A80E29AC0 /* ReminderDefaultsStoreTests.swift */; };
+		454C9276F942ACC6C1309C52 /* RelativeDateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4E5F63B5B17C0C72DACF38 /* RelativeDateResolver.swift */; };
 		46E9FED2EAE95E6A359330DA /* PlusJakartaSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 92A994D0C24FA67406D7EB58 /* PlusJakartaSans-Bold.ttf */; };
 		46F0A0E7CD40ADA613A66952 /* MarketingKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A12955F31961C0BCB6B0F4 /* MarketingKitView.swift */; };
 		4771CCAC645C68BE66FE3C79 /* AppleFoundationModelInterpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AAE454E9940EBB014B3E0CA /* AppleFoundationModelInterpreter.swift */; };
@@ -59,6 +60,7 @@
 		4DE4E5A5468259A7F338868A /* AppleAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCFC7A9D6F30F2E5935BCC2 /* AppleAccount.swift */; };
 		4F24810D9A6165C552B51B11 /* FestivalWeatherContingencyConflictView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9AD78CBECCE35E233DA934 /* FestivalWeatherContingencyConflictView.swift */; };
 		524D837291C97CA041110FBF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D50D2A3D89AD4B726CC4A4E /* ContentView.swift */; };
+		54B1794ECDB65B099EFEFAD8 /* RelativeDateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152C9F5C00482A1B005C0F8D /* RelativeDateResolverTests.swift */; };
 		5525DFD4873FAE5E62D8635F /* EventModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFE26C5E268E8D088E1CD07 /* EventModels.swift */; };
 		559F5E606918F57B15CF011B /* BatchDestinationsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF7C8FC0FE13209CDF279AA /* BatchDestinationsEditor.swift */; };
 		58A943AC470FC38FEFCB3FB9 /* PlanLimitsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2C51D0A1E062FC09677C19 /* PlanLimitsTests.swift */; };
@@ -187,6 +189,7 @@
 		0EF7C8FC0FE13209CDF279AA /* BatchDestinationsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchDestinationsEditor.swift; sourceTree = "<group>"; };
 		112201B01FC669762DCC0BDC /* ICloudDownloadConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudDownloadConfirmationView.swift; sourceTree = "<group>"; };
 		125C831D5863E17E9EDBEC03 /* EventReviewEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReviewEditView.swift; sourceTree = "<group>"; };
+		152C9F5C00482A1B005C0F8D /* RelativeDateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDateResolverTests.swift; sourceTree = "<group>"; };
 		16C57127AB7B208570033B0F /* PlusJakartaSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-ExtraBold.ttf"; sourceTree = "<group>"; };
 		1956429E5FD2E74C17C0152E /* EventUnderstandingPipelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUnderstandingPipelineTests.swift; sourceTree = "<group>"; };
 		1AD8AF758C6012D0F221B6DD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -322,6 +325,7 @@
 		DD413ED6E52FCBC1508294CE /* SavedEventActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedEventActions.swift; sourceTree = "<group>"; };
 		DDD20E01E31725A3C1C06617 /* ScheduleExtractionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleExtractionTests.swift; sourceTree = "<group>"; };
 		DEE942F563C85F010026D90B /* PencildError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencildError.swift; sourceTree = "<group>"; };
+		DF4E5F63B5B17C0C72DACF38 /* RelativeDateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDateResolver.swift; sourceTree = "<group>"; };
 		DFFE26C5E268E8D088E1CD07 /* EventModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModels.swift; sourceTree = "<group>"; };
 		E04EAA4DDC315DC379920C9E /* AutomationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationSettingsView.swift; sourceTree = "<group>"; };
 		E4B50F045DFE0626BC488752 /* ICloudDownloadSettingsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudDownloadSettingsCard.swift; sourceTree = "<group>"; };
@@ -423,6 +427,7 @@
 				4238B9976253A4887A4B5818 /* PermissionAccess.swift */,
 				B86D6CBB6FEA95850DCB56EE /* PhotoCandidateRanker.swift */,
 				8375F76A35372C148523626F /* PhotoLibraryService.swift */,
+				DF4E5F63B5B17C0C72DACF38 /* RelativeDateResolver.swift */,
 				D07A857E03B57B1BC4CA1F0A /* ReminderService.swift */,
 				BF93E8D590175D7AB9DCDB50 /* RemoteAssetGate.swift */,
 				2CD23486207B3B11B8C53060 /* SampleFlyer.swift */,
@@ -577,6 +582,7 @@
 				56792EFECC6DED5428E852F0 /* PermissionAccessTests.swift */,
 				2F2C51D0A1E062FC09677C19 /* PlanLimitsTests.swift */,
 				F026E309222940E174698AA6 /* PurchaseViewModelTests.swift */,
+				152C9F5C00482A1B005C0F8D /* RelativeDateResolverTests.swift */,
 				49A11DE649B7D89A80E29AC0 /* ReminderDefaultsStoreTests.swift */,
 				8E6F6261153C8E316B604C76 /* RemoteAssetGateTests.swift */,
 				3F194AFA71747698A409D2C6 /* SceneActivationRefreshTests.swift */,
@@ -811,6 +817,7 @@
 				0D45D76A74B45BE58F40B399 /* PhotoLibraryService.swift in Sources */,
 				643FE9FB549B69409CF10A9E /* PrivacyCenterView.swift in Sources */,
 				7E40249E7E0818406C1BA7F0 /* PurchaseViewModel.swift in Sources */,
+				454C9276F942ACC6C1309C52 /* RelativeDateResolver.swift in Sources */,
 				BF3CBBB0EF8C0E83F3329906 /* ReminderDefaultsStore.swift in Sources */,
 				D4BC2D5762E23F6C4ABACF6E /* ReminderScheduleEditorView.swift in Sources */,
 				D096A6E28FC26B7AD23B3864 /* ReminderService.swift in Sources */,
@@ -876,6 +883,7 @@
 				62D640E9A4B70279706CC837 /* PermissionAccessTests.swift in Sources */,
 				58A943AC470FC38FEFCB3FB9 /* PlanLimitsTests.swift in Sources */,
 				063BA72AEEFDEED2612A5C4B /* PurchaseViewModelTests.swift in Sources */,
+				54B1794ECDB65B099EFEFAD8 /* RelativeDateResolverTests.swift in Sources */,
 				42F3A86C2A39DAF16F8B7AEA /* ReminderDefaultsStoreTests.swift in Sources */,
 				AACB90EEFCA20BBB9C8B0670 /* RemoteAssetGateTests.swift in Sources */,
 				0042866E8E4FDD45513DB9AC /* SceneActivationRefreshTests.swift in Sources */,
