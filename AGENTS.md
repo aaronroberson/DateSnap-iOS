@@ -23,7 +23,7 @@ Install the repository's staged-file pre-commit brand check once per clone:
 ./scripts/install-hooks.sh
 ```
 
-CI also runs the brand identity gate and its regression tests on every pull request and push to `main`.
+GitHub Actions is intentionally disabled on this repository (owner decision, 2026-11-03: Actions usage budget/limits are exhausted), so `.github/workflows/ci.yml` will not run. Local checks are authoritative: run the brand gate and the scripted regression suite yourself before pushing (`./scripts/install-hooks.sh` sets up the pre-commit gate), and run the xcodebuild commands below for anything affecting Swift sources. Do not re-enable Actions, and do not delete or rename `ci.yml`.
 
 ```sh
 xcodegen generate --spec project.yml

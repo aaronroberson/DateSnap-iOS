@@ -183,10 +183,12 @@ Still requiring external setup or stronger runtime evidence:
       screenshots, and Custom Product Page assets. (StoreKit product IDs,
       prices, 1-week trials, lifetime sunset April 13, 2027, and 10 scans/mo
       allowance confirmed by owner.)
-- [ ] Remote GitHub Actions state. The repo's local workflow
-      `.github/workflows/ci.yml` is active (re-armed on main on 2026-11-02);
-      the Actions budget/limits state is still not verified — the 2026-10-14
-      `gh workflow list` attempt did not complete (API unreachable).
+- [x] Remote GitHub Actions state. Owner confirmed on 2026-11-03 that
+      Actions usage budget/limits are exhausted, so GitHub Actions is
+      intentionally disabled repo-wide and no workflow will run.
+      `.github/workflows/ci.yml` stays in the tree ready for a future
+      re-arm; local xcodebuild and the brand gate are the authoritative
+      checks while Actions remains off.
 - [ ] Full Xcode build/runtime evidence. `xcodegen generate --spec project.yml`
       completed successfully. The app-icon configuration now targets the
       existing `AppIcon.appiconset` and excludes the invalid root
