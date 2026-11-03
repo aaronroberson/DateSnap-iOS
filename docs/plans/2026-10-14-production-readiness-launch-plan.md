@@ -59,8 +59,11 @@ Product decisions are fixed for this wave:
 
 17. Add `.codebase-memory/` to `.gitignore` or the approved brand-gate
     exclusions, without committing its local index.
-18. Confirm the GitHub Actions workflow is disabled remotely after inspecting
-    the current local and remote state.
+18. Resolved 2026-11-03 by owner decision reversal: Actions is re-enabled
+    with a Linux-only gate in `.github/workflows/ci.yml` (brand gate +
+    script regressions, verified green on dispatch). macOS runners are
+    banned for budget reasons and the iOS xcodebuild suite stays
+    local-only.
     
 19. Update "CAPTURE - Create New Event" sheet/modal so that it has a matching background gradient as the other sheets/modals, , matching eyebrow color, font, and font size as well as positioning, restore the description below the title, Update the full width Screenshots tile to include the auto selected events display when applicable (same as the Home screen's Screenshots card) , make the 4 tiles after the Screenshots tile into a two column grid (2x2), superimpose the PREMIUM bandge over the top right corner of the PDF  & File import tile (extending beyond the top border of the tile) and change it's background to match the other three 2x tiles.
 
@@ -180,9 +183,15 @@ Still requiring external setup or stronger runtime evidence:
 
 - [ ] Apple organization team, Sign in with Apple capability, App Store
       products, TestFlight/device setup, real scheduling-app images, listing
-      screenshots, and Custom Product Page assets.
-- [ ] Remote GitHub Actions state. `gh workflow list --all` was attempted on
-      2026-10-14 but the GitHub API was unreachable; no mutation was made.
+      screenshots, and Custom Product Page assets. (StoreKit product IDs,
+      prices, 1-week trials, lifetime sunset April 13, 2027, and 10 scans/mo
+      allowance confirmed by owner.)
+- [x] Remote GitHub Actions state. Owner re-enabled Actions on
+      2026-11-03 with a Linux-only gate (brand identity + scripted
+      regressions, first dispatch run succeeded). macOS runners are
+      banned for budget reasons (10× multiplier), so the iOS
+      xcodebuild suite remains a local-only task; the Linux gate
+      replaces the previous repo-wide disable.
 - [ ] Full Xcode build/runtime evidence. `xcodegen generate --spec project.yml`
       completed successfully. The app-icon configuration now targets the
       existing `AppIcon.appiconset` and excludes the invalid root

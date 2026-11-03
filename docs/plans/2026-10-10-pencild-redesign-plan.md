@@ -271,21 +271,24 @@ For target-generation changes, inspect/install the project-approved XcodeGen 2.4
 - iPhone and iPad screens tested for actual touch, accessibility, loading/empty/denied/error/success states. iPad-specific layouts are optional only after actual device family/layout approval.
 - Every link/reference in plan resolves. Any future copy or visual change must preserve approved claims, accessibility, and protected identifiers unless a separate migration is explicitly approved.
 
-## 10. Open questions and approval gates
+## 10. Open questions and approval gates (RESOLVED)
 
-1. Does Pencil'd become the product/legal/App Store name, or is this an exploratory design label? Who owns new domains, support inbox, privacy/terms, and Apple account copy?
-2. The Stitch token set specifies amber/orange/coral/violet on `#101127` and Plus Jakarta Sans; current native tokens and repo guidance specify `#050816` and cyan. Which is authoritative, and may Plus Jakarta Sans be bundled/licensed? Missing `pencild-design-system-updated.md` prevents a source comparison; do not restore it from recollection.
-3. Is the intention to preserve the currently installed App Store identity? Strong safe default: retain `com.pencild.app`, all four StoreKit IDs, module/scheme/targets, notifications and persistent models until Apple account and customer migration facts are verified.
-4. Agenda is now app-owned with grouped sections and filters; History is pushed from Agenda, matching the four-tab shell.
-5. Which of the 16 Stitch-only designs are approved product scope versus explorations/marketing? Which is authoritative where there are variants (Queue original/v2, PDF original/v2, two iPad PDF versions)?
-6. Is actual iPad adaptive UI desired? Current app is a single SwiftUI universal target; `TARGETED_DEVICE_FAMILY=1,2` is verified in generated build settings, but accepted layout behavior remains untested. Pencil input, desktop dashboard and iPad-specific scope are not established.
-7. Is manual camera capture, crop/keystone correction, share extension, `.ics` import/export, standalone Agenda, conflict detection/resolution, page-range PDF preview, screenshot background detection desired? Each is new implementation, permissions, model/test/review scope.
-8. Is an account/remote verification, phone/SMS/WhatsApp, sync, chat, cloud parsing or telemetry product explicitly approved? If not, remove those affordances/claims. If yes, specify privacy model, authentication/service provider, legal basis, account recovery, secrets, operations, age/region and deletion/export before implementation; no vendor chosen here.
-9. Are tier quotas/pricing/free trials/benefits changing? The local StoreKit config contains monthly, annual, and Lifetime products for Plus and Premium; actual App Store Connect catalog and group state are unknown.
-10. Does the incomplete iOS 18 `ContactIntegration.swift` scaffold get removed, completed, or retained unused? No reachable contact UI is evidenced; do not let the file create implied product scope.
-11. Which assertions/copy may say “on-device”, “private”, calendar sync, OCR confidence, zero cloud, speed, data retention and calendar scope? Match actual code and Apple permissions; catalogue includes unsupported/exaggerated claims.
-12. Should no-date recovery include true crop/camera flow, and how should manual event date/time be chosen rather than tomorrow at 7PM? The existing default is code behavior, not an approved product decision.
-13. Which work is a visual reskin versus functional scope, and who approves acceptance of touch/Dynamic Type, VoiceOver, localization, reduced motion, light/dark, smaller devices, iPad and permission/runtime testing?
+1. **Product Name & Legal Ownership:** **Resolved.** The app name is officially **Pencil'd** (internal code module/bundle `Pencild` / `com.pencild.app`). Legal/support URLs and external domain configuration are managed by the owner. Keep URLs as configured in code.
+2. **Design Tokens & Typography:** **Resolved.** Retain existing `PencilTokens` (Plus Jakarta Sans and luminous precision color palette). Do not switch to SF Pro or execute global recoloring. De-clutter through clean layout hierarchy, not re-theming.
+3. **App Store Identity & StoreKit IDs:** **Resolved.** Confirmed retaining `com.pencild.app` and all active StoreKit IDs (`com.pencild.plus.monthly`, `com.pencild.plus.annual`, `com.pencild.plus.lifetime`, `com.pencild.premium.monthly`, `com.pencild.premium.annual`, `com.pencild.premium.lifetime`).
+4. **Navigation Structure:** **Resolved.** Agenda is app-owned; History and archive navigation remain preserved without breaking back-navigation.
+5. **Stitch Scope vs. Clean Native Implementation:** **Resolved.** Stitch screens are conceptual inspiration only and must not be followed with 100% fidelity. De-clutter views by removing duplicate badges, secondary text redundancies, and unnecessary visual noise:
+   - **Home:** One primary capture action and clean recent/likely-event cards; no decorative clutter.
+   - **Event Review:** Essential details (title, date/time, location, calendar) at top; suggestions (duration, reminders, repeat) in a single compact card, collapsed by default.
+   - **Batch Review:** Clear row-based presentation with confidence state, destination, and skip/merge rationale always visible.
+6. **iPad Adaptive Layout:** **Resolved.** Keep the existing regular-width navigation rail for iPad. No complex split-view or custom tablet refactor for initial launch.
+7. **Feature Scope & Extra Suggestions:** **Resolved.** Support video-meeting links (Zoom/Teams/Meet/Webex) and Apple Maps links (`https://maps.apple.com/?q=`) strictly when grounded verbatim in OCR evidence. No manual keystone correction or heavy external flows.
+8. **Authentication & Accounts:** **Resolved.** 100% on-device local-first. No accounts, phone/SMS/WhatsApp verification, sync servers, or cloud telemetry.
+9. **Tier Quotas & Pricing:** **Resolved.** Free allowance is confirmed at 10 scans/month (`PlanLimits.freeScansPerMonth`). StoreKit products, prices, group, and 1-week trials in `Pencild.storekit` are approved. Lifetime tier is available through April 13, 2027 with permanent entitlement afterward.
+10. **Contacts Integration:** **Resolved.** No Contacts framework integration or contact permissions. Phone/email suggestions use standard `tel:` and `mailto:` only when appearing verbatim in OCR evidence.
+11. **Privacy & On-Device Claims:** **Resolved.** Maintain strict truthful claims: 100% on-device Vision OCR, EventKit calendar saving, and zero server data transfer.
+12. **Ambiguity & Conflict Resolution:** **Resolved.** Ambiguities are prefilled with the highest-ranked interpretation while allowing user edits; alternatives are shown as chips only when grounded in evidence (max 3). Conflicts flag the overlap and allow user selection (save anyway / edit time / change calendar); do not synthesize artificial alternative times for flyers.
+13. **Accessibility & Review Gates:** **Resolved.** All interactions maintain minimum 44pt touch targets, Dynamic Type, and high contrast without visual clutter.
 
 ## Appendix A. Asset inventory completeness contract
 

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  # Budget constraints (owner decision 2026-11-03):
+  # - NO macOS runners, ever, without owner approval. macOS bills ~10x
+  #   and the xcodebuild iOS suite stays a local-only task (AGENTS.md).
+  # - Linux checks (brand gate + scripted regressions) bill ~1 minute
+  #   at $0.006/min, so push triggers on main are acceptable here.
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "lancedb/**"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "lancedb/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-checks:
+    name: Brand gate + script regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        # Gives every run step `bash -eo pipefail`, so any check's exit
+        # status is never masked by output formatting.
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Pencil'd brand identity
+        run: |
+          python3 scripts/verify-brand-identity.py --worktree
+          python3 scripts/tests/test_brand_identity_gate.py

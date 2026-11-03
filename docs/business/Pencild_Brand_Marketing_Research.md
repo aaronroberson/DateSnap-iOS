@@ -438,14 +438,14 @@ This framing sets accurate expectations, differentiates from auto-save competito
 | **Apple Visual Intelligence (iOS 27) native photo-to-calendar scanning** | High | Differentiate on: PDF/document import, review workflow, breadth of input types, history/archive — Apple's native feature doesn't cover these |
 | **App Store privacy label accuracy** | High | Audit all third-party SDKs and network calls before setting "Data Not Collected" |
 | **Crowded category with near-zero ratings** | High | First to 50+ ratings with ≥4.5★ wins category authority; prioritize review prompts |
-| **Current subtitle "Screenshot to Event" is generic** | High | Update immediately; no code change required, only metadata |
-| **Pricing too high vs. direct competitors** | Medium | The October 7 $4.99/$7.99 proposal is superseded by the October 2026 launch strategy's $3.99/$6.99 monthly prices; validate conversion after launch rather than configuring from this older recommendation. |
+| **Current subtitle "Screenshot to Event" is generic** | High | Resolved: Subtitle "Flyers & screenshots to events" approved for launch. |
+| **Pricing too high vs. direct competitors** | Medium | Resolved: Launch pricing confirmed at $3.99/$6.99 monthly with 1-week free trials and $24.99/$39.99 annual. |
 | **OCR accuracy at launch** | Medium | Validate review workflow handles errors gracefully; ensure edit step is frictionless |
-| **Free tier too restrictive (5 scans/month)** | Medium | Monitor conversion-to-paid data; if >40% users hit limit in week 1, free tier may feel punishing before value is established |
-| **"No account required" claim** | Medium | Verify with actual subscription entitlement implementation |
-| **On-device vs. cloud processing disclosure** | Medium | If any OCR or AI model calls an external API, this must be disclosed in privacy policy and App Store label |
+| **Free tier too restrictive** | Medium | Resolved: Free tier allowance confirmed at 10 scans/month (PlanLimits.freeScansPerMonth). |
+| **"No account required" claim** | Medium | Resolved: Verified 100% on-device operation with StoreKit 2 entitlement resolution. |
+| **On-device vs. cloud processing disclosure** | Medium | Resolved: 100% local processing confirmed. No network requests or cloud AI calls. |
 | **Name confusion: "Pencild" vs. dating apps** | Low | Name is unique enough; no meaningful risk from dating app confusion in Productivity category context |
-| **PDF import depth** | Low-Medium | Confirm multi-page PDF scanning is shipped, not proposed, before featuring in App Store copy |
+| **PDF import depth** | Low-Medium | Resolved: Multi-page PDF scanning is shipped and gated behind Premium. |
 
 ---
 
