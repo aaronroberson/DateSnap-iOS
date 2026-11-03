@@ -1204,43 +1204,67 @@ public enum DateInference {
             "thinking about coming", "host for", "comment below", "tag a friend"
         ]
 
+        // A line may only fold into a multi-line headline when it is itself title-like: the same
+        // type size, no boilerplate or conversational words, and no time, date, or app-chrome
+        // text. Credit lines ("Presented by ..."), navigation chrome ("< Back"), and door-time
+        // lines ("DOORS 7:00 PM") must never be swept into the title.
+        func mergeableText(_ text: String) -> Bool {
+            if isTemporalOnlyLine(text) || containsTimeOrDate(text) { return false }
+            if looksLikeAppChrome(text) { return false }
+            let lower = text.lowercased()
+            let words = Set(lower.components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "+")).inverted).filter { !$0.isEmpty })
+            if boilerplateKeywords.contains(where: { $0.contains(" ") ? lower.contains($0) : words.contains($0) }) { return false }
+            if conversationalKeywords.contains(where: { $0.contains(" ") ? lower.contains($0) : words.contains($0) }) { return false }
+            return true
+        }
+
         // Build composite multi-line candidates for titles split across 2-3 lines (e.g. VINTAGE / HOLLYWOOD / NIGHT)
-        var pool: [(line: OCRLine, isCompound: Bool)] = lines.map { ($0, false) }
+        var pool: [(line: OCRLine, mergedLines: Int, maxSize: CGFloat)] = lines.map { ($0, 1, $0.boundingBox.height) }
         for i in 0..<lines.count {
             let l1 = lines[i]
             let t1 = l1.text.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard t1.count >= 2, t1.count <= 30, !isTemporalOnlyLine(t1) else { continue }
+            guard t1.count >= 2, t1.count <= 30, mergeableText(t1) else { continue }
             let words1 = t1.split(whereSeparator: \.isWhitespace).count
             guard words1 <= 4, !t1.hasSuffix("."), !t1.hasSuffix("!") else { continue }
 
             var accumText = t1
             var accumBox = l1.boundingBox
             var minConf = l1.confidence
+            var accumMaxSize = l1.boundingBox.height
+            var mergedLines = 1
 
             for j in (i + 1)..<min(lines.count, i + 3) {
                 let next = lines[j]
                 let tNext = next.text.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard tNext.count >= 2, tNext.count <= 30, !isTemporalOnlyLine(tNext) else { break }
+                guard tNext.count >= 2, tNext.count <= 30, mergeableText(tNext) else { break }
                 let wordsNext = tNext.split(whereSeparator: \.isWhitespace).count
                 guard wordsNext <= 4, !tNext.hasSuffix("."), !tNext.hasSuffix("!") else { break }
+
+                // A real multi-line headline is set in one type size; merge only similar heights
+                // so a large headline is not inflated by unioning a much smaller neighbour.
+                let sizeRatio = min(accumMaxSize, next.boundingBox.height) / max(accumMaxSize, next.boundingBox.height)
+                guard sizeRatio >= 0.65 else { break }
 
                 let yDist = abs(next.boundingBox.origin.y - accumBox.origin.y)
                 guard yDist < 0.35 else { break }
 
                 accumText += " \(tNext)"
                 accumBox = accumBox.union(next.boundingBox)
+                accumMaxSize = max(accumMaxSize, next.boundingBox.height)
                 minConf = min(minConf, next.confidence)
-                pool.append((OCRLine(text: accumText, confidence: minConf, boundingBox: accumBox), true))
+                mergedLines += 1
+                pool.append((OCRLine(text: accumText, confidence: minConf, boundingBox: accumBox), mergedLines, accumMaxSize))
             }
         }
 
-        let maxHeight = pool.map { $0.line.boundingBox.height }.max() ?? 1.0
+        let maxHeight = pool.map { $0.maxSize }.max() ?? 1.0
         var scoredLines: [(line: OCRLine, score: Float)] = []
 
         for item in pool {
             let line = item.line
             let trimmed = line.text.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.count < 3 || trimmed.count > 70 { continue }
+            if looksLikeAppChrome(trimmed) { continue }
 
             let lower = trimmed.lowercased()
             let words = Set(lower.components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "+")).inverted).filter { !$0.isEmpty })
@@ -1253,10 +1277,14 @@ public enum DateInference {
             let isNumericDate = trimmed.range(of: "^\\d{1,2}[/.-]\\d{1,2}", options: .regularExpression) != nil
             if isNumericDate || isTemporalOnlyLine(trimmed) { continue }
 
-            let sizeRank = Float(line.boundingBox.height / max(0.001, maxHeight)) * 0.55
+            // Size is the tallest component line's height, never the union box of the compound,
+            // so chained small lines do not masquerade as a large headline.
+            let sizeRank = Float(item.maxSize / max(0.001, maxHeight)) * 0.55
             let widthScore = Float(line.normalizedWidth) * 0.10
             let topQuartileBonus: Float = line.boundingBox.maxY >= 0.75 ? 0.08 : (line.boundingBox.origin.y >= 0.35 ? 0.04 : 0.0)
-            let compoundBonus: Float = item.isCompound ? 0.15 : 0.0
+            // A compound may also out-score its own truncated two-line prefix when both survive
+            // to the same size-based score: the longer reading of an equal-size headline wins.
+            let compoundBonus: Float = item.mergedLines > 1 ? 0.15 + 0.05 * Float(item.mergedLines - 2) : 0.0
 
             let wordCount = trimmed.split(whereSeparator: \.isWhitespace).count
             let isSentence = wordCount > 8 || trimmed.hasSuffix(".") || trimmed.hasSuffix("!") || trimmed.hasSuffix("?")
@@ -1292,6 +1320,20 @@ public enum DateInference {
     }
 
     // MARK: - Location, Venue, and Contact Field Extraction
+
+    /// True when a line is app navigation chrome ("< Back", "Done", status-bar junk) rather
+    /// than event content, so it can neither become a title nor merge into one.
+    public static func looksLikeAppChrome(_ text: String) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return true }
+        if let first = trimmed.first, "<‹>↑↓←→✕".contains(first) { return true }
+        let chromeLabels: Set<String> = [
+            "back", "done", "close", "cancel", "share", "edit", "save", "delete", "menu",
+            "search", "more", "settings", "home", "ok", "wifi", "battery", "messages",
+            "imessage", "notifications", "reminders", "notes"
+        ]
+        return chromeLabels.contains(trimmed.lowercased())
+    }
 
     /// True when a line is just a date/time ("9am - 1pm", "Saturday, October 31") with no other words.
     public static func isTemporalOnlyLine(_ text: String) -> Bool {

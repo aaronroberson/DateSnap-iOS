@@ -102,9 +102,12 @@ enum ExtractionEvaluator {
             report.total += 1
             guard let event = result.events.first else {
                 if expected.expectsQuestion { report.questionsWarranted += 1 }
+                print("[eval] \(flyer.name): NO EVENT")
                 continue
             }
             let best = event.best
+            if DateInference.normalizeText(best.title.value) != DateInference.normalizeText(expected.title) { print("[eval] \(flyer.name): title=\(best.title.value) expected=\(expected.title)") }
+            if !event.questions.isEmpty && !expected.expectsQuestion { print("[eval] \(flyer.name): UNEXPECTED question=\(event.questions.map { $0.field.rawValue })") }
             let day = calendar.dateComponents([.year, .month, .day], from: best.start.value)
             let time = calendar.dateComponents([.hour, .minute], from: best.start.value)
 
