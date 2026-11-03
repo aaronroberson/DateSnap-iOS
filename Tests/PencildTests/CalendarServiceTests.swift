@@ -6,11 +6,14 @@ import Testing
 // MARK: - Test Error Double
 private enum MockEventStoreError: LocalizedError {
     case removalFailed
+    case accessFailed
 
     var errorDescription: String? {
         switch self {
         case .removalFailed:
             return "Mock EKEventStore remove failed intentionally."
+        case .accessFailed:
+            return "Mock EKEventStore requestAccess failed intentionally."
         }
     }
 }
@@ -24,8 +27,18 @@ private final class TestCalendarEventStore: CalendarEventStoreProviding, @unchec
     var removeSpanPassed: EKSpan?
     var removeCommitPassed: Bool?
 
+    var stubbedRequestAccessResult = true
+    var requestAccessError: Error?
+    var requestAccessCalled = false
+
     func authorizationStatus() -> EKAuthorizationStatus { .fullAccess }
-    func requestAccess() async throws -> Bool { true }
+    func requestAccess() async throws -> Bool {
+        requestAccessCalled = true
+        if let requestAccessError {
+            throw requestAccessError
+        }
+        return stubbedRequestAccessResult
+    }
     func writableCalendars() -> [EKCalendar] { [] }
     func defaultCalendar() -> EKCalendar? { nil }
     func makeEvent() -> EKEvent { EKEvent(eventStore: eventFactoryStore) }
@@ -175,5 +188,61 @@ struct CalendarServiceApplyFallbackTests {
         CalendarService(eventStore: eventStore).apply(candidate: candidate, alarms: [], to: event)
 
         #expect(event.endDate == explicitEndDate)
+    }
+}
+
+// MARK: - Calendar Service Request Access Tests Suite
+@Suite("CalendarService Request Access Tests")
+struct CalendarServiceRequestAccessTests {
+
+    @Test("requestEventAccess returns true when underlying event store grants access")
+    func requestEventAccessGranted() async throws {
+        let mockStore = TestCalendarEventStore()
+        mockStore.stubbedRequestAccessResult = true
+
+        let service = CalendarService(eventStore: mockStore)
+        let granted = try await service.requestEventAccess()
+
+        #expect(granted == true)
+        #expect(mockStore.requestAccessCalled == true)
+    }
+
+    @Test("requestEventAccess returns false when underlying event store denies access")
+    func requestEventAccessDenied() async throws {
+        let mockStore = TestCalendarEventStore()
+        mockStore.stubbedRequestAccessResult = false
+
+        let service = CalendarService(eventStore: mockStore)
+        let granted = try await service.requestEventAccess()
+
+        #expect(granted == false)
+        #expect(mockStore.requestAccessCalled == true)
+    }
+
+    @Test("requestEventAccess throws PencildError.calendar(.accessDenied) when underlying event store throws")
+    func requestEventAccessErrorHandling() async {
+        let mockStore = TestCalendarEventStore()
+        mockStore.requestAccessError = MockEventStoreError.accessFailed
+
+        let service = CalendarService(eventStore: mockStore)
+
+        await #expect(throws: PencildError.self) {
+            try await service.requestEventAccess()
+        }
+
+        do {
+            _ = try await service.requestEventAccess()
+            #expect(Bool(false), "Expected requestEventAccess to throw an error but it succeeded")
+        } catch let PencildError.calendar(calendarError) {
+            if case .accessDenied = calendarError {
+                #expect(Bool(true))
+            } else {
+                #expect(Bool(false), "Expected .accessDenied error, got \(calendarError)")
+            }
+        } catch {
+            #expect(Bool(false), "Expected PencildError.calendar, got \(error)")
+        }
+
+        #expect(mockStore.requestAccessCalled == true)
     }
 }
