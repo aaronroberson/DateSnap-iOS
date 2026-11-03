@@ -648,78 +648,10 @@ public enum DateInference {
 
     // MARK: - B3. Relative Date Resolution
 
-    public struct RelativeResult: Sendable {
-        public var date: Date
-        public var hasExplicitTime: Bool
-    }
+    public typealias RelativeResult = RelativeDateResolver.RelativeResult
 
     public static func resolveRelativePhrases(in text: String, anchor: Date, calendar: Calendar) -> RelativeResult? {
-        let lower = text.lowercased()
-
-        // Today / Tonight
-        if lower.contains("tonight") {
-            var comps = calendar.dateComponents([.year, .month, .day], from: anchor)
-            comps.hour = 19
-            comps.minute = 0
-            let d = calendar.date(from: comps) ?? anchor
-            return RelativeResult(date: d, hasExplicitTime: true)
-        }
-        if lower.contains("today") {
-            return RelativeResult(date: anchor, hasExplicitTime: false)
-        }
-
-        // Tomorrow / Tmrw
-        if lower.contains("tomorrow") || lower.contains("tmrw") {
-            let nextDay = calendar.date(byAdding: .day, value: 1, to: anchor) ?? anchor
-            return RelativeResult(date: nextDay, hasExplicitTime: false)
-        }
-
-        // in N days
-        let inDaysRegex = try? NSRegularExpression(pattern: "\\bin\\s+(\\d+)\\s+days?\\b")
-        if let match = inDaysRegex?.firstMatch(in: lower, range: NSRange(location: 0, length: lower.utf16.count)),
-           let r = Range(match.range(at: 1), in: lower),
-           let n = Int(lower[r]) {
-            let target = calendar.date(byAdding: .day, value: n, to: anchor) ?? anchor
-            return RelativeResult(date: target, hasExplicitTime: false)
-        }
-
-        // in N weeks
-        let inWeeksRegex = try? NSRegularExpression(pattern: "\\bin\\s+(\\d+)\\s+weeks?\\b")
-        if let match = inWeeksRegex?.firstMatch(in: lower, range: NSRange(location: 0, length: lower.utf16.count)),
-           let r = Range(match.range(at: 1), in: lower),
-           let n = Int(lower[r]) {
-            let target = calendar.date(byAdding: .weekOfYear, value: n, to: anchor) ?? anchor
-            return RelativeResult(date: target, hasExplicitTime: false)
-        }
-
-        // "this/coming <weekday>" vs "next <weekday>"
-        let weekdays = [
-            "sunday": 1, "monday": 2, "tuesday": 3, "wednesday": 4, "thursday": 5, "friday": 6, "saturday": 7,
-            "sun": 1, "mon": 2, "tue": 3, "wed": 4, "thu": 5, "fri": 6, "sat": 7
-        ]
-
-        let weekdayPattern = "(?:this|coming|next)\\s+(sunday|monday|tuesday|wednesday|thursday|friday|saturday|sun|mon|tue|wed|thu|fri|sat)"
-        let regex = try? NSRegularExpression(pattern: weekdayPattern)
-        if let match = regex?.firstMatch(in: lower, range: NSRange(location: 0, length: lower.utf16.count)) {
-            let fullMatched = (lower as NSString).substring(with: match.range)
-            let nameMatched = (lower as NSString).substring(with: match.range(at: 1))
-
-            if let targetWeekday = weekdays[nameMatched] {
-                let anchorWeekday = calendar.component(.weekday, from: anchor)
-                var daysAhead = (targetWeekday - anchorWeekday + 7) % 7
-                if daysAhead == 0 { daysAhead = 7 }
-
-                /// Convention: "next <weekday>" strictly means the following week (daysAhead + 7).
-                if fullMatched.hasPrefix("next") {
-                    daysAhead += 7
-                }
-
-                let d = calendar.date(byAdding: .day, value: daysAhead, to: anchor) ?? anchor
-                return RelativeResult(date: d, hasExplicitTime: false)
-            }
-        }
-
-        return nil
+        RelativeDateResolver.resolve(in: text, anchor: anchor, calendar: calendar)
     }
 
     // MARK: - Month Dates & Date Range Expansion (B1, B4, B5)
