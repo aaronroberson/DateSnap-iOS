@@ -1,9 +1,20 @@
 name: CI
 
 on:
+  # Budget: macOS runners bill at a 10x multiplier against included
+  # minutes, so this workflow is deliberately lean:
+  # - PR-only triggers. Squash-merges to main were already validated by
+  #   the branch's own PR run; direct pushes to main run locally instead.
+  # - Doc-only changes skip the run entirely (no compiled code touched).
+  # - Hard 25-minute timeout caps the worst-case billing per run.
+  # Never re-add push triggers without owner approval (2026-11-03).
   pull_request:
-  push:
-    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - ".github/**"
+      - "lancedb/**"
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -13,7 +24,7 @@ jobs:
   build-and-test:
     name: Regenerate project + run suite
     runs-on: macos-latest
-    timeout-minutes: 45
+    timeout-minutes: 25
     defaults:
       run:
         # Gives every run step `bash -eo pipefail`, so xcodebuild's exit
@@ -59,8 +70,12 @@ jobs:
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
           echo "Selected simulator: $DEVICE"
 
+      # Track per-run macOS burn. The multiplier means a 20-minute run
+      # bills 200 included minutes; keep an eye on this in the logs.
       - name: Run full test suite
         run: |
+          SECONDS=0
           xcodebuild test \
             -scheme Pencild \
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}"
+          echo "xcodebuild wall time: ${SECONDS}s (billed at 10x on macOS runners)"
