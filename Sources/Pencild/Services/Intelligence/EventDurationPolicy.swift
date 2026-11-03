@@ -4,43 +4,20 @@ import Foundation
 /// The single source for "how long is an event with no stated end". Extraction, review and
 /// `CalendarService` all use `fallback`, so no layer silently applies a different assumption.
 /// Category durations are offered as editable suggestions only, until evaluation supports a better default.
-/// Explicit end times found on flyers always take precedence over suggested durations.
 public enum EventDurationPolicy {
-    /// Labeled fallback when the flyer states no end time (2 hours).
+    /// Labeled fallback when the flyer states no end time.
     public static let fallback: TimeInterval = 2 * 3600
 
-    /// Suggested length for dining events (~1.5 hours).
-    public static let diningDuration: TimeInterval = 5400
-
-    /// Suggested length for standard medical/personal appointments (1 hour).
-    public static let appointmentDuration: TimeInterval = 3600
-
     /// Suggested length for a category, shown in review as an optional one-tap adjustment.
-    /// Returns nil for .deadline and .other, where an arbitrary duration assumption is inappropriate.
-    public static func suggestedDuration(for category: EventCategory, isDining: Bool = false) -> TimeInterval? {
-        if isDining {
-            return diningDuration
-        }
+    public static func suggestedDuration(for category: EventCategory) -> TimeInterval? {
         switch category {
         case .concert, .sports, .social: return 3 * 3600
         case .nightlife: return 4 * 3600
         case .conference, .festival: return 8 * 3600
-        case .appointment: return appointmentDuration
+        case .appointment: return 3600
         case .classOrWorkshop: return 2 * 3600
         case .deadline, .other: return nil
         }
-    }
-
-    /// Evaluates duration suggestion taking explicit end time into account.
-    /// If an explicit end time was detected on the flyer, no suggestion is generated because
-    /// the flyer's stated time has full precedence.
-    public static func suggestedDuration(
-        for category: EventCategory,
-        hasExplicitEnd: Bool,
-        isDining: Bool = false
-    ) -> TimeInterval? {
-        guard !hasExplicitEnd else { return nil }
-        return suggestedDuration(for: category, isDining: isDining)
     }
 
     public static func fallbackEnd(for start: Date) -> Date {
