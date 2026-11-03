@@ -111,7 +111,22 @@ struct RuleBasedEventAnalyzerTests {
         #expect(RuleBasedEventAnalyzer.classifyCategory(text: "Dr. Aris DDS routine cleaning") == .appointment)
         #expect(RuleBasedEventAnalyzer.classifyCategory(text: "Swift Summit keynote") == .conference)
         #expect(EventDurationPolicy.suggestedDuration(for: .appointment) == 3600)
+        #expect(EventDurationPolicy.suggestedDuration(for: .social, isDining: true) == 5400)
+        #expect(EventDurationPolicy.suggestedDuration(for: .deadline) == nil)
+        #expect(EventDurationPolicy.suggestedDuration(for: .other) == nil)
         #expect(EventDurationPolicy.fallback == 7200)
+    }
+
+    @Test("Explicit end time takes precedence over category suggestions")
+    func explicitEndTimePrecedence() {
+        // When flyer has an explicit end time, no suggestion should override it
+        #expect(EventDurationPolicy.suggestedDuration(for: .appointment, hasExplicitEnd: true) == nil)
+        #expect(EventDurationPolicy.suggestedDuration(for: .social, hasExplicitEnd: true, isDining: true) == nil)
+        // When flyer has no explicit end time, category duration suggestion is available
+        #expect(EventDurationPolicy.suggestedDuration(for: .appointment, hasExplicitEnd: false) == 3600)
+        #expect(EventDurationPolicy.suggestedDuration(for: .social, hasExplicitEnd: false, isDining: true) == 5400)
+        #expect(EventDurationPolicy.suggestedDuration(for: .deadline, hasExplicitEnd: false) == nil)
+        #expect(EventDurationPolicy.suggestedDuration(for: .other, hasExplicitEnd: false) == nil)
     }
 
     @Test("Triggers fire only when the baseline needs help")

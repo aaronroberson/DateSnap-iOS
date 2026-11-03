@@ -46,6 +46,8 @@ enum EvaluationFixtures {
                      expected: .init(title: "Harvest Festival", date: .init(year: 2026, month: 10, day: 31), start: nil)),
         LabeledFlyer(name: "year-less", lines: [("Pottery Workshop", 0.08), ("November 21 · 2:00 PM", 0.04), ("Clay Studio", 0.04)],
                      expected: .init(title: "Pottery Workshop", date: .init(year: 2026, month: 11, day: 21), start: .init(hour: 14, minute: 0))),
+        LabeledFlyer(name: "dinner-reservation", lines: [("BISTRO LUMIERE", 0.08), ("Dinner Reservation", 0.04), ("Friday, November 20, 2026 7:30 PM", 0.04), ("450 Main Street", 0.03)],
+                     expected: .init(title: "BISTRO LUMIERE", date: .init(year: 2026, month: 11, day: 20), start: .init(hour: 19, minute: 30), venueContains: "BISTRO LUMIERE")),
         LabeledFlyer(name: "receipt", lines: [("CAFE GRATITUDE", 0.06), ("1x ESPRESSO $4.50", 0.03), ("SUBTOTAL $4.50", 0.03), ("TAX $0.40", 0.03), ("TOTAL $4.90", 0.03), ("10/02/2026 9:14 AM", 0.03)],
                      expected: nil),
         LabeledFlyer(name: "meme", lines: [("WHEN THE CODE COMPILES", 0.08), ("first try", 0.05)], expected: nil)
