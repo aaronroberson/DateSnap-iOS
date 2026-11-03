@@ -114,3 +114,47 @@ private struct OfflineSubscriptionService: SubscriptionServiceProtocol {
 
     func updateCustomerProductStatus() async {}
 }
+
+
+// MARK: - PencildLinks Tests
+
+@Suite("PencildLinks support mail generation")
+struct PencildLinksSupportMailTests {
+    @Test("Support mail creates valid mailto URL with standard subject")
+    func supportMailWithStandardSubject() throws {
+        let subject = "Pencil’d Support Request"
+        let url = try #require(PencildLinks.supportMail(subject: subject))
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+
+        #expect(components.scheme == "mailto")
+        #expect(components.path == PencildLinks.supportEmail)
+        #expect(components.queryItems?.count == 1)
+        #expect(components.queryItems?.first?.name == "subject")
+        #expect(components.queryItems?.first?.value == subject)
+    }
+
+    @Test("Support mail handles empty subject string")
+    func supportMailWithEmptySubject() throws {
+        let url = try #require(PencildLinks.supportMail(subject: ""))
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+
+        #expect(components.scheme == "mailto")
+        #expect(components.path == PencildLinks.supportEmail)
+        #expect(components.queryItems?.count == 1)
+        #expect(components.queryItems?.first?.name == "subject")
+        #expect(components.queryItems?.first?.value == "")
+    }
+
+    @Test("Support mail safely encodes special characters, spaces, and emoji")
+    func supportMailWithSpecialCharactersAndEmoji() throws {
+        let subject = "Help & Feedback: Questions? [Pencil’d] #42 + ?=& ✏️"
+        let url = try #require(PencildLinks.supportMail(subject: subject))
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+
+        #expect(components.scheme == "mailto")
+        #expect(components.path == PencildLinks.supportEmail)
+        #expect(components.queryItems?.count == 1)
+        #expect(components.queryItems?.first?.name == "subject")
+        #expect(components.queryItems?.first?.value == subject)
+    }
+}
