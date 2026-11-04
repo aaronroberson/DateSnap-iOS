@@ -7,14 +7,15 @@ You own the action suggestions attached to extracted events in the Pencil'd iOS 
 
 ## Scope & Code Seams
 - Link Building and Validation:
-  - `Sources/Pencild/Views/InterpretationReviewViews.swift`: `EventActionsChecklist` and `validatedActionURL` (line 343).
+  - `Sources/Pencild/Views/InterpretationReviewViews.swift`: `EventActionsChecklist` and `validatedActionURL`.
   - `Sources/Pencild/Services/NotificationService.swift`: http/https URL scheme and host validation.
 - Evidence & Models:
+  - `Sources/Pencild/Services/Intelligence/RuleBasedEventAnalyzer.swift`: `extractActions(in:temporal:)`, where deterministic actions are built from evidence lines.
   - `Sources/Pencild/Services/Intelligence/EvidenceValidator.swift`: validation of candidate properties against OCR evidence lines.
-  - `Sources/Pencild/Services/Intelligence/EventUnderstandingModels.swift`: `ActionSuggestion` (line 258) and `ActionSuggestion.Kind`.
+  - `Sources/Pencild/Services/Intelligence/EventUnderstandingModels.swift`: `ActionSuggestion` and `ActionSuggestion.Kind`.
 - Reminder Strategies:
-  - `Sources/Pencild/Services/Advisors/ReminderStrategyService.swift`: category-based reminder plans (`strategy(for:category:)`).
-  - `Sources/Pencild/Persistence/ReminderDefaultsStore.swift`: local user reminder defaults.
+  - `Sources/Pencild/Services/Advisors/ReminderStrategyService.swift`: category-based reminder plans (`ReminderStrategyService.plan(category:start:isAllDay:rsvpDeadline:now:calendar:)`).
+  - `Sources/Pencild/Services/Advisors/ReminderDefaultsStore.swift`: local user reminder defaults.
 - Tests:
   - `Tests/PencildTests/EvidenceValidationTests.swift`
   - `Tests/PencildTests/ScreenshotGroundingTests.swift`
@@ -33,22 +34,8 @@ You own the action suggestions attached to extracted events in the Pencil'd iOS 
 - No Contacts integration, new entitlements, new Info.plist usage strings, or remote services. Each of those needs a separately approved task.
 - Actions are offered in review. Nothing opens or saves automatically.
 
-## Prompt Grounding Standards
-When generating or handing off task prompts to be implemented by this agent, ensure the prompt explicitly provides:
-1. **Concrete Objective:** Specific action type, URL pattern, or reminder strategy behavior.
-2. **Exact Files and Method Seams with Line Numbers:** e.g., modifying `validatedActionURL(for:)` in `Sources/Pencild/Views/InterpretationReviewViews.swift` at line 343 or `EvidenceValidator.swift`.
-3. **Expected Outcomes:** Concrete validation logic ensuring that only verbatim text in OCR evidence produces an `ActionSuggestion`.
-4. **Repository Conventions:**
-   - Swift 6 strict concurrency (`Sendable`-correct).
-   - Warnings treated as errors.
-   - Prohibit `print` (use `os.Logger` if needed).
-   - Prohibit force unwraps (`!`).
-   - Prohibit `TODO`/`FIXME`/`HACK`/`XXX` markers in `Sources/`.
-   - Never edit `Pencild.xcodeproj` directly.
-   - Preserve brand identity (`Pencil'd` / `Pencild`).
-5. **Testing & Verification Commands:**
-   - Negative unit tests asserting that missing evidence yields `nil` or empty action lists.
-   - Unit test command: `xcodebuild test -project Pencild.xcodeproj -scheme Pencild -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:PencildTests/EvidenceValidationTests`.
+## Handoffs
+Prompts handed to this agent follow the shared standards in `AGENTS.md` ("Prompt Grounding Standards for Agent Handoffs"). Cite symbols, not line numbers.
 
 ## Done means
 The app target builds with warnings as errors, and the related suites pass (`EvidenceValidationTests`, `ScreenshotGroundingTests`, `EventUnderstandingTests`, `AdvisorTests`).
