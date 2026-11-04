@@ -114,6 +114,34 @@ struct RuleBasedEventAnalyzerTests {
         #expect(EventDurationPolicy.fallback == 7200)
     }
 
+    @Test("Dining is its own category with a 90-minute suggestion")
+    func diningCategory() {
+        #expect(RuleBasedEventAnalyzer.classifyCategory(text: "Dinner reservation for 4 at Bistro Lumiere") == .dining)
+        #expect(RuleBasedEventAnalyzer.classifyCategory(text: "Reservation at Nobu, table for 2") == .dining)
+        // Plain "dinner" (galas, fundraisers) stays social; dentist reservations stay appointments.
+        #expect(RuleBasedEventAnalyzer.classifyCategory(text: "Annual fundraiser dinner & gala") == .social)
+        #expect(RuleBasedEventAnalyzer.classifyCategory(text: "Dr. Aris DDS reservation for cleaning") == .appointment)
+        #expect(EventDurationPolicy.suggestedDuration(for: .dining) == 5400)
+        #expect(EventDurationPolicy.suggestedDuration(for: .deadline) == nil)
+        #expect(EventDurationPolicy.suggestedDuration(for: .other) == nil)
+        #expect(ReminderStrategyService.plan(category: .dining, start: testAnchor.addingTimeInterval(7 * 86400), isAllDay: false, rsvpDeadline: nil, now: testAnchor, calendar: testCalendar).offsets == [.oneDayBefore, .oneHourBefore])
+    }
+
+    @Test("A stated end time wins over the category suggestion")
+    func explicitEndPrecedence() throws {
+        let ranged = makeOCR([("Bistro Lumiere Tasting Menu", 0.08), ("November 20, 2026 7:00 PM - 10:00 PM", 0.04)])
+        let explicit = try #require(analyze(ranged).events.first?.best)
+        #expect(explicit.durationSource == .explicit)
+        #expect(explicit.end.provenance == .explicitText)
+        let end = try #require(explicit.end.value)
+        #expect(testCalendar.component(.hour, from: end) == 22)
+
+        let open = makeOCR([("Bistro Lumiere Tasting Menu", 0.08), ("November 20, 2026 7:00 PM", 0.04)])
+        let suggested = try #require(analyze(open).events.first?.best)
+        #expect(suggested.durationSource == .categoryDefault)
+        #expect(suggested.end.provenance == .fallbackDefault)
+    }
+
     @Test("Triggers fire only when the baseline needs help")
     func triggers() {
         let clear = makeOCR([("Book Club", 0.08), ("October 20, 2026 at 7pm", 0.04), ("Central Library", 0.03)])

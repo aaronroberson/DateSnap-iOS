@@ -108,7 +108,7 @@ public struct TemporalEvidence: Sendable, Codable, Hashable {
 
 /// Broad event category, used for duration priors, calendar suggestions and reminder plans.
 public enum EventCategory: String, Sendable, Codable, CaseIterable {
-    case concert, nightlife, conference, appointment, sports, festival, classOrWorkshop, social, deadline, other
+    case concert, nightlife, conference, appointment, sports, festival, classOrWorkshop, social, dining, deadline, other
 
     public var displayName: String {
         switch self {
@@ -120,6 +120,7 @@ public enum EventCategory: String, Sendable, Codable, CaseIterable {
         case .festival: return "Festival"
         case .classOrWorkshop: return "Class / Workshop"
         case .social: return "Social"
+        case .dining: return "Dining"
         case .deadline: return "Deadline"
         case .other: return "Event"
         }

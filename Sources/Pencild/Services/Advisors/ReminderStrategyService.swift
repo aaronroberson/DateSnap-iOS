@@ -26,6 +26,9 @@ public enum ReminderStrategyService {
         case .appointment:
             preferred = [.oneDayBefore, .oneHourBefore]
             rationale = "Appointments: a day-before heads-up and an hour to get there."
+        case .dining:
+            preferred = [.oneDayBefore, .oneHourBefore]
+            rationale = "Reservations: a day-before heads-up and an hour to get there."
         case .concert, .nightlife, .sports:
             preferred = [.oneDayBefore, .twoHoursBefore]
             rationale = "Shows and games: plan the day before, leave two hours ahead."

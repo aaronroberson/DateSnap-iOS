@@ -4,6 +4,8 @@ import Foundation
 /// The single source for "how long is an event with no stated end". Extraction, review and
 /// `CalendarService` all use `fallback`, so no layer silently applies a different assumption.
 /// Category durations are offered as editable suggestions only, until evaluation supports a better default.
+/// An end time stated on the flyer always wins: callers only consult `suggestedDuration` when the end
+/// came from the fallback (`DurationSource.categoryDefault` / `FieldProvenance.fallbackDefault`).
 public enum EventDurationPolicy {
     /// Labeled fallback when the flyer states no end time.
     public static let fallback: TimeInterval = 2 * 3600
@@ -15,7 +17,9 @@ public enum EventDurationPolicy {
         case .nightlife: return 4 * 3600
         case .conference, .festival: return 8 * 3600
         case .appointment: return 3600
+        case .dining: return 90 * 60
         case .classOrWorkshop: return 2 * 3600
+        // A deadline is a point in time; an unclassified event gets the labeled fallback, not a guess.
         case .deadline, .other: return nil
         }
     }

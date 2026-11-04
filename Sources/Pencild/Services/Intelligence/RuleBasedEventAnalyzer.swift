@@ -266,7 +266,11 @@ public enum RuleBasedEventAnalyzer {
 
     // MARK: - Category
 
+    /// First match wins. Dining is checked first so "reservation for 2 at Bistro …" is not an appointment;
+    /// its keywords are deliberately specific — a plain "dinner" (galas, fundraisers) stays social.
     private static let categoryRules: [(EventCategory, [String])] = [
+        (.dining, ["dinner reservation", "lunch reservation", "brunch reservation", "table for", "reservation at",
+                   "tasting menu", "restaurant", "bistro", "brasserie", "trattoria", "steakhouse"]),
         (.appointment, ["appointment", "dds", "dentist", "dr.", "clinic", "checkup", "check-up", "consultation", "reservation for"]),
         (.deadline, ["deadline", "due by", "submit by", "applications close"]),
         (.conference, ["conference", "summit", "keynote", "panel", "talk", "webinar", "meetup", "expo"]),

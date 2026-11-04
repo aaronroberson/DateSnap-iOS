@@ -55,7 +55,7 @@ struct GeneratedEvent {
     var endTimeLine: Int?
     @Guide(description: "The end time copied exactly from endTimeLine.")
     var endTime: String?
-    @Guide(description: "One of: concert, nightlife, conference, appointment, sports, festival, classOrWorkshop, social, deadline, other.")
+    @Guide(description: "One of: concert, nightlife, conference, appointment, sports, festival, classOrWorkshop, social, dining, deadline, other.")
     var category: String?
     @Guide(description: "A few words citing the label that identifies the start time.")
     var reason: String?
